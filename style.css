@@ -138,3 +138,56 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
   .date-filter input{flex:1;min-width:0}
   .data-actions{width:100%}
 }
+
+/* 多宠物与护理管理：工具保持可达，长列表在卡内滚动。 */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.health-profile,.health-reminders{height:36em;min-height:28rem}
+.health-profile .panel-title,.health-reminders .panel-title{margin-bottom:16px}
+.health-profile .panel-title p{font-size:12px;color:var(--muted);margin-top:4px}
+.pet-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:4px}
+.pet-entry{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);min-width:0}
+.pet-entry:last-child{border-bottom:0}
+.pet-entry.is-active .pet-entry-main{background:var(--mint)}
+.pet-entry.is-selected,.managed-reminder.is-selected{background:var(--mint);border-radius:8px}
+.pet-entry-main{display:flex;align-items:center;gap:12px;flex:1;min-width:0;min-height:68px;padding:8px;border-radius:8px;background:none;color:var(--ink);text-align:left}
+.pet-entry-main:hover{background:var(--mint)}
+.pet-entry-main>img,.pet-entry-main>.image-fallback{width:48px;height:48px;min-height:48px;border-radius:50%;flex-shrink:0;object-fit:cover;padding:0}
+.pet-entry-main>span{min-width:0}
+.pet-entry-main strong{display:block;font-size:16px;overflow-wrap:anywhere;line-height:1.5}
+.pet-entry-main small{display:block;color:var(--muted);font-size:12px;margin-top:4px;overflow-wrap:anywhere}
+.pet-entry-main .current-pet{color:var(--green);font-size:12px;margin-top:0}
+.pet-order{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.pet-drag{cursor:grab;flex-shrink:0}
+.pet-drag:active{cursor:grabbing}
+.is-dragging{opacity:.55;user-select:none}
+.icon-button:disabled{opacity:.4;cursor:default}
+.management-check{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.management-check input{width:20px;height:20px;accent-color:var(--green);cursor:pointer}
+.management-toolbar{flex-shrink:0;padding-top:16px;margin-top:8px;border-top:1px solid var(--line)}
+.management-actions{display:flex;gap:8px;flex-wrap:wrap}
+.selection-count{font-size:14px;color:var(--muted);margin-bottom:8px}
+.management-toolbar .demo-note{margin-top:8px;font-size:12px}
+.care-header-actions{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.care-header-actions .text-button{font-size:12px}
+.reminder-full{max-height:none;flex:1;min-height:0}
+.managed-reminder{align-items:center;cursor:pointer}
+.managed-reminder .reminder-content{pointer-events:none}
+.reminder-status{display:block;color:var(--orange);font-size:12px;margin-top:4px}
+.reminder-edit,.pet-edit{flex-shrink:0}
+.reminder-tabs{gap:4px;flex-wrap:wrap}
+.reminder-tabs .tab{font-size:12px;padding:8px}
+.empty-health .empty{padding:24px 12px}
+.empty-health .data-actions{justify-content:center}
+.trash-content{max-height:60dvh;overflow:auto;overscroll-behavior:contain}
+.trash-group{margin-top:24px}
+.trash-group>h3{font-size:16px;margin-bottom:8px}
+.trash-entry{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:16px 0}
+.trash-entry>div{min-width:0;overflow-wrap:anywhere}
+.trash-entry strong{font-size:16px}
+.trash-entry p,.trash-entry small{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.7}
+.trash-entry>.button{flex-shrink:0}
+.trash-entry .trash-parent-hint{color:#893b2b}
+.trash-confirm-names{overflow-wrap:anywhere;margin-bottom:12px}
+.records-table td:last-child{white-space:normal}
+@media(max-width:850px){.health-profile,.health-reminders{height:32em;min-height:28rem}.pet-entry-main{gap:8px}}
+@media(max-width:600px){.health-profile,.health-reminders{height:32em;min-height:28rem}.pet-entry{gap:4px}.pet-entry-main{padding:6px;gap:8px}.pet-entry-main>img,.pet-entry-main>.image-fallback{width:40px;height:40px;min-height:40px}.pet-entry-main strong{font-size:14px}.care-header-actions{gap:0}.management-actions .button{font-size:12px;padding:10px}.trash-entry{flex-wrap:wrap}.trash-entry>.button{margin-left:auto}}

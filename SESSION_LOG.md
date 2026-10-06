@@ -130,3 +130,11 @@ CloudBase部分SDK页面内置打开超时，随后curl读取官方身份文档�
 同步PENDING、PRODUCT、ROADMAP、AGENTS和总/00/01/03/05计划：已确认执行/AI费用原则、阶段0启动与用户验收门槛；阶段1补足本地健康UI的具体验收，阶段3明确免费默认限额和自带Key边界。所有产品任务保持未完成，VERSION/CHANGELOG/发布配置不变。历史日志原样保留。
 
 结构检查`python3 test-results/check_stage0_docs.py`退出0：14份Markdown相对链接/围栏、15个唯一待办、未来阶段未虚勾、产品/发布文件逐字节与7c469c9一致。`node --check app.js`、`git diff --check`退出0。首次追加本段的长Shell heredoc出现Non-UTF-8输入错误，日志未写入；因Shell没有遇错即停，后续Task1提交执行了但没有日志增量。已核对Git结果、改用apply_patch补记，不将失败记录伪装为已写，后续验证/提交命令使用set -e。当前不推送、不部署、不创建新tag/Release。
+
+## 阶段0独立审查与交付门槛
+
+2026-10-06，Asia/Shanghai：Task2本地提交864d0ca，stage0_review以独立上下文只读审查7c469c9..864d0ca，无Critical/Important；两处Minor为总计划Review Focus旧任务号1/2应改1/3，以及Task2已提交但Step5尚未同步。主agent对照实际段落/提交确认，修正任务号并同步已完成文档提交；这是维持计划准确性的低影响更正，不修改产品或补造行为测试。技术交付框勾选，用户阶段验收框继续未勾选，阶段1不启动。
+
+审查agent实际命令：完整git diff及stat、`python3 test-results/check_stage0_docs.py`、独立扫描18份跟踪Markdown的18个相对链接、`git diff --check 7c469c9..864d0ca`、`node --check app.js`、git status和HEAD，均退出0；确认五项阶段0Review Focus全部覆盖。Declined to judge为尚未实现的真实云端/模型/跨账户/ICS、AI与引导实现、手机键盘/原生200%缩放/屏幕阅读器；主agent同意保留未验证状态，未将现状布局或作者PASS冒充这些能力通过。没有Critical/Important修复循环或重复审查。
+
+新增指南补充按writing-plans规则核对具体Files、复用dialog接口、未保存输入、失败测试/运行/实现/复验/提交和实际功能说明，不重做总需求。收尾使用verification-before-completion检查文档/接口/产品范围；finishing-a-development-branch的本地整合沿项目用户已授权的Git常规操作执行，准备fast-forward回原main，不增加推送/发布审批或改变用户阶段门槛。证据复制保存在主工作区test-results/stage0，Git忽略且不进入网站白名单；实际整合结果随后追加。

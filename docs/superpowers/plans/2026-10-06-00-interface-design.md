@@ -48,7 +48,7 @@
 - [x] Step2：列明360、390、768、1440px布局，200%文字、手机键盘、长名称、长评论及图片缺失的行为。
 - [x] Step3：按Vercel界面规则检查语义元素、键盘焦点、表单标签、loading/错误/空状态和reduced-motion；与本项目风格冲突的品牌特定偏好不照搬。
 - [x] Step4：准备各阶段实施后的截图/交互验收表，截图一次集中检查，修复后一轮确认；自动扫描不替代用户路径测试。
-- [ ] Step5：提交 `docs: specify responsive UI states and acceptance checklist`，后续实现按此验收。
+- [x] Step5：提交 `docs: specify responsive UI states and acceptance checklist`，后续实现按此验收。实际提交864d0ca。
 
 ## 阶段退出标准
 
@@ -56,7 +56,7 @@
 
 ## 当前交付与阶段门槛
 
-- [ ] 设计任务本地交付和技术检查完成（两份说明、代码/浏览器证据、独立审查与Git记录）。
+- [x] 设计任务本地交付和技术检查完成（两份说明、代码/浏览器证据、独立审查与Git记录）。
 - [ ] 用户已确认页面层级、新增流程及验收表，可以进入阶段1。
 
 本阶段不实施产品UI；现状问题和未来要求见 `docs/design/experience-brief.md`、`docs/design/ui-acceptance.md`。用户要求的新手使用指南已排在阶段5 Task2，区别于阶段3首次三步引导。

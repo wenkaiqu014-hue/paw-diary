@@ -1,160 +1,161 @@
-# 登录与云端私有档案 Implementation Plan
+# 阶段2：本地个人档案与邮箱私有云同步 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans（主agent协调执行）；独立模块按需要使用superpowers:subagent-driven-development/dispatching-parallel-agents。每任务依次RED、实现、GREEN、归档。此文件是本轮规划交付，不是开始执行的指令。
 
-**Goal:** 访客仍能免登录体验，真实用户登录后保存私有多宠物档案并跨设备同步。
+**Goal:** 八小时实施目标内交付免登录本地个人健康/照片、真实邮箱私有云同步、V3生命周期与自定义类型、中英文及确认迁移/完整备份；原网址可用。
 
-**2026-10-07讨论更新（实施方案尚未定稿）：** 用户要求微信/邮箱/手机号都要，并追加不登录可建立自己的本地档案、云同步/社区发布互动时登录。云端刷新/返回前台拉取、并发拒绝覆盖保留输入、断网保留输入重试、单张照片确认后永久删除已确认，详见[阶段2决策记录](2026-10-06-followup-discussion.md)。后文邮箱AuthAdapter是旧草案；本地个人模式、三通道/绑定、照片删除需在讨论收口后补齐接口/任务/真实验收，不按旧注册门槛直接实施。本地模式正常保存不混同云端断网规则。短信/微信存在资质、审核和费用前置，当前没有接通证据，本轮尚未授权代码实施或收费开通。
+**Architecture:** DemoRepository保留；新增IndexedDB LocalRepository与服务端CloudRepository，共用领域规则。CloudBase上海云数据库：每用户一个健康快照文档+revision、独立媒体/回执/导入映射，paw-api逐action验证可信身份。私有图片由鉴权API读取后生成浏览器blob URL，文件不直接公开。前端仍GitHub Pages原生界面，esbuild打包。
 
-**Architecture:** 前端继续部署 GitHub Pages；建议后端使用腾讯云 CloudBase 的身份、文档数据库、存储和云函数，统一通过 `paw-api` 业务函数访问私有数据。客户端公开配置与服务端密钥分开；演示仓储和云端仓储采用第一阶段的相同接口。CloudBase 是本计划的建议选型，账号、预算和能力验证通过后才开通与实现，不假定已有环境。
+**Tech Stack:** 原生ESM、IndexedDB/Blob、esbuild、CloudBase Web/Node SDK、node:test、fake-indexeddb（仅测试）、Python Playwright。真实SDK/运行时在Task1核对源码并锁入package-lock，不猜旧OPENID行为。
 
-**Tech Stack:** 原生 ESM、esbuild、CloudBase Web/Node SDK、node:test、Python Playwright。执行时核对 V3 与实际可用 SDK/运行时并锁定版本，不从旧版 `_openid` 示例推断 V3 登录身份。
+**Spec:** [阶段2设计](../specs/2026-10-07-stage2-local-cloud-design.md)；[用户答案/研究](2026-10-06-followup-discussion.md)；[阶段1V3生命周期](../specs/2026-10-07-health-management-design.md)。本计划替代旧邮箱密码/六action/仅云相册草案。
 
-**Spec:** `ROADMAP.md` §2、§5、§7；`PENDING.md` P1-01–03；前序 `2026-10-06-01-local-foundation.md`。
+**规划期已核对的前置（非实施完成）：** 用户已自行创建专用环境，2026-10-07 01:27:19以指定FUJI环境变量只读DescribeEnvs/DescribeBillingInfo成功：`paw-diary-d8g3p4tlsb305221d`，ap-shanghai，NORMAL，baas_trial，云数据库资源1、PostgreSQL资源0，到期2027-04-07 23:59:59，自动续费/超额按量false。后续管理调用只从TENCENTCLOUD_FUJI_SECRET_ID/KEY读取，不默认改用此前查cloud1的凭证。邮箱/Principal/事务/私有访问与部署权限仍未实测。
 
 ## Global Constraints
 
-- 原 URL 和四个 hash 路由不变；云端异常时访客演示仍可用。
-- 未明确计费边界，不开通收费资源、不调用付费模型；个人笔试资源不默认走集团账单。
-- 不在浏览器接受 ownerId 作为授权依据；身份只从验证后的平台调用上下文获取。
-- 前端只发布环境ID、地域和平台允许公开的 Publishable Key，不包含管理或 AI 密钥。
-- 示例记录不自动成为真实账户的数据，私有健康资料不公开。
+- 本轮用户仅授权plan/分析：不安装产品依赖、构建、开通/配置云资源、上传数据、部署或改业务代码。以下步骤全部待正式开始指令。
+- 原仓库/网址、#home/#health/#nearby/#community不变，已发布v0.1.0/v0.2.0不移动。
+- `paw-diary:v3:demo`及旧v1/v2原文/备份保留；完整snapshot保留deletedAt，visibleHealth不作为持久化输入。demo/local/account分开，不自动迁移、种示例、公开健康/图片。
+- 本次真实认证仅邮箱；微信/手机号经用户本轮同意不纳入本次验收，无不可用按钮。未来多身份主动验证绑定同UID。
+- 免费先验，个人账号基础云约20元/月在用户可接受范围内；不自动续费/超额按量。额外邮件费用、超预算资源或集团账单未获本次选择，不静默启用。
+- 云保存后刷新/返回前台拉取；revision冲突保留输入/重新决定；云断网不离线写入/自动合并。本地保存独立正常工作。
+- 未登录个人头像/照片墙/幻灯片也实现。单照片确认永久删除；父宠回收保留媒体且恢复重现。
+- other/typeLabel1–20字、非other清标签；中英文覆盖现有四页/新表单/状态/错误/ARIA，不翻译用户原文。
+- 前端仅公开环境/地域/平台允许公开配置；管理和AI密钥只经环境变量读取，不能回显/提交。可信Principal拒绝未登录/匿名平台用户，owner不来自payload。
+- 本阶段不实施AI/真实社区/定位/指南/PWA；正常local/account社区只读示例，demo演示互动独立保留。
 
 ## Review Focus
 
-1. 登录过期与迟到响应：用户退出后，旧请求不能把上个用户数据重新渲染。Task 2、3 验证。
-2. 伪造 ownerId/petId：另一用户不能读、改或完成事项。Task 3 验证。
-3. v1 演示和自建数据混合：迁移必须预览，只上传用户选中内容。Task 4 验证。
-4. 云函数管理员身份：前端数据库规则不足以保护函数读写，业务函数再次检查归属。Task 3 验证。
-5. SDK/邮件注册不可用：没有验证真实账号前不能替换线上主入口；预设资料不算登录成功。Task 1 验证。
+1. 前台刷新或切语言改变打开表单的宠物/输入：固定petId/baseRevision/generation；Task4/6测试。
+2. 有uid的匿名用户或A退出迟到响应仍获得私有内容：Principal查真实身份、generation覆盖健康/图片；Task1/3/4测试。
+3. IDB quota/abort与对象存储上传的半保存：本地三store事务，云暂存/确认/清理，完整备份下载失败不报完成；Task2/5测试。
+4. 幂等先后顺序、同key不同输入及复活/越权批次：回执先于CAS，完整关联/批次验证，旧备份不复活；Task3/4/5测试。
+5. 新发布哈希模块和旧缓存HTML：完整静态产物、v0.2兼容白名单、旧数据原文保护；Task1/7测试。
 
-## 文件与接口
+## 八小时预算与责任
 
-最新确认：阶段1新增生命周期协议按[补充计划](2026-10-07-01-health-management.md)审阅并实现后，CloudRepository必须镜像V3软删除/恢复/排序与全量备份语义，增加`pets.reorder|trash.move|trash.restore`，按Principal验证整个批次归属并事务保存；真实环境验收包含另一账号不能恢复或排序他人实体。不能用仍仅六个旧action的实现宣称覆盖管理能力。
+预算是计划分配，不是完成承诺；从后续正式开始指令的工具时间起连续计时，包含外部等待。平台/邮箱前置若失败，及时报告，保留可独立推进的本地工作，不能把阶段2勾完成。
 
-P1-09/P1-10在本阶段实现：`type:'other'`与`typeLabel`（去首尾空白、1–20字）支持自定义记录/宠物类型；已有枚举和旧备份向后兼容，非other不附带自定义标签。自定义记录不当作体重，不参与体重趋势；筛选/时间线/备份/草稿显示标签，其他宠物使用中性默认图，不自动推定护理周期。Task3增加字段校验/旧数据测试，Task4补表单和备份往返浏览器验收。
+| 任务 | 预算 | 门槛/产物 |
+| --- | --- | --- |
+| 1 平台/邮箱/可信身份与公开构建 | 45分钟 | 实际专用环境、邮箱能力/Principal探针、bundle/配置边界 |
+| 2 local仓储与统一V3扩展 | 75分钟 | 空个人档案、事务/冲突、other/头像引用 |
+| 3 私有云健康API | 105分钟 | 生命周期/排序/profile/幂等/CAS、两个真实账号隔离 |
+| 4 会话UI与确认迁移 | 75分钟 | 邮箱登录/退出、三空间、编辑保护/导入闭包 |
+| 5 媒体UI与完整备份 | 75分钟 | 本地/云私有图、删除、幻灯片、备份往返 |
+| 6 双语覆盖 | 45分钟 | 四页/新增/错误切换不丢输入 |
+| 7 复验、修复与交付 | 60分钟 | 一轮审查/回归、真实报告、候选版本 |
+| 合计 | 480分钟 | 不省略真实权限和旧数据保护 |
 
-新增 `src/auth/cloudbase-auth.js`、`src/data/cloud-repository.js`、`src/config/public-config.js`、`src/ui/account.js`、`backend/{api,identity,health,storage,cloudbase-store}.cjs`、`cloudfunctions/paw-api/{index.js,package.json}`、`scripts/{build,build-functions}.mjs`、`docs/operations/cloud-setup.md`、`.env.example`、`tests/cloud-*.test.js`、`tests/integration/cloud-private.test.js`；修改 `package.json`、`.gitignore`、发布工作流、`app.js`、`index.html`。
+按用户既有执行偏好由主agent协调；并发上限含主agent4。接口冻结后可并行：local worker仅IDB/local仓储/媒体处理/单测；cloud worker仅backend/functions/cloud auth/repository/真实集成；UI worker仅词典/error-localization/photo-wall独立模块/浏览器脚本。主agent独占schema/领域共享文件、app.js/app-session.js、index/style、构建/工作流、接口整合、日志和验收。工人不独占代码库，不回退别人、不再派工、不自行云部署/Git发布。计时预算按关键路径调整，不把各worker工时简单相加；验收60分钟必须预留。
 
-客户端 `AuthAdapter`：`getSession(): Promise<{userId:string}|null>`、`startRegistration({email,password}): Promise<{registrationId:string}>`、`verifyRegistration({registrationId,code}): Promise<{userId:string}>`、`signIn({email,password})`、`signOut()`、`subscribe(listener): unsubscribe`。registrationId 仅映射本次平台注册流程，不自己创造登录身份。
+检查点：45分钟认证前置是否真实可用；第3小时健康/本地事务；第5小时云权限/会话；第7小时停止加非必要装饰、进入集中验证；第8小时报告真实结果。原10月8日20:00截止不变，不擅自将未完项延期。
 
-函数协议：`{version:1,action,payload,idempotencyKey?}` → `{ok:true,data}` 或 `{ok:false,error:{code,message}}`。错误码固定 `UNAUTHENTICATED|FORBIDDEN|INVALID_INPUT|CONFLICT|UNAVAILABLE`。客户端 `invoke(action,payload,options): Promise<data>` 将失败 envelope 转为明确错误。
+## 固定接口与文件责任
 
-`Principal={userId:string}`；`resolvePrincipal(platformContext): Promise<Principal>`。`handleRequest(request,{principal,store,clock}): Promise<Envelope>` 不把客户端 payload 的 ownerId 写入数据库。`CloudRepository` 实现前序 Repository，并由函数提供 `health.snapshot|pets.save|records.save|records.delete|reminders.save|reminders.complete`。
+`AppSnapshotV3`增加mode=local、other/typeLabel和Pet.avatarAssetId；`WorkspaceEnvelope={snapshot,revision,workspaceId}`；媒体不塞未经schema支持的顶层字段。仓储既有领域操作返回值按设计第4节保留；任意mutate仅demo，本地replaceSnapshot仅本地恢复，云端恢复换显式archive预览/导入。
 
-数据库集合 `pets`、`health_records`、`reminders`、`mutation_receipts` 均含 `ownerId`；幂等记录键 `{ownerId,idempotencyKey}`，重复请求返回原结果。私有集合禁止前端直接访问。`CloudStore` 提供 `findOwned(collection,id,ownerId)`、`listOwned(collection,ownerId)`、`saveOwned(collection,doc,ownerId)`、`transaction(callback)`；事务内完成提醒状态、关联记录和幂等回执。具体 SDK 语法在能力验证中锁定，并用真实环境集成测试验证。
+`AuthAdapter.getSession/requestEmailCode/verifyEmailCode/signOut/subscribe`；`createAppSession`增加switchWorkspace/refresh/generation，兼容旧demo调用；用户语言与当前宠物选择是空间隔离的设备偏好。
 
-## Task 1 验证平台 注册方式与构建产物
+`ApiRequest={version:1,action,payload,expectedRevision?,idempotencyKey?}`；`Envelope={ok:true,data,revision}|{ok:false,error:{code,messageKey,params?}}`；code固定`UNAUTHENTICATED|FORBIDDEN|INVALID_INPUT|CONFLICT|UNAVAILABLE`。读操作无expectedRevision，所有业务写操作必带revision/key；媒体读取仅用assetId，绝不使用客户端fileId/ownerId授权。
 
-**Files:** `cloud-setup.md`、`.env.example`、`scripts/build.mjs`、`src/config/public-config.js`、`package.json`、发布工作流、`tests/build.test.js`、`tests/integration/cloud-auth.test.js`。
+健康actions：`health.snapshot`、`pets.save`、`pets.reorder`、`records.save`、`records.delete`、`reminders.save`、`reminders.complete`、`trash.move`、`trash.restore`、`profile.save`。当前宠物设备偏好不发跨设备写操作；不提供任意mutate/replace远端快照接口。
 
-**Consumes:** 固定 URL、已确认账户/预算。**Produces:** 可实际注册的测试环境；`npm run build` 输出 `dist/`，仅静态网页和打包后的客户端；可确认邮件注册和OTP到达能力。
+媒体actions：`media.list|media.prepare|media.confirm|media.read|media.remove`；导入actions：`imports.preview|imports.prepare|imports.commit`。MediaRepository.list/save/remove/resolveUrl参数与设计第6节一致；resolveUrl返回浏览器临时URL及释放函数。
 
-- [ ] Step 1：写构建测试，断言产物只含公开配置与客户端代码，没有 `backend/`、`.env`、`TEXT_AI_API_KEY`、`MINIMAX_API_KEY`、`TENCENTCLOUD_SECRET_KEY` 的值；在 `/paw-diary/` 路径能打开四页。
-核心断言示例（变量由该步骤的真实输入/结果fixture定义，不是生产代码）：
+`WorkspaceStore.readOwned(principal)`、`transactionOwned(principal,callback)`，事务对象支持读取/保存该owner健康文档、媒体元数据、回执和来源映射；`resolvePrincipal(platformContext)`校验真实已验证邮箱身份，`handleRequest(request,{principal,store,clock})`执行显式action。`imports.prepare/commit`使用当前revision和key，media.prepare只创建owner内上传暂存票据、不改共享快照；confirm/remove必须CAS，其他事务性共享变更递增revision。完整archive包含sourceWorkspaceId/资产字节，导出snapshot.mode=local，legacy无来源ID走明确命名空间及实体ID冲突预览。存储SDK语法在Task1冻结，管理员权限不能绕过业务归属校验。
 
-```js
-assert.equal(publicFiles.some(path => path.startsWith('backend/')), false);
-assert.equal(publicFiles.includes('.env'), false);
-assert.equal(leakedSecretValues.length, 0);
-```
+## Task 1 平台、邮箱/Principal与静态构建（45分钟）
 
-- [ ] Step 2：运行 `node --test tests/build.test.js`，确认未实现构建时失败。
-- [ ] Step 3：在预算内验证环境及邮件认证，记录具体 SDK 版本和运行时；邮件/认证方式不可用时暂停这一阶段，修改方案后再继续，不自行写密码系统。增加 esbuild bundle，Pages 改为上传 `dist/`，本地页面也以 dist 验证。
-- [ ] Step 4：运行构建测试、`npm test`、现有浏览器测试；在已获授权的真实环境验证两个邮箱注册、验证码与登录成功。记录失败信息，不在日志写邮箱密码/token。
-- [ ] Step 5：提交 `build: add cloud-ready static bundle and verified auth setup`。
+**Files:** 新增`docs/operations/cloud-setup.md`、`.env.example`、`src/config/public-config.js`、`src/auth/cloudbase-auth.js`、`scripts/build.mjs`、`scripts/build-functions.mjs`、`tests/build.test.js`、`tests/integration/cloud-auth.test.js`；修改package/lock、gitignore、Pages工作流/index入口；构建期间不改版本tag。
 
-## Task 2 登录状态与访客模式
+**Consumes:** 用户后续正式开始指令、个人账号、用户自行开通的专用环境结果、两套受控收信邮箱。**Produces:** 实测上海云数据库环境、真实邮箱adapter与可信Principal接入依据、锁定SDK/运行时、可在/paw-diary/打开的dist。
 
-**Files:** `cloudbase-auth.js`、`account.js`、`app-session.js`、`app.js`、`tests/cloud-session.test.js`；扩展 `test_app.py`。
+- [ ] Step1：读取当前Git领先交接、建立隔离worktree，不reset；记录实施起点和+8h目标。复用上方已经只读核对的用户专用环境，再复核可用状态，不重建同名环境或复用cloud1。管理调用按FUJI变量读取，不把EnvCharged字段当已支付金额或订单授权。建立任务ledger，邮箱/SDK/业务能力仍按本任务真实验证。
+- [ ] Step2：写`tests/build.test.js`，用假secret sentinel断言dist没有backend/cloudfunctions/env/docs/tests/日志/secret值、新JS/CSS为哈希入口、四hash子路径可加载；旧缓存app/style/src来自固定v0.2.0白名单且hash相同。运行`node --test tests/build.test.js`，无build时RED，不用真实密钥作为断言输出。
+- [ ] Step3：实际核对并锁定SDK/esbuild/测试IDB依赖；build输出dist，函数另打包到Git忽略产物。前端只发布公开配置。执行时才创建项目所需集合/函数及默认拒绝直接读写规则；如果邮箱配置需额外费用先落实，不能用假邮件。
+- [ ] Step4：用两套可收验证码的真实邮箱走请求/验证/会话；以实测SDK uid对比服务端Principal，并测试无会话、伪造emailVerified、真实匿名uid拒绝。验证数据库事务、1MiB文档/响应、≤1MiB图片鉴权读取、免费3秒运行限制；只读测试配置，实际探针只在专用环境/测试实体上做，不读其他项目用户。必要资源变更限已批准账号/预算和执行范围。
+- [ ] Step5：运行`node --test tests/build.test.js`、`node --test tests/integration/cloud-auth.test.js`（真实适配、未配置应明确失败/退出非0而非skip PASS）、`npm run build`。记录API/版本/邮件到达和失败，日志无邮箱地址/验证码/token。Gate1：45分钟真实前置仍失败就报告，其他独立本地任务可继续，但阶段2不能通过。提交`build: verify email cloud setup and isolate static artifacts`。
 
-**Consumes:** 前序 Repository 和本阶段 AuthAdapter。**Produces:** `switchSession({mode:'demo'|'account',auth,repository}): Promise<void>`；每次切换增加 generation，只有当前 generation 的响应可更新页面。
+## Task 2 local事务仓储、V3扩展与自定义类型（75分钟）
 
-- [ ] Step 1：写测试：未登录能进入 demo；登录用户 snapshot 不包含示例宠物；开始旧请求后退出再返回，该响应不渲染；失败不丢演示数据；登录过期只清当前账号可见缓存，不清原备份。
-核心断言示例（变量由该步骤的真实输入/结果fixture定义，不是生产代码）：
+**Files:** 新增`src/data/indexeddb-store.js`、`src/data/local-repository.js`、`src/data/media-repository.js`、`src/media/process-image.js`、`tests/local-personal.test.js`、`tests/custom-types.test.js`；修改schema/records/reminders/backup、demo默认图；新UI接口由主agent整合。
 
-```js
-assert.equal(sessionAfterLogout.mode, 'demo');
-assert.equal(snapshotAfterLateAccountResponse.mode, 'demo');
-assert.equal(accountSnapshot.pets.some(p => p.id === 'pet-mochi'), false);
-```
+**Consumes:** 设计中的快照/媒体边界、旧领域变换。**Produces:** 空local个人仓储、统一other校验、IDB atomic/CAS、稳定媒体ID。
 
-- [ ] Step 2：运行 `node --test tests/cloud-session.test.js`，确认缺失行为失败。
-- [ ] Step 3：实现真实平台注册/验证/登录/退出界面及会话切换，密码输入不进入应用 state/日志；个人空间加载失败显示重试，不自动混入示例。
-- [ ] Step 4：运行该组测试、`npm test`、浏览器匿名入口和登录退出流程；验证重新登录状态正确。
-- [ ] Step 5：提交 `feat: add guest demo and authenticated personal workspace`。
+- [ ] Step1：写失败测试：首次local无pet-mochi；保存/重开同一DB不丢；完全不改旧demo/v1/v2/backup原文；两实例同revision写入只成功一个；一次IDB abort后snapshot/media/Blob全不变；存储不可用明确失败不偷偷回到demo。
+- [ ] Step2：补other/typeLabel空白/20字/超长/非other清标签、猫狗旧数据不变、自定义记录不进体重趋势、来源other护理完成保留typeLabel、CSV/旧备份往返、avatarAssetId缺省兼容。运行`node --test tests/local-personal.test.js tests/custom-types.test.js`确认真实RED。
+- [ ] Step3：实现三个IDB store原子事务，压缩/网络均在事务外；compare revision后写，complete事件才更新内存。snapshot.mode=local，新workspaceId只初始化一次。保留既有纯领域函数返回形状，城市用saveProfile，device选择隔离存储；Blob URL仅在UI派生。
+- [ ] Step4：为新备份/媒体接口提供读写契约；原demo仍localStorage/raw CAS，不能套用IDB适配绕过原文保护。运行该组测试、`npm test`，真实浏览器IDB quota/abort由Task5补，不拿fake-indexeddb模拟代表浏览器全部通过。
+- [ ] Step5：提交`feat: add isolated local profiles and custom pet record types`，报告返回形状/测试/旧键保持证据。
 
-## Task 3 私有健康 API 与跨账号隔离
+## Task 3 私有健康API与revision/幂等（105分钟）
 
-**Files:** `identity.cjs`、`api.cjs`、`health.cjs`、`cloudbase-store.cjs`、`cloud-repository.js`、云函数入口及构建脚本；`tests/cloud-private.test.js`、`tests/integration/cloud-private.test.js`。
+**Files:** 新增`backend/{api,identity,workspace,cloudbase-store}.cjs`、`cloudfunctions/paw-api/{index.js,package.json}`、`src/data/cloud-repository.js`、`tests/cloud-private.test.js`、`tests/integration/cloud-private.test.js`。
 
-**Consumes:** HealthRecord/Reminder 模型；Principal、CloudStore 和函数协议。**Produces:** 六个健康 action；ownerId 不可变，所有关联 petId/recordId 均检查归属。
+**Consumes:** Task1身份/事务，Task2统一领域规则；明确action协议。**Produces:** 全部十个健康action、CloudRepository兼容方法、云端CAS/所有权/完整V3。
 
-- [ ] Step 1：写服务测试：A创建的 pet，B读取/修改/完成均返回FORBIDDEN；未登录UNAUTHENTICATED；伪造payload.ownerId不改变实际归属；重复完成只增一条；空账户 snapshot 返回空数组。
-核心断言示例（变量由该步骤的真实输入/结果fixture定义，不是生产代码）：
+- [ ] Step1：写测试A创建宠物/记录/事项，B直调其id读改/完成/移入恢复/排序均拒绝；无会话/匿名uid UNAUTHENTICATED；ownerId伪造不改变身份；空账号空数组；soft delete/完成历史/排序槽位同本地。
+- [ ] Step2：测试revision过期CONFLICT、批量混入 他人/不存在实体整批不写、重复完成一条记录、保存成功但丢响应同key重试返回原结果、同key不同payload INVALID_INPUT、幂等返回旧revision不得覆盖更晚的客户端视图。运行`node --test tests/cloud-private.test.js`RED。
+- [ ] Step3：服务端逐action规范输入，以Principal定位owner健康文档；事务先识别回执，再CAS及关联闭包；全量健康文档/回执同次保存。1MiB健康上限/64KiB常规输入超限拒绝，不截断。Client repository将envelope转错误及revision，选择只影响本设备；禁任意远端mutate。
+- [ ] Step4：运行单测；部署到已验证专用环境，用真实A/B及匿名用户运行`node --test tests/integration/cloud-private.test.js`。含两设备先后编辑、排序/恢复越权、直接数据库请求拒绝与完整回收站快照。mock PASS不算Gate3。
+- [ ] Step5：提交`feat: persist private V3 workspaces with revision checks`；记录实际权限/事务/失败修复及第3/5小时状态。
 
-```js
-assert.equal(readByB.error.code, 'FORBIDDEN');
-assert.equal(writeWithoutSession.error.code, 'UNAUTHENTICATED');
-assert.equal(secondCompletion.data.record.id, firstCompletion.data.record.id);
-```
+## Task 4 三空间会话、邮箱UI与确认迁移（75分钟）
 
-- [ ] Step 2：运行 `node --test tests/cloud-private.test.js`，确认未实现函数授权时失败。
-- [ ] Step 3：在云函数内从平台认证上下文解析 userId，执行私有查询、编辑、删除及幂等事务；接入 CloudRepository。绝不依赖客户端传入 userId；部署前核对选定 SDK 的可信身份接口。
-- [ ] Step 4：运行单元测试、`npm test`，再用两个真实账户运行 `tests/integration/cloud-private.test.js`；换浏览器确认同步，直接请求另一用户ID确认拒绝。平台SDK被 mock 的通过不算云端验收。
-- [ ] Step 5：提交 `feat: persist private pet health records with ownership checks`。
+**Files:** 新增`src/ui/account.js`、`src/features/local-import.js`、`backend/imports.cjs`、`tests/cloud-session.test.js`、`tests/cloud-import.test.js`、`tests/e2e/account-workspaces.py`；修改app-session/app/index、接媒体暂存接口。
 
-## Task 4 头像与本地记录迁移确认
+**Consumes:** AuthAdapter、三Repository、revision与MediaRepository；导入映射按owner+来源workspaceId+kind/id。**Produces:** switchWorkspace/refresh/generation、邮箱验证码流程、imports三action、明确迁移预览与重试。
 
-**Files:** `storage.cjs`、`account.js`、`cloud-repository.js`、`tests/cloud-import.test.js`、`tests/integration/cloud-upload.test.js`。
+- [ ] Step1：写会话测试：demo/local/account完全分开；登录不自动上传；退出回local且本地内容不变；A迟到读/图片结果在退出/切B后不更新任何缓存；登录过期不退回显示A；云断网保留输入/当前成功快照；未保存表单空间切换必须明确处理。
+- [ ] Step2：写表单测试：为宠物A打开记录，拉取后选择B，保存仍归A或因版本冲突拒绝，绝不写B；切语言不丢表单；再登录新generation旧草稿拒绝保存。导入测试覆盖预置不勾、依赖闭包、回收站/排序、owner剥离与重映射、同次重试不重复、较旧预览不能覆盖新云编辑。运行`node --test tests/cloud-session.test.js tests/cloud-import.test.js`RED。
+- [ ] Step3：实现显式空间入口/个人空态/邮箱验证码/退出/过期重登；请求与媒体绑定generation。刷新/visibilitychange只拉取；打开表单捕获petId/baseRevision，保留输入及提示。local正常保存，不提示云同步成功；云读失败不种seed。
+- [ ] Step4：实现完整来源预览/选择/依赖确认，source旧原文永不清除；imports.prepare建立可重试批次，commit以预览revision事务保存健康/元数据/映射/回执。city需单独明确选择，新宠顺序追加，旧备份恢复deletedAt变化逐项确认。文件传输在Task5完整接入，不宣称对象字节和DB同事务。
+- [ ] Step5：单测与`PAW_DIARY_TEST_URL=http://127.0.0.1:4178/paw-diary/ /Users/wenkaiqu/.codex/skill-runtime/run python -u tests/e2e/account-workspaces.py`，其中账号流程真实邮箱。提交`feat: switch local and account workspaces with confirmed imports`。
 
-**Interfaces:** `prepareImageUpload({kind:'pet-avatar'|'post',mime,size},principal): Promise<{uploadUrl,fileId}>`；`confirmImage({fileId},principal): Promise<{url}>`。后台验证对象归属、实际类型与大小；上限沿用10MB，JPEG/PNG/WebP。`importSelectedBackup({pets,records,reminders},principal): Promise<{idMap,counts}>` 重新分配 ownerId，事务幂等。
+## Task 5 私有/本地媒体、幻灯片与完整备份（75分钟）
 
-- [ ] Step 1：写测试：10MB以上和非图片拒绝；B不能确认A的对象；备份只迁移选中的宠物/记录，示例不会默认选中；同一次导入重试不重复创建。
-核心断言示例（变量由该步骤的真实输入/结果fixture定义，不是生产代码）：
+**Files:** 新增`backend/{storage,photos}.cjs`、`src/features/photo-wall.js`、`src/domain/archive.js`、`tests/{photos,archive}.test.js`、`tests/integration/photos-private.test.js`、`tests/e2e/photo-wall.py`；扩展media-repository、account/local-import与app/style。
 
-```js
-assert.equal(uploadByOtherOwner.error.code, 'FORBIDDEN');
-assert.equal(importRetry.data.counts.records, importResult.data.counts.records);
-```
+**Consumes:** Task2媒体事务、Task3身份/版本、Task4导入批次。**Produces:** 五个媒体action、头像/私有图墙/播放控件、带资产完整JSON导出/预览恢复。
 
-- [ ] Step 2：运行 `node --test tests/cloud-import.test.js`，确认缺失行为失败。
-- [ ] Step 3：实现头像上传、迁移预览与确认，原备份不删除；显示云端保存结果和失败重试。登录后已发生的编辑不能被较旧迁移覆盖。
-- [ ] Step 4：运行 `npm test`、实际上传与跨账号确认验证，浏览器重载头像和数据；确认没有将预置日常上传公开社区。
-- [ ] Step 5：提交 `feat: upload pet avatars and confirm selected local data import`。
+- [ ] Step1：写图片测试：JPEG/PNG/WebP输入10MiB上限、解码失败/假MIME拒绝；展示最长边1920/≤1MiB（头像512），透明度保留；10张批次/50MiB空间限额失败保留输入；本地IDB abort无孤立可见照片；父宠回收隐藏但保留Blob，恢复重现。
+- [ ] Step2：云测试A/B不能读对方asset、伪造fileId/错宠物确认拒绝，匿名/直接对象读取拒绝；media.read不返回外部签名URL；永久删除后读取拒绝/幂等、对象清理失败明确待重试且不报释放；替换头像失败旧头像仍在。备份tests验证含展示图片hash/关联、去owner/fileId/临时URL，漏文件/100MiB超限不生成假完整备份，V1/2/3兼容/旧导入不复活。运行`node --test tests/photos.test.js tests/archive.test.js`RED。
+- [ ] Step3：实现本地事务/云上传暂存确认/鉴权读字节、浏览器blob URL释放；avatar独立资产不做相册复用。图墙只当前宠物，批次进度与逐项失败可重试；幻灯片主动进入默认暂停，播放/暂停/上下张/Esc/焦点回退，最后照片删除退出；减少动画静态切换。
+- [ ] Step4：实现archive formatVersion=1完整JSON，资产base64+SHA256，云端逐文件读取成功才导出；另标明仅健康JSON。恢复先全部校验/预览，本地同一IDB事务，云走imports批次。运行`node --test tests/integration/photos-private.test.js`与`tests/e2e/photo-wall.py`，真实两个账号及本地refresh/浏览器存储失败/图片失败/切空间用例。
+- [ ] Step5：提交`feat: add private photo walls and complete media backups`，记录实际文件权限、删除清理边界与限制。
 
-## Task 5 中英文界面能力
+## Task 6 现有全站中英文（45分钟，可提前并行）
 
-**Files:** 新增`src/ui/i18n.js`、`src/ui/locales/{zh-CN,en}.js`、`tests/i18n.test.js`；修改`app.js`、`style.css`；新增`tests/e2e/language.py`。
+**Files:** 新增`src/ui/i18n.js`、`src/ui/error-localization.js`、`src/ui/locales/{zh-CN,en}.js`、`tests/i18n.test.js`、`tests/e2e/language.py`；主agent修改app/index/style及领域错误映射接入。
 
-**Interfaces:** `t(key,params,locale)`；`setLocale(locale:'zh-CN'|'en')`；语言偏好独立存储，不改变健康snapshot；用浏览器偏好仅作初始候选，显式选择优先。AI请求后续携带uiLocale，用户名字/记录/帖子/typeLabel不翻译。
+**Consumes:** 三空间/媒体稳定词条、用户原文。**Produces:** t/setLocale、统一键/插值/错误转换、刷新保留偏好。
 
-- [ ] Step1：写两份词典键集合一致、插值文本转义、偏好刷新保存、切换不改业务原文/未保存输入/当前宠物的测试。
-- [ ] Step2：运行`node --test tests/i18n.test.js`与language e2e，确认未有能力真实失败。
-- [ ] Step3：实现语言入口与原四页/表单/错误/状态文字，保留日期数值的统一存储，仅按语言格式展示；后续功能同样用词典。
-- [ ] Step4：运行`npm test`、语言e2e与四宽度布局，验证英文长文和所有已实现页面；未实现指南/AI部分留阶段3/5收口。
-- [ ] Step5：提交`feat: switch interface languages while preserving original records`。
+- [ ] Step1：词典键相同、所有占位参数一致、插值转义、偏好刷新保存、名字/备注/typeLabel/帖子不翻译测试；语言切换保持当前宠物、照片、未保存表单。运行`node --test tests/i18n.test.js`RED。
+- [ ] Step2：实现独立locale偏好、导航/footer/四页/状态/ARIA、账号/照片/导入管理及已有领域错误映射；日期/数字只格式展示，不改存储。未知后端消息用通用提示，不泄露原异常或日志内容。
+- [ ] Step3：为新界面接词条，保留减少动画和既有样式；不用为了换语言重建dialog丢输入。
+- [ ] Step4：`node --test tests/i18n.test.js`、`tests/e2e/language.py`，360/390/768/1440四宽度、英文长文本/校验/空态实际DOM检查。
+- [ ] Step5：提交`feat: localize current workflows without changing user records`。后续AI/指南词条按阶段3/5补，不把尚未存在功能当已覆盖。
 
-## Task 6 当前宠物私有照片墙与幻灯片
+## Task 7 真实复验、单轮审查与阶段交付（60分钟）
 
-**Files:** 新增`backend/photos.cjs`、`src/features/photo-wall.js`、`tests/photos.test.js`、`tests/integration/photos-private.test.js`、`tests/e2e/photo-wall.py`；扩展`storage.cjs`、`api.cjs`、`app.js`、`style.css`与语言词典。
+**Files:** 新增`docs/verification/stage2-report.md`；更新测试runner/README/PENDING/SESSION_LOG/AGENTS/总计划/阶段计划，按实际发布再更新VERSION/CHANGELOG。
 
-**Interfaces:** `Photo={id,ownerId,petId,fileId,caption,createdAt}`，caption0–200字，图片限制沿Task4上传规则；actions`photos.list|photos.save`均验证宠物/fileId归属；`list({petId,cursor,limit:20})`只返回本人当前宠物照片。私有存储访问沿已验证Task4机制，不把私有URL写进公开社区；没有显式分享动作不公开。
+**Consumes:** 前六任务及真实前置全部通过；**Produces:** 真实验收报告、可回退候选、明确完成/未完成项。
 
-- [ ] Step1：写A/B隔离、跨宠物错绑拒绝、伪造fileId拒绝、图片上传失败保留输入与重复保存幂等；浏览器切宠物切照片、无照片空态、全屏/暂停/退出/键盘Esc/减少动画测试。
-- [ ] Step2：运行`node --test tests/photos.test.js`及e2e，确认能力缺失真实失败。
-- [ ] Step3：实现私有图集/多图上传/归属校验、当前宠物墙与用户主动全屏幻灯片；自动播放默认停止，主动播放可暂停/退出，减少动画使用静态切换。删除宠物后照片不公开或失去归属，恢复时重现。
-- [ ] Step4：运行单测/e2e与真实两账号图片权限验证、手机/键盘操作；不能用默认公共素材冒充私有照片存储通过。
-- [ ] Step5：提交`feat: display private pet photos with controllable slideshows`。
+- [ ] Step1：执行`npm test`、`node --check app.js`、`git diff --check`、`npm run build`、`npm run build:functions`；检查白名单/虚假secret扫描。所有新增集成测试分别运行，没真实环境必须非0或报告未执行，不用skip总结为全过。
+- [ ] Step2：服务dist父目录，使URL确为/paw-diary/，按README/skill-runtime启动验证服务（旧4178已未连通，先检查再启动，测试产物在test-results/stage2不提交）。现有八套脚本test_app.py、local-foundation/local-boundaries/local-regressions/health-layout/health-management/management-quality/cached-upgrade全部跑，保留demo路径断言；新account-workspaces/photo-wall/language以同静态产物运行。
+- [ ] Step3：独立只读审查最多一轮，聚焦身份/匿名/迟到、表单宠物归属、revision幂等、原文迁移、媒体权限/备份；Critical/Important真实复现后修复并重跑覆盖及完整相关套件。root负责整合复验，不把worker说完成当证据。
+- [ ] Step4：技术阶段验收：真实邮箱A/B与另一浏览器、直接数据库/对象拒绝、照片备份往返、语言、四宽度/键盘/焦点、失败重试/断网/缓存。真实手机键盘/原生200%/读屏未做则仍列阶段5，不把桌面模拟冒充；不重复日历导入。给用户3分钟个人流程验收路线，用户体验与技术状态分开。
+- [ ] Step5：按实际结果更新状态并本地Git归档，未过项列明。未来正式开始且按本计划交付时，前置/技术全通过后沿已有项目Git/部署授权发布候选v0.3.0到原地址、匿名复验、新tag/Release，用户亲自体验仍待确认的范围分开记录，不重复问工具权限。如用户未来明确只做本地/暂缓发布则尊重限制。本轮仅plan不发布，未通过不称完成，不自动推进阶段3。
 
-## 扩展后的阶段退出标准
+## 计划自检与执行交接
 
-原身份/私有档案门槛保留，新增自定义类型、阶段1管理镜像、双语界面与私有照片墙逐项验证。所有后续方案按新增文件/接口进入执行前细化与审阅；不在当前阶段1提前接入平台。
+- [ ] 执行前：用户阅读本设计/计划并明确开始；保留主agent协调＋按需worker方式，不重复问模型/工具权限。
+- [ ] 实施前置：用户专用环境创建和管理只读访问已核对，邮箱代发/两套受控邮箱/可信身份/事务/图片私有读取/部署权限仍须实测，不用旧cloud1或截图代替业务测试。
+- [ ] 所有写action有revision+幂等，原六action遗漏已补；城市和当前宠物设备偏好不通过任意mutate跨云保存。
+- [ ] local/account备份含媒体，旧健康JSON仍兼容；photos在envelope，avatar引用已入schema，不被验证剥离。
+- [ ] spec每项映射Task1–7，五条Review Focus各有明确行为测试；退出门槛包括真实匿名平台用户，不只无token。
 
-两个真实账号隔离与跨设备同步、匿名演示、实际注册验证和上传全部通过。账号能力受阻时保留上一稳定版本，不发布半通的个人入口。建议候选版本 `v0.3.0`，验收后才创建。
-
-## 已核对的官方来源
-
-身份概述内置网页打开超时，随后 curl 取得完整官方 HTML，核对 `signUp`、`verifyOtp`、`signInWithPassword`、`getSession` 与 Node `getUserInfo().uid`：https://docs.cloudbase.net/api-reference/webv3/authentication 。V3 具体适配仍以实际安装版本的类型与源码为准。
-
-云函数管理员读写绕过前端数据库安全规则，须再次校验身份和归属：[CloudBase 多租户隔离说明](https://docs.cloudbase.net/recipes/secure-database-multi-tenant-rules)。该页面使用的旧版 SDK/OPENID 示例不作为 V3 API 的直接依据。
+本文件的步骤均为将来实施任务，当前没有运行这些检查、安装依赖、执行构建或部署。当前只做文档围栏/链接/diff/状态核对，结果记录SESSION_LOG；下一步等待用户后续明确开始，本轮止于计划。

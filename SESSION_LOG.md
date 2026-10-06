@@ -356,3 +356,21 @@ cloud_environment_readonly实际01:06:32以本机PythonSDK3.1.177读取个人os.
 认证：微信电脑网站应用及微信登录权限须审核；微信内H5授权为已认证服务号等支持，域名/主体条件不能假设固定GitHub地址自动满足。当前认证源129357包含WX_MP/WX_OPEN，不以旧V1示例替代V3；认证绑定支持同一UID但具体用户选择未答。腾讯短信39022明确个人自用签名不再创建，他用需企事业授权，117410新增报备平均7–10工作日且不承诺。没有现成合法可用通道时不能保证10月8前全部接通；仅报告事实，未自行缩减三种登录目标或改变截止。参考完整URL在followup-discussion阶段2段，原始只读HTML/目录在/tmp/paw-auth-*、/tmp/paw-wechat-*、/tmp/paw-sms-382.*，未纳入公开产物。
 
 已同步PRODUCT/ROADMAP/PENDING与讨论记录，给总/阶段计划增加待修订入口；相关待办不勾完成。一次聚合apply_patch因PRODUCT原句不匹配被拒绝，git diff确认没有部分改动，再按实际文本重试成功。后续仅文档检查、本地提交，不运行无关产品测试、不push/部署。下一轮重点为三登录外部前置的范围裁决、身份绑定、匿名照片与可接受基础套餐费用，未定问题继续按依赖推进。
+
+## 阶段2规划交付与FUJI环境只读确认
+
+2026-10-07 01:29:26（Asia/Shanghai，工具date）：用户第二轮确认免费先验/基础云约20元月可接受、暂无相关资质先仅邮箱、未来主动验证绑定同UID、未登录自己的头像/照片墙/幻灯片可用。要求阶段2八小时目标、本轮只plan/分析不要构建；本轮未开始计时，八小时从后续明确实施指令计工具时间，原最终10月8日20:00不变，不作为完成保证。
+
+brainstorming按架构改动归纳设计，writing-plans形成七任务、接口/文件/RED→GREEN/真实验收，预算45+75+105+75+75+45+60=480分钟，预留最终60分钟。用户直接要求plan，设计/计划同轮交付供审阅，不为形式另请批准写计划，也不等同实施。只读explorer stage2_plan_audit核Repository/AppSession/UI（未改代码/跑测试/查云/另派工）：IDB不能套DemoRepository、schema剥未知字段、blob URL仅视图、表单固定petId/revision/generation、other护理传播typeLabel、幂等先识别回执、完整媒体备份均纳入。后续主agent独占共享app/schema/session，worker按新模块边界，不换模型。
+
+新增设计docs/superpowers/specs/2026-10-07-stage2-local-cloud-design.md，重写原阶段2plan（旧稿Git保留），三空间/IDB三store事务、每用户健康文档revision/显式actions、鉴权媒体read字节/非公共下载URL、阶段上传确认清理、来源映射、含照片JSON备份、双语与v0.2缓存兼容。云端不开放任意mutate/replaceSnapshot；备份sourceWorkspaceId、portable local模式、prepare暂存不改共享snapshot等自检补齐。1MiB健康/64KiB输入、1920px≤1MiB照片/50MiB空间/100MiB备份均为工程建议，不是平台硬限额/用户原话。所有任务未虚勾，版本仍0.2.0。
+
+用户购买截图上海/paw-diary/免费六个月/0元已选，PG默认/兑换码未填，助手建议云数据库/领取码。官方127357重读确认能力，136006本次内部错误（此前已读）；价格页云默认与实际购买PG默认不同，按实际选择。用户自行开通后发环境卡片，要求正式开工前用FUJI变量只读确认，不要求代创建/部署。
+
+只打印相关环境变量名称、不回显值，确认FUJI_SECRET_ID/KEY已在环境（完整名称TENCENTCLOUD_FUJI_SECRET_ID/KEY）。Python腾讯SDK以FUJI凭证DescribeEnvs/DescribeBillingInfo各一次，01:27:19成功退出0：唯一paw-diary-d8g3p4tlsb305221d，ap-shanghai/NORMAL/体验版baas_trial，云数据库资源1/PG0/存储1/Functions命名空间1；不是已部署业务函数计数。到期2027-04-07 23:59:59、自动续费/超额false，EnvCharged=yes/EnvActivated=no仅作元数据，不解读现金金额或业务已验。urllib3有LibreSSL兼容提示，实际请求成功，未改依赖。无凭证/token/订单/业务私密内容输出或记录，无云写/收费/模型/短信/邮件发送。ID是可公开配置不是密钥；后续固定FUJI，不混用此前默认凭证cloud1，用户无需另找SecretKey。管理读访问成功不证明邮箱/部署权限/可信身份/事务/私有业务通过。
+
+已同步AGENTS现状/FUJI与环境事实/仅规划限制、PRODUCT/ROADMAP/PENDING、总/阶段计划和讨论记录；微信手机号经用户同意移出本次真实验收，其他方向不擅自延期，匿名AI留阶段3。一轮聚合patch因SESSION_LOG匹配文本缺失被整体拒绝，无部分写入；重读实际尾句后分次补记成功。只检文档围栏/链接/预算/接口/业务无变更与git diff，不执行计划中的npm/build/业务集成，不重启预览、不push/发布。
+
+本轮官方依据完整URL：https://cloud.tencent.com/document/product/876/127357 、https://cloud.tencent.com/document/product/876/34820 、https://cloud.tencent.com/document/product/876/94390 。用户环境卡片为截图来源，API事实为上述01:27:19执行。设计/计划归档本地Git，下一步等待用户明确开始，从Task1真实业务前置进入，不重复创建已核对环境。
+
+实际归档检查：git diff --check退出0；Python文档检查退出0，9份Markdown（含新增设计）围栏/相对链接有效，七任务35待执行Step、预算480分钟、仅邮箱/FUJI和无虚勾均通过；Git变更路径仅.md。计划自检修正云replaceSnapshot开放歧义、幂等/prepare的revision边界、备份来源ID/portable模式；发布沿既有工具授权，未额外制造重复权限确认，本轮仍不发布。检查不代表实施测试，未运行npm/build/真实业务集成；随后纳入一次本地文档Git提交，保留此前四次未推送提交。

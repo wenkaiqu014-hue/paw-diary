@@ -198,3 +198,32 @@ test('ICS结束日期跨月年和闰年正确，非法日期或不存在的宠�
   assert.throws(() => exportRemindersIcs([reminder('m1', { dueDate: '2026-02-30' })], [pet()]));
   assert.throws(() => exportRemindersIcs([reminder('m1', { petId: 'missing' })], [pet()]));
 });
+
+test('ICS从完整V3资料导出时排除事项自身的回收站资料', () => {
+  const full = validateBackup(state());
+  full.reminders.push(reminder('trashed-care', { deletedAt: now }));
+  const before = copy(full);
+  const ics = exportRemindersIcs(full.reminders, full.pets);
+  assert.equal((ics.match(/BEGIN:VEVENT/g) || []).length, 1);
+  assert.match(ics, /UID:m1@paw-diary\r\n/);
+  assert.doesNotMatch(ics, /UID:trashed-care@paw-diary/);
+  assert.deepEqual(full, before);
+});
+
+test('ICS从完整V3资料导出时排除父宠物在回收站的待办', () => {
+  const full = validateBackup(state());
+  full.pets.push({ ...pet('hidden-pet'), deletedAt: now });
+  full.reminders.push(reminder('hidden-parent-care', { petId: 'hidden-pet', deletedAt: null }));
+  const ics = exportRemindersIcs(full.reminders, full.pets);
+  assert.equal((ics.match(/BEGIN:VEVENT/g) || []).length, 1);
+  assert.match(ics, /UID:m1@paw-diary\r\n/);
+  assert.doesNotMatch(ics, /UID:hidden-parent-care@paw-diary/);
+  assert.doesNotMatch(exportRemindersIcs([full.reminders[1]], full.pets), /BEGIN:VEVENT/);
+});
+
+test('ICS仍兼容没有deletedAt标记的旧V2可见待办', () => {
+  const old = state();
+  const ics = exportRemindersIcs(old.reminders, old.pets);
+  assert.equal((ics.match(/BEGIN:VEVENT/g) || []).length, 1);
+  assert.match(ics, /UID:m1@paw-diary\r\n/);
+});

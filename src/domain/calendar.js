@@ -37,9 +37,10 @@ export function exportRemindersIcs(reminders, pets) {
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Paw Diary//Care Reminders//ZH', 'CALSCALE:GREGORIAN'];
   for (const reminder of reminders) {
     if (!['pending', 'completed', 'cancelled'].includes(reminder.status)) throw new Error('护理事项状态无效');
-    if (reminder.status !== 'pending') continue;
+    if (reminder.status !== 'pending' || reminder.deletedAt != null) continue;
     const pet = petsById.get(reminder.petId);
     if (!pet) throw new Error('护理事项找不到所属宠物');
+    if (pet.deletedAt != null) continue;
     if (typeof reminder.id !== 'string' || !reminder.id || /[\r\n\u0000-\u001f]/.test(reminder.id) || ids.has(reminder.id)) throw new Error('护理事项标识无效或重复');
     ids.add(reminder.id);
     if (typeof reminder.title !== 'string' || !reminder.title.trim() || typeof pet.name !== 'string' || !pet.name.trim()) throw new Error('护理事项或宠物名称无效');

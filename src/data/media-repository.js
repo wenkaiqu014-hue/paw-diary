@@ -10,7 +10,8 @@ export function createMediaRepository({repository}={}){
   return {
     list:({petId,cursor,limit=20,kind='photo'}={})=>repository._mediaRead(({envelope,media})=>{if(!Number.isInteger(limit)||limit<1||limit>100)throw new Error('照片分页数量无效');const pet=envelope.snapshot.pets.find(p=>p.id===petId);if(!pet||pet.deletedAt!==null)return {items:[],nextCursor:null};const assets=sorted([...media.values()].filter(a=>a.petId===petId&&a.kind===kind));const start=cursor?assets.findIndex(a=>a.id===cursor)+1:0;if(cursor&&start===0)throw new Error('照片分页位置无效');const items=assets.slice(start,start+limit);return {items:structuredClone(items),nextCursor:start+limit<assets.length?items.at(-1).id:null};}),
     listAll:()=>repository._mediaRead(({media})=>structuredClone(sorted([...media.values()]))),read,
-    save:async({petId,kind='photo',blob,caption='',baseRevision,operationId}={})=>{
+    save:async({petId,kind='photo',blob,caption='',baseRevision,operationId}={},options={})=>{
+      baseRevision=options.baseRevision??baseRevision;operationId=options.operationId??operationId;
       if(!['avatar','photo'].includes(kind)||typeof caption!=='string'||caption.length>200)throw storageError('INVALID_INPUT','照片用途或说明无效');
       await inspectImageBlob(blob,{maxBytes:MAX_DISPLAY_BYTES});const sha256=await hashBlob(blob),signature=JSON.stringify({petId,kind,caption,sha256});
       if(operationId){const receipt=await repository._mediaRead(({envelope})=>envelope.receipts?.[operationId]);if(receipt){if(receipt.signature!==signature)throw storageError('INVALID_INPUT','同一操作标识对应不同内容');return structuredClone(receipt.result);}}
@@ -26,7 +27,8 @@ export function createMediaRepository({repository}={}){
         if(operationId)ctx.envelope.receipts[operationId]={signature,result:metadata};return metadata;
       },{baseRevision,idempotency:operationId?{operationId,signature}:undefined});
     },
-    remove:async({assetId,baseRevision,operationId}={})=>{
+    remove:async({assetId,baseRevision,operationId}={},options={})=>{
+      baseRevision=options.baseRevision??baseRevision;operationId=options.operationId??operationId;
       const signature=JSON.stringify({action:'remove',assetId});
       if(operationId){const receipt=await repository._mediaRead(({envelope})=>envelope.receipts?.[operationId]);if(receipt){if(receipt.signature!==signature)throw storageError('INVALID_INPUT','同一操作标识对应不同内容');return;}}
       await repository._mediaWrite(ctx=>{const asset=ctx.media.get(assetId);if(!asset)throw storageError('INVALID_INPUT','照片不存在');const pet=visiblePet(ctx.envelope.snapshot,asset.petId);ctx.media.delete(assetId);ctx.blobs.delete(asset.fileRef);if(pet.avatarAssetId===assetId)pet.avatarAssetId=null;if(operationId){ctx.envelope.receipts??={};ctx.envelope.receipts[operationId]={signature,result:null};}},{baseRevision,idempotency:operationId?{operationId,signature}:undefined});

@@ -25,7 +25,7 @@
 
 发布事实：v0.2.0 annotated tag指向 `ceed8d3`，与最终Pages部署 `37497726088` 的源码一致；Release已公开、非draft/非prerelease。v0.1.0仍指向 `17cba15`，禁止移动。Release： https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.2.0 。后续文档提交不改变发布源码；本轮结束交接只做本地Git提交，续作先查本地main与origin/main差异，不以reset丢弃尚未推送的交接。
 
-阶段2本轮已grill对齐、写设计与七任务实施计划，但用户明确**仅plan/分析，不开始正式构建**。后续入口 `docs/superpowers/plans/2026-10-06-02-cloud-identity.md`，设计在 `docs/superpowers/specs/2026-10-07-stage2-local-cloud-design.md`。目标为后续明确开始实施起八小时内完成阶段2（含真实验收，不是保证），本轮未启动计时；原最终截止不变。新方向：免登录个人健康/头像/照片墙/幻灯片，云同步/社区交互时登录；示例/local/account分开，迁移预览确认。本次实际认证仅邮箱，微信/手机号因暂无资质经用户同意转后续目标；未来主动验证绑定同UID。不重复既有界面访谈，不将用户一句ok当亲自验收全套脚本。
+阶段2已由用户明确“开始吧”授权实施，起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46（包含验收，不是完成保证）。当前在隔离 `.worktrees/stage2` / `feat/stage2-local-cloud` 工作，基点de67c55，主main领先origin的交接保留。入口 `docs/superpowers/plans/2026-10-06-02-cloud-identity.md`，设计在 `docs/superpowers/specs/2026-10-07-stage2-local-cloud-design.md`。本地个人/自定义类型/媒体备份/双语已实现并做合成数据浏览器检查；云端真实邮箱A/B、私有对象规则与正式发版仍未通过，审查修复正在进行，不能称阶段完成。实施日志与实际门槛以SESSION_LOG最新段为准。免登录个人健康/头像/照片墙/幻灯片、demo/local/account隔离、迁移确认、本次仅邮箱等已确认方向不重复访谈。邮箱人工收信按用户要求放验收环节，不阻断独立开发；不把用户一句ok当亲自跑完脚本。
 
 阶段2除原登录/权限/跨设备/头像/确认迁移外，需镜像当前V3生命周期/排序，包含P1-09/P1-10自定义记录/宠物类型、N-06语言基础和N-08当前宠物私有照片墙/可控幻灯片。N-04只读使用帮助/宠物记录助手在阶段3；N-07国内地域搜索/主动辅助定位在阶段4；N-03每版一次新内容、遮罩高亮“下一步/跳过指引”及可安装网页在阶段5。用户要求全部现有想法在最终截止前实现，不能默认移到截止后；原约30小时估计不含新增，不是工期保证。
 
@@ -37,7 +37,7 @@
 
 续作先读 `SESSION_LOG.md` 最新阶段与 `PENDING.md` 当前状态，再读总计划 `docs/superpowers/plans/2026-10-06-paw-diary-master.md`。按当次任务进入00–05对应子计划，必要时查 `ROADMAP.md`、`PRODUCT.md`、`DESIGN.md`，不自动通读Daily其他项目、无关旧会话或全部项目历史。
 
-用户已自行创建专用CloudBase环境 `paw-diary-d8g3p4tlsb305221d`。2026-10-07 01:27:19按用户明确指定FUJI变量只读DescribeEnvs/DescribeBillingInfo成功：上海/NORMAL/baas_trial体验版、云数据库资源1/PG资源0，到期2027-04-07 23:59:59，自动续费/超额按量false。**本项目后续管理调用固定从 `TENCENTCLOUD_FUJI_SECRET_ID` / `TENCENTCLOUD_FUJI_SECRET_KEY` 读取**，不默认替换成此前查cloud1的TENCENTCLOUD_SECRET_*或集团凭证；不回显/提交实际值。环境ID允许作为公开配置，不能把EnvCharged=yes当此次实际付费金额，也不能将只读成功当邮箱/部署权限/业务私有访问已通过。用户接受免费先验证、必要基础云约20元/月；本轮没有开通/配置/付费动作，额外费用仍按具体范围落实。文本AI供应商/额度与匿名体验在阶段3定，密钥仅服务端。
+用户已自行创建专用CloudBase环境 `paw-diary-d8g3p4tlsb305221d`。2026-10-07 01:27:19按用户明确指定FUJI变量只读DescribeEnvs/DescribeBillingInfo成功：上海/NORMAL/baas_trial体验版、云数据库资源1/PG资源0，到期2027-04-07 23:59:59，自动续费/超额按量false。**本项目后续管理调用固定从 `TENCENTCLOUD_FUJI_SECRET_ID` / `TENCENTCLOUD_FUJI_SECRET_KEY` 读取**，不默认替换成此前查cloud1的TENCENTCLOUD_SECRET_*或集团凭证；不回显/提交实际值。环境ID允许作为公开配置，不能把EnvCharged=yes当此次实际付费金额，也不能将只读成功当邮箱/部署权限/业务私有访问已通过。用户接受免费先验证、必要基础云约20元/月；实施已配置专用trial的邮箱/五集合/业务及临时readiness函数。trial不允许正式安全域名和存储deny规则；原六个月升配119.39元未执行，预算内新个人版上海paw-diary-prod一月19.90元仅创建一笔待付订单，付款因BalanceInsufficient失败、无扣费/充值/新环境。只读同单03:07:35仍未付；后续只在用户明确资金就位后付款同单，不新单、不自动续费/超额。具体安全guard、配置与读回在docs/operations/cloud-setup.md；公开站仍v0.2.0，真实验收通过前不发布。文本AI供应商/额度与匿名体验在阶段3定，密钥仅服务端。
 
 ## 使用哪些技能
 

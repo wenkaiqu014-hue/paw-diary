@@ -136,3 +136,10 @@ python3 scripts/cloud-setup.py --env NEW_ENV_ID refresh-public-config
 02:11–02:12原trial重新打包两个函数、更新代码与配置，最终均Active/$LATEST，公开变量读回匹配；readiness管理InvokeResult0、Duration574ms，transactionReadable与storageNamespacePresent仍true，context UID/匿名marker均不存在。没有发送邮件或签发用户会话。原环境读回依旧不自动续费、不超额按量，到期2027-04-07 23:59:59。
 
 `refresh-public-config` 已实际核生产域、真实存储规则、邮箱代发/入口、MaxDevice、五集合与函数规则，并写 `cloudEnabled=false`、`platformSetupReady=false`、三个尚缺原因：生产域未配置、私有存储规则未配置、真实邮箱/私有访问未验证。键字段为WebSDK3.10.1的 `accessKey`（`types/index.d.ts:69`、`core.d.ts:163`），应传 `config.publishableKey`，不传管理秘密。即使后续平台设置全部通过，这个运维脚本仍保留cloudEnabled=false与真实验收待完成状态，由root依据真正验收证据决定产品启用。
+
+
+## 最终受控会话捕获（尚未实测收信）
+
+`node scripts/capture-cloud-sessions.mjs --help`说明命令；`--check`只校验已保存公开配置，无邮件/网络。正式命令要求public-config中的platformSetupReady=true，以stdin逐条输入request/verify，A/B各独立SDK Worker；不将邮箱/代码写代码或Shell历史。session写到Git忽略test-results/stage2/real-sessions.json，权限0600，仅envId及access/refresh，stdout不回显秘密。此工具按实际原始email_verified校验，不信SDK转换日期。
+
+匿名捕获另需Root批准精确环境短时开启provider，创建真实SDK匿名会话后finally恢复关闭并读回；本次尚未执行。实际邮箱登录UI仍需独立浏览器验收，捕获工具仅为后续真实integration会话准备，不等同已接通。所有集成仍须使用同一已核环境和公开key，账号不同的SDK不得共享全局缓存，管理密钥不得进入Worker。

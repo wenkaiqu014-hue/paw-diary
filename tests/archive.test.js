@@ -18,3 +18,59 @@ test('same-id photo metadata cannot transfer an existing asset to another parent
 test('archive caption boundary rejects 201 even when bytes and hash are valid',async()=>{metadata.sha256=await archive.hashBlob(blob);const out=await archive.exportArchive({repository,media:{listAll:async()=>[metadata],read:async()=>({metadata,blob})}});out.assets[0].metadata.caption='字'.repeat(201);await assert.rejects(archive.validateArchive(out),/元数据/);});
 test('target media quota rejects entire archive import including new health entities',async()=>{const {IDBFactory}=await import('fake-indexeddb'),{createLocalRepository}=await import('../src/data/local-repository.js');const source=createLocalRepository({indexedDB:new IDBFactory()}),target=createLocalRepository({indexedDB:new IDBFactory(),mediaMaxBytes:blob.size-1}),p=await source.savePet({name:'A',type:'cat'});await source.media.save({petId:p.id,kind:'photo',blob});const backup=await source.exportArchive(),preview=await target.previewArchiveImport(backup);await assert.rejects(target.commitArchiveImport(preview),/容量|配额/);assert.equal((await target.snapshot()).pets.length,0);assert.equal((await target.media.listAll()).length,0);assert.equal(target.getRevision(),0);});
 test('legacy V1 and V2 backups remain compatible without source media references',async()=>{const base={...snapshot,mode:'demo',pets:[{...pet}]};const {deletedAt,...v2pet}=pet;const v2={...base,version:2,pets:[v2pet]};const v1={version:1,pets:[{...pet}],records:[],posts:[],activePet:'p',city:'深圳'};for(const old of [v1,v2]){const checked=await archive.validateArchive(old);assert.equal(checked.snapshot.version,3);assert.equal(checked.snapshot.mode,'local');assert.equal(checked.snapshot.pets[0].deletedAt,null);assert.equal(checked.assets.length,0);}});
+
+// Regression: ordinary import preview reads snapshot and cannot open corrupt storage.
+async function corruptRestoreFixture({mediaMaxBytes,abortWrites=false}={}){
+ const {IDBFactory}=await import('fake-indexeddb'),{createLocalRepository}=await import('../src/data/local-repository.js'),{createIndexedDBStore}=await import('../src/data/indexeddb-store.js');
+ const idb=new IDBFactory();let abort=false;
+ const indexedDB=abortWrites?{open(name,version){const request=idb.open(name,version);request.addEventListener('success',()=>{const db=request.result,transaction=db.transaction.bind(db);db.transaction=(...args)=>{const tx=transaction(...args);if(abort&&args[1]==='readwrite'){abort=false;queueMicrotask(()=>tx.abort());}return tx;};});return request;}}:idb;
+ const opts={indexedDB,dbName:'corrupt-target',mediaMaxBytes},store=createIndexedDBStore(opts),original={version:3,mode:'local',broken:'original',pets:'corrupt'};
+ await store.initialize({snapshot:original,revision:4,workspaceId:'keep-source',receipts:{keep:'receipt'},importMaps:{keep:'mapping'}});
+ await store.transaction(4,ctx=>{ctx.media.set('old-avatar',{id:'old-avatar',petId:'old-pet',kind:'avatar',fileRef:'old-file',caption:'damaged source'});ctx.blobs.set('old-file',new Blob(['original blob'],{type:'application/octet-stream'}));});
+ const repo=createLocalRepository(opts),source=createLocalRepository({indexedDB:new IDBFactory()}),p=await source.savePet({name:'兔兔',type:'other',typeLabel:'兔'});
+ await source.media.save({petId:p.id,kind:'avatar',blob});await source.media.save({petId:p.id,kind:'photo',blob,caption:'原片'});
+ await source.saveRecord({petId:p.id,type:'daily',occurredDate:'2026-10-06',title:'真实护理',nextDate:'2026-10-07'});await source.moveToTrash({kind:'pet',ids:[p.id]});
+ const backup=await source.exportArchive();return {repo,opts,store,original,backup,armAbort:()=>{abort=true;}};
+}
+test('corrupt restore previews raw source without initialization and atomically preserves envelope metadata and blobs',async()=>{
+ const {repo,opts,store,original,backup}=await corruptRestoreFixture();await assert.rejects(repo.snapshot());await assert.rejects(repo.previewArchiveImport(backup));
+ const preview=await repo.previewCorruptArchiveRestore(backup);assert.equal(preview.mode,'corrupt-restore');assert.deepEqual(JSON.parse(preview.rawBackup),original);assert.equal(preview.baseRevision,4);assert.equal(preview.newAssets.length,2);
+ assert.deepEqual((await store.read()).envelope.snapshot,original);const restored=await repo.commitCorruptArchiveRestore(preview);
+ assert.equal(restored.pets.length,1);assert.equal(restored.pets[0].type,'other');assert.ok(restored.pets[0].deletedAt);assert.equal(restored.activePetId,null);assert.equal(restored.records.length,1);assert.equal(restored.reminders.length,1);assert.equal(repo.getRevision(),5);assert.equal(repo.getWorkspaceId(),'keep-source');
+ const raw=await store.read(),recovery=raw.envelope.recoveryArchives[0];assert.deepEqual(recovery.envelope.snapshot,original);assert.equal(recovery.envelope.workspaceId,'keep-source');assert.deepEqual(recovery.envelope.receipts,{keep:'receipt'});assert.deepEqual(recovery.envelope.importMaps,{keep:'mapping'});
+ assert.equal(recovery.media.get('old-avatar').caption,'damaged source');assert.equal(await recovery.blobs.get('old-file').text(),'original blob');assert.equal(raw.media.has('old-avatar'),false);assert.equal(raw.blobs.has('old-file'),false);
+ const reopened=(await createLocalRepositoryForTest(opts));assert.deepEqual(await reopened.snapshot(),restored);const assets=await reopened.media.listAll();assert.equal(assets.length,2);const avatar=assets.find(a=>a.kind==='avatar');assert.equal(restored.pets[0].avatarAssetId,avatar.id);assert.equal((await reopened.media.read(avatar.id,{includeDeleted:true})).blob.size,blob.size);
+});
+async function createLocalRepositoryForTest(opts){return (await import('../src/data/local-repository.js')).createLocalRepository(opts);}
+test('corrupt archive recovery rejects stale external write and leaves its latest raw data untouched',async()=>{
+ const {repo,store,backup}=await corruptRestoreFixture(),preview=await repo.previewCorruptArchiveRestore(backup);
+ await store.transaction(4,ctx=>{ctx.envelope.snapshot.broken='external update';ctx.envelope.revision++;});
+ await assert.rejects(repo.commitCorruptArchiveRestore(preview),{code:'CONFLICT'});const raw=await store.read();assert.equal(raw.envelope.snapshot.broken,'external update');assert.equal(raw.envelope.recoveryArchives,undefined);assert.equal(await raw.blobs.get('old-file').text(),'original blob');
+});
+test('corrupt archive recovery rejects tampered bytes and target quota without changing raw storage',async()=>{
+ const {repo,store,backup,original}=await corruptRestoreFixture({mediaMaxBytes:blob.size-1});const broken=structuredClone(backup);broken.assets[0].metadata.sha256='0'.repeat(64);
+ await assert.rejects(repo.previewCorruptArchiveRestore(broken),/hash/);const preview=await repo.previewCorruptArchiveRestore(backup);await assert.rejects(repo.commitCorruptArchiveRestore(preview),/容量|配额/);
+ const raw=await store.read();assert.deepEqual(raw.envelope.snapshot,original);assert.equal(raw.envelope.recoveryArchives,undefined);assert.equal(await raw.blobs.get('old-file').text(),'original blob');await assert.rejects(repo.snapshot());
+});
+test('corrupt restore aborted transaction retains source and permits explicit retry',async()=>{
+ const {repo,store,backup,original,armAbort}=await corruptRestoreFixture({abortWrites:true}),preview=await repo.previewCorruptArchiveRestore(backup);armAbort();
+ await assert.rejects(repo.commitCorruptArchiveRestore(preview),{code:'UNAVAILABLE'});const raw=await store.read();assert.deepEqual(raw.envelope.snapshot,original);assert.equal(raw.envelope.recoveryArchives,undefined);assert.equal(await raw.blobs.get('old-file').text(),'original blob');await assert.rejects(repo.snapshot());
+ await repo.commitCorruptArchiveRestore(preview);assert.equal((await repo.snapshot()).pets.length,1);assert.equal((await store.read()).envelope.recoveryArchives.length,1);
+});
+test('corrupt restore entry refuses healthy storage and preserves legacy soft deletion semantics',async()=>{
+ const healthy=await createLocalRepositoryForTest({indexedDB:new (await import('fake-indexeddb')).IDBFactory()});await healthy.snapshot();await assert.rejects(healthy.previewCorruptArchiveRestore(empty),/损坏|正常/);
+ const {repo,original}=await corruptRestoreFixture(),legacy={...snapshot,pets:[{...pet,deletedAt:'2026-10-06T00:00:00.000Z'}],activePetId:null},preview=await repo.previewCorruptArchiveRestore(legacy);
+ assert.deepEqual(JSON.parse(preview.rawBackup),original);await repo.commitCorruptArchiveRestore(preview);const restored=await repo.snapshot();assert.ok(restored.pets[0].deletedAt);assert.equal(restored.pets[0].avatarAssetId,null);assert.equal((await repo.media.listAll()).length,0);
+});
+
+test('corrupt recovery preserves malformed existing recovery metadata instead of blocking restore',async()=>{
+ const {repo,store,backup}=await corruptRestoreFixture();await store.transaction(4,ctx=>{ctx.envelope.recoveryArchives={broken:'older metadata'};});
+ const preview=await repo.previewCorruptArchiveRestore(backup);await repo.commitCorruptArchiveRestore(preview);const saved=(await store.read()).envelope;
+ assert.equal(saved.recoveryArchives.length,1);assert.deepEqual(saved.recoveryArchives[0].envelope.recoveryArchives,{broken:'older metadata'});assert.equal((await repo.snapshot()).pets.length,1);
+});
+test('corrupt recovery rejects modified confirmed archive and same-revision source changes',async()=>{
+ const {repo,store,backup,original}=await corruptRestoreFixture(),preview=await repo.previewCorruptArchiveRestore(backup);preview.archive.snapshot.profile.city='修改后的备份';
+ await assert.rejects(repo.commitCorruptArchiveRestore(preview),/预览|改变/);assert.deepEqual((await store.read()).envelope.snapshot,original);
+ const next=await repo.previewCorruptArchiveRestore(backup);await store.transaction(4,ctx=>{ctx.media.get('old-avatar').caption='external metadata';});await assert.rejects(repo.commitCorruptArchiveRestore(next),{code:'CONFLICT'});
+ assert.equal((await store.read()).media.get('old-avatar').caption,'external metadata');assert.equal((await store.read()).envelope.recoveryArchives,undefined);
+});

@@ -29,16 +29,20 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Build public files
+        run: npm run build
       - uses: actions/configure-pages@v5
-      - name: Prepare public files
-        run: |
-          mkdir -p public-site
-          cp index.html style.css app.js .nojekyll public-site/
-          cp -R assets public-site/assets
-          if [ -d src ]; then cp -R src public-site/src; fi
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: public-site
+          path: dist
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

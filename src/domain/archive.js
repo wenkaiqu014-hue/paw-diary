@@ -69,3 +69,35 @@ export async function commitArchiveImport({repository,preview,acceptedConflictId
     return validateSnapshot(next);
   },preview.baseRevision);
 }
+
+// Explicit whole-archive recovery is separate from healthy-storage merge/import.
+const archiveFingerprint=archive=>hashBlob(new Blob([JSON.stringify({format:archive.format,formatVersion:archive.formatVersion,archiveId:archive.archiveId,sourceWorkspaceId:archive.sourceWorkspaceId,exportedAt:archive.exportedAt,snapshot:archive.snapshot,assets:archive.assets.map(({metadata,base64})=>({metadata,base64}))})]));
+export async function previewCorruptArchiveRestore({repository,archive}={}){
+  if(!repository?._corruptArchiveRead)throw new Error('损坏资料恢复只支持个人本地仓储');
+  const checked=await validateArchive(archive),source=await repository._corruptArchiveRead(),rawBackup=JSON.stringify(source.envelope.snapshot);
+  const revision=source.envelope.revision;if(!Number.isSafeInteger(revision)||revision<0)throw new Error('损坏资料版本无效，请先导出原始备份');
+  const incoming={snapshot:clone(checked.snapshot),assets:checked.assets,dependencies:[]},potentialRestorations=[];
+  // Partial markers are advisory only; recovery deliberately uses the confirmed archive state.
+  const original=source.envelope.snapshot;
+  if(original&&typeof original==='object')for(const [kind,field]of Object.entries(fields)){
+    const old=Array.isArray(original[field])?new Map(original[field].filter(item=>item&&typeof item.id==='string').map(item=>[item.id,item])):new Map();
+    for(const item of checked.snapshot[field])if(item.deletedAt===null&&old.get(item.id)?.deletedAt!=null)potentialRestorations.push({kind,id:item.id,deletedAt:old.get(item.id).deletedAt});
+  }
+  return {mode:'corrupt-restore',archive:checked,archiveFingerprint:await archiveFingerprint(checked),sourceWorkspaceId:checked.sourceWorkspaceId,baseRevision:revision,rawBackup,recoveryReference:{workspaceId:source.envelope.workspaceId,baseRevision:revision,sourceFingerprint:source.sourceFingerprint},incoming,conflicts:[],newPets:clone(checked.snapshot.pets),newRecords:clone(checked.snapshot.records),newReminders:clone(checked.snapshot.reminders),newAssets:checked.assets.map(a=>clone(a.metadata)),dependencies:[],potentialRestorations};
+}
+export async function commitCorruptArchiveRestore({repository,preview}={}){
+  if(!repository?._corruptArchiveCommit||preview?.mode!=='corrupt-restore')throw new Error('请先预览损坏资料恢复');
+  const checked=await validateArchive(preview.archive);
+  if(await archiveFingerprint(checked)!==preview.archiveFingerprint)throw new Error('备份预览已改变，请重新预览');
+  if(!preview.recoveryReference||preview.baseRevision!==preview.recoveryReference.baseRevision)throw new Error('恢复预览引用无效');
+  return repository._corruptArchiveCommit(ctx=>{
+    if(checked.assets.reduce((n,a)=>n+a.blob.size,0)>repository._mediaOptions.mediaMaxBytes)throw new Error('照片总容量超过空间配额');
+    // Keep the complete corrupt source in the same IDB transaction before replacing anything.
+    const recovery={savedAt:repository._mediaOptions.clock(),raw:JSON.stringify(ctx.envelope.snapshot),envelope:clone(ctx.envelope),media:clone(ctx.media),blobs:clone(ctx.blobs)};
+    if(!Array.isArray(ctx.envelope.recoveryArchives))ctx.envelope.recoveryArchives=[];ctx.envelope.recoveryArchives.push(recovery);
+    ctx.envelope.snapshot=clone(checked.snapshot);ctx.envelope.receipts={};ctx.envelope.importMaps={};
+    ctx.media.clear();ctx.blobs.clear();
+    for(const asset of checked.assets){const id=asset.metadata.id;ctx.media.set(id,{...asset.metadata,fileRef:id});ctx.blobs.set(id,asset.blob);}
+    return clone(ctx.envelope.snapshot);
+  },preview.recoveryReference);
+}

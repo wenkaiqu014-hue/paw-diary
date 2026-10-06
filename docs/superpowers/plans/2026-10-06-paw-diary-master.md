@@ -10,6 +10,8 @@
 
 **Spec:** `ROADMAP.md`、`PRODUCT.md`、`PENDING.md`；用户本轮确认的截止时间、技术选择权限和AI供应商纠正。
 
+当前阶段2已获用户明确开始授权，2026-10-07 01:38:46起八小时目标09:38:46 Asia/Shanghai。本地候选与合成检查正在收口，真实邮箱/云权限未通过，公开仍v0.2.0。具体结果见[阶段2报告](../../verification/stage2-report.md)和SESSION_LOG最新段；不自动进入阶段3。
+
 ## Global Constraints
 
 - 固定评审地址 `https://wenkaiqu014-hue.github.io/paw-diary/`，仓库名 `paw-diary`；不移动已发布`v0.1.0` tag。

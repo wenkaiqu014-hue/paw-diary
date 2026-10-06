@@ -117,6 +117,6 @@ assert.equal(mergeBackup(state, backup, {acceptedConflictIds:[]}).records.length
 
 - [x] 本地完整实现、71项单测、8套浏览器/边界/管理/缓存回归通过，实际静态白名单子路径验证通过；Calendar导入已由用户和指定窗口截图确认。
 - [ ] 用户完成阶段1体验验收。
-- [ ] 新版在原评审地址部署并匿名复验、创建新版本tag/Release。
+- [x] 新版在原评审地址部署、8套匿名浏览器复验、创建v0.2.0 annotated tag及非draft/非prerelease Release；用户亲自体验框不虚勾。
 
 数据裁决：legacyCreatedAtUnknown标注旧缺创建时间，稳定回退不盖过真实同日测量，CSV不把占位当真实日期；legacyCompletionUnknown和completionRecordDeleted区别未知旧完成与已删关联记录。备份恢复包含本地posts，冲突键kind:id；savePet(makeActive)原子选择。旧缓存发现另一窗口变化则拒绝覆盖，未保存输入可复制后刷新。这些是本地可靠性约定，不代表跨设备同步。完整结果及限制见 `docs/verification/stage1-report.md` 和SESSION_LOG。

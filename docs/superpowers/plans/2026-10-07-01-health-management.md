@@ -8,7 +8,7 @@
 
 **Tech Stack:** 原生ESM、node:test、Python Playwright、既有仓储/dialog/SVG；不增加UI库或付费接口。
 
-**Spec:** [阶段1健康管理设计](../specs/2026-10-07-health-management-design.md)。状态：用户明确授权按方案完整实施，本地3任务已完成并验证，公开部署已通过，tag/Release待完成。已有高度缺陷独立修复，不等待新数据协议。
+**Spec:** [阶段1健康管理设计](../specs/2026-10-07-health-management-design.md)。状态：用户明确授权按方案完整实施，本地3任务已完成并验证，公开部署已通过，v0.2.0 tag/Release已完成。已有高度缺陷独立修复，不等待新数据协议。
 
 ## Global Constraints
 

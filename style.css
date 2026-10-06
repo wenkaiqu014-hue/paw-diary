@@ -37,13 +37,14 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
 .pet-profile>div{min-width:0}
 .pet-profile p{font-size:14px}
 .local-health{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);grid-template-areas:'profile reminders' 'chart timeline' 'records records';align-items:stretch}
-.health-profile{display:flex;flex-direction:column}
-.health-profile .pet-profile{flex:1;align-items:center}
+.health-profile,.health-reminders{display:flex;flex-direction:column;height:36em;min-height:0}
+.health-profile .panel-title,.health-reminders .panel-title,.health-reminders .reminder-tabs,.health-reminders .calendar-download,.health-reminders>.demo-note{flex-shrink:0}
+.health-profile .pet-profile{min-height:0;overflow-y:auto;align-items:flex-start}
 .health-profile .pet-profile>img{width:120px;height:120px}
-.reminder-full{max-height:280px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:4px}
+.reminder-full{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:4px}
 .health-reminders .reminder-tabs{margin-bottom:8px}
 .health-reminders .reminder{padding-top:12px;padding-bottom:12px}
-.health-reminders .calendar-download{margin-top:12px}
+.health-reminders .calendar-download{margin-top:12px;align-self:flex-start}
 /* main是程序化定位的内容地标；交互控件仍保留全局focus-visible。 */
 #main:focus-visible{outline:none}
 .health-profile{grid-area:profile}
@@ -93,9 +94,10 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
   .care-home{grid-template-areas:'pet' 'reminders' 'stats' 'chart' 'timeline' 'teaser';grid-template-columns:minmax(0,1fr)}
   .care-home>.community-teaser{position:static}
   .local-health{grid-template-areas:'profile' 'reminders' 'chart' 'timeline' 'records';grid-template-columns:minmax(0,1fr)}
-  .health-profile .pet-profile{flex:initial}
+  .health-profile,.health-reminders{height:auto}
+  .health-profile .pet-profile{overflow-y:visible}
   .health-profile .pet-profile>img{width:85px;height:85px}
-  .reminder-full{max-height:320px}
+  .reminder-full{flex:initial;max-height:320px}
   .page-heading{flex-wrap:wrap}
 }
 @media(max-width:600px){

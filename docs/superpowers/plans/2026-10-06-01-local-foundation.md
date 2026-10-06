@@ -105,7 +105,7 @@ assert.equal(mergeBackup(state, backup, {acceptedConflictIds:[]}).records.length
 - [x] Step 2：运行 `node --test tests/export.test.js`，确认缺失接口失败。
 - [x] Step 3：实现导入预览/确认、CSV、ICS；仅点击确认后持久化，不从文件直接替换全部 state。
 - [x] Step 4：运行 `npm test`、浏览器下载/导入；把测试 ICS 导入本机可用日历应用核对日期。记录实际应用和结果；不能导入时这项保持未完成。
-- [ ] Step 5：提交 `feat: restore backups and export care events to calendar`，更新版本说明。
+- [x] Step 5：提交 `feat: restore backups and export care events to calendar`，更新版本说明。实际提交cf6b681；CHANGELOG为未发布，VERSION/tag维持公开0.1.0。
 
 ## 阶段退出标准
 

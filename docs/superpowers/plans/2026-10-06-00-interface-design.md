@@ -6,7 +6,7 @@
 
 **Architecture:** 保留DESIGN.md的奶油色、绿色、宠物摄影和桌面侧栏/手机底栏，在已有页面上规划新增流程和状态。优先清晰与可操作性，不用大幅品牌重做或复杂动效抢占开发时间。
 
-**Tech Stack:** 原生HTML/CSS/JS、现有Impeccable技能、浏览器截图；Anthropic frontend-design与Vercel web-design-guidelines作为GitHub调研参考，是否安装后续再决定。
+**Tech Stack:** 原生HTML/CSS/JS、现有Impeccable技能、浏览器截图；Anthropic frontend-design作为参考，Vercel web-design-guidelines已按后续用户授权安装，用于实施后的检查。
 
 **Spec:** `PRODUCT.md`、`DESIGN.md`、`ROADMAP.md` §2–3；本轮用户要求查询HTML设计技能，整体仍仅规划。
 

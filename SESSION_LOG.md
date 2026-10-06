@@ -83,3 +83,15 @@ CloudBase部分SDK页面内置打开超时，随后curl读取官方身份文档�
 自检：7份总/阶段计划均含目标、架构、栈、设计来源、全局约束及Review Focus；19项任务顺序正确；Markdown代码块闭合、本地链接有效；供应商约束检查通过，未残留MiniMax默认文本适配器或BASE_URL。逐项核对PENDING的14项与计划覆盖，修正AppSnapshot模式、跨阶段输出类型及模型内部错误映射。git diff --check通过。此次未运行产品测试，产品源码和线上部署没有变化。
 
 同步PRODUCT、ROADMAP、PENDING、README和AGENTS，记录确认截止、待定预算与供应商，并将实施总计划设为续作入口。当前只完成计划，所有产品实施任务维持待执行；之后由用户明确启动实施与执行方式。
+
+## 技能安装与项目协作授权
+
+2026-10-06 21:38–21:40（Asia/Shanghai，开始与安装核对时间来自时钟工具）：用户要求按需安装技能，在项目根目录而非Daily维护agents规则，写明技能、时间、完整开发日志，并明确本session允许各种能力和派出子agent。
+
+判断只补装Vercel web-design-guidelines用于UI审查。Impeccable、Superpowers和webapp-testing已有；Anthropic frontend-design与当前设计主技能部分重叠，本次不额外安装。先核对目标未安装，读取skill-installer，再使用官方安装脚本从vercel-labs/agent-skills的skills/web-design-guidelines目录安装；固定来源提交063bee94c3f4df8453406c830b0a7df0f2860278，不浮动到未记录版本。
+
+安装命令退出0，目标 `/Users/wenkaiqu/.codex/skills/web-design-guidelines/`，实际SKILL.md元数据name=web-design-guidelines、author=vercel、version=1.0.0。仅技能文件，没有附带执行脚本；下一轮可加载。未覆盖已有技能、安装前端依赖或改动网页。
+
+更新项目根目录AGENTS.md，写明固定地址、北京时间2026-10-08 20:00截止、14:00冻结/18:00验收建议、具体技能和场景、工具/子agent授权、worker所有权与主agent整合验证、子agent重复核对、日志七项记录要求及续作入口。明确广泛能力授权不替代仍待确认的平台/账号/费用，也不意味着本轮开始实施。
+
+同步技能调研、阶段0、总计划和PENDING的安装/授权状态，保留过去调研时尚未安装的历史事实。当前没有派出子agent；这一小任务由主agent直接完成。Daily根目录没有新增或改写AGENTS。文档检查和安装元数据核对通过；没有运行产品行为测试，产品源码未变。

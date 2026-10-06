@@ -6,6 +6,8 @@
 
 用户确认修改截止时间为北京时间2026年10月8日20:00。用户将补充平台、账号与预算；现有MiniMax主要用于语音，文本AI API之后商量，DeepSeek为候选。本轮只定详细计划，不开始实施或收费调用。
 
+最新准备状态：用户已授权按需安装技能，并允许session使用各种可用能力和派出子agent。web-design-guidelines已安装；项目根目录AGENTS.md维护具体技能、时间与日志/协作规则。这是执行准备，不表示功能任务已完成或收费边界已确认。
+
 固定评审地址：https://wenkaiqu014-hue.github.io/paw-diary/
 
 固定开源仓库：https://github.com/wenkaiqu014-hue/paw-diary

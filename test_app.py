@@ -39,6 +39,7 @@ with sync_playwright() as p:
     expect(page.locator('.reminder').filter(has_text='测试健康提醒')).to_be_visible()
     page.locator('.reminder').filter(has_text='测试健康提醒').get_by_role('button', name='记录完成').click()
     page.get_by_role('button', name='保存记录', exact=True).click()
+    page.get_by_role('button', name='暂不安排', exact=True).click()
     expect(page.locator('.reminder').filter(has_text='测试健康提醒')).to_have_count(0)
     print('PASS: 疫苗记录、待办生成、完成待办')
 
@@ -57,6 +58,7 @@ with sync_playwright() as p:
     page.get_by_role('button', name='添加一只宠物').click()
     page.locator('[name=name]').fill('小团子')
     page.locator('[name=type]').select_option('cat')
+    page.locator('[name=estimatedAgeMonths]').fill('12')
     page.get_by_role('button', name='保存档案').click()
     expect(page.get_by_text('这里还没有记录', exact=True)).to_be_visible()
     page.get_by_role('button', name='管理我的宠物').click()

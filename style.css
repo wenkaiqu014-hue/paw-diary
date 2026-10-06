@@ -7,3 +7,119 @@
 .health-grid>*{min-width:0}
 @media(max-width:600px){.home-right{align-items:stretch}.hero-copy h2{font-size:21px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* 阶段1：任务顺序、可读性与完整的本地护理操作。 */
+body{font-size:14px}
+.button,.text-button,.tab,.delete-button{font-size:14px;min-height:44px}
+.text-button,.delete-button{padding:8px 10px}
+.button:active{transform:translateY(0)}
+.button:disabled{transform:none}
+small,.demo-note,.form-tip,.demo-badge,.breadcrumb,.city-button,.field small,.post-text,.post-user small,.post-topic,.post-actions button,.friend-body p,.friend-tags span,.small-badge,.tag,.stat-label,.stat p,.timeline-content p,.timeline-content time,.reminder p,.reminder .due,.chart-label,.legend,.teaser-copy p,footer{font-size:12px}
+.chart text{font-size:12px}
+.field input,.field select,.field textarea{font-size:16px;min-height:44px}
+.field,.form-grid>*{min-width:0}
+.icon-button{width:44px;height:44px}
+dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
+.form-actions{position:sticky;bottom:-1px;padding:16px 0 0;background:var(--paper);flex-wrap:wrap}
+.form-error{color:#893b2b;background:var(--peach);border-radius:8px;padding:12px;font-size:14px;margin-top:16px;overflow-wrap:anywhere}
+.form-error[hidden]{display:none}
+.form-grid .field .field{display:contents}
+.care-home{grid-template-areas:'pet reminders' 'stats reminders' 'chart reminders' 'timeline teaser';align-items:start}
+.care-home>.pet-hero{grid-area:pet}
+.care-home>.home-reminders{grid-area:reminders}
+.care-home>.stats-strip{grid-area:stats}
+.care-home>.home-chart{grid-area:chart}
+.care-home>.home-timeline{grid-area:timeline}
+.care-home>.community-teaser{grid-area:teaser}
+.hero-copy h2,.page-heading h1,.pet-profile h2,.friend-body h3,.post-content h3{overflow-wrap:anywhere;text-wrap:balance}
+.hero-copy p{font-size:14px}
+.pet-profile>div{min-width:0}
+.pet-profile p{font-size:14px}
+.local-health{grid-template-areas:'profile reminders' 'records records' 'chart timeline';align-items:start}
+.health-profile{grid-area:profile}
+.health-reminders{grid-area:reminders}
+.health-records{grid-area:records}
+.health-chart{grid-area:chart}
+.health-timeline{grid-area:timeline}
+.panel-title{flex-wrap:wrap}
+.data-actions,.date-filter,.recovery-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.data-actions .text-button{font-size:12px}
+.date-filter{margin:16px 0;color:var(--muted);font-size:12px}
+.date-filter label{display:flex;align-items:center;gap:8px;min-width:0}
+.date-filter input{border:1px solid #d9dfd2;border-radius:8px;background:var(--paper);padding:8px;color:var(--ink);font-size:14px;min-height:44px;max-width:100%}
+.records-table{max-width:100%;margin:0}
+.records-table table{white-space:normal}
+.records-table td:nth-child(1){white-space:nowrap}
+.records-table td:nth-child(3){min-width:140px;max-width:300px;overflow-wrap:anywhere}
+.records-table td:last-child{min-width:120px;white-space:nowrap}
+.records-cards{display:none}
+.reminder{align-items:flex-start}
+.reminder-content{flex:1;min-width:0}
+.reminder-content h3{overflow-wrap:anywhere;font-size:14px}
+.reminder-actions{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:8px}
+.reminder-actions .text-button{font-size:12px;padding:8px 4px}
+.calendar-select{font-size:12px;min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:8px 4px;cursor:pointer}
+.calendar-select input,.conflict-option input{width:18px;height:18px;accent-color:var(--green)}
+.calendar-download{margin-top:20px}
+.reminder-tabs{margin-bottom:12px}
+.reminder-all{margin-top:12px}
+.danger-text{color:#893b2b}
+.conflict-option{display:flex;align-items:flex-start;gap:10px;padding:14px 0;font-size:14px}
+.conflict-option span{min-width:0;overflow-wrap:anywhere}
+.conflict-option small{display:block;color:var(--muted);margin-top:6px}
+.restore-summary{font-size:16px;margin-bottom:12px}
+.recovery-panel p{margin-bottom:16px}
+.image-fallback{display:flex;align-items:center;justify-content:center;min-height:100px;background:var(--mint);color:var(--green);font-size:14px;border-radius:8px;padding:12px}
+.hero-image>.image-fallback{height:100%;min-height:224px}
+.post-avatar.image-fallback{font-size:0;min-height:32px;padding:0;width:32px}
+.pet-profile>.image-fallback{width:85px;flex-shrink:0}
+.friend-image>.image-fallback{height:100%}
+.friend-tags{flex-wrap:wrap}
+.friend-body h3{gap:8px;flex-wrap:wrap}
+.timeline-content h3{align-items:flex-start;flex-wrap:wrap}
+.post-actions{flex-wrap:wrap}
+.post-actions button{min-height:44px}
+@media(max-width:850px){
+  .care-home{grid-template-areas:'pet' 'reminders' 'stats' 'chart' 'timeline' 'teaser';grid-template-columns:minmax(0,1fr)}
+  .care-home>.community-teaser{position:static}
+  .local-health{grid-template-areas:'profile' 'reminders' 'records' 'chart' 'timeline';grid-template-columns:minmax(0,1fr)}
+  .page-heading{flex-wrap:wrap}
+}
+@media(max-width:600px){
+  .sidebar{height:calc(70px + env(safe-area-inset-bottom))}
+  nav a{font-size:12px;min-height:44px}
+  main{padding-bottom:24px}
+  footer{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+  .toast{bottom:calc(89px + env(safe-area-inset-bottom))}
+  .topbar{min-height:61px;height:auto;padding-top:12px;padding-bottom:12px;gap:8px;flex-wrap:wrap}
+  .top-actions{gap:8px}
+  .page-heading h1{font-size:25px}
+  .page-heading p{font-size:12px;max-width:none}
+  .page-heading>.button{font-size:14px;margin:0;padding:10px 14px}
+  .pet-hero{min-height:180px}
+  .hero-image{min-height:180px}
+  .hero-copy{padding:18px 0 18px 18px}
+  .hero-copy h2{font-size:21px}
+  .hero-copy p{font-size:12px;max-width:none}
+  .hero-caption{font-size:12px;left:12px;right:12px;text-align:center}
+  .pet-tags{gap:4px}
+  .panel{padding:20px 16px}
+  .stat{min-width:0;padding:0 8px}
+  .stat-label{flex-wrap:wrap}
+  .stat strong{font-size:22px}
+  .records-table{display:none}
+  .records-cards{display:block}
+  .record-card{border-top:1px solid var(--line);padding:18px 0;overflow-wrap:anywhere}
+  .record-card p{white-space:pre-line;color:var(--muted);margin-top:6px;font-size:14px}
+  .record-meta,.record-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .record-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .record-actions{margin-top:8px}
+  .form-grid{grid-template-columns:minmax(0,1fr)}
+  .form-actions{gap:8px}
+  .reminder{gap:8px}
+  .reminder .event-icon{width:30px;height:30px}
+  .reminder .due{white-space:normal;max-width:72px;flex-shrink:0}
+  .date-filter label{width:100%}
+  .date-filter input{flex:1;min-width:0}
+  .data-actions{width:100%}
+}

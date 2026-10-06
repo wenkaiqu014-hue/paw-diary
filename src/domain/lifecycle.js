@@ -20,12 +20,13 @@ function chooseActive(state) {
 export function moveToTrash(state,input,{now=new Date().toISOString()}={}) {
   const next=validateSnapshot(state),items=selection(next,input),timestamp=isoTime(now);
   if(input.kind!=='pet'&&items.some(item=>next.pets.find(p=>p.id===item.petId).deletedAt!==null))throw new Error('请先恢复所属宠物');
+  const newlyTrashed=items.some(item=>item.deletedAt===null);
   for(const item of items){
     if(item.deletedAt!==null)continue;
     item.deletedAt=timestamp;
     if(input.kind==='record')for(const reminder of next.reminders)if(reminder.originRecordId===item.id&&reminder.status==='pending')reminder.status='cancelled';
   }
-  if(input.kind==='pet')next.activePetId=next.pets.find(p=>p.deletedAt===null)?.id??null;else chooseActive(next);return validateSnapshot(next);
+  if(input.kind==='pet'&&newlyTrashed)next.activePetId=next.pets.find(p=>p.deletedAt===null)?.id??null;else chooseActive(next);return validateSnapshot(next);
 }
 export function restoreFromTrash(state,input) {
   const next=validateSnapshot(state),items=selection(next,input);

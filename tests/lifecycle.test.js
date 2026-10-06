@@ -100,3 +100,11 @@ test('backup cannot restore an individual child while its parent remains trashed
 test('explicit record-trash backup acceptance also cancels pending linked care atomically',async()=>{
   const {moveToTrash}=await lifecycle(),s=base(),incoming=moveToTrash(s,{kind:'record',ids:['d']},{now});const merged=mergeBackup(s,incoming,{acceptedConflictIds:['record:d']});assert.equal(merged.records.find(r=>r.id==='d').deletedAt,now);assert.equal(merged.reminders.find(r=>r.originRecordId==='d').status,'cancelled');
 });
+test('retrying a previously trashed pet preserves the current pet selected after the original deletion',async()=>{
+  const s=base();s.pets.push({...s.pets[0],id:'p3',name:'第三只'});
+  const storage=memoryStorage({'paw-diary:v3:demo':JSON.stringify(s)}),r=repository(storage);
+  await r.moveToTrash({kind:'pet',ids:['p3']});assert.equal((await r.snapshot()).activePetId,'p1');
+  await r.selectPet('p2');const before=await r.snapshot();
+  await r.moveToTrash({kind:'pet',ids:['p3']});const retried=await r.snapshot();
+  assert.equal(retried.activePetId,'p2');assert.deepEqual(retried,before);assert.deepEqual(await repository(storage).snapshot(),before);
+});

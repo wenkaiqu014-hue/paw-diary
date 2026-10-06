@@ -148,3 +148,17 @@ CloudBase部分SDK页面内置打开超时，随后curl读取官方身份文档�
 阶段0技术设计交付与独立审查已完成，用户验收仍待确认；下一步由用户核对两份说明中的首页顺序、完整待办/编辑、草稿确认与分享路径后再授权阶段1。本轮发现的读取/焦点/待办截断等产品问题没有修复，已进入阶段1具体验收。新增P3-03指南维持未完成，阶段5实施。Impeccable context提示PRODUCT为旧模板，当前未按init扩展文档schema，不影响本阶段沿用户确认事实设计，若后续需要再单独整理。
 
 外部依据仅当次读取的界面检查规则：https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md 。项目事实来自本地代码、规划与隔离浏览器证据；未使用其他网页判断已实现能力。
+
+## 阶段1启动与Task1发布保护
+
+2026-10-06 22:05:42（Asia/Shanghai，本机date为隔离开发开始时间）：用户明确“开始吧，开始阶段1”，视为接受阶段0交付并授权本阶段实施，不自动授权阶段2。建立.worktrees/stage1-local、分支feat/stage1-local，基于2a5aae5；Node实际v22.23.1。执行原四任务，先本地验收，之后仍按用户逐阶段验收再决定发布，不开通云端/模型、不收费。
+
+技能执行为using-git-worktrees、executing-plans、test-driven-development；独立模块按dispatching-parallel-agents委派，主agent负责共享app.js和发布/整合，用impeccable已确认设计及craft-floor、webapp-testing实际浏览器、verification-before-completion及阶段末独立审查。SESSION_LOG为统一执行记录。worker stage1_data仅schema/records/reminders/seed/repository/session及相关单测；worker stage1_exports仅backup/calendar/export单测。均明确非独占、不回退他人修改、不改UI或Gitstage/commit、不再派工。两次spawn单独调用，当前任务树各一个，无重复任务。
+
+预检：阶段1–4AppSnapshot字段统一；profile.city保留旧城市；页面现有date/arrival字段若需短期适配只作为snapshot派生视图，不写回旧格式。saveRecord输入nextDate在同次持久化转独立事项；undefined不改、null取消pending，完成与下一次分步。v1完成历史没有可追溯记录/时间，用legacyCompletionUnknown标注而不编造；正常重复完成幂等。备份输入输出沿V2关系校验，帖子也纳入恢复，跨宠物同id不允许转移归属。恢复坏存储前另保留原始字符串，写失败不覆盖。
+
+Task1新增package.json（type:module、node --test tests/*.test.js，无依赖）、HTML ESM入口、Pages paths过滤及存在时src白名单，编写docs/operations/deploy-and-rollback.md。回退使用历史静态文件的新提交，不移动tag，不清数据；明确v0.1.0不读取v2，新记录需保留备份。日志/docs/tests改动不触发自动部署，workflow_dispatch保留。
+
+实际检查：Node语法和git diff --check退出0。现有test_app.py在变更前、ESM入口变更后各跑一次均九组PASS/退出0，端口4180。命令为`PAW_DIARY_TEST_URL=http://127.0.0.1:4180/ /Users/wenkaiqu/.codex/skill-runtime/run python /Users/wenkaiqu/.codex/skills/webapp-testing/scripts/with_server.py --server "python3 -m http.server 4180 --bind 127.0.0.1" --port 4180 -- /Users/wenkaiqu/.codex/skill-runtime/run python -u test_app.py`。本地test-results/subpath/paw-diary链接到工作区，用4181服务该目录，同一测试URL改为http://127.0.0.1:4181/paw-diary/，九组PASS/退出0，确认子路径原页面/素材/ESM入口可读。后续真实模块整合后仍需再测该子路径。
+
+新浏览器回归tests/e2e/local-foundation.py先运行真实RED，退出1于“v1记录尚未非破坏迁移到v2”，旧页面正常加载后缺失新行为，不是选择器错误。单测worker分别记录接口缺失RED及新增边界失败，报告GREEN后主agent仍统一复验。Task1只完成配置基线和回退文档，不把后续domain/UI未整合写成已完成。当前不推送、不部署、不改版本tag。

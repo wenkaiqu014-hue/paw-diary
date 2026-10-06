@@ -2,6 +2,17 @@ name: Publish Paw Diary
 on:
   push:
     branches: [main]
+    paths:
+      - 'index.html'
+      - 'style.css'
+      - 'app.js'
+      - 'src/**'
+      - 'assets/**'
+      - '.nojekyll'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/**'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,6 +35,7 @@ jobs:
           mkdir -p public-site
           cp index.html style.css app.js .nojekyll public-site/
           cp -R assets public-site/assets
+          if [ -d src ]; then cp -R src public-site/src; fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public-site

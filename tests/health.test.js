@@ -4,7 +4,16 @@ import {migrateV1} from '../src/domain/schema.js';
 import {applyRecord,removeRecord} from '../src/domain/records.js';
 import {applyReminder,completeReminder} from '../src/domain/reminders.js';
 import {v1,now,ids} from './fixtures/local-state.js';
+import {validateSnapshot} from '../src/domain/schema.js';
 const base=()=>migrateV1(v1(),{now});
+test('backup data cannot silently reinterpret grams as kilograms or discard unsupported values',()=>{
+  const s=base();s.records[0].unit='g';assert.throws(()=>validateSnapshot(s));
+  const nonWeight=base();nonWeight.records.find(r=>r.type==='deworm').value=3;assert.throws(()=>validateSnapshot(nonWeight));
+});
+test('an explicit change from weight to daily clears old weight fields without changing record identity',()=>{
+  const changed=applyRecord(base(),{id:'a',type:'daily',title:'生活瞬间'},{now,idFactory:ids()});
+  const record=changed.records.find(r=>r.id==='a');assert.equal(record.type,'daily');assert.equal(record.value,null);assert.equal(record.unit,null);
+});
 test('weight rejects invalid boundaries and impossible or future dates',()=>{for(const value of [0,201,NaN,'oops',null,''])assert.throws(()=>applyRecord(base(),{petId:'p1',type:'weight',occurredDate:'2026-10-06',value},{now,idFactory:ids()}));for(const value of [0.01,200])assert.equal(applyRecord(base(),{petId:'p1',type:'weight',occurredDate:'2026-10-06',value},{now,idFactory:ids()}).records.at(0).value,value);for(const date of ['2026-02-30','2026-10-07'])assert.throws(()=>applyRecord(base(),{petId:'p1',type:'weight',occurredDate:date,value:2},{now,idFactory:ids()}));});
 test('editing preserves identity and creation time; latest actual-date weight stays correct',()=>{const s=base(),old=s.records.find(r=>r.id==='a');const changed=applyRecord(s,{id:'a',value:24,occurredDate:'2026-08-01'},{now,idFactory:ids()});const record=changed.records.find(r=>r.id==='a');assert.equal(record.createdAt,old.createdAt);assert.equal(record.updatedAt,now);assert.equal(changed.records.filter(r=>r.petId==='p1'&&r.type==='weight').sort((a,b)=>a.occurredDate.localeCompare(b.occurredDate)||a.createdAt.localeCompare(b.createdAt)).at(-1).value,22.5);assert.equal(changed.records.filter(r=>r.petId==='p2').length,1);assert.equal(s.records.find(r=>r.id==='a').value,23);});
 test('delete cancels linked pending reminder and does not delete completed history',()=>{const s=removeRecord(base(),'d');assert.ok(!s.records.some(r=>r.id==='d'));assert.equal(s.reminders.find(r=>r.originRecordId==='d')?.status,'cancelled');assert.equal(s.reminders.find(r=>r.status==='completed')?.originRecordId,'c');});

@@ -36,6 +36,8 @@ export function normalizePet(raw) {
 export function normalizeRecord(raw) {
   object(raw,'记录'); if(!RECORD_TYPES.includes(raw.type)) fail('未知记录类型');
   const weight=raw.type==='weight'; let value=null;
+  if(raw.unit!=null && (weight?raw.unit!=='kg':true))fail('记录单位不受支持，请核对后再导入');
+  if(!weight && raw.value!=null)fail('本类型不支持数值字段，请将说明填写在备注中');
   if(weight){if((typeof raw.value!=='number'&&typeof raw.value!=='string')||String(raw.value).trim()==='')fail('体重需为数字');value=Number(raw.value);if(!Number.isFinite(value)||value<0.01||value>200)fail('体重需在0.01至200 kg之间');}
   return {id:requiredText(raw.id,'记录ID'),petId:requiredText(raw.petId,'宠物ID'),type:raw.type,occurredDate:validDate(raw.occurredDate,'记录日期'),value,unit:weight?'kg':null,title:limited(weight?text(raw.title??'体重记录','记录名称'):requiredText(raw.title,'记录名称'),'记录名称',60),note:limited(text(raw.note,'备注'),'备注',500),createdAt:isoTime(raw.createdAt,'创建时间'),updatedAt:isoTime(raw.updatedAt,'更新时间'),...(raw.legacyCreatedAtUnknown===true?{legacyCreatedAtUnknown:true}:{})};
 }

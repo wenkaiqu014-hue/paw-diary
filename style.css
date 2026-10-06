@@ -36,7 +36,16 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
 .hero-copy p{font-size:14px}
 .pet-profile>div{min-width:0}
 .pet-profile p{font-size:14px}
-.local-health{grid-template-areas:'profile reminders' 'records records' 'chart timeline';align-items:start}
+.local-health{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);grid-template-areas:'profile reminders' 'chart timeline' 'records records';align-items:stretch}
+.health-profile{display:flex;flex-direction:column}
+.health-profile .pet-profile{flex:1;align-items:center}
+.health-profile .pet-profile>img{width:120px;height:120px}
+.reminder-full{max-height:280px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:4px}
+.health-reminders .reminder-tabs{margin-bottom:8px}
+.health-reminders .reminder{padding-top:12px;padding-bottom:12px}
+.health-reminders .calendar-download{margin-top:12px}
+/* main是程序化定位的内容地标；交互控件仍保留全局focus-visible。 */
+#main:focus-visible{outline:none}
 .health-profile{grid-area:profile}
 .health-reminders{grid-area:reminders}
 .health-records{grid-area:records}
@@ -83,7 +92,10 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
 @media(max-width:850px){
   .care-home{grid-template-areas:'pet' 'reminders' 'stats' 'chart' 'timeline' 'teaser';grid-template-columns:minmax(0,1fr)}
   .care-home>.community-teaser{position:static}
-  .local-health{grid-template-areas:'profile' 'reminders' 'records' 'chart' 'timeline';grid-template-columns:minmax(0,1fr)}
+  .local-health{grid-template-areas:'profile' 'reminders' 'chart' 'timeline' 'records';grid-template-columns:minmax(0,1fr)}
+  .health-profile .pet-profile{flex:initial}
+  .health-profile .pet-profile>img{width:85px;height:85px}
+  .reminder-full{max-height:320px}
   .page-heading{flex-wrap:wrap}
 }
 @media(max-width:600px){

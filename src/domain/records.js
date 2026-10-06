@@ -4,7 +4,9 @@ export function applyRecord(state,input,{now=new Date().toISOString(),idFactory=
   const next=validateSnapshot(state),old=input.id?next.records.find(r=>r.id===input.id):null;
   if(input.id&&!old)throw new Error('记录不存在');
   if(old&&input.petId&&input.petId!==old.petId)throw new Error('不能更改记录的宠物归属');
-  const timestamp=isoTime(now),record=normalizeRecord({...old,...input,id:old?.id??idFactory(),createdAt:old?.createdAt??timestamp,updatedAt:timestamp});
+  const timestamp=isoTime(now),candidate={...old,...input,id:old?.id??idFactory(),createdAt:old?.createdAt??timestamp,updatedAt:timestamp};
+  if(old&&input.type&&input.type!==old.type){if(input.unit===undefined)candidate.unit=input.type==='weight'?'kg':null;if(input.value===undefined&&input.type!=='weight')candidate.value=null;}
+  const record=normalizeRecord(candidate);
   if(record.occurredDate>todayAt(timestamp))throw new Error('记录日期不能晚于今天');
   if(old)next.records[next.records.findIndex(r=>r.id===old.id)]=record;else next.records.unshift(record);
   if(input.nextDate!==undefined){

@@ -113,7 +113,7 @@ assert.equal(mergeBackup(state, backup, {acceptedConflictIds:[]}).records.length
 
 ## 实际交付状态
 
-- [x] 本地实现、41项单测、原九组及新增浏览器/边界/审查回归通过，实际静态白名单子路径验证通过；Calendar导入已由用户和指定窗口截图确认。
+- [x] 本地实现、43项单测、原九组及新增浏览器/边界/审查回归通过，实际静态白名单子路径验证通过；Calendar导入已由用户和指定窗口截图确认。
 - [ ] 用户完成阶段1体验验收。
 - [ ] 新版在原评审地址部署并匿名复验、创建新版本tag/Release。
 

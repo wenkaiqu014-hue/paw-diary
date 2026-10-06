@@ -320,3 +320,7 @@ tests/e2e/health-layout.py先实际RED退出1：图表在完整记录之后。�
 同步PENDING续作段和总计划最新状态：下一会话读取本日志最新交接、PENDING和总计划，再进入2026-10-06-02-cloud-identity.md；先只读核对实际环境/认证/SDK/运行时和费用，不重做已确认界面、不重复grill，真实登录/权限/跨设备与图片必须实测，不用本地mock冒充。供应商/预算尚未落实，AI密钥仅服务端，新增服务是否收费需实际确认，不因既有工具权限自动授权费用。当前仍无云端/AI/真实共享；真机软键盘、原生200%/读屏、Google/Outlook实导留最终阶段，历史空Calendar清理不作为阶段2阻塞也不擅自删其他日程。
 
 2026-10-07 00:56:25（Asia/Shanghai，工具date）：文档链接/围栏、阶段1勾选/未来能力未虚勾、VERSION/package0.2.0与旧tag保护检查退出0；git diff --check退出0，当前产品文件与v0.2.0 tag的git diff为空，未修改业务。没有为文档改动重复跑产品测试。最后将AGENTS、PENDING、总计划和本日志纳入一次本地Git提交；不push，下一session先检查本地main可能领先origin/main，不reset丢交接提交。
+
+## 移除过时的重复agent清理要求
+
+2026-10-07 00:58:10（Asia/Shanghai，工具date）：用户明确指出AGENTS残留的重复agent清理规则属于旧时期做法，要求直接删除。已删除整个对应技能调用/检查/清理指令，保留并发上限、主agent整合复验与默认配置规则；未改产品、未卸载全局技能、未改历史开发记录。确认AGENTS不再包含对应要求，diff检查后本地提交；不push或部署，继续作为下一session交接。

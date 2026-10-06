@@ -49,3 +49,9 @@ test_app.py 已支持 PAW_DIARY_TEST_URL 参数，可复用同一套验证检查
 ## v0.1.0 版本准备
 
 用户要求创建 release 0.1.0 和 tag 后提交作品。准备 VERSION 与 CHANGELOG.md，版本冻结范围为已验证的前端交互雏形。计划以同一提交创建 annotated tag v0.1.0 并发布 GitHub Release；执行结果随后追加。公开地址保持不变。
+
+## v0.1.0 发布结果
+
+GitHub Release 发布成功，publishedAt=2026-10-06T12:56:56Z（北京时间 2026-10-06 20:56:56）。版本页 https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.1.0 。API 确认 tagName=v0.1.0、isDraft=false、isPrerelease=false。
+
+Annotated tag v0.1.0 指向提交 17cba15（包含 VERSION、CHANGELOG 和版本准备记录），tag 已推送到 origin。发布后再次匿名请求固定网页返回 HTTP 200。后续提交继续更新 main；不移动已发布的 v0.1.0 tag，新增版本创建新 tag。当前发布不改变网站内容或地址。

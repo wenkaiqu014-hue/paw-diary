@@ -22,8 +22,8 @@ with sync_playwright() as p:
     page.evaluate("raw=>{localStorage.clear();localStorage.setItem('paw-diary:v1',raw);}",json.dumps(v1,ensure_ascii=False))
     page.reload(wait_until='networkidle')
     expect(page.get_by_role('heading',name='你好呀，我的小猫。')).to_be_visible()
-    migrated=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo'))")
-    assert migrated and migrated['version']==2,'v1记录尚未非破坏迁移到v2'
+    migrated=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo'))")
+    assert migrated and migrated['version']==3,'v1记录尚未非破坏迁移到v3'
     assert migrated['records'][0]['id']=='old' and migrated['records'][0]['value']==4.5
     assert page.evaluate("localStorage.getItem('paw-diary:v1')===localStorage.getItem('paw-diary:v1:backup')")
     print('PASS: v1原始键/迁移前备份保留，多宠资料迁移')
@@ -35,7 +35,7 @@ with sync_playwright() as p:
     page.get_by_role('button',name='保存记录',exact=True).click()
     expect(row).to_contain_text('4.8')
     page.reload(wait_until='networkidle')
-    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo')).records.filter(r=>r.id==='old').length")==1
+    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo')).records.filter(r=>r.id==='old').length")==1
     page.locator('.skip-link').focus(); page.keyboard.press('Enter')
     expect(page.locator('#page-label')).to_have_text('健康档案')
     assert page.evaluate('document.activeElement.id')=='main'
@@ -58,7 +58,7 @@ with sync_playwright() as p:
     page.get_by_role('button',name='保存记录',exact=True).click()
     page.get_by_role('button',name='暂不安排',exact=True).click()
     expect(page.locator('.reminder')).to_have_count(5)
-    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo')).records.filter(r=>r.title==='独立护理事项0').length")==1
+    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo')).records.filter(r=>r.title==='独立护理事项0').length")==1
     page.locator('.reminder').filter(has_text='独立护理事项1').get_by_role('button',name='取消事项',exact=True).click()
     page.get_by_role('button',name='确认取消',exact=True).click()
     expect(page.locator('.reminder')).to_have_count(4)
@@ -67,23 +67,25 @@ with sync_playwright() as p:
     page.get_by_role('button',name='导出备份',exact=True).click()
     # Direct buttons use the same backup entry; downloads are user-triggered only.
     page.get_by_role('button',name='恢复备份',exact=True).click()
-    before=page.evaluate("localStorage.getItem('paw-diary:v2:demo')")
-    incoming=json.loads(before); incoming['records'].append({'id':'import-new','petId':'mine','type':'daily','occurredDate':today,'value':None,'unit':None,'title':'备份新增瞬间','note':'恢复验证','createdAt':'2026-10-06T00:00:00.000Z','updatedAt':'2026-10-06T00:00:00.000Z'})
+    before=page.evaluate("localStorage.getItem('paw-diary:v3:demo')")
+    incoming=json.loads(before); incoming['records'].append({'id':'import-new','petId':'mine','type':'daily','occurredDate':today,'value':None,'unit':None,'title':'备份新增瞬间','note':'恢复验证','createdAt':'2026-10-06T00:00:00.000Z','updatedAt':'2026-10-06T00:00:00.000Z','deletedAt':None})
     backup_file=OUT/'import.json';backup_file.write_text(json.dumps(incoming,ensure_ascii=False))
     page.locator('[name=backup]').set_input_files(str(backup_file))
     page.get_by_role('button',name='预览恢复',exact=True).click()
     expect(page.get_by_text('恢复前请核对',exact=True)).to_be_visible()
-    assert page.evaluate("localStorage.getItem('paw-diary:v2:demo')")==before
+    assert page.evaluate("localStorage.getItem('paw-diary:v3:demo')")==before
     page.get_by_role('button',name='确认恢复',exact=True).click()
-    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo')).records.filter(r=>r.id==='import-new').length")==1
+    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo')).records.filter(r=>r.id==='import-new').length")==1
     page.get_by_role('button',name='恢复备份',exact=True).click()
     page.locator('[name=backup]').set_input_files(str(backup_file))
     page.get_by_role('button',name='预览恢复',exact=True).click()
     page.get_by_role('button',name='确认恢复',exact=True).click()
-    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo')).records.filter(r=>r.id==='import-new').length")==1
+    assert page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo')).records.filter(r=>r.id==='import-new').length")==1
     with page.expect_download() as info:
         page.get_by_role('button',name='导出 CSV',exact=True).click()
     info.value.save_as(str(OUT/'records.csv'))
+    page.get_by_role('button',name='管理与导出',exact=True).click()
+    for choice in page.locator('[name=managed-reminder]').all():choice.check()
     with page.expect_download() as info:
         page.get_by_role('button',name='导出日历',exact=True).click()
     info.value.save_as(str(OUT/'care.ics'))
@@ -118,7 +120,7 @@ with sync_playwright() as p:
     bad_page.reload(wait_until='networkidle')
     expect(bad_page.get_by_role('heading',name='暂时无法读取档案',exact=True)).to_be_visible()
     assert bad_page.evaluate("localStorage.getItem('paw-diary:v1')")=='{broken'
-    assert bad_page.evaluate("localStorage.getItem('paw-diary:v2:demo')") is None
+    assert bad_page.evaluate("localStorage.getItem('paw-diary:v3:demo')") is None
     with bad_page.expect_download() as info:
         bad_page.get_by_role('button',name='导出原始数据',exact=True).click()
     info.value.save_as(str(OUT/'broken-original.txt'))

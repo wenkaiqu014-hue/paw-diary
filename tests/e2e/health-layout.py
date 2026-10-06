@@ -22,7 +22,7 @@ with sync_playwright() as p:
             assert chart['top']<1000,'正常待办时图表应在第二排，不被长记录表挤到屏外'
             assert page.locator('.health-profile').evaluate('''e=>{
                 const title=e.querySelector('.panel-title').getBoundingClientRect();
-                return e.querySelector('.pet-profile').getBoundingClientRect().top-title.bottom<40;
+                return e.querySelector('.pet-entry').getBoundingClientRect().top-title.bottom<40;
             }'''),'宠物条目应跟随标题靠上排列，不能在大块空白中纵向居中'
             for label in ('已完成','已取消','全部事项','待完成'):
                 page.get_by_role('button',name=label,exact=True).click()
@@ -46,14 +46,15 @@ with sync_playwright() as p:
             assert abs(measured[card]['height']-baseline[card]['height'])<1,f'{label}不能改变{card}高度：{measured[card]}，基准{baseline[card]}'
         assert abs(measured['health-chart']['top']-baseline['health-chart']['top'])<1,f'{label}不能移动第二排图表'
     page.get_by_role('button',name='待完成',exact=True).click()
-    raw=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo'))")
-    raw['reminders'] += [{'id':f'layout-{i}','petId':raw['activePetId'],'title':f'完整护理事项{i}','dueDate':'2026-10-08','status':'pending','originRecordId':None,'completionRecordId':None,'completedAt':None} for i in range(10)]
-    page.evaluate("raw=>localStorage.setItem('paw-diary:v2:demo',JSON.stringify(raw))",raw)
+    raw=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo'))")
+    raw['reminders'] += [{'id':f'layout-{i}','petId':raw['activePetId'],'title':f'完整护理事项{i}','dueDate':'2026-10-08','status':'pending','originRecordId':None,'completionRecordId':None,'completedAt':None,'deletedAt':None} for i in range(10)]
+    page.evaluate("raw=>localStorage.setItem('paw-diary:v3:demo',JSON.stringify(raw))",raw)
     page.set_viewport_size({'width':1440,'height':1000});page.reload(wait_until='networkidle')
     expect(page.locator('.reminder')).to_have_count(len(raw['reminders']))
     last=page.locator('.reminder').filter(has_text='完整护理事项9').get_by_role('button',name='记录完成',exact=True)
     last.scroll_into_view_if_needed();expect(last).to_be_visible()
     assert rect('.health-chart')['top']<1000,'大量待办不能把统计图挤到页底'
+    page.get_by_role('button',name='管理与导出',exact=True).click()
     expect(page.get_by_role('button',name='导出日历',exact=True)).to_be_visible()
     assert abs(rect('.health-reminders')['height']-baseline['health-reminders']['height'])<1,'长待办应在列表内部滚动，不能增高桌面卡片'
     list_box=page.locator('.reminder-full')
@@ -67,10 +68,11 @@ with sync_playwright() as p:
             for(const [e,size] of sizes)e.style.fontSize=(size*2)+'px';
         }''')
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),'200%文字不得引起整页横向溢出'
-        page.get_by_role('button',name='管理我的宠物',exact=True).scroll_into_view_if_needed()
-        expect(page.get_by_role('button',name='管理我的宠物',exact=True)).to_be_visible()
+        page.get_by_role('button',name='管理宠物',exact=True).scroll_into_view_if_needed()
+        expect(page.get_by_role('button',name='管理宠物',exact=True)).to_be_visible()
         last=page.locator('.reminder').filter(has_text='完整护理事项9').get_by_role('button',name='记录完成',exact=True)
         last.scroll_into_view_if_needed();expect(last).to_be_visible()
+        page.get_by_role('button',name='管理与导出',exact=True).click()
         export=page.get_by_role('button',name='导出日历',exact=True)
         export.scroll_into_view_if_needed();expect(export).to_be_visible()
         assert page.locator('.health-reminders').evaluate('''e=>{

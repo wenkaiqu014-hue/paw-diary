@@ -25,12 +25,12 @@ with sync_playwright() as p:
     assert page.evaluate('document.activeElement.dataset.action')=='record'
     results['cancel_and_focus']='pass'
 
-    raw=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo'))")
+    raw=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo'))")
     raw['pets'][0]['name']='毛孩子长名称测试长名称测试长名称测'[:20]
     raw['pets'][0]['image']='assets/missing-stage1.jpg'
     raw['records'][0]['title']='W'*60
     raw['records'][0]['note']='长备注'*166
-    page.evaluate("raw=>localStorage.setItem('paw-diary:v2:demo',JSON.stringify(raw))",raw)
+    page.evaluate("raw=>localStorage.setItem('paw-diary:v3:demo',JSON.stringify(raw))",raw)
     page.reload(wait_until='networkidle')
     expect(page.locator('.image-fallback').first).to_be_visible()
     for route in ('home','health','nearby','community'):
@@ -65,8 +65,8 @@ with sync_playwright() as p:
     results['layout_zoom_200_scroll_width']=page.evaluate('({scroll:document.documentElement.scrollWidth,width:innerWidth})')
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     page.evaluate("document.body.style.zoom='1'")
-    clean={'version':2,'mode':'demo','activePetId':None,'pets':[],'records':[],'reminders':[],'posts':[],'profile':{'city':'深圳'}}
-    page.evaluate("raw=>localStorage.setItem('paw-diary:v2:demo',JSON.stringify(raw))",clean)
+    clean={'version':3,'mode':'demo','activePetId':None,'pets':[],'records':[],'reminders':[],'posts':[],'profile':{'city':'深圳'}}
+    page.evaluate("raw=>localStorage.setItem('paw-diary:v3:demo',JSON.stringify(raw))",clean)
     page.reload(wait_until='networkidle')
     expect(page.get_by_text('还没有宠物档案',exact=True)).to_be_visible()
     assert not page.get_by_text('糯米',exact=True).count()
@@ -75,7 +75,7 @@ with sync_playwright() as p:
     page.locator('[name=estimatedAgeMonths]').fill('12')
     page.get_by_role('button',name='保存档案',exact=True).click()
     expect(page.get_by_role('heading',name='你好呀，估龄新宠。')).to_be_visible()
-    saved=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v2:demo')).pets[0]")
+    saved=page.evaluate("JSON.parse(localStorage.getItem('paw-diary:v3:demo')).pets[0]")
     assert saved['birthday'] is None and saved['estimatedAgeMonths']==12 and saved['arrivalDate'] is None
     results['empty_and_estimated_age']='pass'
     assert not errors,errors

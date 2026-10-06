@@ -49,20 +49,18 @@ with sync_playwright() as p:
     with page.expect_download() as download_info:
         page.get_by_role('button', name='导出备份', exact=True).click()
     download_info.value.save_as(str(OUT / 'backup.json'))
-    page.locator('tbody tr').filter(has_text='23.15').get_by_role('button', name='删除').click()
+    page.locator('tbody tr').filter(has_text='23.15').get_by_role('button', name='移入回收站').click()
     page.get_by_role('button', name='保留', exact=True).click()
     expect(page.locator('tbody tr')).to_have_count(5)
     print('PASS: 健康记录筛选、导出备份、删除取消')
 
-    page.get_by_role('button', name='管理我的宠物').click()
-    page.get_by_role('button', name='添加一只宠物').click()
+    page.get_by_role('button', name='添加宠物', exact=True).click()
     page.locator('[name=name]').fill('小团子')
     page.locator('[name=type]').select_option('cat')
     page.locator('[name=estimatedAgeMonths]').fill('12')
     page.get_by_role('button', name='保存档案').click()
     expect(page.get_by_text('这里还没有记录', exact=True)).to_be_visible()
-    page.get_by_role('button', name='管理我的宠物').click()
-    page.locator('.pet-option').filter(has_text='糯米').click()
+    page.get_by_role('button', name='切换到糯米', exact=True).click()
     expect(page.locator('tbody tr')).to_have_count(5)
     print('PASS: 添加宠物、各宠物数据隔离、切换宠物')
 

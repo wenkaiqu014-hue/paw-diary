@@ -1,4 +1,4 @@
-import { migrateV1, migrateV2, validateSnapshot } from './schema.js';
+import { migrateV1, migrateV2, validateSnapshot } from './schema.js?v=0.2.0';
 
 // A legacy file with no timestamps must produce the same IDs/order on every import.
 const LEGACY_IMPORT_TIME = '1970-01-01T00:00:00.000Z';

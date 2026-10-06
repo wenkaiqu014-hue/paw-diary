@@ -1,9 +1,9 @@
-import {createDemoRepository} from './src/data/demo-repository.js';
-import {createAppSession} from './src/app-session.js';
-import {validateBackup,previewImport,mergeBackup,exportRecordsCsv} from './src/domain/backup.js';
-import {exportRemindersIcs} from './src/domain/calendar.js';
-import {visibleHealth} from './src/domain/lifecycle.js';
-import {transitionManagement,selectedCalendarReminders} from './src/features/health-management.js';
+import {createDemoRepository} from './src/data/demo-repository.js?v=0.2.0';
+import {createAppSession} from './src/app-session.js?v=0.2.0';
+import {validateBackup,previewImport,mergeBackup,exportRecordsCsv} from './src/domain/backup.js?v=0.2.0';
+import {exportRemindersIcs} from './src/domain/calendar.js?v=0.2.0';
+import {visibleHealth} from './src/domain/lifecycle.js?v=0.2.0';
+import {transitionManagement,selectedCalendarReminders} from './src/features/health-management.js?v=0.2.0';
 const icons = {
   paw:'<ellipse cx="12" cy="16" rx="5.5" ry="4"/><ellipse cx="4.5" cy="9" rx="2" ry="2.8" transform="rotate(-20 4.5 9)"/><ellipse cx="9.5" cy="5.5" rx="2" ry="2.8"/><ellipse cx="15" cy="5.5" rx="2" ry="2.8"/><ellipse cx="20" cy="9" rx="2" ry="2.8" transform="rotate(20 20 9)"/>',
   home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',

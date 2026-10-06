@@ -1,4 +1,4 @@
-import {migrateV1,isoTime} from '../domain/schema.js';
+import {migrateV1,isoTime} from '../domain/schema.js?v=0.2.0';
 export function createSeedState({now=new Date().toISOString()}={}) {
   const timestamp=isoTime(now);
   const dayOffset=n=>{const d=new Date(timestamp);d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};

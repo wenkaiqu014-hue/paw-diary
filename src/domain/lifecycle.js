@@ -1,4 +1,4 @@
-import {validateSnapshot,isoTime} from './schema.js';
+import {validateSnapshot,isoTime} from './schema.js?v=0.2.0';
 const fields={pet:'pets',record:'records',reminder:'reminders'};
 
 export function visibleHealth(snapshot) {

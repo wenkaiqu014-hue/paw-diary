@@ -1,5 +1,5 @@
-import {validateSnapshot,isoTime} from './schema.js';
-import {applyRecord,defaultId} from './records.js';
+import {validateSnapshot,isoTime} from './schema.js?v=0.2.0';
+import {applyRecord,defaultId} from './records.js?v=0.2.0';
 export function applyReminder(state,input,{idFactory=defaultId}={}) {
   const next=validateSnapshot(state),old=input.id?next.reminders.find(r=>r.id===input.id):null;
   if(input.id&&!old)throw new Error('事项不存在');

@@ -1,5 +1,5 @@
-import {moveToTrash} from './lifecycle.js';
-import {validateSnapshot,normalizeRecord,isoTime,todayAt,validDate,requiredText} from './schema.js';
+import {moveToTrash} from './lifecycle.js?v=0.2.0';
+import {validateSnapshot,normalizeRecord,isoTime,todayAt,validDate,requiredText} from './schema.js?v=0.2.0';
 export const defaultId=()=>globalThis.crypto?.randomUUID?.()??`id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 export function applyRecord(state,input,{now=new Date().toISOString(),idFactory=defaultId}={}) {
   const next=validateSnapshot(state),old=input.id?next.records.find(r=>r.id===input.id):null;

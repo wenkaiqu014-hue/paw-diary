@@ -1,4 +1,4 @@
-import {visibleHealth} from '../domain/lifecycle.js';
+import {visibleHealth} from '../domain/lifecycle.js?v=0.2.0';
 
 const initial=()=>({petManage:false,reminderManage:false,selectedPetIds:[],selectedReminderIds:[]});
 const toggle=(ids,id)=>ids.includes(id)?ids.filter(value=>value!==id):[...ids,id];

@@ -1,8 +1,8 @@
-import {clone,migrateV1,migrateV2,validateSnapshot,normalizePet,todayAt,isoTime} from '../domain/schema.js';
-import {applyRecord,removeRecord,defaultId} from '../domain/records.js';
-import {applyReminder,completeReminder as finishReminder} from '../domain/reminders.js';
-import {moveToTrash as trash,restoreFromTrash as restore,reorderPets as reorder} from '../domain/lifecycle.js';
-import {createSeedState} from './seed.js';
+import {clone,migrateV1,migrateV2,validateSnapshot,normalizePet,todayAt,isoTime} from '../domain/schema.js?v=0.2.0';
+import {applyRecord,removeRecord,defaultId} from '../domain/records.js?v=0.2.0';
+import {applyReminder,completeReminder as finishReminder} from '../domain/reminders.js?v=0.2.0';
+import {moveToTrash as trash,restoreFromTrash as restore,reorderPets as reorder} from '../domain/lifecycle.js?v=0.2.0';
+import {createSeedState} from './seed.js?v=0.2.0';
 export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>new Date().toISOString(),idFactory=defaultId,seedFactory=createSeedState}={}) {
   if(!storage||typeof storage.getItem!=='function'||typeof storage.setItem!=='function')throw new Error('本地存储不可用');
   let state=null,queue=Promise.resolve(),expectedRaw=null;

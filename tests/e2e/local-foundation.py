@@ -6,7 +6,7 @@ import os
 from playwright.sync_api import sync_playwright, expect
 
 BASE=os.environ.get('PAW_DIARY_TEST_URL','http://127.0.0.1:4180/')
-OUT=Path(__file__).resolve().parents[2]/'test-results'/'stage1'
+OUT=Path(os.environ.get('PAW_DIARY_TEST_OUTPUT_DIR', str(Path(__file__).resolve().parents[2]/'test-results'/'stage1')))
 OUT.mkdir(parents=True,exist_ok=True)
 today=date.today().isoformat()
 next_date=(date.today()+timedelta(days=6)).isoformat()

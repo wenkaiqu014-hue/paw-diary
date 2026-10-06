@@ -14,6 +14,7 @@ body{font-size:14px}
 .text-button,.delete-button{padding:8px 10px}
 .button:active{transform:translateY(0)}
 .button:disabled{transform:none}
+.city-button,.pet-picker{min-width:44px;min-height:44px}
 small,.demo-note,.form-tip,.demo-badge,.breadcrumb,.city-button,.field small,.post-text,.post-user small,.post-topic,.post-actions button,.friend-body p,.friend-tags span,.small-badge,.tag,.stat-label,.stat p,.timeline-content p,.timeline-content time,.reminder p,.reminder .due,.chart-label,.legend,.teaser-copy p,footer{font-size:12px}
 .chart text{font-size:12px}
 .field input,.field select,.field textarea{font-size:16px;min-height:44px}

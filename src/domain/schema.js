@@ -27,15 +27,17 @@ export function normalizePet(raw) {
   object(raw,'宠物'); const id=requiredText(raw.id,'宠物ID'), name=limited(requiredText(raw.name,'宠物名'),'宠物名',20);
   if(!['cat','dog'].includes(raw.type)) fail('宠物类型无效');
   const birthday=nullableDate(raw.birthday,'生日'), estimatedAgeMonths=raw.estimatedAgeMonths??null;
+  const arrivalDate=nullableDate(raw.arrivalDate,'到家日期');
+  if(birthday && arrivalDate && birthday>arrivalDate)fail('生日不能晚于来到家的日期');
   if(estimatedAgeMonths!==null && (!Number.isInteger(estimatedAgeMonths)||estimatedAgeMonths<0||estimatedAgeMonths>1200)) fail('估计月龄需为0到1200的整数');
   if(birthday && estimatedAgeMonths!==null) fail('生日和估计月龄只能填写一个');
-  return {id,name,type:raw.type,birthday,estimatedAgeMonths,arrivalDate:nullableDate(raw.arrivalDate,'到家日期'),breed:limited(text(raw.breed,'品种'),'品种',30),sex:text(raw.sex,'性别'),image:validImage(raw.image??'')};
+  return {id,name,type:raw.type,birthday,estimatedAgeMonths,arrivalDate,breed:limited(text(raw.breed,'品种'),'品种',30),sex:text(raw.sex,'性别'),image:validImage(raw.image??'')};
 }
 export function normalizeRecord(raw) {
   object(raw,'记录'); if(!RECORD_TYPES.includes(raw.type)) fail('未知记录类型');
   const weight=raw.type==='weight'; let value=null;
   if(weight){if((typeof raw.value!=='number'&&typeof raw.value!=='string')||String(raw.value).trim()==='')fail('体重需为数字');value=Number(raw.value);if(!Number.isFinite(value)||value<0.01||value>200)fail('体重需在0.01至200 kg之间');}
-  return {id:requiredText(raw.id,'记录ID'),petId:requiredText(raw.petId,'宠物ID'),type:raw.type,occurredDate:validDate(raw.occurredDate,'记录日期'),value,unit:weight?'kg':null,title:limited(weight?text(raw.title??'体重记录','记录名称'):requiredText(raw.title,'记录名称'),'记录名称',60),note:limited(text(raw.note,'备注'),'备注',500),createdAt:isoTime(raw.createdAt,'创建时间'),updatedAt:isoTime(raw.updatedAt,'更新时间')};
+  return {id:requiredText(raw.id,'记录ID'),petId:requiredText(raw.petId,'宠物ID'),type:raw.type,occurredDate:validDate(raw.occurredDate,'记录日期'),value,unit:weight?'kg':null,title:limited(weight?text(raw.title??'体重记录','记录名称'):requiredText(raw.title,'记录名称'),'记录名称',60),note:limited(text(raw.note,'备注'),'备注',500),createdAt:isoTime(raw.createdAt,'创建时间'),updatedAt:isoTime(raw.updatedAt,'更新时间'),...(raw.legacyCreatedAtUnknown===true?{legacyCreatedAtUnknown:true}:{})};
 }
 function normalizeReminder(raw) {
   object(raw,'事项'); if(!['pending','completed','cancelled'].includes(raw.status))fail('事项状态无效');
@@ -70,14 +72,16 @@ export function validateSnapshot(raw) {
 export function migrateV1(raw,{now=new Date().toISOString()}={}) {
   if(typeof raw==='string')raw=JSON.parse(raw);object(raw,'旧数据');if(raw.version!==1)fail('不是有效的旧版数据');
   for(const key of ['pets','records','posts'])if(!Array.isArray(raw[key]))fail(`旧数据${key}无效`);
-  const timestamp=isoTime(now), fallback=Date.parse(timestamp), reminders=[];
+  isoTime(now);
+  const knownTimes=raw.records.map(r=>typeof r?.createdAt==='number'?r.createdAt:Date.parse(r?.createdAt)).filter(Number.isFinite);
+  const fallback=Math.min(0,...knownTimes)-1, reminders=[];
   const records=raw.records.map((r,i)=>{
     object(r,'旧记录');let createdAt;
     if(r.createdAt==null)createdAt=new Date(fallback-i).toISOString();
     else if(typeof r.createdAt==='number'&&Number.isFinite(r.createdAt)){createdAt=new Date(r.createdAt).toISOString();}
     else createdAt=isoTime(r.createdAt);
     if(r.nextDate){reminders.push({id:`legacy-reminder:${r.id}`,petId:r.petId,title:r.title||(r.type==='weight'?'体重记录':'护理事项'),dueDate:r.nextDate,status:r.reminderDone?'completed':'pending',originRecordId:r.id,completionRecordId:null,completedAt:null,...(r.reminderDone?{legacyCompletionUnknown:true}:{})});}
-    return {id:r.id,petId:r.petId,type:r.type,occurredDate:r.date,value:r.value,title:r.title,note:r.note,createdAt,updatedAt:r.updatedAt==null?createdAt:typeof r.updatedAt==='number'?new Date(r.updatedAt).toISOString():r.updatedAt};
+    return {id:r.id,petId:r.petId,type:r.type,occurredDate:r.date,value:r.value,title:r.title,note:r.note,createdAt,updatedAt:r.updatedAt==null?createdAt:typeof r.updatedAt==='number'?new Date(r.updatedAt).toISOString():r.updatedAt,...(r.createdAt==null?{legacyCreatedAtUnknown:true}:{})};
   });
   const pets=raw.pets.map(p=>({...p,estimatedAgeMonths:p.estimatedAgeMonths??null,arrivalDate:p.arrivalDate??p.arrival??null}));
   return validateSnapshot({version:2,mode:'demo',activePetId:raw.activePet??raw.activePetId??pets[0]?.id??null,pets,records,reminders,posts:raw.posts,profile:{...(raw.profile??{}),city:raw.city??raw.profile?.city??'深圳'}});

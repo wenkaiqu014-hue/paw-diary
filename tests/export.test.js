@@ -12,6 +12,13 @@ const post = (id = 'post1', title = '新日常') => ({ id, author: '我', pet: '
 const state = () => ({ version: 2, mode: 'demo', activePetId: 'p1', pets: [pet()], records: [record()], reminders: [reminder()], posts: [], profile: { city: '深圳' } });
 const copy = value => structuredClone(value);
 
+test('CSV does not report internal fallback timestamps as known legacy creation times',()=>{
+  const legacy={...record(),createdAt:'1969-12-31T23:59:59.999Z',updatedAt:'1969-12-31T23:59:59.999Z',legacyCreatedAtUnknown:true};
+  const result=spawnSync('python3',['-c','import csv,json,sys; print(json.dumps(list(csv.DictReader(sys.stdin))))'],{input:exportRecordsCsv([legacy]).replace(/^\ufeff/,''),encoding:'utf8'});
+  assert.equal(result.status,0);const parsed=JSON.parse(result.stdout)[0];
+  assert.equal(parsed.createdAt,'');assert.equal(parsed.updatedAt,'');assert.equal(parsed.occurredDate,'2026-10-06');
+});
+
 test('重复备份是重复项而非冲突，重复导入不增加记录或提醒', () => {
   const current = state();
   const preview = previewImport(current, JSON.stringify(current));

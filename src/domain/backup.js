@@ -100,5 +100,5 @@ function csvCell(value) {
 
 export function exportRecordsCsv(records) {
   if (!Array.isArray(records)) throw new Error('请选择要导出的记录');
-  return '\ufeff' + [csvFields.map(csvCell).join(','), ...records.map(record => csvFields.map(field => csvCell(record[field])).join(','))].join('\r\n') + '\r\n';
+  return '\ufeff' + [csvFields.map(csvCell).join(','), ...records.map(record => csvFields.map(field => csvCell(record.legacyCreatedAtUnknown&&(field==='createdAt'||field==='updatedAt'&&record.updatedAt===record.createdAt)?'':record[field])).join(','))].join('\r\n') + '\r\n';
 }

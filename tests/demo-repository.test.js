@@ -16,3 +16,24 @@ test('record and followup reminder fail as one durable unit; parallel completion
 test('new storage key failure keeps migration source and successful backup available for retry',async()=>{const raw=JSON.stringify(v1()),storage=memoryStorage({'paw-diary:v1':raw}),set=storage.setItem;storage.setItem=function(k,v){if(k==='paw-diary:v2:demo'&&this.failNew)throw new Error('new key blocked');return set.call(this,k,v);};storage.failNew=true;const r=repo(storage);await assert.rejects(r.snapshot());assert.equal(storage.data.get('paw-diary:v1'),raw);assert.equal(storage.data.get('paw-diary:v1:backup'),raw);assert.equal(storage.data.has('paw-diary:v2:demo'),false);storage.failNew=false;assert.equal((await r.snapshot()).records.length,4);});
 test('migration never replaces a different existing v1 backup and retains current source separately',async()=>{const raw=JSON.stringify(v1()),prior='an older original backup',storage=memoryStorage({'paw-diary:v1':raw,'paw-diary:v1:backup':prior}),r=repo(storage);await r.snapshot();assert.equal(storage.data.get('paw-diary:v1:backup'),prior);const historical=[...storage.data.entries()].filter(([k])=>k.startsWith('paw-diary:v1:backup:'));assert.equal(historical.length,1);assert.equal(historical[0][1],raw);});
 test('savePet makeActive creates and selects atomically while ordinary saves retain selection',async()=>{const storage=memoryStorage({'paw-diary:v1':JSON.stringify(v1())}),r=repo(storage),before=await r.snapshot();storage.fail=true;await assert.rejects(r.savePet({name:'新猫',type:'cat',makeActive:true}));assert.deepEqual(await r.snapshot(),before);storage.fail=false;const created=await r.savePet({name:'新猫',type:'cat',makeActive:true});const saved=await r.snapshot();assert.equal(saved.activePetId,created.id);assert.equal(saved.pets.length,3);assert.equal('makeActive' in created,false);assert.equal((await repo(storage).snapshot()).activePetId,created.id);const other=await r.savePet({name:'第二只新猫',type:'cat'});assert.equal((await r.snapshot()).activePetId,created.id);await r.savePet({id:other.id,name:'选中编辑的猫',makeActive:true});assert.equal((await r.snapshot()).activePetId,other.id);});
+test('known birthday cannot be later than arrival and rejection preserves the stored pet',async()=>{
+  const storage=memoryStorage({'paw-diary:v1':JSON.stringify(v1())}),r=repo(storage),before=await r.snapshot();
+  await assert.rejects(r.savePet({id:'p1',birthday:'2025-04-01',arrivalDate:'2025-03-01'}));
+  assert.deepEqual(await r.snapshot(),before);
+  assert.deepEqual(await repo(storage).snapshot(),before);
+});
+test('a cached second repository cannot overwrite records saved by another window',async()=>{
+  const storage=memoryStorage({'paw-diary:v1':JSON.stringify(v1())}),a=repo(storage),b=repo(storage);
+  await a.snapshot();await b.snapshot();
+  await a.saveRecord({petId:'p1',type:'weight',occurredDate:'2026-10-06',value:24});
+  await assert.rejects(b.saveRecord({id:'d',note:'另一窗口的旧快照'}));
+  const saved=await repo(storage).snapshot();
+  assert.equal(saved.records.length,5);assert.equal(saved.records.find(r=>r.id==='d').note,'');
+});
+test('confirmed recovery from a corrupt legacy key can create the absent v2 key safely',async()=>{
+  const storage=memoryStorage({'paw-diary:v1':'{legacy-broken'}),r=repo(storage);
+  await assert.rejects(r.snapshot());await r.replaceSnapshot(createSeedState({now}));
+  assert.equal((await r.snapshot()).version,2);
+  assert.equal(storage.data.get('paw-diary:v1'),'{legacy-broken');
+  assert.ok([...storage.data.values()].includes('{legacy-broken'));
+});

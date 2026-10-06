@@ -4,13 +4,18 @@ import {applyReminder,completeReminder as finishReminder} from '../domain/remind
 import {createSeedState} from './seed.js';
 export function createDemoRepository({storage,key='paw-diary:v2:demo',clock=()=>new Date().toISOString(),idFactory=defaultId,seedFactory=createSeedState}={}) {
   if(!storage||typeof storage.getItem!=='function'||typeof storage.setItem!=='function')throw new Error('本地存储不可用');
-  let state=null,queue=Promise.resolve();
+  let state=null,queue=Promise.resolve(),expectedRaw=null;
   const serial=operation=>{const pending=queue.then(operation);queue=pending.catch(()=>{});return pending;};
-  const persist=async candidate=>{const checked=validateSnapshot(candidate);if(checked.mode!=='demo')throw new Error('演示仓储只接受本地演示数据');await storage.setItem(key,JSON.stringify(checked));state=checked;return checked;};
+  const persist=async (candidate,expected=expectedRaw)=>{
+    const checked=validateSnapshot(candidate);if(checked.mode!=='demo')throw new Error('演示仓储只接受本地演示数据');
+    const read=storage.getItem(key),actual=read&&typeof read.then==='function'?await read:read;
+    if(actual!==expected)throw new Error('资料已在另一窗口更新，请先复制当前输入，再刷新读取后重试。');
+    const raw=JSON.stringify(checked);await storage.setItem(key,raw);state=checked;expectedRaw=raw;return checked;
+  };
   const initialize=async()=>{
     if(state)return state;
     const saved=await storage.getItem(key);
-    if(saved!==null){const checked=validateSnapshot(saved);if(checked.mode!=='demo')throw new Error('本地演示数据模式无效');state=checked;return state;}
+    if(saved!==null){const checked=validateSnapshot(saved);if(checked.mode!=='demo')throw new Error('本地演示数据模式无效');state=checked;expectedRaw=saved;return state;}
     const legacy=await storage.getItem('paw-diary:v1');
     if(legacy!==null){
       const migrated=migrateV1(legacy,{now:clock()}),existing=await storage.getItem('paw-diary:v1:backup');
@@ -38,9 +43,10 @@ export function createDemoRepository({storage,key='paw-diary:v2:demo',clock=()=>
     mutate:mutator=>operation(async()=>{const next=clone(state);await mutator(next);await persist(next);return clone(state);}),
     replaceSnapshot:snapshot=>serial(async()=>{
       const checked=validateSnapshot(snapshot);if(checked.mode!=='demo')throw new Error('演示仓储只接受本地演示数据');
-      const original=await storage.getItem(key)??await storage.getItem('paw-diary:v1');
+      const currentRaw=await storage.getItem(key),original=currentRaw??await storage.getItem('paw-diary:v1');
       if(original!==null){const prefix=`paw-diary:recovery-backup:${isoTime(clock())}`;let backupKey=prefix,n=0;while(await storage.getItem(backupKey)!==null)backupKey=`${prefix}:${++n}`;await storage.setItem(backupKey,original);}
-      await persist(checked);return clone(state);
+      if(state&&currentRaw!==expectedRaw)throw new Error('资料已在另一窗口更新，请重新读取后再次预览备份。');
+      await persist(checked,currentRaw);return clone(state);
     }),
     getRawBackup:()=>serial(async()=>{const saved=await storage.getItem(key);if(saved!==null)return saved;const legacy=await storage.getItem('paw-diary:v1');return legacy??JSON.stringify(state);})
   };

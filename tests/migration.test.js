@@ -1,7 +1,19 @@
 import test from 'node:test';
+// Regression: unknown legacy creation time must not overtake a real same-day measurement.
 import assert from 'node:assert/strict';
 import {migrateV1,validateSnapshot} from '../src/domain/schema.js';
 import {v1,now} from './fixtures/local-state.js';
+test('unknown legacy timestamps never overtake known same-day measurements and are deterministic',()=>{
+  const raw=v1();raw.records=[
+    {id:'real',petId:'p1',type:'weight',date:'2026-10-05',value:24,createdAt:Date.parse('2026-10-05T08:00:00.000Z')},
+    {id:'old-seed',petId:'p1',type:'weight',date:'2026-10-05',value:22.5}
+  ];
+  const migrated=migrateV1(raw,{now});
+  const latest=migrated.records.toSorted((a,b)=>a.occurredDate.localeCompare(b.occurredDate)||a.createdAt.localeCompare(b.createdAt)).at(-1);
+  assert.equal(latest.id,'real');assert.equal(latest.value,24);
+  assert.deepEqual(migrateV1(raw,{now:'2026-11-01T00:00:00.000Z'}).records,migrated.records);
+  assert.equal(migrated.records.find(r=>r.id==='old-seed').legacyCreatedAtUnknown,true);
+});
 test('migrates multiple pets, records and original community content without invention',()=>{const raw=v1(),s=migrateV1(raw,{now});assert.equal(s.version,2);assert.equal(s.mode,'demo');assert.equal(s.activePetId,'p2');assert.equal(s.profile.city,'成都');assert.deepEqual(s.posts,raw.posts);assert.equal(s.records.length,4);assert.equal(s.pets[1].image,raw.pets[1].image);assert.equal(s.pets[0].arrivalDate,'2025-02-01');assert.ok(s.records[0].createdAt>s.records[1].createdAt);assert.equal(s.records[3].createdAt,'2025-06-15T15:06:40.000Z');assert.equal(s.reminders.length,2);assert.equal(s.reminders[0].status,'completed');assert.equal(s.reminders[0].completedAt,null);assert.equal(s.reminders[0].completionRecordId,null);assert.equal(s.reminders[0].legacyCompletionUnknown,true);assert.notEqual(s.reminders[0].id,'c');assert.ok(!('nextDate' in s.records[2]));assert.deepEqual(validateSnapshot(s),s);});
 test('rejects malformed snapshots, unknown record types and orphan ownership',()=>{assert.throws(()=>migrateV1('{bad',{now}));for(const change of [s=>s.records[0].type='medicine',s=>s.records[0].petId='absent',s=>s.pets[0].birthday='2026-02-30',s=>s.pets[0].image='javascript:alert(1)',s=>s.records[0].value=0]){const raw=v1();change(raw);assert.throws(()=>migrateV1(raw,{now}));}const s=migrateV1(v1(),{now});s.version=9;assert.throws(()=>validateSnapshot(s));});
 test('malformed posts and unsafe media are rejected instead of crashing community',()=>{const changes=[p=>delete p.id,p=>p.title=null,p=>p.text=42,p=>delete p.author,p=>p.date='2026-02-30',p=>p.likes='4',p=>p.likes=-1,p=>p.liked='true',p=>p.comments=null,p=>p.comments=[{author:'我',text:42}],p=>p.comments=[{text:'你好'}],p=>p.image='javascript:alert(1)',p=>p.avatar='http://bad.test/photo'];for(const change of changes){const raw=v1();change(raw.posts[0]);assert.throws(()=>migrateV1(raw,{now}));}});

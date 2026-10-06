@@ -186,3 +186,19 @@ Impeccable detector实际运行一次，但缺HTML/CSS解析模块，退化regex
 日历：Calendar版本16.0实际可读。AppleScript创建测试日历并尝试open文件后返回AppleEvent处理失败(-10000)，System Events初次窗口不可见；用户明确已授予终端日历权限，继续尝试仍有AppleEvent失败。通过Calendar菜单导入/系统文件打开得到界面，用户随后提供两张实际截图：四个“我的小猫·独立护理事项2–5”在2026-10-12全天显示，备注含宠物/事项/原定日期；主agent也以Calendar window id 37398做指定窗口screencapture，图像一致。这个结果确认实际应用导入，不能把失败的AppleScript说成自动导入成功。右侧默认提前一天09:00提醒由系统日历设置，导出ICS没有VALARM。care.ics包含4个VEVENT及DTSTART=20261012；保留同份care-calendar-accepted.ics，避免后续测试覆盖验收依据，不重复导入。
 
 临时空日历“爪爪日记阶段1验收-20261006”由本轮创建，读其events为0，清理尝试仍AppleEvent失败；未因此删除或改其他用户日程，实际四个导入事件由用户在界面确认。残留清理若仍受阻如实交接，不能虚标删除。截图/本地测试产物Git忽略，不写私密日历内容进日志。官方ICS依据由导出worker核对RFC5545 §§3.1/3.3.11/3.6.1：https://www.rfc-editor.org/rfc/rfc5545 。
+
+## 阶段1独立审查、单次修复与最终产物验证
+
+2026-10-06 22:45:12（Asia/Shanghai，本机date）：数据提交35182a9、UI提交02df575已完成。stage1_review独立只读审查2a5aae5..02df575，Node36/36及语法/diff检查通过，但实际复现三项Important：无nextDate控件的记录编辑传null取消关联待办；三处帖子data-id未转义可从备份注入onclick；缺创建时间的旧记录使用迁移now导致同日旧示例盖过真实称重。另有无效日期范围使界面仍有记录、CSV却空。审查使用Node最小复现及隔离Chrome4185的实际恢复/点击/导出，未改文件或读取真实用户数据，不把全套绿掩盖边缘缺陷。
+
+主agent将CSV不一致按导出正确性一并修复；tests/e2e/local-regressions.py先实际三项全FAIL/退出1，修改后care_edit/imported_id/invalid_range全PASS/退出0。无日期控件时nextDate保持undefined；明确改变类型才确认取消关联事项；post.id三处esc；日期先验证候选值再提交筛选。迁移混合已知/未知时间的Node回归先失败（最新old-seed而非real），改成稳定且早于已知时间的旧序占位，并标legacyCreatedAtUnknown后通过；CSV不把占位输出为真实创建时间的测试也实际RED→GREEN，实际发生日期不变。修复只一轮，不再派重复审查，由覆盖回归和绿色全套验证。
+
+主agent补发现已知生日晚于到家日期的退化（实际RED Missing expected rejection），在normalizePet比较后通过；第一次patch目标行写错，工具拒绝未改文件，重读实际limited函数后最小修改。首次RED用管道tail导致Shell码0，但输出确为失败；重新用test-name-pattern直接运行确认退出1，不用管道码冒充测试成功。随后补另一窗口旧缓存覆盖的真实RED，持久化前比对原始V2字符串、变化则拒绝覆盖；新增guard又暴露损坏v1恢复时错误比对legacy原文与空v2键，单独失败测试定位后使用currentRaw校验目标键，保留legacy原文后恢复成功。最新完整npm test为41/41、退出0。
+
+实际静态产物按Pages白名单复制到test-results/publish-artifact/paw-diary，仅HTML/CSS/JS/.nojekyll/assets/src，检查无docs/tests/backend/env。以4181服务产物，在真实/paw-diary/路径运行原test_app、local-foundation、local-boundaries、local-regressions四套脚本，全部退出0：九组原流程、七组闭环、边界近似和三项审查回归通过；后续输出在stage1-final，未覆盖已确认日历文件。命令为设置PAW_DIARY_TEST_URL与PAW_DIARY_TEST_OUTPUT_DIR后使用skill-runtime/with_server运行test-results/run_stage1_checks.py；完整输出browser-final.log。最后补明确的顶栏“本地体验”和帖子“我的本地发布”，不宣称社区共享；该文案及布局另做轻量DOM确认。
+
+原公开评审URL匿名curl HTTP200，本轮未推送、新工作流未远端执行，没有新版线上验收或tag/Release。VERSION仍为已发布0.1.0，CHANGELOG新增未发布说明。PENDING只勾本地已验证项，模式/账户分离、真实云端/AI/社区、使用指南及新版发布保持未完成；同步总/阶段计划、AGENTS、PRODUCT、ROADMAP、README及stage1-report。阶段0用户确认来源为随后明确开始阶段1，阶段1用户体验确认仍待执行，不自动启动阶段2。
+
+日历补查：用户给出实际Calendar截图并询问预期，主agent确认四项全天日期/标题/备注正确，默认提醒属于系统日历。尝试JXA取CG窗口列表时deepUnwrap非数组、filter TypeError失败；改为Calendar标准window id=37398并screencapture指定窗口成功，再次看到同四项。AppleScript自动open和空验收日历delete多次返回-10000，取消待处理导入后仍未成功；最后exists确认空验收日历仍存在，原因未确认，不归咎用户未授权（用户已明确给终端权限），不宣称清理成功。停止重复导入，仅此空日历清理留交接，其他用户日程未删除。
+
+未验证范围维持：真实手机软键盘、原生浏览器200%缩放、屏幕阅读器、后续云端/模型/跨账户；近似边界和regex退化扫描不是这些能力通过。规范网页当次核对Vercel规则，完整URL已在报告列出；医学事项日期完全由用户设置，不自动建议周期或剂量。下一步本地Git整合、保留证据、启动4178预览，交用户按三分钟路线验收后再决定原地址发布。

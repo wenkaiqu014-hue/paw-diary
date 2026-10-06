@@ -138,3 +138,13 @@ CloudBase部分SDK页面内置打开超时，随后curl读取官方身份文档�
 审查agent实际命令：完整git diff及stat、`python3 test-results/check_stage0_docs.py`、独立扫描18份跟踪Markdown的18个相对链接、`git diff --check 7c469c9..864d0ca`、`node --check app.js`、git status和HEAD，均退出0；确认五项阶段0Review Focus全部覆盖。Declined to judge为尚未实现的真实云端/模型/跨账户/ICS、AI与引导实现、手机键盘/原生200%缩放/屏幕阅读器；主agent同意保留未验证状态，未将现状布局或作者PASS冒充这些能力通过。没有Critical/Important修复循环或重复审查。
 
 新增指南补充按writing-plans规则核对具体Files、复用dialog接口、未保存输入、失败测试/运行/实现/复验/提交和实际功能说明，不重做总需求。收尾使用verification-before-completion检查文档/接口/产品范围；finishing-a-development-branch的本地整合沿项目用户已授权的Git常规操作执行，准备fast-forward回原main，不增加推送/发布审批或改变用户阶段门槛。证据复制保存在主工作区test-results/stage0，Git忽略且不进入网站白名单；实际整合结果随后追加。
+
+## 阶段0本地整合结果与下一步
+
+2026-10-06 22:02:11（Asia/Shanghai，本机date）：main从7c469c9 fast-forward至bb22a4e，包含Task1 cd26996、Task2 864d0ca及审查状态bb22a4e。主工作区重新运行`python3 test-results/stage0/check_stage0_docs.py`、`node --check app.js`、`git diff --check`均退出0，git status为空；产品HTML/CSS/JS、工作流、VERSION/CHANGELOG与基线逐字节一致，v0.1.0仍指17cba15。没有推送、部署、联网检查原评审网页或新tag/Release；不能据本轮本地检查宣称当前线上再验收通过。
+
+已保留浏览器截图/取证脚本/JSON与备份在test-results/stage0，均为隔离测试数据，未提交或发布。归档前后逐文件核对，随后清理本轮自建的隔离worktree和已整合文档分支，不操作其他工作区。最后补记与路径修正在main本地Git归档，提交哈希由Git历史查看，不循环把自身提交号写入自身日志。
+
+阶段0技术设计交付与独立审查已完成，用户验收仍待确认；下一步由用户核对两份说明中的首页顺序、完整待办/编辑、草稿确认与分享路径后再授权阶段1。本轮发现的读取/焦点/待办截断等产品问题没有修复，已进入阶段1具体验收。新增P3-03指南维持未完成，阶段5实施。Impeccable context提示PRODUCT为旧模板，当前未按init扩展文档schema，不影响本阶段沿用户确认事实设计，若后续需要再单独整理。
+
+外部依据仅当次读取的界面检查规则：https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md 。项目事实来自本地代码、规划与隔离浏览器证据；未使用其他网页判断已实现能力。

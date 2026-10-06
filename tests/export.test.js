@@ -134,7 +134,7 @@ test('帖子与记录的id相同也能独立确认冲突，帖子默认保留本
 test('v1备份迁移保留记录与提醒，缺失创建时间重复导入仍确定', () => {
   const legacy = { version: 1, city: '深圳', activePet: 'p1', pets: [{ id: 'p1', name: '糯米', type: 'dog', birthday: '2025-10-06', arrival: '2025-11-06', breed: '', sex: '', image: '' }], records: [{ id: 'old1', petId: 'p1', type: 'daily', date: '2026-10-06', title: '散步', note: '开心', nextDate: '2026-10-08' }], posts: [] };
   const migrated = validateBackup(JSON.stringify(legacy));
-  assert.equal(migrated.version, 2);
+  assert.equal(migrated.version, 3);
   assert.equal(migrated.records[0].occurredDate, '2026-10-06');
   assert.equal(migrated.reminders[0].dueDate, '2026-10-08');
   const merged = mergeBackup(migrated, legacy);

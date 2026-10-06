@@ -14,7 +14,7 @@
 
 - 个人健康记录始终私有，不因公开宠友资料而开放。
 - 真实图文与示例明显区分，点赞/活跃度不把示例当真实数据。
-- 手动城市/行政区/宠物类型/交流目的，不获取GPS，不虚构距离或在线状态。
+- 国内城市/行政区可搜索，用户主动触发定位仅辅助填地域，失败保留手动；不公开坐标或虚构距离/在线状态，具体API与费用执行时再核对。
 - 不做私信；作者权限在服务端检查。
 - 回顾分享只有用户确认后发布，默认不含健康数值。
 
@@ -78,11 +78,11 @@ assert.equal(postsAfterCancelledPreview.length, postsBeforePreview.length);
 
 ## Task 3 主动公开的同城资料与组合筛选
 
-新增候选N-07：扩大可搜索地域目录，并讨论用户主动触发浏览器定位。原仅六城/不获取GPS的约定暂不改变；地域覆盖、坐标转地域、手动回退与公开范围待确认后修订。详见[讨论登记](2026-10-06-followup-discussion.md)，未作定位或地图调用。
+新增N-07已确认：扩大国内可搜索地域目录，主动点击可选浏览器定位，只辅助填城市/行政区；拒绝/失败继续手动。不加入精确距离或地图，具体目录/API/费用正式执行时核对，本session不调用。详见[决策记录](2026-10-06-followup-discussion.md)。
 
 **Files:** `profiles.cjs`、`nearby.js`、`region-filter.js`、`regions.json`、`tests/profiles.test.js`、`tests/region-filter.test.js`、集成测试。
 
-**Interfaces:** `normalizeRegion({city,district},regionDirectory) → {city,district:null|string}`；`matchesProfile(profile,{city,district?,petType?,purpose?}) → boolean`；`profiles.saveOwn(input,principal)` 不接受他人userId。区域目录的来源/版本写在文档，只覆盖当前六城；不把过期区名当作用户所在区。
+**Interfaces:** `normalizeRegion({city,district},regionDirectory) → {city,district:null|string}`；`matchesProfile(profile,{city,district?,petType?,purpose?}) → boolean`；`profiles.saveOwn(input,principal)` 不接受他人userId。区域目录扩充国内城市/行政区，来源/版本/缺漏写文档；`suggestRegionFromLocation(): Promise<{city,district}|null>`仅在用户点击后请求权限，坐标转换API待正式实施核对，不持续追踪/保存精确坐标。
 
 - [ ] Step 1：写测试：深圳/南山切到上海时district清空；同城+猫+养猫交流组合正确；discoverable=false与隐藏资料立即排除；公开响应无邮箱、private record和地址；与当前用户自身区分。
 核心断言示例（变量由该步骤的真实输入/结果fixture定义，不是生产代码）：
@@ -94,8 +94,8 @@ assert.equal(publicProfile.email, undefined);
 ```
 
 - [ ] Step 2：运行 `node --test tests/profiles.test.js tests/region-filter.test.js`，确认缺失过滤/公开字段规则失败。
-- [ ] Step 3：核对所用地域目录来源；实现主动加入/退出、目的与宠物筛选、资料编辑、无结果放宽条件和找搭子帖子预填。真实匹配资料由用户自己公开，示例宠友单独标识。
-- [ ] Step 4：运行测试和两个真实账号地域/退出发现集成验证，浏览器检查城市联动与找搭子路径；不输出不存在的距离。
+- [ ] Step 3：核对更广国内地域目录来源，实现可搜索城市/行政区、主动加入/退出、目的与宠物筛选、无结果放宽条件；正式核对定位与坐标转地域API/费用后实现可选辅助填写，不在打开页面时自动申请权限。真实匹配资料自己公开，示例独立标识。
+- [ ] Step 4：运行测试和两个真实账号地域/退出发现集成验证，检查六城之外搜索/行政区联动、定位授权/拒绝/超时/不支持及手动回退、无坐标泄露；核对实际转换结果，不用mock算真实定位通过。
 - [ ] Step 5：提交 `feat: discover opted-in pet friends by district and purpose`。
 
 ## 阶段退出标准

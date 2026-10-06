@@ -120,7 +120,19 @@ assert.equal(recapAfterSourceChange.stale, true);
 
 ## 阶段退出标准
 
-新增候选N-04：浮动入口、侧栏/对话框、欢迎语与快捷问题，回答网站用法及当前宠物信息，并评估检索/RAG。尚未确定只读/写入及咨询范围；详见[讨论登记](2026-10-06-followup-discussion.md)。本计划原4个任务不自动包含该助手，用户确认后另细化接口、依据与验收，不能用原AI录入/回顾计划声称已覆盖。
+新增N-04已确认：浮动入口、侧栏/对话框、欢迎语与快捷问题，首版回答网站使用帮助与当前宠物真实记录，只读并可追溯；不加入一般健康咨询，写入沿已有草稿确认。由新增Task5实施，不把原4任务当作已覆盖。自定义类型`typeLabel`与`uiLocale`沿阶段2传入草稿/回顾，隐藏实体排除于AI查询。
+
+## Task 5 使用帮助与当前宠物记录助手
+
+**Files:** 新增`backend/ai/assistant.cjs`、`src/features/assistant-panel.js`、`src/data/help-topics.js`、`tests/assistant.test.js`、`tests/e2e/assistant.py`；扩展`api.cjs`、TextModel、语言词典与`app.js`。
+
+**Interfaces:** `ai.assistant.ask({petId,question,from?,to?,uiLocale},principal)`返回`{answer,sources:[{kind:'help'|'record'|'reminder',id,label}]}`，question1–1000字；默认记录范围最近30天，用户给范围时仅查所选范围；`retrieveAssistantContext(...)`先授权当前宠物再查询，排除回收站内容。帮助索引只列实际已发布能力，答案中的引用须属于检索集合；首次采用结构化资料/关键词检索，是否需要向量库在资料规模与效果核对后再定。
+
+- [ ] Step1：写跨账号/宠物越权拒绝、隐藏记录排除、无记录不虚构、虚假引用拒绝、问法不触发写库/发布、英文回复请求、超时回退测试；浏览器快捷问题/来源跳转/切宠物清上下文/焦点关闭与手机遮挡检查。
+- [ ] Step2：运行`node --test tests/assistant.test.js`与助手e2e，确认未实现能力真实失败。
+- [ ] Step3：实现浮动入口、侧栏/手机对话框、“你好，昵称，试着问我”与快捷问题，显示当前宠物/范围；会话首版只保存在当前页面内存，切宠物/账号清空，不持久化私有聊天。模型适配/超时/调用限额复用Task1，没有写库工具。
+- [ ] Step4：运行单测/e2e及已确认预算内真实模型案例，核对回答来源、无记录/服务失败行为，不能把mock问答算实际AI已通。
+- [ ] Step5：提交`feat: answer usage and pet record questions with verifiable context`。
 
 “新手建档→第一笔记录→提醒→回顾”实际可走通，AI失败不阻断，数字与引用正确。日历由第一阶段交付，在本阶段个人空间验证。建议候选 `v0.4.0`，未验收前不创建。
 

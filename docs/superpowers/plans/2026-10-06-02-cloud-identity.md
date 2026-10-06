@@ -28,6 +28,10 @@
 
 ## 文件与接口
 
+最新确认：阶段1新增生命周期协议按[补充计划](2026-10-07-01-health-management.md)审阅并实现后，CloudRepository必须镜像V3软删除/恢复/排序与全量备份语义，增加`pets.reorder|trash.move|trash.restore`，按Principal验证整个批次归属并事务保存；真实环境验收包含另一账号不能恢复或排序他人实体。不能用仍仅六个旧action的实现宣称覆盖管理能力。
+
+P1-09/P1-10在本阶段实现：`type:'other'`与`typeLabel`（去首尾空白、1–20字）支持自定义记录/宠物类型；已有枚举和旧备份向后兼容，非other不附带自定义标签。自定义记录不当作体重，不参与体重趋势；筛选/时间线/备份/草稿显示标签，其他宠物使用中性默认图，不自动推定护理周期。Task3增加字段校验/旧数据测试，Task4补表单和备份往返浏览器验收。
+
 新增 `src/auth/cloudbase-auth.js`、`src/data/cloud-repository.js`、`src/config/public-config.js`、`src/ui/account.js`、`backend/{api,identity,health,storage,cloudbase-store}.cjs`、`cloudfunctions/paw-api/{index.js,package.json}`、`scripts/{build,build-functions}.mjs`、`docs/operations/cloud-setup.md`、`.env.example`、`tests/cloud-*.test.js`、`tests/integration/cloud-private.test.js`；修改 `package.json`、`.gitignore`、发布工作流、`app.js`、`index.html`。
 
 客户端 `AuthAdapter`：`getSession(): Promise<{userId:string}|null>`、`startRegistration({email,password}): Promise<{registrationId:string}>`、`verifyRegistration({registrationId,code}): Promise<{userId:string}>`、`signIn({email,password})`、`signOut()`、`subscribe(listener): unsubscribe`。registrationId 仅映射本次平台注册流程，不自己创造登录身份。
@@ -117,7 +121,33 @@ assert.equal(importRetry.data.counts.records, importResult.data.counts.records);
 - [ ] Step 4：运行 `npm test`、实际上传与跨账号确认验证，浏览器重载头像和数据；确认没有将预置日常上传公开社区。
 - [ ] Step 5：提交 `feat: upload pet avatars and confirm selected local data import`。
 
-## 阶段退出标准
+## Task 5 中英文界面能力
+
+**Files:** 新增`src/ui/i18n.js`、`src/ui/locales/{zh-CN,en}.js`、`tests/i18n.test.js`；修改`app.js`、`style.css`；新增`tests/e2e/language.py`。
+
+**Interfaces:** `t(key,params,locale)`；`setLocale(locale:'zh-CN'|'en')`；语言偏好独立存储，不改变健康snapshot；用浏览器偏好仅作初始候选，显式选择优先。AI请求后续携带uiLocale，用户名字/记录/帖子/typeLabel不翻译。
+
+- [ ] Step1：写两份词典键集合一致、插值文本转义、偏好刷新保存、切换不改业务原文/未保存输入/当前宠物的测试。
+- [ ] Step2：运行`node --test tests/i18n.test.js`与language e2e，确认未有能力真实失败。
+- [ ] Step3：实现语言入口与原四页/表单/错误/状态文字，保留日期数值的统一存储，仅按语言格式展示；后续功能同样用词典。
+- [ ] Step4：运行`npm test`、语言e2e与四宽度布局，验证英文长文和所有已实现页面；未实现指南/AI部分留阶段3/5收口。
+- [ ] Step5：提交`feat: switch interface languages while preserving original records`。
+
+## Task 6 当前宠物私有照片墙与幻灯片
+
+**Files:** 新增`backend/photos.cjs`、`src/features/photo-wall.js`、`tests/photos.test.js`、`tests/integration/photos-private.test.js`、`tests/e2e/photo-wall.py`；扩展`storage.cjs`、`api.cjs`、`app.js`、`style.css`与语言词典。
+
+**Interfaces:** `Photo={id,ownerId,petId,fileId,caption,createdAt}`，caption0–200字，图片限制沿Task4上传规则；actions`photos.list|photos.save`均验证宠物/fileId归属；`list({petId,cursor,limit:20})`只返回本人当前宠物照片。私有存储访问沿已验证Task4机制，不把私有URL写进公开社区；没有显式分享动作不公开。
+
+- [ ] Step1：写A/B隔离、跨宠物错绑拒绝、伪造fileId拒绝、图片上传失败保留输入与重复保存幂等；浏览器切宠物切照片、无照片空态、全屏/暂停/退出/键盘Esc/减少动画测试。
+- [ ] Step2：运行`node --test tests/photos.test.js`及e2e，确认能力缺失真实失败。
+- [ ] Step3：实现私有图集/多图上传/归属校验、当前宠物墙与用户主动全屏幻灯片；自动播放默认停止，主动播放可暂停/退出，减少动画使用静态切换。删除宠物后照片不公开或失去归属，恢复时重现。
+- [ ] Step4：运行单测/e2e与真实两账号图片权限验证、手机/键盘操作；不能用默认公共素材冒充私有照片存储通过。
+- [ ] Step5：提交`feat: display private pet photos with controllable slideshows`。
+
+## 扩展后的阶段退出标准
+
+原身份/私有档案门槛保留，新增自定义类型、阶段1管理镜像、双语界面与私有照片墙逐项验证。所有后续方案按新增文件/接口进入执行前细化与审阅；不在当前阶段1提前接入平台。
 
 两个真实账号隔离与跨设备同步、匿名演示、实际注册验证和上传全部通过。账号能力受阻时保留上一稳定版本，不发布半通的个人入口。建议候选版本 `v0.3.0`，验收后才创建。
 

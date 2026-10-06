@@ -22,9 +22,9 @@
 
 1. AI/云端不可用时：演示和手动录入仍可体验，输入不丢失。Task 1 验证。
 2. 手机键盘与长中文：对话框保存按钮可达，导航不遮住末尾操作。Task 1 验证。
-3. 静态站子路径/缓存：旧浏览器不加载不兼容模块或错误schema。Task 3 验证。
-4. 宣传文案/指南与实际能力：未接通功能不能说已完成。Task 2、3 验证。
-5. 操作失败后回退：恢复已验证版本并维持原URL，不删除健康云端数据。Task 3 验证。
+3. 静态站子路径/缓存：旧浏览器不加载不兼容模块或错误schema。Task 3、4 验证。
+4. 宣传文案/指南与实际能力：未接通功能不能说已完成。Task 2、4 验证。
+5. 操作失败后回退：恢复已验证版本并维持原URL，不删除健康云端数据。Task 4 验证。
 
 ## Task 1 完整浏览器和跨用户验收
 
@@ -40,25 +40,37 @@
 - [ ] Step 4：运行 `npm test`、`npm run build`、demo浏览器测试和云端集成测试；记录真实模型案例、账号隔离、日历导入的实际结果，任何未验证项标明未验证。
 - [ ] Step 5：提交 `test: verify complete pet care and community journeys`，记录具体测试证据。
 
-## Task 2 可再次打开的新手使用指南
+## Task 2 版本新内容、遮罩高亮指南与双语收口
 
-新增候选N-03：用户提出指南前显示全站遮罩及版本“新内容”弹窗，点击确定；展示频率/再次查看待讨论。本任务原“指南不强制弹出”不等于否定独立版本说明，两者分别处理，未确认前不实现。N-06双语同样尚未纳入本任务；详见[讨论登记](2026-10-06-followup-discussion.md)。
+用户已确认每个已发布版本首次访问显示“新内容”，确定后不再自动弹出，帮助可重看；随后首次访客可进入遮罩高亮指引，逐条“下一步/跳过指引”，老用户回原任务。界面/指南双语，用户原文保持。用户明确本session只记录，留本阶段正式实施，技术方案执行前审阅；详见[决策记录](2026-10-06-followup-discussion.md)。
 
-**Files:** 新增 `docs/user-guide.md`（编写依据，不进入Pages白名单）；修改 `app.js` 的帮助入口与既有dialog；必要时将内容组件放入 `src/features/help.js`；扩展 `test_app.py`。
+**Files:** 新增`docs/user-guide.md`、`src/features/{help,guided-tour,whats-new}.js`、`src/data/release-notes.js`、`tests/tour.test.js`、`tests/e2e/help-tour.py`；修改`app.js`、`style.css`、中英文词典、`test_app.py`。docs不进Pages白名单。
 
-**Interfaces:** 复用当前四个hash和原生dialog，帮助打开不切换宠物/账户、不触发保存；关闭恢复原页/触发控件。存在未保存表单时先明确继续编辑或放弃，不用另一个dialog静默覆盖原输入。文本按实际可用能力生成，不要求先配API Key。
+**Interfaces:** `TourStep={id,targetSelector,route,titleKey,bodyKey}`，步骤只指向实际可用入口；`advanceTour(state,'NEXT'|'SKIP'|'CLOSE')`，跳过/关闭恢复触发焦点，页面变化目标缺失时返回可读帮助，不能挂着遮罩。`shouldShowWhatsNew({releasedVersion,acknowledgedVersion})`，确认记忆按已发布版本及本地用户区分；非已发布开发版本不强制公告。帮助不写库/不切宠物；未保存表单不被覆盖；所有界面和说明两语言词典齐全。
 
 - [ ] Step 1：核心功能范围验收后编写简短指南：示例与个人档案、第一次记录、护理提醒与日历、回顾及确认分享、AI不可用时的手动分支；删去未接通能力的操作承诺。
 
 日历指南纳入P3-04：说明下载ICS后各客户端如何导入、文件导入与同步的区别，默认提醒由客户端配置；未验证客户端明确标注，现阶段不提供订阅URL。
-- [ ] Step 2：先写浏览器用例并确认缺失入口失败：匿名首次访客打开/关闭、老用户重新打开、手机与键盘阅读、健康页帮助返回原路由、已有未保存输入不被丢弃。
-- [ ] Step 3：实现常驻“使用指南”入口与轻量内容，首次三步建档引导保持独立；指南不阻断主线、不强制弹出、不重做页面视觉。
-- [ ] Step 4：运行新增用例、`npm test`及demo浏览器测试；由用户或首次体验者按指南完成一条真实操作，并检查说明与最终交付范围一致。
+- [ ] Step 2：写版本只弹一次/更新再弹/帮助重看、新内容先于首次指南、遮罩高亮随滚动与resize、下一步/跳过/目标缺失、手机/键盘/焦点恢复和未保存输入保护用例；中英文说明/界面键集合与真实页面覆盖检查；运行`node --test tests/tour.test.js`及help-tour e2e确认缺失真实失败。
+- [ ] Step 3：实现常驻帮助、新内容确认、遮罩高亮指引和说明；首次三步建档独立，指引可跳过，不把强制建档作为“下一步”。复用阶段2语言能力，完善后来增加的助手/照片/定位/桌面说明，不翻译用户原文。
+- [ ] Step 4：运行新增用例、`npm test`、双语/四宽度浏览器检查；首次体验者按指南完成真实操作，确认公告/指南与实际版本一致。
 - [ ] Step 5：提交 `feat: add a reusable beginner guide`，勾选P3-03实际验收项，记录未执行检查。
 
 用户原文：“补一个pending吧，就是加一个新手指引；放在plan后面的某个地方就行，不用着急，可以按照你的想法进行排序”。安排本阶段核心验证后、发版前，不占阶段0实施范围。时间不足时压缩为短步骤说明，不为指南增加新功能。
 
-## Task 3 文档与稳定版本交付
+## Task 3 可安装网页与桌面启动
+
+**Files:** 新增`manifest.webmanifest`、`src/features/install.js`、`tests/install.test.js`、`tests/e2e/install.py`、`docs/operations/desktop-install.md`；按实际平台要求提供图标，必要时增加`service-worker.js`；修改`index.html`、构建白名单与`app.js`。
+
+**Interfaces:** manifest的start_url为`./#home`、scope为`./`，不改变固定/paw-diary/路径；安装入口以实际浏览器能力显示，并提供不支持时的客户端说明。若引入worker，仅缓存公开静态壳，禁止缓存认证/API/AI/健康响应；静态更新需与数据协议兼容，失败保留可回退版本。
+
+- [ ] Step1：正式核对当前浏览器官方安装要求后写manifest子路径/白名单/私有响应不缓存/安装可用与不支持分支/更新兼容测试。
+- [ ] Step2：运行`node --test tests/install.test.js`及install e2e，确认能力缺失真实失败。
+- [ ] Step3：实现安装入口与实际可安装网页、独立窗口便捷启动，说明其非原生pkg/exe/dmg；未验证离线写入、系统通知不宣称支持。
+- [ ] Step4：运行测试与/paw-diary/静态产物检查，在实际桌面浏览器验证安装/启动/更新/卸载；Mac/Windows客户端分别留证，无法实测的环境明确未验证，截图不代替实际安装。
+- [ ] Step5：提交`feat: install paw diary for convenient desktop access`。
+
+## Task 4 文档与稳定版本交付
 
 **Files:** `README.md`、`VERSION`、`CHANGELOG.md`、`ROADMAP.md`、`PENDING.md`、`SESSION_LOG.md`、部署运维文档；新增 `docs/demo-guide.md`。
 

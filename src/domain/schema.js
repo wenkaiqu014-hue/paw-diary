@@ -1,4 +1,4 @@
-export const RECORD_TYPES = ['weight','vaccine','deworm','daily'];
+export const RECORD_TYPES = ['weight','vaccine','deworm','daily','other'];
 export const clone = value => structuredClone(value);
 function fail(message) { throw new Error(message); }
 function object(value, label) { if (!value || typeof value !== 'object' || Array.isArray(value)) fail(`${label}格式无效`); return value; }
@@ -26,21 +26,24 @@ export function validImage(value) {
 }
 export function normalizePet(raw) {
   object(raw,'宠物'); const id=requiredText(raw.id,'宠物ID'), name=limited(requiredText(raw.name,'宠物名'),'宠物名',20);
-  if(!['cat','dog'].includes(raw.type)) fail('宠物类型无效');
+  if(!['cat','dog','other'].includes(raw.type)) fail('宠物类型无效');
+  const typeLabel=raw.type==='other'?limited(requiredText(raw.typeLabel,'自定义宠物类型'),'自定义宠物类型',20):undefined;
+  const avatarAssetId=raw.avatarAssetId==null?null:requiredText(raw.avatarAssetId,'头像资产ID');
   const birthday=nullableDate(raw.birthday,'生日'), estimatedAgeMonths=raw.estimatedAgeMonths??null;
   const arrivalDate=nullableDate(raw.arrivalDate,'到家日期');
   if(birthday && arrivalDate && birthday>arrivalDate)fail('生日不能晚于来到家的日期');
   if(estimatedAgeMonths!==null && (!Number.isInteger(estimatedAgeMonths)||estimatedAgeMonths<0||estimatedAgeMonths>1200)) fail('估计月龄需为0到1200的整数');
   if(birthday && estimatedAgeMonths!==null) fail('生日和估计月龄只能填写一个');
-  return {id,name,deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),type:raw.type,birthday,estimatedAgeMonths,arrivalDate,breed:limited(text(raw.breed,'品种'),'品种',30),sex:text(raw.sex,'性别'),image:validImage(raw.image??'')};
+  return {id,name,deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),type:raw.type,...(typeLabel!==undefined?{typeLabel}:{}),avatarAssetId,birthday,estimatedAgeMonths,arrivalDate,breed:limited(text(raw.breed,'品种'),'品种',30),sex:text(raw.sex,'性别'),image:validImage(raw.type==='other'&&!avatarAssetId&&/^(?:\.\/)?assets\/(?:cat|dog)\.jpg$/.test(raw.image??'')?'':raw.image??'')};
 }
 export function normalizeRecord(raw) {
   object(raw,'记录'); if(!RECORD_TYPES.includes(raw.type)) fail('未知记录类型');
+  const typeLabel=raw.type==='other'?limited(requiredText(raw.typeLabel,'自定义记录类型'),'自定义记录类型',20):undefined;
   const weight=raw.type==='weight'; let value=null;
   if(raw.unit!=null && (weight?raw.unit!=='kg':true))fail('记录单位不受支持，请核对后再导入');
   if(!weight && raw.value!=null)fail('本类型不支持数值字段，请将说明填写在备注中');
   if(weight){if((typeof raw.value!=='number'&&typeof raw.value!=='string')||String(raw.value).trim()==='')fail('体重需为数字');value=Number(raw.value);if(!Number.isFinite(value)||value<0.01||value>200)fail('体重需在0.01至200 kg之间');}
-  return {id:requiredText(raw.id,'记录ID'),deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),petId:requiredText(raw.petId,'宠物ID'),type:raw.type,occurredDate:validDate(raw.occurredDate,'记录日期'),value,unit:weight?'kg':null,title:limited(weight?text(raw.title??'体重记录','记录名称'):requiredText(raw.title,'记录名称'),'记录名称',60),note:limited(text(raw.note,'备注'),'备注',500),createdAt:isoTime(raw.createdAt,'创建时间'),updatedAt:isoTime(raw.updatedAt,'更新时间'),...(raw.legacyCreatedAtUnknown===true?{legacyCreatedAtUnknown:true}:{})};
+  return {id:requiredText(raw.id,'记录ID'),deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),petId:requiredText(raw.petId,'宠物ID'),type:raw.type,...(typeLabel!==undefined?{typeLabel}:{}),occurredDate:validDate(raw.occurredDate,'记录日期'),value,unit:weight?'kg':null,title:limited(weight?text(raw.title??'体重记录','记录名称'):requiredText(raw.title,'记录名称'),'记录名称',60),note:limited(text(raw.note,'备注'),'备注',500),createdAt:isoTime(raw.createdAt,'创建时间'),updatedAt:isoTime(raw.updatedAt,'更新时间'),...(raw.legacyCreatedAtUnknown===true?{legacyCreatedAtUnknown:true}:{})};
 }
 function normalizeReminder(raw) {
   object(raw,'事项'); if(!['pending','completed','cancelled'].includes(raw.status))fail('事项状态无效');
@@ -54,7 +57,7 @@ function normalizeReminder(raw) {
 function unique(items,label){const ids=new Set();for(const item of items){if(ids.has(item.id))fail(`${label}ID重复`);ids.add(item.id);}return ids;}
 export function validateSnapshot(raw) {
   if(typeof raw==='string')raw=JSON.parse(raw);object(raw,'备份');
-  if(raw.version!==3)fail('不支持此数据版本');if(!['demo','account'].includes(raw.mode))fail('数据模式无效');
+  if(raw.version!==3)fail('不支持此数据版本');if(!['demo','local','account'].includes(raw.mode))fail('数据模式无效');
   for(const key of ['pets','records','reminders','posts'])if(!Array.isArray(raw[key]))fail(`${key}必须为数组`);
   for(const key of ['pets','records','reminders'])for(const item of raw[key]){object(item,key);if(!Object.hasOwn(item,'deletedAt'))fail('V3资料缺少回收站标记');deletedAt(item.deletedAt);}
   const pets=raw.pets.map(normalizePet),records=raw.records.map(normalizeRecord),reminders=raw.reminders.map(normalizeReminder),petIds=unique(pets,'宠物');unique(records,'记录');unique(reminders,'事项');

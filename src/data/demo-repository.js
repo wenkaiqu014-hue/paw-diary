@@ -44,7 +44,7 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
       const next=clone(state),old=input.id?next.pets.find(p=>p.id===input.id):null;if(input.id&&!old)throw new Error('宠物不存在');
       if(old&&old.deletedAt!==null)throw new Error('宠物已在回收站，请先恢复');
       if(input.deletedAt!==undefined&&input.deletedAt!==null)throw new Error('请通过回收站操作移入资料');
-      const pet=normalizePet({birthday:null,estimatedAgeMonths:null,arrivalDate:null,breed:'',sex:'',image:input.type==='cat'?'assets/cat.jpg':'assets/dog.jpg',...old,...input,id:old?.id??idFactory()});
+      const pet=normalizePet({birthday:null,estimatedAgeMonths:null,arrivalDate:null,breed:'',sex:'',image:input.type==='cat'?'assets/cat.jpg':input.type==='dog'?'assets/dog.jpg':'',...old,...input,id:old?.id??idFactory()});
       const today=todayAt(isoTime(clock()));if(pet.birthday>today||pet.arrivalDate>today)throw new Error('生日或到家日期不能晚于今天');
       if(old)next.pets[next.pets.findIndex(p=>p.id===pet.id)]=pet;else next.pets.push(pet);
       if(input.makeActive===true||!next.activePetId)next.activePetId=pet.id;await persist(next);return clone(pet);

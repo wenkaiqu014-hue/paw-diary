@@ -1,0 +1,7 @@
+import {build} from 'esbuild';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+const sdkVersion=JSON.parse(await readFile('node_modules/@cloudbase/node-sdk/package.json','utf8')).version;
+const target='test-results/stage2/functions/paw-api';await mkdir(target,{recursive:true});
+await build({entryPoints:['cloudfunctions/paw-api/index.js'],bundle:true,platform:'node',format:'cjs',target:['node18'],outfile:target+'/index.js',alias:{'lodash.set':'lodash/set.js','lodash.unset':'lodash/unset.js'},plugins:[{name:'sdk-version',setup(b){b.onLoad({filter:/@cloudbase\/node-sdk\/dist\/utils\/version\.js$/},()=>({contents:'exports.version='+JSON.stringify(sdkVersion)+';',loader:'js'}));}}],logLevel:'warning'});
+await writeFile(target+'/package.json',JSON.stringify({name:'paw-api',version:'1.0.0',main:'index.js',type:'commonjs'},null,2));
+console.log('Function bundle ready in ignored test-results directory.');

@@ -18,6 +18,36 @@
 
 阶段1技术方案与补充任务见[设计](../specs/2026-10-07-health-management-design.md)、[实施计划](2026-10-07-01-health-management.md)。后续N-03–N-08进入阶段2–5对应任务，技术选型不在本轮展开。
 
+## 阶段2预期对齐（2026-10-07，仍在讨论）
+
+用户首轮回答：免费优先、先查计费；微信/邮箱/手机号都要；Q3–Q6按建议。确认云端保存成功即写入，刷新/返回前台时拉取；拒绝并发静默覆盖并保留输入；云端断网不声称保存，保留输入重试；单张照片确认后永久删除，不加入照片回收站，宠物整体回收站仍保留照片。这些是产品要求，尚未授权本轮代码实施或收费开通，也没有确定人民币预算上限。
+
+用户随后追加免登录本地个人记录、选择交互服务（例如社区）时再登录。方向改为可先建自己的本地档案，云同步/社区互动时可选登录；示例与个人资料分开，登录后的迁移预览确认继续保留。本地保存不混用“云端断网未保存”提示。未登录照片/AI范围、微信覆盖、三种身份绑定、照片质量/备份仍待下一轮对齐。阶段2实施计划待讨论收口后修订；旧邮箱AuthAdapter草案不能视为已覆盖三种登录和本地个人模式。
+
+只读研究截至2026-10-07 01:09:27（Asia/Shanghai）：CloudBase腾讯目录完整盘点240节点/209页面，定向核对费用/认证，未通读全部；独立认证目录25页已读9页，未读16页，未盘点独立站所有分支；短信目录177节点/140页，已读10页，其余130页未读。Web对独立站和微信部分页超时/拒绝，相关官方原页以只读HTTP补读。
+
+CloudBase上海资源点模式免费版0元/3000点/月，个人版19.9元/月（限时优惠）/40000点/月，套餐内点数抵扣不重复按量相加；免费云函数固定3秒/256MB，后续AI需评估。价格页列短信50点/条，但当前短信指南要求自有服务商，两路扣费关系未查明，不认定同路或双重收费。独立腾讯短信最小自定义包1000条×0.05元=50元，不能把100条单价乘积当作最低购买额。邮箱代发配额/单价与微信认证金额未核实，不报0元或全包价。
+
+微信网站应用及微信登录权限须审核，微信内H5授权有已认证服务号等要求；固定GitHub URL是否满足主体/域名审批条件尚未验证。当前腾讯短信不再创建个人自用签名，个人申请他用须企事业授权；新增签名运营商报备平均7–10工作日且无时效承诺。若无现成合法可用通道，不能保证三种登录10月8日前全部接通；是否调整验收范围仍由用户决定，未自动调整。
+
+个人账号只读查询有旧环境cloud1，计费接口2025-11-29到期、EnvActivated=no、EnvCharged=no与NORMAL同时返回；不能认定现在免费/可用，未查业务数据或用途，未修改/开通/续费资源、发送短信或调用模型。
+
+官方证据完整URL：
+
+- CloudBase资源点价格：https://cloud.tencent.com/document/product/876/127357
+- 套餐操作：https://cloud.tencent.com/document/product/876/136006
+- 身份与绑定：https://cloud.tencent.com/document/product/876/121347
+- 短信接入：https://docs.cloudbase.net/authentication-v2/method/sms-login
+- 邮箱代发：https://docs.cloudbase.net/authentication-v2/method/email-login
+- V3认证：https://docs.cloudbase.net/api-reference/webv3/authentication
+- 当前微信身份源API：https://cloud.tencent.com/document/product/876/129357
+- 微信网站登录：https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
+- 微信内网页授权：https://developers.weixin.qq.com/doc/service/guide/h5/auth.html
+- 独立短信价格：https://cloud.tencent.com/document/product/382/36132
+- 签名资格：https://cloud.tencent.com/document/product/382/39022
+- 短信报备：https://cloud.tencent.com/document/product/382/117410
+- 环境/计费查询：https://cloud.tencent.com/document/product/876/34820 、https://cloud.tencent.com/document/product/876/94390
+
 ## 上轮候选登记（历史，已被上述确认结果更新）
 
 ## 已有安排与新增部分

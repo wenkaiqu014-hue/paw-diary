@@ -162,3 +162,27 @@ Task1新增package.json（type:module、node --test tests/*.test.js，无依赖�
 实际检查：Node语法和git diff --check退出0。现有test_app.py在变更前、ESM入口变更后各跑一次均九组PASS/退出0，端口4180。命令为`PAW_DIARY_TEST_URL=http://127.0.0.1:4180/ /Users/wenkaiqu/.codex/skill-runtime/run python /Users/wenkaiqu/.codex/skills/webapp-testing/scripts/with_server.py --server "python3 -m http.server 4180 --bind 127.0.0.1" --port 4180 -- /Users/wenkaiqu/.codex/skill-runtime/run python -u test_app.py`。本地test-results/subpath/paw-diary链接到工作区，用4181服务该目录，同一测试URL改为http://127.0.0.1:4181/paw-diary/，九组PASS/退出0，确认子路径原页面/素材/ESM入口可读。后续真实模块整合后仍需再测该子路径。
 
 新浏览器回归tests/e2e/local-foundation.py先运行真实RED，退出1于“v1记录尚未非破坏迁移到v2”，旧页面正常加载后缺失新行为，不是选择器错误。单测worker分别记录接口缺失RED及新增边界失败，报告GREEN后主agent仍统一复验。Task1只完成配置基线和回退文档，不把后续domain/UI未整合写成已完成。当前不推送、不部署、不改版本tag。
+
+## 阶段1 Task2/3/4整合与真实验证
+
+2026-10-06 22:24:31（Asia/Shanghai，来自本机date）：Task1本地提交308ee9f。数据与导出worker并行产物已整合；共享app.js由主agent改为Repository/AppSession异步操作，派生视图为旧渲染提供date/arrival别名，导出和持久化均使用V2，避免混写。Task2/3共享接口紧密，代码先整体接好并验证，提交按数据基础、UI操作、导出验收责任拆分，不将中间提交当用户阶段验收。
+
+stage1_data先14个行为测试全部RED（早期一处测试语法错误修正后才计RED），后实现GREEN；恢复原文备份、旧backup防覆盖/畸形帖子/字段长度三项、删除完成记录保留已知日期、宠物保存与选中同次持久化，各新增测试也实际RED→GREEN。产物schema/records/reminders/seed/repository/session、migration/demo-repository/health测试与fixture；主agent复验完整npm test最新36/36退出0，不用中途另一workerRED期的35/36或30/33冒充最终结果。
+
+stage1_exports先缺失backup接口RED退出1，再GREEN；帖子唯一id、空档案导入后选择宠物各新增真实失败再修复，export最终13/13，合并完整套件36/36。backup恢复pets/records/reminders/posts，冲突键kind:id逐项确认，同id跨宠物归属拒绝；旧备份缺时间使用固定epoch保证重复导入稳定，与已有迁移时间不同会提示冲突，不静默覆盖。CSV带BOM/正确引号/公式文本保护，不改源记录；ICS全天事件、稳定UID、CRLF/UTF8 75字节折行、TEXT转义、排他DTEND，只导出pending，不自行设VALARM。
+
+补充裁决：旧completed缺依据用legacyCompletionUnknown，重复返回record:null，不编记录；删除后来真实完成记录保留completedAt并标completionRecordDeleted。导入坏存储先保留原字符串到独立recovery-backup时间戳键；已有v1:backup不覆盖。新宠savePet(makeActive:true)一写完成，避免创建成功、第二次选中失败而误导重试。空档案恢复选中备份有效宠物，已有档案不切换当前宠物/城市。安排下一次关联本次完成记录，不猜下一周期；体重来源提醒要求输入本次实际体重，不能复制旧测量。
+
+UI新增编辑、完整待办与pending/completed/cancelled筛选、改期/取消、独立事项、护理完成回执/可选下一次、日期筛选、移动记录卡、JSON恢复预览及冲突、CSV/所选ICS导出。手机待办先于趋势和短时间线；跳转内容不换路由，筛选/弹窗返回保留焦点，保存中防重复、失败保留输入、读取故障可原文导出/备份恢复。图片错误占位、长内容、触控区、输入字号和dialog可视区按阶段0实施。当前仍本地示例，未加登录/云端/AI/真实社区。
+
+浏览器`tests/e2e/local-foundation.py`从v1迁移、编辑id/刷新、skip/筛选焦点、6项完整待办/改期/完成/取消、恢复预览不写/重复不复制、CSV/ICS实际下载、存储写失败保留输入/重试、16宽度页面布局、坏JSON不重置/原文下载/有效备份恢复，最后一次退出0、七组PASS、无JS运行异常。脚本默认4180，用本项目skill-runtime run与with_server启动/停止本地服务器；测试只改隔离浏览器存储。
+
+原test_app.py因三步后的提示变化，完成护理后新增“暂不安排”，新宠填写估计12个月而非伪造生日；其余原九组保留。整合发现两项真实错误：发帖和评论textarea缺闭合，浏览器分别photo字段缺失与发送评论按钮缺失（实际失败）；按DOM证据补闭合后九组全部通过。示例宠友事实说明恢复原文；第一次因不必要文案变动使原断言失败，未用删除断言掩盖。4181/paw-diary下同一九组也通过，资源/真实ESM导入无404。
+
+`tests/e2e/local-boundaries.py`退出0：编辑取消保留输入/明确放弃，关闭焦点回记一笔；20字长名/500字内长备注和失效图占位；四页长内容无整页横溢；390×430短viewport保存可达；手机待办先于趋势；减少动画；逐元素字号加倍与CSS布局zoom=2无整页横溢；空档案不种糯米、12月估龄无生日/到家日期可保存。短viewport只是软键盘近似，CSS zoom/字号加倍不是浏览器原生缩放，未把它们写成真实手机/原生200%验收完成。截图第一轮已看代表页面并修正桌面网格大空隙，接下来一轮确认；不无限视觉调整。
+
+Impeccable detector实际运行一次，但缺HTML/CSS解析模块，退化regex且不计算对比，返回[]不能当干净证明；未因此批量装无关依赖。主要证据仍为DOM/浏览器路径，后续原生缩放、真实手机键盘和读屏检查留最终阶段；本轮需完成其余设计清单及独立代码审查。
+
+日历：Calendar版本16.0实际可读。AppleScript创建测试日历并尝试open文件后返回AppleEvent处理失败(-10000)，System Events初次窗口不可见；用户明确已授予终端日历权限，继续尝试仍有AppleEvent失败。通过Calendar菜单导入/系统文件打开得到界面，用户随后提供两张实际截图：四个“我的小猫·独立护理事项2–5”在2026-10-12全天显示，备注含宠物/事项/原定日期；主agent也以Calendar window id 37398做指定窗口screencapture，图像一致。这个结果确认实际应用导入，不能把失败的AppleScript说成自动导入成功。右侧默认提前一天09:00提醒由系统日历设置，导出ICS没有VALARM。care.ics包含4个VEVENT及DTSTART=20261012；保留同份care-calendar-accepted.ics，避免后续测试覆盖验收依据，不重复导入。
+
+临时空日历“爪爪日记阶段1验收-20261006”由本轮创建，读其events为0，清理尝试仍AppleEvent失败；未因此删除或改其他用户日程，实际四个导入事件由用户在界面确认。残留清理若仍受阻如实交接，不能虚标删除。截图/本地测试产物Git忽略，不写私密日历内容进日志。官方ICS依据由导出worker核对RFC5545 §§3.1/3.3.11/3.6.1：https://www.rfc-editor.org/rfc/rfc5545 。

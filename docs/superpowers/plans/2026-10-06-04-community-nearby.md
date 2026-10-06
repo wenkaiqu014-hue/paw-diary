@@ -78,6 +78,8 @@ assert.equal(postsAfterCancelledPreview.length, postsBeforePreview.length);
 
 ## Task 3 主动公开的同城资料与组合筛选
 
+新增候选N-07：扩大可搜索地域目录，并讨论用户主动触发浏览器定位。原仅六城/不获取GPS的约定暂不改变；地域覆盖、坐标转地域、手动回退与公开范围待确认后修订。详见[讨论登记](2026-10-06-followup-discussion.md)，未作定位或地图调用。
+
 **Files:** `profiles.cjs`、`nearby.js`、`region-filter.js`、`regions.json`、`tests/profiles.test.js`、`tests/region-filter.test.js`、集成测试。
 
 **Interfaces:** `normalizeRegion({city,district},regionDirectory) → {city,district:null|string}`；`matchesProfile(profile,{city,district?,petType?,purpose?}) → boolean`；`profiles.saveOwn(input,principal)` 不接受他人userId。区域目录的来源/版本写在文档，只覆盖当前六城；不把过期区名当作用户所在区。

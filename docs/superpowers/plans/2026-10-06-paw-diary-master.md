@@ -33,7 +33,7 @@
 
 ## 现状与文件边界
 
-目前`index.html`、`style.css`、`app.js`为原生静态站，没有package.json或构建链。存储与渲染集中在app.js，关键入口`readState/commit/update/recordModal/petModal/remindersHTML/postModal/render`。工作流复制显式白名单；test_app.py有九组演示验证，并支持PAW_DIARY_TEST_URL。
+目前`index.html`、`style.css`、`app.js`仍为原生静态站；阶段1已新增package.json、原生ESM、node:test及领域/本地仓储模块，尚未接入esbuild构建与云端SDK。渲染仍主要在app.js，存储通过`src/data/demo-repository.js`访问。工作流复制显式白名单；test_app.py有九组演示验证，并支持PAW_DIARY_TEST_URL。
 
 新增文件的责任：`src/domain/`承接纯规则与导入导出，`src/data/`承接demo/cloud仓储，`src/features/`承接新增AI/引导/社区界面，`backend/`承接认证后的业务与模型代理，`scripts/`承接打包，`tests/`承接规则及真实环境集成。仅因功能需要拆分，保留现有页面视觉和可复用渲染。
 
@@ -100,6 +100,12 @@
 详细计划：[05 quality release](2026-10-06-05-quality-release.md)，3个任务（完整验证、可再次打开的新手使用指南、稳定发版）。
 
 - [ ] 退出验收：所交付能力真实验证；指南准确且可再次打开；固定网页公开稳定；tag目标正确，说明与实际一致。候选`v0.6.0`。
+
+## 最新候选需求：先讨论，不实施
+
+用户本轮明确先grilling、不要改代码，新增N-01–N-08已同步PENDING及[需求讨论登记](2026-10-06-followup-discussion.md)。这不是新增能力的实施授权或截止前交付承诺；原约30小时不含这些工作，范围/优先级待用户回答。
+
+候选安排：健康双卡稳定高度、多宠物列表管理/排序、待办选择导出属于阶段1体验修订；批量删除前置依赖回收站的数据规则。浮动上下文AI助手在阶段3评估，更广地域/可选浏览器定位在阶段4评估，版本“新内容”在阶段5指南/发布环节评估。双语为跨阶段能力，桌面安装与照片墙建议主线稳定后单列版本；以上均为建议，未确认。原不获取GPS、不做独立健康咨询的基线不能被候选条目静默覆盖。
 
 ## 依赖与执行方法
 

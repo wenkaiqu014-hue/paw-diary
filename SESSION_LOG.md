@@ -296,3 +296,15 @@ tests/e2e/health-layout.py先实际RED退出1：图表在完整记录之后。�
 ## 发布过程中收到的文案修正
 
 2026-10-07 00:41:19（Asia/Shanghai，工具date）：用户要求删除“不知道生日时填写估计月龄，不需要虚构实际生日。”，仅移除宠物表单这段说明，不改变年龄字段/验证。app语法/diff检查通过，主工作区原9组浏览器流程再次退出0；独立DOM打开添加宠物确认该句已不显示、估计月龄输入可用。为让此前看过首轮公开版的浏览器刷新能读取修正后的入口，app入口增加revision=1，业务模块版本仍0.2.0。Tag/Release尚未创建，因此纳入同一v0.2.0，不移动已有tag；接下来推送此修正、重新部署并确认最新公开内容，再创建tag/Release。
+
+## v0.2.0正式发布与最终核对
+
+2026-10-07 00:46:30（Asia/Shanghai，工具date）：文案修正ceed8d3已推送main；第二次Pages工作流37497726088/headSha=ceed8d3a0b3e411397afe186eacdaf973b07d67b completed/success：https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37497726088 。公开revision1 HTML/JS逐字节同源，匿名宠物表单确认指定句已移除、估计月龄可用；重新运行8套公开浏览器脚本全退出0，71单测再次通过。
+
+创建annotated v0.2.0并push成功，远端tag对象24bde81b68877352e63b03d843d3ab04e9d5a4bd，解引用ceed8d3a0b3e411397afe186eacdaf973b07d67b，与部署源码一致。远端v0.1.0仍解引用17cba1530420e2d74cd9da872ee9b4ef078b379e，未移动。gh release create --verify-tag --notes-file成功，公开URL https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.2.0 ，JSON核对tagName=v0.2.0、isDraft=false、isPrerelease=false、publishedAt=2026-10-06T16:46:29Z（UTC，即北京时间2026-10-07 00:46:29）。固定网页 https://wenkaiqu014-hue.github.io/paw-diary/ 已更新。
+
+本轮依据用户完整交付要求，在同一小修复波额外收口独立审查的两项Minor：重复删除与键盘焦点。代价是少量测试时间及选择/焦点回归风险，实际RED→GREEN及71单测/8套浏览器覆盖后未有未修复发布阻断。真实手机键盘、原生200%和读屏留最终阶段，不虚勾；用户亲自全面体验及阶段2启动仍另行确认。指南/双语/AI/云端/其他类型/照片/定位/桌面等不自动启动，不宣称完成。
+
+2026-10-07 00:50:00（Asia/Shanghai，工具date）：发布后文档提交5829267已推送main，不移动v0.2.0 tag。67份明确测试/截图/日志与执行ledger保留在主工作区Git忽略目录并已核对；确认PID命令及cwd后仅终止本轮4191/4192临时服务器，4178用户预览继续运行。自建工作树与已合并分支删除成功，主Git状态干净，最后补记本段再提交。距本轮起点00:12:43约37分钟，小于两小时。
+
+元数据整理期间一次旧上下文patch被拒绝，未写入；随后Python stdin含中文的追加遇编码SyntaxError，未追加日志，后续纯文档提交仍成功。已用本次真实上下文apply_patch补全发布回执与失败记录，产品代码和公开Release不受影响，不用Shell最终退出码掩盖此前错误。此后收尾仅文档检查/提交，不重复部署同一产品。

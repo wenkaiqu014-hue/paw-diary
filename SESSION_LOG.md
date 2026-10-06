@@ -485,3 +485,5 @@ Root真实integration当前四文件实际再跑exit1：0pass/5fail/0skip，全�
 Agent原实现及单轮审查/定向修复都已回报结束，Root整合复验而非只引述。详细已同步stage2-report/PENDING/设计协议/阶段计划：Task2本地与Task6已有界面双语步骤可勾，其余任务真实门槛仍保留。下一步等资金/已有单支付、两个受控邮箱收码，再按操作说明配置同一真实paid环境/来源/存储、采正向flag和SDK session、序列真实测试、真实UI、全过后原URL0.3发版；工具/发布已有授权不重复问。源码与完整日志将本地Git归档，无push/main合并/tag/Release/公开更新。
 
 本轮DB来源核对完整URL：https://cloud.tencent.com/document/product/876/128117 、https://cloud.tencent.com/document/product/876/128592 。官方API缺省未明确，我们依据原文明确资源输入，不假设默认值。
+
+最终候选源码已本地提交3d14cc6（完整review修复、权限测试防假绿、210单测/17浏览器检查与实际限制），未push/合并main/打tag或Release。独立fixture4197已关闭并清其临时目录，候选4193保留；dist public配置仍false。主main将仅追加本地交接入口，完整本轮日志保留本分支SESSION_LOG；续作切到.worktrees/stage2并先读本报告/日志，不从main旧业务代码重复构建。

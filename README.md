@@ -9,7 +9,7 @@
 3. 附近宠友按城市与宠物类型探索示例用户。
 4. 社区发布文字和照片，体验点赞、评论和搜索。
 
-本地开发版已完成阶段1技术验证：多宠物独立档案、记录编辑、完整护理待办、JSON备份恢复、CSV和ICS导出。公开评审网页仍是v0.1.0，尚未部署这些新增能力；阶段1等待用户本地体验确认。见[交付与验收报告](docs/verification/stage1-report.md)。
+v0.2.0候选已完成阶段1本地能力与技术验证：多宠物卡内切换/添加/排序、管理选择、记录与护理事项编辑、回收站恢复、JSON备份冲突确认、CSV和ICS导出。当前准备在固定地址部署与公开验收。见[交付与验收报告](docs/verification/stage1-report.md)。
 
 ## 当前能力与边界
 
@@ -25,13 +25,13 @@ python3 -m http.server 4178 --bind 127.0.0.1
 
 ## 文件与迭代
 
-`index.html`是应用外壳，`style.css`定义响应式界面，`app.js`调用`src/data/demo-repository.js`和`src/app-session.js`。纯规则、迁移、导入和导出在`src/domain/`。成功持久化后才更新页面；渲染沿四个hash入口。数据存于`paw-diary:v2:demo`，旧v1原文和备份保留。
+`index.html`是应用外壳，`style.css`定义响应式界面，`app.js`调用`src/data/demo-repository.js`和`src/app-session.js`。纯规则、迁移、导入和导出在`src/domain/`。成功持久化后才更新页面；渲染沿四个hash入口。完整数据存于`paw-diary:v3:demo`；v1/v2原文和旧备份保留。回收站以deletedAt标记保存，界面/CSV/ICS只用可见资料，JSON保留完整内容。
 
 后续需求与验收见 ROADMAP.md。用户已授权发布第一版，公开仓库为 https://github.com/wenkaiqu014-hue/paw-diary 。固定网页地址为 https://wenkaiqu014-hue.github.io/paw-diary/ ，部署结果见 SESSION_LOG.md。
 
 用户已提交 v0.1.0 作品。后续执行待办见 PENDING.md，按优先级记录任务、依赖和验收标准；开发过程持续维护在 SESSION_LOG.md。
 
-详细实施计划见 `docs/superpowers/plans/2026-10-06-paw-diary-master.md`；阶段0已确认，阶段1本地技术交付待用户验收，线上仍为已发布雏形。HTML技能调研保留在`docs/research/2026-10-06-frontend-skills.md`。
+详细实施计划见 `docs/superpowers/plans/2026-10-06-paw-diary-master.md`；阶段0已确认，阶段1技术验收完成并获用户发布授权，公开部署验收正在执行；阶段2不自动启动。HTML技能调研保留在`docs/research/2026-10-06-frontend-skills.md`。
 
 ## GitHub Pages 部署准备
 

@@ -266,3 +266,21 @@ tests/e2e/health-layout.py先实际RED退出1：图表在完整记录之后。�
 ## v0.2.0条件发布指令核对
 
 用户询问阶段1是否还有补充，明确“如果没有的话，就push并且release+tag吧，0.2.0”。核对当前PENDING N-01/N-02与阶段1补充计划：多宠物卡内切换/添加/管理选择/排序、“管理与导出”的事项删除与选择、回收站及对应V3迁移/恢复/备份验收均未实现；只有原闭环与高度缺陷修复已技术交付。该发布条件目前不满足，本轮未push、未创建v0.2.0 tag/Release，VERSION仍0.1.0，不把新计划当完成。发布意图与版本号保留，条件满足后按该指令执行；未重新要求工具/推送权限。此次只核对状态/文档，不改产品、不重新运行与本次状态查询无关的全套测试。
+
+## 阶段1完整管理实施与两小时发布准备
+
+2026-10-07 00:12:43（Asia/Shanghai，工具date）：用户明确“继续开始做，把阶段一完整做完”“2小时内完成”，授权技能/子agent/有头截图；结合上一轮v0.2.0推送/tag/Release授权，本轮实施并完成技术验收后直接发布，不重复确认。截止点02:12:43，同步保留项目最终10月8日20:00截止。新计划与数据方案据此获实施授权，阶段2与指南等后续能力不自动启动。
+
+隔离.worktrees/stage1-management，分支feat/stage1-management，基点61f9998，基线43/43。使用executing-plans/TDD/verification、Impeccable与webapp-testing，主agent协调领域/UI边界并维护任务ledger。新UI spawn和复用health_height_fix遇运行时thread limit，均未创建任务；成功新建management_data负责domain/data/单测，复用现有stage1_exports负责app/style/features/UI单测，复用stage0_review独立只读审查。任务树确认没有重复实现任务，不作无效shell kill；工人均被告知非独占代码库、不得回退其他编辑。
+
+数据提交6db687f：规范V3/deletedAt、保留v1/v2原文与坏源拒绝、完整仓储/可见派生分离、软删除/恢复/排序、完整JSON与复活冲突确认。生命周期首轮RED14/14→GREEN，补并发与备份父隐藏等实际失败修复；旧43项按明确V3/软删除契约更新，未删原行为覆盖。UI提交98f0859：多宠物卡内切换/添加/原生拖动及上/下移、“管理宠物”“管理与导出”、回收站/真空态、只读完成详情、选择切换/失败保留。管理状态RED缺模块→GREEN5/5；data/ui所有权无冲突，不派工人自审查代理。
+
+主agent发现ICS直接接收full数组仍可泄露隐藏项，数据worker加两个真实RED并最小过滤，旧V2无deletedAt仍兼容，提交47aa6c1，导出17/17，全套70/70。缓存升级模拟旧src HTTP模块缓存实际RED（新版显示空档案），主agent统一入口/style及生产ESM依赖?v=0.2.0，GREEN，提交7f9287e，保留相对/paw-diary/路径，无构建依赖或收费服务。
+
+新浏览器管理用例先在旧UI实际RED缺入口；在完整源上通过V2原文迁移、切换/新增/排序、所选pending ICS实际下载及非pending拒绝、事项/父子恢复、完整备份/旧导入不复活、写失败可重试/最后宠物恢复、四宽度。额外验证只确认恢复子记录但父仍隐藏时，行内失败并保留勾选。第一次测试与工人写CSS并发导致旧样式遮挡，稳定源复验正常；全局同名移入按钮改卡片作用域，空态新增采用实际标签，这是测试修正，不强制点击掩盖问题。
+
+独立stage0_review审查61f9998..7f9287e并Node/隔离Chrome复现，未发现Critical/Important，给两项Minor：纯重复移入隐藏宠物重置active、键盘排序到边界焦点回main。为完整交付计划明示的幂等/键盘规则，本轮决定同一小修复波收口（偏离技能默认暂缓Minor建议，代价为少量验证时间及选择/焦点回归风险）。数据worker RED1→GREEN20项修复，提交10eb809；UI worker管理质量RED2→GREEN3项修复，提交5ba8e8b，并纠正旧completionRecordDeleted物理删除被误称可从回收站恢复的文案。所有71项GREEN，不派第二轮广义审查，使用覆盖回归与完整产物复验。
+
+原生拖动：Playwright drag_to瞬移只触发mousedown，改分步mouse.down/3px/10px/steps15移动后真实dragstart/dragover/drop与刷新顺序验证通过；root新测试一度误用箭头函数arguments出现ReferenceError，改显式id参数，不当生产缺陷。有头Chrome新context集中1440/390截图（12宠物/14事项），看过管理及普通状态；列表内部滚动、外部工具/焦点可达、没有整页溢出或button内交互嵌套。真实手机/原生200%/读屏不冒充通过。
+
+2026-10-07 00:32:24（Asia/Shanghai，工具date）：源已整合提交2135f21测试。npm test71/71、app/全模块node --check、diff退出0；在4192/paw-diary/按真实Actions白名单复制产物，逐文件SHA256同源，原9组、新闭环、边界、旧回归、六宽度/四态布局、新管理、质量/真实拖动、缓存8套脚本全退出0，日志在stage1-release，不复制docs/tests/backend/env/log到网站。维护候选VERSION/package0.2.0与准确CHANGELOG、README、AGENTS、产品/设计/计划/待办/验收报告；N-01/N-02本地完成，未来云端/AI/指南/其他类型等保持未勾选。用户授权发版与用户亲自体验验收分开记录；公开部署/tag/Release尚待下一步实际完成。

@@ -108,3 +108,25 @@ CloudBase部分SDK页面内置打开超时，随后curl读取官方身份文档�
 只读explorer stage0_evidence负责现有代码事实、行号及待改问题，禁止改文件；主agent负责设计文件、浏览器检查、进度同步、整合及实际复验。仅单个spawn，不作批量并行派工；后续独立审查整个阶段。执行文档与低影响配置适用AGENTS允许的文档检查，不制造与文字同构的TDD测试。
 
 实施方法说明：采用已获授权的隔离worktree与本地Git提交；设计方向已经由用户确认，不重复访谈。阶段0完成定义分为“设计交付已检查”和“用户阶段验收”，后者须用户回复后才勾选，不自动推进阶段1。
+
+## 阶段0 Task1/2：设计交付、取证与追加待办
+
+2026-10-06 21:59:04（Asia/Shanghai，来自本机date）：Task1已本地提交cd26996，包含交互说明、DESIGN约定及Task1前四步状态。Task2状态表已写，正在进行全阶段独立审查；本段补记Task1和实际验证过程。
+
+产物为`docs/design/experience-brief.md`、`docs/design/ui-acceptance.md`及DESIGN。采用Operate模式，手机首页护理先于趋势/时间线、健康页完整待办与可编辑记录、示例与个人档案持续区分。登录/三步引导、AI多草稿、护理完成/下一次、回顾分享具有保存、取消和失败恢复路径，复用阶段1–4接口。产品源码未改，设计用户验收未勾选。
+
+预检与裁决：两任务共用DESIGN，状态固定idle/loading/success/error；提醒仅pending/completed/cancelled，逾期为日期分组。completeReminder接口不含下一次日期，因此完成与下一次saveReminder分步保存，第二步失败不重复完成；独立事项无来源类型时记通用日常事实，不猜药物类型。自带Key仅可选后续，不扩张阶段3必做；默认AI不要求用户自带Key，但真实私有解析仍遵守既定认证，不自动新增匿名模型接口。这些裁决若不符用户预期，阶段验收时调整，当前没有数据迁移。使用项目指定SESSION_LOG和阶段复选框记录任务，不另造与其并行的持久日志；本次为设计/文档交付，采用结构与接口检查，不制造文字镜像TDD测试。
+
+只读explorer stage0_evidence已返回8项有代码位置的缺口：读异常静默示例、顶层结构校验不足、编辑/提醒三态缺失、前4待办限制、完成缺幂等回执、skip链接冲突、整页渲染焦点、图片错误占位不足。子agent未改文件或运行浏览器；主agent区分静态风险和实际取证，不把报告当测试通过。调查为nl -ba app.js/index.html/style.css/test_app.py及rg阶段接口/测试覆盖，命令均退出0。当前任务树只有一个调查子agent；已读kill-race-dupes，当前工具不提供其描述的meta/TaskStop接口，任务树未发现重复，不用Shell kill替代。接下来单独派一个只读阶段审查agent。
+
+实际基线命令：`PAW_DIARY_TEST_URL=http://127.0.0.1:4179/ /Users/wenkaiqu/.codex/skill-runtime/run python /Users/wenkaiqu/.codex/skills/webapp-testing/scripts/with_server.py --server "python3 -m http.server 4179 --bind 127.0.0.1" --port 4179 -- /Users/wenkaiqu/.codex/skill-runtime/run python -u test_app.py`退出0，九组PASS。首次漏设URL，脚本访问默认4178而服务在4179，ERR_CONNECTION_REFUSED退出1；根据test_app.py:7及服务日志定位参数不匹配，修正调用后通过，无产品修复。
+
+同一with_server方式运行`test-results/stage0_audit.py`，最终退出0：360/390/768/1440四页16种布局无整页横溢；390长内容3页与逐元素字号加倍4页也仅确认无整页横溢，不宣称无裁切/所有操作可达，更不等于原生200%缩放或实际软键盘。模拟写满时弹窗/备注保留，失败提示可见；8项pending健康页只渲染4；筛选后焦点BODY；减少动画为none；无JS运行错误。取证脚本早期两次失败：返回被注入的函数被Playwright求值导致模拟异常提前抛出；hash同文档导航保留注入影响后续设数据。改成无返回值包装、保存/恢复原setItem，并在重读新测试数据时reload，重新验证通过。
+
+定向补查`test-results/stage0_followup.py`退出0：等待decode后360附近页三张图naturalWidth均>0；初始imagesLoaded=false是采样未完成，不当404。skip链接等待hashchange后从健康页回首页，hash=#main、焦点main，确认为后续待修问题。已集中看四页1440/390的8张截图，证据在隔离worktree的test-results/stage0-*，不发布。没有执行真实手机软键盘、原生200%缩放、屏幕阅读器、云端/模型/跨账户/ICS导入，当前阶段没有对应实现。
+
+用户执行中追加“补一个pending...加一个新手指引...不用着急...按照你的想法排序”。按助手判断解释为可再次打开的简明使用指南，区别于P1-06已有三步建档引导；新增P3-03，安排阶段5核心验收后、稳定发版前，新增Task2、原发版顺延Task3。当前只新增待办，不实现；指南帮助入口应保留当前页和未保存输入，内容只覆盖最终验收能力。
+
+同步PENDING、PRODUCT、ROADMAP、AGENTS和总/00/01/03/05计划：已确认执行/AI费用原则、阶段0启动与用户验收门槛；阶段1补足本地健康UI的具体验收，阶段3明确免费默认限额和自带Key边界。所有产品任务保持未完成，VERSION/CHANGELOG/发布配置不变。历史日志原样保留。
+
+结构检查`python3 test-results/check_stage0_docs.py`退出0：14份Markdown相对链接/围栏、15个唯一待办、未来阶段未虚勾、产品/发布文件逐字节与7c469c9一致。`node --check app.js`、`git diff --check`退出0。首次追加本段的长Shell heredoc出现Non-UTF-8输入错误，日志未写入；因Shell没有遇错即停，后续Task1提交执行了但没有日志增量。已核对Git结果、改用apply_patch补记，不将失败记录伪装为已写，后续验证/提交命令使用set -e。当前不推送、不部署、不创建新tag/Release。

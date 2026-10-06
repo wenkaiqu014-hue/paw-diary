@@ -34,6 +34,10 @@
 
 `computeRecapFacts({records,reminders,petId,from,to}): {recordIds,recordCount,weightChangeKg:null|number,completedCareCount,upcomingReminders,sourceHash}`；范围含首尾日期，体重差值按0.01kg精度取值，避免浮点0.20000000000000018出现在回顾。`generateRecap({petId,from,to},principal): Promise<Recap>`；`Recap={id,petId,from,to,generatedAt,sourceHash,recordIds,facts,story,stale}`。记录更新后比较hash标记stale。`prepareRecapShare(recap,{includeWeights:false}): {title,text,topic:'养宠心得'}` 默认不包含健康数值，第三阶段只生成预览，第四阶段才支持真实发布。
 
+## 本session确认的接入原则
+
+用户确认免费优先、必要收费先给估算再决定；默认提供有限额的真实AI体验，无需用户自带Key。免费模型实际可用性、限流和任务效果仍须真实smoke验证，不能用模型开放权重代替公开服务可用性。自带Key仅为可选后续能力，不占本阶段必做范围，不存前端长期密钥，不接受未评估的任意端点。供应商与模型待选，当前不开通服务、不收费调用；额度用完保留手动分支。
+
 ## Task 1 真实模型适配与结构校验
 
 **Files:** `provider.cjs`、`gateway.cjs`、`tests/ai-provider.test.js`、`tests/integration/text-model-smoke.test.js`；更新 `.env.example` 与云端运维说明。

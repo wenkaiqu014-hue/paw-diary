@@ -36,7 +36,7 @@
 - [x] Step2：写成长首页、健康档案、附近宠友、社区日常的层级：主动作分别是记一笔、管理护理记录、寻找伙伴、发布日常；体重趋势提供可核对记录，回顾提供查看依据。
 - [x] Step3：画三步引导、登录、AI多条草稿确认、回顾预览/分享、提醒完成/下一次设置的简要流程，所有中断点有恢复/退出路线。
 - [x] Step4：逐项对照ROADMAP，检查用户不完整资料、AI失败和无社区内容仍能行动，不添加新功能以填版面。
-- [ ] Step5：提交 `docs: define pet care page hierarchy and interaction flows`，记录设计决策。
+- [x] Step5：提交 `docs: define pet care page hierarchy and interaction flows`，记录设计决策。实际提交cd26996，决策与验证补记SESSION_LOG。
 
 ## Task 2 组件 状态与响应式验收表
 
@@ -44,10 +44,10 @@
 
 **Interfaces:** 表单/列表/草稿/回顾/空状态统一使用 `idle|loading|success|error`；提醒状态复用`pending|completed|cancelled`，不新增同义状态。
 
-- [ ] Step1：记录字体层级、间距、颜色、图标和常用按钮/输入/对话框约定；继承现有token，仅对有证据的问题提出调整。
-- [ ] Step2：列明360、390、768、1440px布局，200%文字、手机键盘、长名称、长评论及图片缺失的行为。
-- [ ] Step3：按Vercel界面规则检查语义元素、键盘焦点、表单标签、loading/错误/空状态和reduced-motion；与本项目风格冲突的品牌特定偏好不照搬。
-- [ ] Step4：准备各阶段实施后的截图/交互验收表，截图一次集中检查，修复后一轮确认；自动扫描不替代用户路径测试。
+- [x] Step1：记录字体层级、间距、颜色、图标和常用按钮/输入/对话框约定；继承现有token，仅对有证据的问题提出调整。
+- [x] Step2：列明360、390、768、1440px布局，200%文字、手机键盘、长名称、长评论及图片缺失的行为。
+- [x] Step3：按Vercel界面规则检查语义元素、键盘焦点、表单标签、loading/错误/空状态和reduced-motion；与本项目风格冲突的品牌特定偏好不照搬。
+- [x] Step4：准备各阶段实施后的截图/交互验收表，截图一次集中检查，修复后一轮确认；自动扫描不替代用户路径测试。
 - [ ] Step5：提交 `docs: specify responsive UI states and acceptance checklist`，后续实现按此验收。
 
 ## 阶段退出标准

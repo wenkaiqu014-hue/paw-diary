@@ -260,3 +260,5 @@ tests/e2e/health-layout.py先实际RED退出1：图表在完整记录之后。�
 主agent审阅git show后main fast-forward，4178既有预览自动读取更新，不换原地址。独立复跑npm test43/43、node --check app.js、git diff --check均退出0；health-layout.py退出0，实际四态同504px且图表位置稳定，查看main桌面/手机模拟截图；local-boundaries初次默认4180无人监听而ERR_CONNECTION_REFUSED/退出1，明确PAW_DIARY_TEST_URL=http://127.0.0.1:4178/后退出0（长文本/失效图/取消焦点/短viewport/移动顺序/减少动画/模拟缩放/空档案）。未改产品来掩盖端口配置失败，模拟缩放不宣称真实原生200%或手机键盘通过。
 
 本轮patch有三次被工具拒绝：同一文件重复operation一次，两个占位上下文未匹配；均未写入，去掉错误段/使用真实上下文后成功。没有实际定位、AI调用、付费开通或指南实现。按任务树核对本轮worker仅1个同名任务，未发现重复任务；缺旧skill所用meta路径/TaskStop，未作无效shell kill。高度只勾本地技术修复，管理/回收站/新增后续能力仍未完成；用户阶段验收、公开发布与阶段2保持未完成。新版仍未推送/tag/Release。
+
+2026-10-07 00:08:33（Asia/Shanghai，工具date）：阶段1高度修复c2e3850已合入main；需求/设计/计划与报告提交a977505。新设计自检补明确“恢复首只后选择当前宠物，有现存选择则保持”，接口/三个任务与五类Review Focus覆盖核对完成。Markdown链接/围栏、未实现能力未虚勾、VERSION0.1.0/tag17cba15与cached diff均通过。worker的8个明确产物复制至test-results/stage1-height-worker并逐文件SHA256核对；清理自建worktree/已合并分支成功，4178继续运行。下一步书面审阅阶段1新增生命周期方案后按3任务继续，保留既有主agent协调执行方式，不重复平台/模型/费用选择或grill已确认产品方向。

@@ -284,3 +284,11 @@ tests/e2e/health-layout.py先实际RED退出1：图表在完整记录之后。�
 原生拖动：Playwright drag_to瞬移只触发mousedown，改分步mouse.down/3px/10px/steps15移动后真实dragstart/dragover/drop与刷新顺序验证通过；root新测试一度误用箭头函数arguments出现ReferenceError，改显式id参数，不当生产缺陷。有头Chrome新context集中1440/390截图（12宠物/14事项），看过管理及普通状态；列表内部滚动、外部工具/焦点可达、没有整页溢出或button内交互嵌套。真实手机/原生200%/读屏不冒充通过。
 
 2026-10-07 00:32:24（Asia/Shanghai，工具date）：源已整合提交2135f21测试。npm test71/71、app/全模块node --check、diff退出0；在4192/paw-diary/按真实Actions白名单复制产物，逐文件SHA256同源，原9组、新闭环、边界、旧回归、六宽度/四态布局、新管理、质量/真实拖动、缓存8套脚本全退出0，日志在stage1-release，不复制docs/tests/backend/env/log到网站。维护候选VERSION/package0.2.0与准确CHANGELOG、README、AGENTS、产品/设计/计划/待办/验收报告；N-01/N-02本地完成，未来云端/AI/指南/其他类型等保持未勾选。用户授权发版与用户亲自体验验收分开记录；公开部署/tag/Release尚待下一步实际完成。
+
+## 阶段1原地址公开部署验收
+
+2026-10-07 00:38:20（Asia/Shanghai，工具date）：候选发布提交3bd45e1已fast-forward至main，主工作区npm test71/71、语法/diff复验通过、Git干净；git fetch确认origin/main是祖先，不force push。git push origin main成功（485f339→3bd45e1），Pages工作流37496771400/headSha3bd45e1c508570dd3faf844a1d6e2e9d98effaf2实际completed/success：https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37496771400 。
+
+固定站点https://wenkaiqu014-hue.github.io/paw-diary/ 匿名curl HTTP200，HTML及app.js?v=0.2.0逐字节SHA256与验证源匹配。随后8套完整脚本以该公开URL在新建匿名Chrome context运行，original/foundation/boundaries/regressions/layout/management/quality/cache全部退出0，包括迁移、下载、恢复和实际拖动；测试写入仅对应浏览器localStorage，无共享服务或生产用户数据。内置Web open该URL返回“not accessible via this tool”，原因未确认；已如实采用匿名curl与真实Chromium验证，不冒充网页读取器成功。公共验证日志在test-results/stage1-v0.2.0/public。
+
+工作树67份指定测试/截图/日志产物复制至主工作区test-results/stage1-v0.2.0并逐文件hash确认，另保存计划execution-ledger供恢复；不提交截图/JSON/CSV/ICS或完整会话。4178用户预览读取main新代码继续运行。本轮未调用云端/AI/定位、未重复操作Calendar。网页v0.2.0已部署验收，接下来创建并核对新tag/Release；v0.1.0仍不移动，用户后续视觉体验与阶段2启动仍另行确认。

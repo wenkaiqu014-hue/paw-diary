@@ -1,6 +1,6 @@
 # 阶段1：本地健康闭环与管理验收
 
-状态：阶段1全部本地能力已实现，技术检查通过；用户明确授权完整实施及发布v0.2.0，正在进行公开部署验收。用户后续视觉体验确认与阶段2启动另行记录，不把技术检查说成用户亲自验收。
+状态：阶段1全部本地能力已实现，技术检查通过；用户明确授权完整实施及发布v0.2.0，已在原评审地址公开部署并匿名验收通过，tag/Release正在创建。用户后续视觉体验确认与阶段2启动另行记录，不把技术检查说成用户亲自验收。
 
 ## 当前交付
 
@@ -28,6 +28,7 @@
 | 发布产物 | 按Actions白名单复制到4192的`/paw-diary/`，8套脚本全部退出0；逐文件SHA256与源一致，docs/tests/backend/env/log不入产物 |
 | 截图 | 独立有头Chromium1440/390，12宠物/14事项普通及管理状态；看过桌面与手机，工具可达、无整页横溢或交互嵌套 |
 | 基础 | app与全部生产模块`node --check`、`git diff --check`通过 |
+| 公开部署 | [Pages工作流37496771400](https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37496771400)成功，部署3bd45e1；匿名HTTP200，HTML/JS逐字节同源，8套公开站浏览器脚本全部退出0 |
 
 上述验证全部使用独立浏览器context/内存fixture，不修改用户真实数据。证据位于Git忽略的`test-results/stage1-release/`、`stage1-management/`、`stage1-management-visual/`；完整过程见[SESSION_LOG](../../SESSION_LOG.md)。
 
@@ -50,4 +51,4 @@
 
 Apple Calendar16.0此前已由用户导入并双方截图确认四个测试事项在2026-10-12全天显示；本轮只下载/解析ICS，未重复导入。ICS无VALARM，是快照文件，网站后续修改不自动同步，通知由日历客户端配置。Google/Outlook未实际导入，见[客户端说明](../operations/calendar-clients.md)。此前创建的空测试日历清理仍未确认成功，不再操作其他日程。
 
-发布结果以实际Actions/匿名公开验证和新tag/Release为准，流程见[部署说明](../operations/deploy-and-rollback.md)；阶段2不自动启动，费用仍需正式接入前确认。
+公开部署/匿名验证已通过；新tag/Release完成后另记最终核对，流程见[部署说明](../operations/deploy-and-rollback.md)；阶段2不自动启动，费用仍需正式接入前确认。

@@ -1,0 +1,55 @@
+# 完整体验验证与评审发版 Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** 在原评审地址交付说明真实、流程完整、可以回退的稳定版本。
+
+**Architecture:** 功能阶段各自验证，最终对已选交付范围做完整集成检查。测试浏览器、真实测试账号和公共访客分开，测试产物不发布。候选版本先验收再创建新tag，不以提交代码成功代替用户体验完成。
+
+**Tech Stack:** node:test、Python Playwright、已部署云端集成测试、GitHub Pages/Actions、Git tags/releases。
+
+**Spec:** `ROADMAP.md` §6–7；`PENDING.md` P3；本系列前四阶段。
+
+## Global Constraints
+
+- 保持固定URL，不移动`v0.1.0`及之后已发布tag。
+- 只发布已验收能力；未完成项继续保持unchecked并在说明中明确。
+- 功能范围先冻结，再部署验证；具体截止时间未确认前不写“截止前已完成”。
+- 文档、测试、后端或密钥不进入前端dist；日志持续记录。
+- 不以预置账号数据或本地mock测试冒充真实云端/模型验证。
+
+## Review Focus
+
+1. AI/云端不可用时：演示和手动录入仍可体验，输入不丢失。Task 1 验证。
+2. 手机键盘与长中文：对话框保存按钮可达，导航不遮住末尾操作。Task 1 验证。
+3. 静态站子路径/缓存：旧浏览器不加载不兼容模块或错误schema。Task 2 验证。
+4. 宣传文案/演示与实际能力：未接通功能不能说已完成。Task 2 验证。
+5. 操作失败后回退：恢复已验证版本并维持原URL，不删除健康云端数据。Task 2 验证。
+
+## Task 1 完整浏览器和跨用户验收
+
+**Files:** 修改 `test_app.py`；新增 `tests/e2e/account-flow.py`、`tests/e2e/failure-flow.py`、`docs/verification/final-report.md`；修复被验证发现的具体产品文件，不进行无依据重写。
+
+**Interfaces:** 测试默认访客demo，真实测试需显式传环境和两账号凭证的环境变量。只输出场景/结果与脱敏错误；测试不得向生产写示例群体或删除他人数据。
+
+- [ ] Step 1：写尚缺的浏览器用例，分别确认360/390/768/1440px布局、200%文字、keyboard和reduced-motion；加入登录过期、弱网、AI超时、上传失败、草稿取消、重复完成、记录编辑和两用户共享流程。
+- [ ] Step 2：运行新用例，确认当前缺失体验出现真实失败；将失败归到具体代码/接口。已可用用例不为制造失败修改正确行为。
+- [ ] Step 3：按观察结果修复并保留回归测试；截图一轮集中查看，修复后确认，避免无限视觉调整。
+- [ ] Step 4：运行 `npm test`、`npm run build`、demo浏览器测试和云端集成测试；记录真实模型案例、账号隔离、日历导入的实际结果，任何未验证项标明未验证。
+- [ ] Step 5：提交 `test: verify complete pet care and community journeys`，记录具体测试证据。
+
+## Task 2 文档与稳定版本交付
+
+**Files:** `README.md`、`VERSION`、`CHANGELOG.md`、`ROADMAP.md`、`PENDING.md`、`SESSION_LOG.md`、部署运维文档；新增 `docs/demo-guide.md`。
+
+**Consumes:** 已通过的交付范围与final-report。**Produces:** 原URL上的稳定部署、新tag/Release、2–3分钟可执行体验说明。最终候选版本建议`v0.6.0`，阶段有删减时按实际功能命名，不把版本号当完成承诺。
+
+- [ ] Step 1：对照PENDING与验收报告逐项标状态；编写匿名示例→个人建档→AI确认→提醒/日历→回顾→同城分享体验路线，未完成分支从对外路线移除。
+- [ ] Step 2：运行 `git diff --check` 与发布产物检查，确认没有密钥或未实现能力声明；检查所需云端配置和实际服务状态。
+- [ ] Step 3：在main部署验收过的候选产物；等待工作流成功，使用匿名浏览器验证原URL、静态资源、demo及真实账户流程。若核心失败，先回退稳定前端，再修复，不删除真实云端记录。
+- [ ] Step 4：验证通过后更新VERSION/CHANGELOG，创建新annotated tag与GitHub Release，核对远端tag目标、非draft状态与公开链接。文档变更不重复部署应已由第一阶段实现。
+- [ ] Step 5：日志记录版本、提交、工作流、验证和限制，本地Git提交干净。检查截止时间有余量，避免以最后一刻部署代替验收。
+
+## 阶段退出标准
+
+固定网页公开可访问，主要流程通过真实验证，说明准确，日志和待办反映实际结果。完整版本可以继续迭代；未完成但已记录的任务不虚标通过。

@@ -31,6 +31,8 @@ python3 -m http.server 4178 --bind 127.0.0.1
 
 用户已提交 v0.1.0 作品。后续执行待办见 PENDING.md，按优先级记录任务、依赖和验收标准；开发过程持续维护在 SESSION_LOG.md。
 
+详细分阶段实施计划见 `docs/superpowers/plans/2026-10-06-paw-diary-master.md`；HTML设计技能调研见 `docs/research/2026-10-06-frontend-skills.md`。当前只完成规划，线上产品仍为已发布雏形。
+
 ## GitHub Pages 部署准备
 
 代码可以部署到固定公开仓库的 GitHub Pages。仓库名确认后保留，后续只更新文件，不更改仓库名或网页域名。使用 `.github/workflows/pages.yml` 工作流，GitHub 仓库 Settings → Pages → Source 设为 GitHub Actions。

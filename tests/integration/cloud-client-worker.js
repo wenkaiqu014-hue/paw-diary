@@ -2,7 +2,15 @@ import { parentPort, workerData, threadId } from "node:worker_threads";
 import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import cloudbase from "@cloudbase/js-sdk";
-const { envId, publicKey, sessionPath, label, cacheOnly = false, captureLogin=false } = workerData;
+import verifiedProfile from "../../backend/verified-profile.cjs";
+const {
+  envId,
+  publicKey,
+  sessionPath,
+  label,
+  cacheOnly = false,
+  captureLogin = false,
+} = workerData;
 const app = cloudbase.init({
   env: envId,
   region: "ap-shanghai",
@@ -11,7 +19,9 @@ const app = cloudbase.init({
   ...(publicKey ? { accessKey: publicKey } : {}),
 });
 const auth = app.auth(),
-  uploads = new Map();
+  uploads = new Map(),
+  fixtureObjects = new Map();
+let expectedWorkspaceId = null;
 const fail = (code) => Object.assign(new Error(code), { code });
 const safeCode = (error) =>
   typeof error?.code === "string" && /^[A-Za-z0-9_.-]{1,100}$/.test(error.code)
@@ -32,13 +42,30 @@ async function initialize() {
   }
   if (document.envId !== envId) throw fail("REAL_CLOUD_SESSION_ENV_MISMATCH");
   const session = document[label];
-  if(captureLogin){
-    if(typeof session?.username!=='string'||typeof session?.password!=='string')throw fail('REAL_CLOUD_LOGIN_CREDENTIALS_INCOMPLETE');
-    const result=await auth.signInWithPassword({username:session.username,password:session.password});
-    if(result?.error||typeof result?.data?.session?.access_token!=='string'||typeof result?.data?.session?.refresh_token!=='string')throw fail('REAL_CLOUD_PASSWORD_LOGIN_REJECTED');
-    const latest=JSON.parse(await fs.readFile(sessionPath,'utf8'));
-    latest[label]={...latest[label],access_token:result.data.session.access_token,refresh_token:result.data.session.refresh_token};
-    await fs.writeFile(sessionPath,JSON.stringify(latest),{mode:0o600});await fs.chmod(sessionPath,0o600);
+  if (captureLogin) {
+    if (
+      typeof session?.username !== "string" ||
+      typeof session?.password !== "string"
+    )
+      throw fail("REAL_CLOUD_LOGIN_CREDENTIALS_INCOMPLETE");
+    const result = await auth.signInWithPassword({
+      username: session.username,
+      password: session.password,
+    });
+    if (
+      result?.error ||
+      typeof result?.data?.session?.access_token !== "string" ||
+      typeof result?.data?.session?.refresh_token !== "string"
+    )
+      throw fail("REAL_CLOUD_PASSWORD_LOGIN_REJECTED");
+    const latest = JSON.parse(await fs.readFile(sessionPath, "utf8"));
+    latest[label] = {
+      ...latest[label],
+      access_token: result.data.session.access_token,
+      refresh_token: result.data.session.refresh_token,
+    };
+    await fs.writeFile(sessionPath, JSON.stringify(latest), { mode: 0o600 });
+    await fs.chmod(sessionPath, 0o600);
     return;
   }
   if (
@@ -70,6 +97,7 @@ async function operation(name, payload) {
   if (cacheOnly) throw fail("CACHE_ONLY_CLIENT_CANNOT_CALL_CLOUD");
   if (name === "identityFlags") {
     const user = await freshUser();
+    const raw = await auth.getUserInfo();
     const uid = typeof user?.id === "string" ? user.id : null;
     return {
       signedIn: !!uid,
@@ -77,10 +105,21 @@ async function operation(name, payload) {
         ? createHash("sha256").update(`${envId}\0${uid}`).digest("hex")
         : null,
       emailPresent: typeof user?.email === "string" && !!user.email,
-      emailVerified:
-        typeof user?.email_confirmed_at === "string" &&
-        Number.isFinite(Date.parse(user.email_confirmed_at)),
+      emailVerified: raw?.email_verified === true,
       isAnonymous: user?.is_anonymous === true,
+    };
+  }
+  if (name === "profileLookupFlags") {
+    const session = (await auth.getSession())?.data?.session;
+    const raw = await verifiedProfile.createPlatformProfileLookup({environmentId:envId,publishableKey:publicKey})(session?.access_token);
+    return {
+      profilePresent: !!raw,
+      fieldNames: raw ? Object.keys(raw).filter(key=>/^[A-Za-z_][A-Za-z0-9_]{0,60}$/.test(key)) : [],
+      emailPresent: typeof raw?.email === "string" && !!raw.email,
+      emailVerifiedFieldPresent: !!raw && Object.hasOwn(raw,"email_verified"),
+      emailVerified: raw?.email_verified === true,
+      uidMatchesSdk: !!raw && (raw.sub ?? raw.uid ?? raw.id) === session?.user?.id,
+      explicitlyAnonymous: raw?.is_anonymous === true || raw?.isAnonymous === true,
     };
   }
   if (name === "workspaceMatches") {
@@ -94,10 +133,32 @@ async function operation(name, payload) {
     );
   }
   if (name === "invoke") {
-    const raw = (await app.callFunction({ name: "paw-api", data: payload })).result;
+    const session = await auth.getSession();
+    const request = {
+      ...payload,
+      ...(expectedWorkspaceId && payload.expectedWorkspaceId === undefined
+        ? { expectedWorkspaceId }
+        : {}),
+      ...(session?.data?.session?.access_token
+        ? { authToken: session.data.session.access_token }
+        : {}),
+    };
+    const raw = (await app.callFunction({ name: "paw-api", data: request }))
+      .result;
     let result;
-    try {result=typeof raw==='string'?JSON.parse(raw):raw;} catch {throw fail('REAL_CLOUD_API_REPLY_INVALID');}
-    if(typeof result?.ok!=='boolean')throw fail('REAL_CLOUD_API_REPLY_INVALID');
+    try {
+      result = typeof raw === "string" ? JSON.parse(raw) : raw;
+    } catch {
+      throw fail("REAL_CLOUD_API_REPLY_INVALID");
+    }
+    if (typeof result?.ok !== "boolean")
+      throw fail("REAL_CLOUD_API_REPLY_INVALID");
+    if (
+      result.ok &&
+      payload.action === "health.snapshot" &&
+      typeof result.workspaceId === "string"
+    )
+      expectedWorkspaceId = result.workspaceId;
     if (
       payload.action === "media.prepare" &&
       result?.ok &&
@@ -111,11 +172,32 @@ async function operation(name, payload) {
     }
     return result;
   }
-  if(name==='readiness') {
-    const raw=(await app.callFunction({name:'paw-stage2-readiness',data:{}})).result;
-    let flags;try{flags=typeof raw==='string'?JSON.parse(raw):raw;}catch{throw fail('REAL_CLOUD_PROBE_REPLY_INVALID');}
-    if(!flags||typeof flags!=='object')throw fail('REAL_CLOUD_PROBE_REPLY_INVALID');
-    return Object.fromEntries(Object.entries(flags).filter(([key,value])=>typeof value==='boolean'||value===null||key==='adminFieldNames'&&Array.isArray(value)&&value.every(name=>typeof name==='string'&&/^[A-Za-z_][A-Za-z0-9_]{0,60}$/.test(name))));
+  if (name === "readiness") {
+    const raw = (
+      await app.callFunction({ name: "paw-stage2-readiness", data: {} })
+    ).result;
+    let flags;
+    try {
+      flags = typeof raw === "string" ? JSON.parse(raw) : raw;
+    } catch {
+      throw fail("REAL_CLOUD_PROBE_REPLY_INVALID");
+    }
+    if (!flags || typeof flags !== "object")
+      throw fail("REAL_CLOUD_PROBE_REPLY_INVALID");
+    return Object.fromEntries(
+      Object.entries(flags).filter(
+        ([key, value]) =>
+          typeof value === "boolean" ||
+          value === null ||
+          (key === "adminFieldNames" &&
+            Array.isArray(value) &&
+            value.every(
+              (name) =>
+                typeof name === "string" &&
+                /^[A-Za-z_][A-Za-z0-9_]{0,60}$/.test(name),
+            )),
+      ),
+    );
   }
   if (name === "upload") {
     const upload = uploads.get(payload.ticketId);
@@ -127,6 +209,28 @@ async function operation(name, payload) {
     });
     return { ok: result.ok, status: result.status };
   }
+  if (name === "bindFixtureObject") {
+    if (typeof payload?.assetId !== "string" || !payload.assetId || typeof payload?.fileRef !== "string" ||
+        !payload.fileRef.startsWith(`cloud://${envId}.`) || !payload.fileRef.includes("/")) throw fail("REAL_CLOUD_FIXTURE_MISMATCH");
+    fixtureObjects.set(payload.assetId,payload.fileRef);
+    return {bound:true};
+  }
+  if (name === "directFixtureUrls" || name === "directFixtureDownload") {
+    const fileRef = fixtureObjects.get(payload?.assetId);
+    if (!fileRef) throw fail("REAL_CLOUD_FIXTURE_NOT_BOUND");
+    if (name === "directFixtureDownload") {
+      const result = await app.downloadFile({fileID:fileRef});
+      if (result?.code && result.code !== "SUCCESS") return {allowed:false,code:safeCode(result)};
+      return {allowed:true};
+    }
+    const result = await app.getTempFileURL({fileList:[fileRef]});
+    if (result?.code && result.code !== "SUCCESS") return {allowed:false,code:safeCode(result)};
+    if (!Array.isArray(result?.fileList) || result.fileList.length !== 1) throw fail("REAL_CLOUD_DIRECT_PROBE_FAILED");
+    const file = result.fileList[0];
+    if (file?.code === "SUCCESS" && typeof file.tempFileURL === "string" && file.tempFileURL) return {allowed:true};
+    if (file?.code && file.code !== "SUCCESS") return {allowed:false,code:safeCode(file)};
+    throw fail("REAL_CLOUD_DIRECT_PROBE_FAILED");
+  }
   if (name === "directDatabaseRead") {
     if (payload.collection !== "health_workspaces")
       throw fail("DIRECT_DB_PROBE_SCOPE_INVALID");
@@ -135,7 +239,7 @@ async function operation(name, payload) {
       .collection(payload.collection)
       .limit(1)
       .get();
-    if (result?.code) throw fail(safeCode(result));
+    if (result?.code && result.code !== "SUCCESS") return {allowed:false,code:safeCode(result)};
     return { data: [], allowed: true };
   }
   if (name === "directUrls") {

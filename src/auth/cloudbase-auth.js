@@ -3,30 +3,82 @@ const safeError = (code = "UNAVAILABLE") =>
     code,
     messageKey: "errors." + code.toLowerCase(),
   });
-const publicSession = (user) =>
-  user &&
-  typeof user.id === "string" &&
-  user.id &&
-  user.is_anonymous === false &&
-  typeof user.email === "string" &&
-  user.email &&
-  typeof user.email_confirmed_at === "string" &&
-  Number.isFinite(Date.parse(user.email_confirmed_at))
+function authFailure(error) {
+  const code = error?.code ?? error?.error;
+  return error?.status === 401 ||
+    error?.statusCode === 401 ||
+    [
+      "UNAUTHENTICATED",
+      "unauthenticated",
+      "token_expired",
+      "invalid_access_token",
+      "invalid_refresh_token",
+      "user_not_found",
+    ].includes(code)
+    ? safeError("UNAUTHENTICATED")
+    : safeError("UNAVAILABLE");
+}
+function publicSession(user, raw) {
+  const rawId = raw?.sub ?? raw?.uid ?? raw?.id;
+  return user &&
+    typeof user.id === "string" &&
+    user.id &&
+    user.id === rawId &&
+    user.is_anonymous === false &&
+    raw?.is_anonymous !== true &&
+    raw?.isAnonymous !== true &&
+    raw?.email_verified === true &&
+    typeof raw.email === "string" &&
+    raw.email
     ? { userId: user.id }
     : null;
+}
 export function createCloudbaseAuth({ app } = {}) {
   if (!app || typeof app.auth !== "function") throw safeError();
   const sdk = app.auth(),
     challenges = new Map();
-  let counter = 0;
+  let counter = 0,
+    confirmedUserId = null,
+    authEpoch = 0;
+  const checked = async (user) => {
+    if (typeof sdk.getUserInfo !== "function") throw safeError();
+    let raw;
+    try {
+      raw = await sdk.getUserInfo();
+    } catch (error) {
+      throw authFailure(error);
+    }
+    return publicSession(user, raw);
+  };
   return {
-    async getSession() {
+    async getRequestSession() {
+      const observed = authEpoch;
       const result = await sdk.getSession();
-      if (result?.error) throw safeError("UNAUTHENTICATED");
+      if (result?.error) throw authFailure(result.error);
+      const session = result?.data?.session,
+        user = result?.data?.user ?? session?.user;
+      if (
+        !session ||
+        typeof session.access_token !== "string" ||
+        !session.access_token
+      )
+        return null;
+      const principal = await checked(user);
+      if (observed === authEpoch && principal)
+        confirmedUserId = principal.userId;
+      return principal ? { principal, authToken: session.access_token } : null;
+    },
+    async getSession() {
+      const observed = authEpoch;
+      const result = await sdk.getSession();
+      if (result?.error) throw authFailure(result.error);
       if (!result?.data?.session) return null;
       const fresh = await sdk.getUser();
-      if (fresh?.error) throw safeError("UNAUTHENTICATED");
-      return publicSession(fresh?.data?.user);
+      if (fresh?.error) throw authFailure(fresh.error);
+      const principal = await checked(fresh?.data?.user);
+      if (observed === authEpoch && principal)
+        confirmedUserId = principal.userId;
+      return principal;
     },
     async requestEmailCode({ email } = {}) {
       if (
@@ -56,21 +108,54 @@ export function createCloudbaseAuth({ app } = {}) {
       )
         throw safeError("INVALID_INPUT");
       const result = await verify({ token: code.trim() });
-      if (result?.error) throw safeError("UNAUTHENTICATED");
-      const session = publicSession(result?.data?.user);
+      if (result?.error) throw authFailure(result.error);
+      const session = await checked(result?.data?.user);
+      if (session) confirmedUserId = session.userId;
       if (!session) throw safeError("UNAUTHENTICATED");
       challenges.delete(challenge.id);
       return session;
     },
     async signOut() {
       challenges.clear();
+      confirmedUserId = null;
       await sdk.signOut();
     },
     subscribe(listener) {
-      const subscription = sdk.onAuthStateChange((_event, session) =>
-        listener(publicSession(session?.user)),
-      );
-      return () => subscription?.data?.subscription?.unsubscribe?.();
+      let active = true,
+        epoch = 0;
+      const subscription = sdk.onAuthStateChange(async (_event, session) => {
+        const current = ++epoch,
+          user = session?.user;
+        authEpoch++;
+        if (!user) {
+          confirmedUserId = null;
+          if (active) listener(null);
+          return;
+        }
+        const switched =
+          confirmedUserId !== null && confirmedUserId !== user.id;
+        if (switched) {
+          confirmedUserId = null;
+          if (active) listener(null);
+        }
+        try {
+          const value = await checked(user);
+          if (!active || current !== epoch) return;
+          confirmedUserId = value?.userId ?? null;
+          listener(value);
+        } catch (error) {
+          if (!active || current !== epoch) return;
+          if (error.code === "UNAUTHENTICATED") {
+            confirmedUserId = null;
+            listener(null);
+          } /* same-user transient failures preserve the last confirmed view and drafts */
+        }
+      });
+      return () => {
+        active = false;
+        epoch++;
+        subscription?.data?.subscription?.unsubscribe?.();
+      };
     },
   };
 }

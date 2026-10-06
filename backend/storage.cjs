@@ -76,7 +76,15 @@ function createCloudbaseStorage({
     async remove(fileRef) {
       const result = await app.deleteFile({ fileList: [fileRef] });
       const file = result?.fileList?.[0];
-      if (!file || file.code !== "SUCCESS") throw new ApiError("UNAVAILABLE");
+      if(file?.code==='SUCCESS')return;
+      // A failed delete is not quota release. Only an authenticated, server-only
+      // signed HEAD proving 404 can confirm an object was never uploaded.
+      const info=await app.getFileInfo({fileList:[fileRef]}),metadata=info?.fileList?.[0];
+      if(metadata?.code==='SUCCESS'&&typeof metadata.tempFileURL==='string'&&metadata.tempFileURL.startsWith('https://')&&typeof fetchFile==='function'){
+        const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),1500);
+        try{const head=await fetchFile(metadata.tempFileURL,{method:'HEAD',redirect:'error',signal:controller.signal});if(head.status===404)return;}finally{clearTimeout(timeout);}
+      }
+      throw new ApiError("UNAVAILABLE");
     },
   };
 }

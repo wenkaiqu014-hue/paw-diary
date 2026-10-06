@@ -56,13 +56,13 @@
 
 `AppSnapshotV3`增加mode=local、other/typeLabel和Pet.avatarAssetId；`WorkspaceEnvelope={snapshot,revision,workspaceId}`；媒体不塞未经schema支持的顶层字段。仓储既有领域操作返回值按设计第4节保留；任意mutate仅demo，本地replaceSnapshot仅本地恢复，云端恢复换显式archive预览/导入。
 
-`AuthAdapter.getSession/requestEmailCode/verifyEmailCode/signOut/subscribe`；`createAppSession`增加switchWorkspace/refresh/generation，兼容旧demo调用；用户语言与当前宠物选择是空间隔离的设备偏好。
+`AuthAdapter.getSession/getRequestSession/requestEmailCode/verifyEmailCode/signOut/subscribe`；`createAppSession`增加switchWorkspace/refresh/generation，兼容旧demo调用；用户语言与当前宠物选择是空间隔离的设备偏好。
 
-`ApiRequest={version:1,action,payload,expectedRevision?,idempotencyKey?}`；`Envelope={ok:true,data,revision}|{ok:false,error:{code,messageKey,params?}}`；code固定`UNAUTHENTICATED|FORBIDDEN|INVALID_INPUT|CONFLICT|UNAVAILABLE`。读操作无expectedRevision，所有业务写操作必带revision/key；媒体读取仅用assetId，绝不使用客户端fileId/ownerId授权。
+`ApiRequest={version:1,action,payload,authToken?,expectedWorkspaceId?,expectedRevision?,idempotencyKey?}`；`Envelope={ok:true,data,revision}|{ok:false,error:{code,messageKey,params?}}`；code固定`UNAUTHENTICATED|FORBIDDEN|INVALID_INPUT|CONFLICT|UNAVAILABLE`。authToken仅当前SDK会话的瞬时Bearer二级验证，不进payload/回执/hash/cache/log；owner仍取可信平台UID。所有写操作同时带已初始化的expectedWorkspaceId防错断言，仅与server当前owner+env派生值比较，不能选owner；在任何Store/回执之前拒错空间。读操作无expectedRevision，所有业务写操作必带revision/key；媒体读取仅用assetId，绝不使用客户端fileId/ownerId授权。
 
 健康actions：`health.snapshot`、`pets.save`、`pets.reorder`、`records.save`、`records.delete`、`reminders.save`、`reminders.complete`、`trash.move`、`trash.restore`、`profile.save`。当前宠物设备偏好不发跨设备写操作；不提供任意mutate/replace远端快照接口。
 
-媒体actions：`media.list|media.prepare|media.confirm|media.read|media.remove`；导入actions：`imports.preview|imports.prepare|imports.commit`。MediaRepository.list/save/remove/resolveUrl参数与设计第6节一致；resolveUrl返回浏览器临时URL及释放函数。
+媒体actions：`media.list|media.prepare|media.confirm|media.read|media.remove|media.cleanup`；导入actions：`imports.preview|imports.prepare|imports.commit`。MediaRepository.list/save/remove/resolveUrl参数与设计第6节一致；save可接完整preparedImage避免重复编码，必须验证签名/字节/实际decode尺寸后使用；cleanupExpired仅处理已过期staging，释放量须对象删除/确认不存在及事务持久化完成，有错明确pending；resolveUrl返回浏览器临时URL及释放函数。
 
 `WorkspaceStore.readOwned(principal)`、`transactionOwned(principal,callback)`，事务对象支持读取/保存该owner健康文档、媒体元数据、回执和来源映射；`resolvePrincipal(platformContext)`校验真实已验证邮箱身份，`handleRequest(request,{principal,store,clock})`执行显式action。`imports.prepare/commit`使用当前revision和key，media.prepare只创建owner内上传暂存票据、不改共享快照；confirm/remove必须CAS，其他事务性共享变更递增revision。完整archive包含sourceWorkspaceId/资产字节，导出snapshot.mode=local，legacy无来源ID走明确命名空间及实体ID冲突预览。存储SDK语法在Task1冻结，管理员权限不能绕过业务归属校验。
 
@@ -84,11 +84,11 @@
 
 **Consumes:** 设计中的快照/媒体边界、旧领域变换。**Produces:** 空local个人仓储、统一other校验、IDB atomic/CAS、稳定媒体ID。
 
-- [ ] Step1：写失败测试：首次local无pet-mochi；保存/重开同一DB不丢；完全不改旧demo/v1/v2/backup原文；两实例同revision写入只成功一个；一次IDB abort后snapshot/media/Blob全不变；存储不可用明确失败不偷偷回到demo。
-- [ ] Step2：补other/typeLabel空白/20字/超长/非other清标签、猫狗旧数据不变、自定义记录不进体重趋势、来源other护理完成保留typeLabel、CSV/旧备份往返、avatarAssetId缺省兼容。运行`node --test tests/local-personal.test.js tests/custom-types.test.js`确认真实RED。
-- [ ] Step3：实现三个IDB store原子事务，压缩/网络均在事务外；compare revision后写，complete事件才更新内存。snapshot.mode=local，新workspaceId只初始化一次。保留既有纯领域函数返回形状，城市用saveProfile，device选择隔离存储；Blob URL仅在UI派生。
-- [ ] Step4：为新备份/媒体接口提供读写契约；原demo仍localStorage/raw CAS，不能套用IDB适配绕过原文保护。运行该组测试、`npm test`，真实浏览器IDB quota/abort由Task5补，不拿fake-indexeddb模拟代表浏览器全部通过。
-- [ ] Step5：提交`feat: add isolated local profiles and custom pet record types`，报告返回形状/测试/旧键保持证据。
+- [x] Step1：写失败测试：首次local无pet-mochi；保存/重开同一DB不丢；完全不改旧demo/v1/v2/backup原文；两实例同revision写入只成功一个；一次IDB abort后snapshot/media/Blob全不变；存储不可用明确失败不偷偷回到demo。
+- [x] Step2：补other/typeLabel空白/20字/超长/非other清标签、猫狗旧数据不变、自定义记录不进体重趋势、来源other护理完成保留typeLabel、CSV/旧备份往返、avatarAssetId缺省兼容。运行`node --test tests/local-personal.test.js tests/custom-types.test.js`确认真实RED。
+- [x] Step3：实现三个IDB store原子事务，压缩/网络均在事务外；compare revision后写，complete事件才更新内存。snapshot.mode=local，新workspaceId只初始化一次。保留既有纯领域函数返回形状，城市用saveProfile，device选择隔离存储；Blob URL仅在UI派生。
+- [x] Step4：为新备份/媒体接口提供读写契约；原demo仍localStorage/raw CAS，不能套用IDB适配绕过原文保护。运行该组测试、`npm test`，真实浏览器IDB quota/abort由Task5补，不拿fake-indexeddb模拟代表浏览器全部通过。
+- [x] Step5：提交`feat: add isolated local profiles and custom pet record types`，报告返回形状/测试/旧键保持证据。
 
 ## Task 3 私有健康API与revision/幂等（105分钟）
 
@@ -132,11 +132,11 @@
 
 **Consumes:** 三空间/媒体稳定词条、用户原文。**Produces:** t/setLocale、统一键/插值/错误转换、刷新保留偏好。
 
-- [ ] Step1：词典键相同、所有占位参数一致、插值转义、偏好刷新保存、名字/备注/typeLabel/帖子不翻译测试；语言切换保持当前宠物、照片、未保存表单。运行`node --test tests/i18n.test.js`RED。
-- [ ] Step2：实现独立locale偏好、导航/footer/四页/状态/ARIA、账号/照片/导入管理及已有领域错误映射；日期/数字只格式展示，不改存储。未知后端消息用通用提示，不泄露原异常或日志内容。
-- [ ] Step3：为新界面接词条，保留减少动画和既有样式；不用为了换语言重建dialog丢输入。
-- [ ] Step4：`node --test tests/i18n.test.js`、`tests/e2e/language.py`，360/390/768/1440四宽度、英文长文本/校验/空态实际DOM检查。
-- [ ] Step5：提交`feat: localize current workflows without changing user records`。后续AI/指南词条按阶段3/5补，不把尚未存在功能当已覆盖。
+- [x] Step1：词典键相同、所有占位参数一致、插值转义、偏好刷新保存、名字/备注/typeLabel/帖子不翻译测试；语言切换保持当前宠物、照片、未保存表单。运行`node --test tests/i18n.test.js`RED。
+- [x] Step2：实现独立locale偏好、导航/footer/四页/状态/ARIA、账号/照片/导入管理及已有领域错误映射；日期/数字只格式展示，不改存储。未知后端消息用通用提示，不泄露原异常或日志内容。
+- [x] Step3：为新界面接词条，保留减少动画和既有样式；不用为了换语言重建dialog丢输入。
+- [x] Step4：`node --test tests/i18n.test.js`、`tests/e2e/language.py`，360/390/768/1440四宽度、英文长文本/校验/空态实际DOM检查。
+- [x] Step5：提交`feat: localize current workflows without changing user records`。后续AI/指南词条按阶段3/5补，不把尚未存在功能当已覆盖。
 
 ## Task 7 真实复验、单轮审查与阶段交付（60分钟）
 

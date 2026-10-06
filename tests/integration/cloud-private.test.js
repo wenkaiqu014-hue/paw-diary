@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { realClients, read, write, requireSuccess } from "./cloud-harness.js";
+import {requireDirectDenial} from "../helpers/cloud-direct-validation.js";
 test("real A/B workspaces enforce ownership, CAS, receipt retry and direct database denial", async () => {
   const { A, B } = await realClients();
   let before = requireSuccess(await read(A));
@@ -51,13 +52,10 @@ test("real A/B workspaces enforce ownership, CAS, receipt retry and direct datab
       ).error?.code,
       "FORBIDDEN",
     );
-  let directAllowed = true;
-  try {
-    await A.app.database().collection("health_workspaces").limit(1).get();
-  } catch {
-    directAllowed = false;
-  }
-  assert.equal(directAllowed, false);
+  await requireDirectDenial(
+    ()=>A.app.database().collection("health_workspaces").limit(1).get(),
+    {kind:"database"},
+  );
   const removed = requireSuccess(
     await write(
       A,

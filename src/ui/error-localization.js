@@ -1,6 +1,6 @@
 import {t as defaultTranslator} from './i18n.js';
 const codes = {unauth:'error.unauth',unauthenticated:'error.unauth',forbidden:'error.forbidden',invalid:'error.invalid',conflict:'error.conflict',unavailable:'error.unavailable',quota:'error.quota',quota_exceeded:'error.quota',storage_full:'error.quota',generation:'error.generation',stale_generation:'error.generation',not_found:'error.notFound',media_type:'error.mediaType',media_size:'error.mediaSize',media_decode:'error.mediaDecode',batch_limit:'error.batchLimit'};
-Object.assign(codes,{UNAUTHENTICATED:'error.unauth',FORBIDDEN:'error.forbidden',INVALID_INPUT:'error.invalid',CONFLICT:'error.conflict',UNAVAILABLE:'error.unavailable',QUOTA_EXCEEDED:'error.quota',STALE_GENERATION:'error.generation'});
+Object.assign(codes,{DEMO_TYPE_UNSUPPORTED:'error.demoCustomType',RECOVERY_CONFIRMATION_REQUIRED:'error.recoveryConfirmation',WORKSPACE_CHANGED:'error.generation',UNAUTHENTICATED:'error.unauth',FORBIDDEN:'error.forbidden',INVALID_INPUT:'error.invalid',CONFLICT:'error.conflict',UNAVAILABLE:'error.unavailable',QUOTA_EXCEEDED:'error.quota',STALE_GENERATION:'error.generation'});
 const backendKeys=new Set(['errors.unauthenticated','errors.forbidden','errors.invalid_input','errors.conflict','errors.unavailable','errors.mediaQuota','errors.invalidImage','errors.workspaceTooLarge','errors.idempotencyReused']);
 const known = new Map([
   ['请先恢复所属宠物，或在本次备份预览中一起确认恢复宠物','error.restoreParent'],

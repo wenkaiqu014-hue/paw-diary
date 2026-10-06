@@ -1,21 +1,37 @@
-# 阶段2实施与验收状态
+# 阶段2候选验收与尚未完成项
 
-当前实施中，尚未通过阶段验收或发布。起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46；截止仍为2026-10-08 20:00。用户已授权完整工作，人工邮箱验证后置验收。公开网页和旧tag维持v0.2.0；本地候选分支feat/stage2-local-cloud，基点de67c55。
+阶段2本地候选与模拟外部边界技术检查已完成，真实邮箱/私有云验收未通过，尚未合并或发布。实施起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46；原最终截止2026-10-08 20:00不变。候选在.worktrees/stage2、分支feat/stage2-local-cloud，公开站及旧tag仍v0.2.0。
 
-## 已有实际证据
+## 固定产物与本地能力
 
-免登录个人空间使用IndexedDB，与canonical示例和旧v1/v2原文隔离；支持多宠物、自定义类型、头像、当前宠物照片墙、主动幻灯片、完整媒体备份与预览恢复、中英文。Root已运行account-workspaces、加强language、personal-media合成数据浏览器流程，均退出0；photos合成数据有头桌面1440及手机尺寸390截图已检查，pageerror0。真机/原生200%/读屏仍列最终阶段，未冒充验收。
+最终验收产物app-ILE2BPQK.js/style-E5NM6WZE.css，公开配置enabled=false；预览http://127.0.0.1:4193/paw-diary/。demo canonical原文和v1/v2保留，个人空间为独立IndexedDB，不自动种示例/迁移；多宠、自定义类型、护理生命周期、回收站/排序、头像、当前宠物照片墙和主动幻灯片、完整媒体JSON备份/显式恢复、双语已实现。
 
-修复批次前全套176/176；单轮独立审查复现Critical账号切换写入和多项Important，因此不发布。对应一个修复批次正在整合：后端原始verified与expectedWorkspaceId、防错迁移、过期暂存清理；本地独立options CAS与显式损坏全量恢复；UI接入、头像压缩、城市勾选。Local工人49/49相关、198/198全套回报仍须root最终复验。
+Root同固定产物实际通过210/210单测、40份生产/工具JS语法、Python编译和git diff检查。8份原回归与9份新增浏览器脚本全部exit0；新增包括account-workspaces、language、四宽Englishresponsive、personal-media、review-local-fixes、以及外部SDK/平台模拟边界下的cloud-contract-ui、media-intent-ui、account、photo-wall。15项跨模块契约、6项回执/媒体意图场景、真实IDB事务abort和完整媒体归档均通过。模拟边界测试不能证明真实邮箱/云规则。
 
-原八套浏览器回归全部exit0（test_app、local-foundation、local-boundaries、local-regressions、health-layout、health-management、management-quality、cached-upgrade），覆盖原demo流程。新构建哈希入口、固定v0.2模块兼容、四hash路径、静态白名单及假secret sentinel两项测试通过。Pages配置已改Node22/npm ci/npm run build/upload dist并取完整tag历史，YAML检查通过，尚无本轮Actions部署。
+360/390/768/1440中英切换、用户原文/FileList/caption不变、示例原文隔离、长期回收/恢复/损坏源全量恢复、并发拒覆盖、缓存兼容均有证据。表格在平板内部横滚可实际操作，整页无横溢。真实原图5,564,152字节→684,001字节、头像最长边512且PNG透明度保留；坏MIME/超10MiB失败保旧头像；浏览器真实blobs.put事务abort后完整归档/IDB不变，原文件说明保留且重试只一新资产。不能称真实磁盘quota耗尽。
 
-## 未过门槛
+有头合成截图已目检，样式同最终hash；最后逻辑修复前的固定app-YVB44MZI证据明确区分，不冒充最终hash。真机软键盘/触控、读屏、原生200%缩放仍未做。Impeccable单次detector exit0/0发现，但缺解析依赖而DEGRADED，仅regex，不是完整无缺陷/WCAG验收。
 
-真实受控邮箱A/B收信与登录、同账号第二浏览器、可信平台身份、真实匿名uid拒绝、私有健康/媒体跨账号与直接DB/对象拒绝、真实CAS/完整照片迁移备份、运行时限额尚未通过。测试没有配置真实session时必须非0，不以mock或skip充当成功。SDK3.10.1转换后的邮箱确认时间不能证明邮箱验证，已改查官方原始email_verified字段，不从日期推断。
+## 审查与修复
 
-原免费trial禁止生产来源域和存储deny规则；六个月升配119.39元未做。预算内上海个人版1个月19.90元唯一订单因余额不足未支付，无扣费、无充值、未创建paid环境；03:07:35只读同单仍未付。资金与两个受控邮箱协助异步等待用户，不能当已确认。邮箱地址/验证码/session/管理凭证不记录在本报告或Git。
+单轮独立审查发现账号A→B旧草稿可能写B、local独立options revision未接、迁移sourceId/closure不匹配、过期staging占额、坏源恢复不可达、发布裸SDK等；一个修复批次逐个实际RED→GREEN，并复验整套。追加同范围的A迟到来源导出、明确登录过期、媒体内容改变重试和晚失败队列，均有实际行为证据。明确UNAUTH清旧资料/代际并允许主动重码，普通网络UNAV保输入，旧A迟到不清B、不自动退出B。
 
-## 日志与证据
+服务端expectedWorkspaceId只作意图防错断言，owner取可信平台UID；authToken瞬时原始邮箱验证，不进业务payload/回执/hash/log。准备/确认/删除/恢复维持revision/幂等，媒体过期清理失败不假报释放；完整preparedImage经过实际尺寸/签名验证，不重复JPEG编码。
 
-统一过程见[SESSION_LOG](../../SESSION_LOG.md)；云配置/费用guard见[操作说明](../operations/cloud-setup.md)。合成浏览器/技术身份/单测原始证据在Git忽略test-results/stage2，技术用户名已删除、入口已恢复关闭。当前3个候选实现提交537e1c8、28b6aee、9279150；后续修复未归档，不把候选提交称公开版本。
+直接对象测试曾catch-all把INVALID_PARAMS当权限拒绝，现只明确官方权限码计denial；网络/超时/无效/未知都FAIL。Root先前以为publicAsset剥fileRef不准确，实际DTO保留、archive才剥，已更正；真实fixture另由主测试进程FUJI只读校验、内部绑定A/B/anon SDK，管理员不代替访问者。
+
+## 真实环境事实与未过门槛
+
+原trial上海NORMAL/MGO1/PG0，邮箱代发与五集合deny/MaxDevice5已读回，生产安全来源和存储custom deny因FreePackageDenied未完成。03:41:46 paw-api修复部署Active且envId/TZ/publish_key公开变量严格读回，Node18.15/256MB/3秒。
+
+真实技术probe仅A完成原始资料/SDK/平台UID比对，未验证标记缺省，API正确UNAUTHENTICATED。诊断shapeassert提前exit1，B未采完，不能称双账户通过。两个自己创建技术账号已删除/0remaining，Username关闭读回，密码/token已清除；没有发邮件。官方旧兼容文档与当前SDK有optional email_verified布尔依据，但本env真实OTP后是否true尚待实际样本；不从转换日期/provider.bind/有UID/email推断，不盲切未说明的v2。
+
+真实集成入口现0pass/5fail/0skip，缺少受控A/B及真实匿名SDK会话。真实邮箱收信登录、同账号另浏览器、健康/媒体私有跨账号与直接访问拒绝、真实CAS/迁移备份、近1MiB/运行时限额仍未验收。这些未过前不公开0.3、不声称阶段完成。
+
+唯一上海个人版1月19.90元订单余额不足未付，无扣费/充值/paid环境；资金与两个受控邮箱协助异步等待用户。原采购记录明确ResourceTypes=[flexdb,cos,scf]，官方flexdb为文档DB；订单不回显类型且原params未存是审计限制，不等于原请求未指定。Root保留同单不无故重建，真正发货必须读回DocDB1/PG0，否则停止，不私自二次购买。自动续费/超额false保持，不升六个月119.39元。
+
+## 恢复工作与证据
+
+统一[SESSION_LOG](../../SESSION_LOG.md)、[云操作说明](../operations/cloud-setup.md)、[阶段2计划](../superpowers/plans/2026-10-06-02-cloud-identity.md)记录实际命令/失败/裁决。原始合成证据在Git忽略test-results/stage2/final-browser、review-local-browser、各worker报告；不记录邮箱/验证码/token/管理密钥。临时readiness诊断尚保留，真实验收结束按精确guard清理，无删除完成声明。
+
+下一步先确认同单资金/实际发货，再配置合法生产及本地测试来源、严格存储规则；用两个受控邮箱真实OTP获取并复读原始verified标记，依次跑真实SDK集成与真实登录UI，全部通过后沿原仓库/URL正式发布0.3并匿名复验，才进入用户体验确认。

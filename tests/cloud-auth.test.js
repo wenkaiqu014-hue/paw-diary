@@ -56,6 +56,13 @@ test("email adapter keeps challenge and credentials out of returned session", as
       error: null,
     }),
     getUser: async () => ({ data: { user }, error: null }),
+    getUserInfo: async () => ({
+      sub: user.id,
+      email: user.email,
+      email_verified: true,
+      created_at: user.email_confirmed_at,
+      is_anonymous: user.is_anonymous,
+    }),
     signInWithOtp: async ({ email }) => ({
       data: {
         verifyOtp: async ({ token }) => ({
@@ -385,9 +392,10 @@ test("cloud repository export identifier comes from the server and cannot expose
 test("real integration clients isolate native SDK cache and do not inherit management credentials", async () => {
   const harness = await import("./integration/cloud-harness.js");
   assert.equal(typeof harness.createIsolatedClient, "function");
-  const priorManagement=process.env.TENCENTCLOUD_FUJI_SECRET_ID,priorOverride=process.env.tcb_token;
-  process.env.TENCENTCLOUD_FUJI_SECRET_ID='test-management-sentinel';
-  process.env.tcb_token='test-sdk-token-override-sentinel';
+  const priorManagement = process.env.TENCENTCLOUD_FUJI_SECRET_ID,
+    priorOverride = process.env.tcb_token;
+  process.env.TENCENTCLOUD_FUJI_SECRET_ID = "test-management-sentinel";
+  process.env.tcb_token = "test-sdk-token-override-sentinel";
   const first = await harness.createIsolatedClient({
       envId: "sdk-cache-isolation-probe",
       cacheOnly: true,
@@ -409,7 +417,309 @@ test("real integration clients isolate native SDK cache and do not inherit manag
   } finally {
     await first.close();
     await second.close();
-    if(priorManagement===undefined)delete process.env.TENCENTCLOUD_FUJI_SECRET_ID;else process.env.TENCENTCLOUD_FUJI_SECRET_ID=priorManagement;
-    if(priorOverride===undefined)delete process.env.tcb_token;else process.env.tcb_token=priorOverride;
+    if (priorManagement === undefined)
+      delete process.env.TENCENTCLOUD_FUJI_SECRET_ID;
+    else process.env.TENCENTCLOUD_FUJI_SECRET_ID = priorManagement;
+    if (priorOverride === undefined) delete process.env.tcb_token;
+    else process.env.tcb_token = priorOverride;
   }
+});
+test("raw verified profile rejects converted SDK confirmation dates and foreign user tokens", async () => {
+  const auth = {
+    getAuthContext: async () => ({ uid: "A" }),
+    getUserInfo: () => ({ uid: "A", isAnonymous: false }),
+    getEndUserInfo: async () => ({
+      userInfo: { uid: "A", email: "bound@example.test", emailVerified: true },
+    }),
+  };
+  let profile = {
+    sub: "A",
+    email: "bound@example.test",
+    email_verified: false,
+    created_at: "2026-10-07T00:00:00Z",
+    email_confirmed_at: "2026-10-07T00:00:00Z",
+  };
+  const options = {
+    auth,
+    authToken: "opaque-bearer",
+    readVerifiedProfile: async () => profile,
+  };
+  assert.equal(await resolvePrincipal({}, options), null);
+  profile.email_verified = true;
+  assert.deepEqual(await resolvePrincipal({}, options), {
+    userId: "A",
+    emailVerified: true,
+    isAnonymous: false,
+  });
+  profile.sub = "B";
+  assert.equal(await resolvePrincipal({}, options), null);
+  assert.equal(
+    await resolvePrincipal({}, { ...options, authToken: null }),
+    null,
+  );
+});
+test("platform verified profile lookup uses a fixed official HTTPS endpoint and bounds returned JSON", async () => {
+  let createPlatformProfileLookup;
+  try {
+    ({
+      createPlatformProfileLookup,
+    } = require("../backend/verified-profile.cjs"));
+  } catch {}
+  assert.equal(typeof createPlatformProfileLookup, "function");
+  let seen;
+  const profile = {
+    sub: "A",
+    email_verified: true,
+    email: "bound@example.test",
+    created_at: "2026-10-07T00:00:00Z",
+  };
+  const lookup = createPlatformProfileLookup({
+    environmentId: "paw-diary-d8g3p4tlsb305221d",
+    publishableKey: "test-publishable",
+    fetch: async (url, options) => {
+      seen = { url, options };
+      return new Response(JSON.stringify(profile));
+    },
+  });
+  assert.deepEqual(await lookup("opaque-bearer"), profile);
+  assert.equal(
+    seen.url,
+    "https://paw-diary-d8g3p4tlsb305221d.api.tcloudbasegateway.com/auth/v1/user/me",
+  );
+  assert.equal(seen.options.headers.Authorization, "Bearer opaque-bearer");
+  assert.equal(seen.options.redirect, "error");
+  const oversized = createPlatformProfileLookup({
+    environmentId: "paw-diary-d8g3p4tlsb305221d",
+    publishableKey: "test-publishable",
+    fetch: async () => new Response("x".repeat(65537)),
+  });
+  await assert.rejects(
+    oversized("opaque-bearer"),
+    (e) => e.code === "UNAVAILABLE",
+  );
+});
+test("frontend login reads raw verified flag instead of SDK fabricated confirmation timestamp", async () => {
+  let raw = {
+    sub: "A",
+    email: "bound@example.test",
+    email_verified: false,
+    created_at: "2026-10-07T00:00:00Z",
+  };
+  const converted = {
+    id: "A",
+    email: raw.email,
+    is_anonymous: false,
+    email_confirmed_at: raw.created_at,
+  };
+  const sdk = {
+    getSession: async () => ({
+      data: { user: converted, session: { user: converted } },
+      error: null,
+    }),
+    getUser: async () => ({ data: { user: converted }, error: null }),
+    getUserInfo: async () => raw,
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
+  };
+  const adapter = createCloudbaseAuth({ app: { auth: () => sdk } });
+  assert.equal(await adapter.getSession(), null);
+  raw.email_verified = true;
+  assert.deepEqual(await adapter.getSession(), { userId: "A" });
+  raw.sub = "B";
+  assert.equal(await adapter.getSession(), null);
+});
+test("old account repository cannot write B when live invocation identity changes before response", async () => {
+  const { memoryStore } = require("./helpers/cloud-memory.cjs"),
+    { handleRequest } = require("../backend/api.cjs");
+  const store = memoryStore();
+  let userId = "A";
+  const invoke = (request) =>
+    handleRequest(request, {
+      principal: { userId, emailVerified: true, isAnonymous: false },
+      store,
+      environmentId: "env-one",
+    });
+  const repo = createCloudRepository({
+    invoke,
+    principal: { userId: "A" },
+    storage: null,
+  });
+  await repo.snapshot();
+  userId = "B";
+  await assert.rejects(
+    repo.savePet({ name: "A draft", type: "cat" }),
+    (e) => e.code === "UNAUTHENTICATED",
+  );
+  const b = await invoke({
+    version: 1,
+    action: "health.snapshot",
+    payload: {},
+  });
+  assert.equal(b.data.pets.length, 0);
+  assert.equal(b.revision, 0);
+});
+test("request credential accessor binds current SDK token to the same raw verified principal", async () => {
+  let raw = {
+      sub: "A",
+      email: "bound@example.test",
+      email_verified: true,
+      created_at: "2026-10-07T00:00:00Z",
+    },
+    converted = { id: "A", email: raw.email, is_anonymous: false };
+  const sdk = {
+    getSession: async () => ({
+      data: {
+        user: converted,
+        session: { user: converted, access_token: "private-opaque-token" },
+      },
+      error: null,
+    }),
+    getUser: async () => ({ data: { user: converted }, error: null }),
+    getUserInfo: async () => raw,
+  };
+  const auth = createCloudbaseAuth({ app: { auth: () => sdk } });
+  assert.equal(typeof auth.getRequestSession, "function");
+  assert.deepEqual(await auth.getRequestSession(), {
+    principal: { userId: "A" },
+    authToken: "private-opaque-token",
+  });
+  assert.deepEqual(await auth.getSession(), { userId: "A" });
+  raw.email_verified = false;
+  assert.equal(await auth.getRequestSession(), null);
+  raw.email_verified = true;
+  raw.sub = "B";
+  assert.equal(await auth.getRequestSession(), null);
+});
+test("raw verified identity does not depend on user creation date field", async () => {
+  const authSdk = {
+      getAuthContext: async () => ({ uid: "A" }),
+      getUserInfo: () => ({ uid: "A", isAnonymous: false }),
+    },
+    profile = { sub: "A", email: "bound@example.test", email_verified: true };
+  assert.deepEqual(
+    await resolvePrincipal(
+      {},
+      {
+        auth: authSdk,
+        authToken: "opaque-bearer",
+        readVerifiedProfile: async () => profile,
+      },
+    ),
+    { userId: "A", emailVerified: true, isAnonymous: false },
+  );
+  const user = { id: "A", is_anonymous: false, email: profile.email },
+    sdk = {
+      getSession: async () => ({
+        data: { user, session: { user, access_token: "private-opaque" } },
+        error: null,
+      }),
+      getUser: async () => ({ data: { user }, error: null }),
+      getUserInfo: async () => profile,
+    };
+  assert.deepEqual(
+    await createCloudbaseAuth({ app: { auth: () => sdk } }).getSession(),
+    { userId: "A" },
+  );
+});
+test("same-user transient profile failure preserves confirmed session while unverified B clears A", async () => {
+  let event,
+    user = { id: "A", is_anonymous: false, email: "bound@example.test" },
+    raw = { sub: "A", email: user.email, email_verified: true },
+    offline = false;
+  const sdk = {
+    getSession: async () => ({
+      data: { user, session: { user, access_token: "opaque" } },
+      error: null,
+    }),
+    getUser: async () => ({ data: { user }, error: null }),
+    getUserInfo: async () => {
+      if (offline) throw new Error("network");
+      return raw;
+    },
+    onAuthStateChange: (fn) => {
+      event = fn;
+      return { data: { subscription: { unsubscribe() {} } } };
+    },
+  };
+  const auth = createCloudbaseAuth({ app: { auth: () => sdk } });
+  await auth.getSession();
+  const delivered = [];
+  auth.subscribe((value) => delivered.push(value));
+  offline = true;
+  event("TOKEN_REFRESHED", { user });
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(delivered.length, 0);
+  await assert.rejects(
+    auth.getRequestSession(),
+    (e) => e.code === "UNAVAILABLE",
+  );
+  user = { ...user, id: "B" };
+  event("SIGNED_IN", { user });
+  await new Promise((r) => setTimeout(r, 0));
+  assert.deepEqual(delivered, [null]);
+  offline = false;
+  raw = { ...raw, sub: "B", email_verified: false };
+  event("TOKEN_REFRESHED", { user });
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(delivered.at(-1), null);
+});
+test("late A verification cannot reset the confirmed B identity tracker", async () => {
+  let event,
+    mode = "A",
+    resolveA,
+    user = { id: "A", is_anonymous: false, email: "bound@example.test" };
+  const raw = (id) => ({ sub: id, email: user.email, email_verified: true });
+  const sdk = {
+    getSession: async () => ({
+      data: { user, session: { user, access_token: "opaque" } },
+      error: null,
+    }),
+    getUser: async () => ({ data: { user }, error: null }),
+    getUserInfo: () =>
+      mode === "delayedA"
+        ? new Promise((resolve) => {
+            resolveA = resolve;
+          })
+        : mode === "offline"
+          ? Promise.reject(new Error("network"))
+          : Promise.resolve(raw(mode)),
+    onAuthStateChange: (fn) => {
+      event = fn;
+      return { data: { subscription: { unsubscribe() {} } } };
+    },
+  };
+  const auth = createCloudbaseAuth({ app: { auth: () => sdk } });
+  await auth.getSession();
+  const delivered = [];
+  auth.subscribe((value) => delivered.push(value));
+  mode = "delayedA";
+  event("TOKEN_REFRESHED", { user });
+  await new Promise((r) => setTimeout(r, 0));
+  mode = "B";
+  user = { ...user, id: "B" };
+  event("SIGNED_IN", { user });
+  await new Promise((r) => setTimeout(r, 0));
+  resolveA(raw("A"));
+  await new Promise((r) => setTimeout(r, 0));
+  const count = delivered.length;
+  mode = "offline";
+  event("TOKEN_REFRESHED", { user });
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(delivered.length, count);
+  assert.deepEqual(delivered.at(-1), { userId: "B" });
+});
+test('storage cleanup confirms missing object before releasing quota instead of trusting a failed delete',async()=>{const {createCloudbaseStorage}=require('../backend/storage.cjs');const app={deleteFile:async()=>({fileList:[{code:'NOT_REMOVED'}]}),getFileInfo:async()=>({fileList:[{code:'SUCCESS',tempFileURL:'https://private.example.invalid/object'}]})};const absent=createCloudbaseStorage({app,fetch:async()=>new Response(null,{status:404})});await absent.remove('opaque');const retained=createCloudbaseStorage({app,fetch:async()=>new Response(null,{status:403})});await assert.rejects(retained.remove('opaque'),e=>e.code==='UNAVAILABLE');});
+
+test("prepared avatar is validated and uploaded once without recompression", async () => {
+  const { createCloudMediaRepository } = await import("../src/data/cloud-media-repository.js");
+  const blob = new Blob([Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jU1kAAAAASUVORK5CYII=", "base64")], {type:"image/png"});
+  const preparedImage = {blob,width:1,height:1,mime:blob.type,bytes:blob.size};
+  let encoded = 0, uploaded = 0, requests = 0, closed = 0;
+  const repository = {getRevision:()=>1,request:async(action)=>{requests++;return action==="media.prepare"?{ticketId:"ticket",upload:{}}:{id:"asset"};}};
+  const media = createCloudMediaRepository({repository,processImage:async()=>{encoded++;throw Error("must not encode twice");},decodeImage:async()=>({width:1,height:1,close(){closed++;}}),upload:async(_,value)=>{assert.equal(value,blob);uploaded++;}});
+  assert.equal((await media.save({petId:"pet",kind:"avatar",preparedImage,operationId:"op"})).id,"asset");
+  assert.equal(encoded,0);assert.equal(uploaded,1);assert.equal(closed,1);
+  const before = requests;
+  await assert.rejects(media.save({petId:"pet",kind:"avatar",preparedImage:{...preparedImage,width:513},operationId:"bad"}),e=>e.code==="INVALID_INPUT");
+  await assert.rejects(media.save({petId:"pet",kind:"avatar",preparedImage:{...preparedImage,bytes:2},operationId:"bad2"}),e=>e.code==="INVALID_INPUT");
+  assert.equal(requests,before);
 });

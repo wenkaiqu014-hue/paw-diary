@@ -54,11 +54,13 @@ const cityOptions=['深圳','北京','上海','广州','杭州','成都'];
 
 let repository, session, state=null, loadError=null;
 let workspaceMode='demo',cloudApp=null,auth=null,accountUI=null,authPrincipal=null,photoWall=null,photoHost=null,photoPetId=null;
-const localRepositories=new Map(),avatarUrls=new Map();
-let restoreAuthUnsubscribe=null;
+const localRepositories=new Map(),avatarUrls=new Map(),reauthRequiredOwners=new Set();
+let restoreAuthUnsubscribe=null,workspaceTransition=0;
 function editingPetId(form){return form?.__pawContext?.petId??pet()?.id;}
 function petTypeLabel(p){return p.type==='other'?p.typeLabel:UI_TEXT(p.type==='cat'?UI_TEXT('猫咪'):UI_TEXT('狗狗'));}
 function recordTypeLabel(r){return r.type==='other'?r.typeLabel:UI_TEXT(types[r.type]?.label??UI_TEXT('日常'));}
+function recordTypeEntries(){return Object.entries(types).filter(([key])=>workspaceMode!=='demo'||key!=='other');}
+function assertDemoTypes(snapshot){if((snapshot.pets??[]).some(p=>p.type==='other')||(snapshot.records??[]).some(r=>r.type==='other'))throw Object.assign(new Error('DEMO_TYPE_UNSUPPORTED'),{code:'DEMO_TYPE_UNSUPPORTED',messageKey:'error.demoCustomType'});}
 function canonicalUiText(value){const text=String(value??'');if(Object.hasOwn(zhMessages,text))return text;const key=Object.keys(enMessages).find(k=>enMessages[k]===text&&typeof zhMessages[k]==='string');return key?zhMessages[key]:text;}
 function applyLocaleChrome(){
  document.documentElement.lang=getLocale();document.title=UI_TEXT('爪爪日记')+' · '+UI_TEXT('让每一次成长都有迹可循');
@@ -76,7 +78,7 @@ function applyLocaleChrome(){
  const footer=document.querySelector('footer');footer.firstChild.textContent=UI_TEXT('每一个普通的日子，都值得被记住。');footer.querySelector('span').textContent=UI_TEXT(workspaceMode==='demo'?UI_TEXT('示例内容 · 新增数据仅保存在当前浏览器'):workspaceMode==='local'?UI_TEXT('个人资料仅保存在当前浏览器'):UI_TEXT('个人健康与照片私有保存'));
 }
 function localizeOpenDialog(){
- if(!dialog.open)return;const body=$('#dialog-body');if(body.querySelector('[data-account-form]')||body.querySelector('#account-login-form')||body.querySelector('#email-login-form')||body.querySelector('#account-actions-form')){accountUI?.refreshLocale();return;}
+ if(!dialog.open)return;const body=$('#dialog-body');body.querySelector('form')?.__pawLocaleRefresh?.();if(body.querySelector('[data-account-form]')||body.querySelector('#account-login-form')||body.querySelector('#email-login-form')||body.querySelector('#account-actions-form')){accountUI?.refreshLocale();return;}
  for(const el of body.querySelectorAll('.field>span,.form-tip,.form-actions button,.demo-note,[data-ui-copy],option')){
   if(el.tagName==='OPTION'&&el.closest('select')?.name==='city')continue;
   if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.setAttribute('value',el.value);
@@ -93,7 +95,7 @@ function workspaceControls(){
  $('#workspace-controls').innerHTML=UI_HTML`<p>${esc(UI_TEXT(description))}</p><div class="workspace-actions">${workspaceMode==='local'?button(UI_TEXT('看看示例'),'workspace-demo','secondary','paw'):button(UI_TEXT('开始记录我的宠物'),'workspace-local','secondary','paw')}${button(workspaceMode==='account'?UI_TEXT('我的账号'):UI_TEXT('登录与云同步'),'account','secondary','community')}</div>`;
  applyLocaleChrome();
 }
-async function getLocalRepository(mode){
+function getLocalRepository(mode){
  if(!localRepositories.has(mode)){localRepositories.set(mode,mode==='demo'?createDemoRepository({storage:localStorage}):createLocalRepository());}
  return localRepositories.get(mode);
 }
@@ -108,29 +110,87 @@ function maintainPhotoWall(){
  if(!photoWall){photoHost=document.createElement('div');photoHost.className='photo-wall-host';container.append(photoHost);photoWall=createPhotoWall({media:repository.media,getPetId:()=>pet()?.id,getGeneration:()=>session.generation,getRevision:()=>repository.getRevision(),t:translate,onChanged:async()=>{await session.load();syncState();render();},onError:e=>toast(localizeError(e)),document});photoPetId=pet().id;photoWall.mount(photoHost).catch(e=>toast(localizeError(e)));}
  else {container.append(old);if(photoPetId!==pet().id){photoPetId=pet().id;photoWall.render().catch(e=>toast(localizeError(e)));}}
 }
+function accountBoundaryError(code='WORKSPACE_CHANGED'){
+ return Object.assign(new Error(code),{code,messageKey:code==='UNAUTHENTICATED'?'errors.unauthenticated':'errors.workspace.changed'});
+}
+function handleAuthIdentityChange(principal){
+ const next=principal?.userId?{userId:principal.userId}:null,previous=authPrincipal?.userId;
+ authPrincipal=next;
+ if(workspaceMode!=='account'||previous===next?.userId)return;
+ // Invalidate visible ownership and drafts synchronously; never carry A's form into B.
+ saving=false;dirty=false;if(dialog.open)closeModal(true);$('#dialog-body').replaceChildren();state=null;loadError=null;
+ const transition=workspaceTransition+1;switchWorkspace(next?'account':'local',{force:true}).catch(error=>{if(workspaceTransition!==transition||authPrincipal?.userId!==next?.userId)return;if(workspaceMode==='account'){authPrincipal=null;switchWorkspace('local',{force:true}).catch(()=>{});}toast(localizeError(error));});
+}
+function expireCurrentAccount(bound,owner,generation){
+ if(repository!==bound||workspaceMode!=='account'||authPrincipal?.userId!==owner.userId||session?.generation!==generation)return false;
+ reauthRequiredOwners.add(owner.userId);handleAuthIdentityChange(null);return true;
+}
+function boundCloudRepository(principal){
+ const owner={userId:principal.userId};let bound;
+ bound=createCloudRepository({principal:owner,invoke:async request=>{
+  const generation=session?.generation;
+  if(repository!==bound||workspaceMode!=='account'||authPrincipal?.userId!==owner.userId)throw accountBoundaryError();
+  // Read the current raw-verified SDK session immediately before every transport.
+  // An unavailable check preserves the same-owner form; a confirmed UID change clears it.
+  let authorization;try{authorization=await auth.getRequestSession();if(!authorization&&repository===bound&&session?.generation===generation)authorization=await auth.getRequestSession();}catch(error){if(error.code==='UNAUTHENTICATED')expireCurrentAccount(bound,owner,generation);throw error;}
+  if(repository!==bound||workspaceMode!=='account'||session?.generation!==generation)throw accountBoundaryError();
+  if(authorization?.principal?.userId!==owner.userId||authorization?.principal?.userId!==authPrincipal?.userId){handleAuthIdentityChange(authorization?.principal??null);throw accountBoundaryError(authorization?'WORKSPACE_CHANGED':'UNAUTHENTICATED');}
+  if(repository!==bound||workspaceMode!=='account'||session?.generation!==generation)throw accountBoundaryError();
+  const result=await cloudApp.callFunction({name:PUBLIC_CONFIG.functionName,data:{...request,authToken:authorization.authToken}});
+  if(repository!==bound||authPrincipal?.userId!==owner.userId||session?.generation!==generation)throw accountBoundaryError();
+  const response=typeof result.result==='string'?JSON.parse(result.result):result,reply=response?.result??response;
+  if(reply?.ok===false&&reply.error?.code==='UNAUTHENTICATED'){expireCurrentAccount(bound,owner,generation);throw accountBoundaryError('UNAUTHENTICATED');}
+  return response;
+ }});return bound;
+}
 async function switchWorkspace(mode,{newPet=false,fromLogin=false,force=false}={}){
  if(dialog.open&&!fromLogin){if(force)closeModal(true);else if(!closeModal())return false;}
+ const transition=++workspaceTransition;
  photoWall?.destroy();photoWall=null;photoHost=null;photoPetId=null;clearAvatarUrls();
- const next=mode==='account'?createCloudRepository({principal:authPrincipal,invoke:async request=>{const result=await cloudApp.callFunction({name:PUBLIC_CONFIG.functionName,data:request});return typeof result.result==='string'?JSON.parse(result.result):result;}}):await getLocalRepository(mode);
+ const next=mode==='account'?boundCloudRepository(authPrincipal):getLocalRepository(mode);
  workspaceMode=mode;repository=next;loadError=null;state=null;management=transitionManagement(management,{type:'EXIT'});
- if(!session)session=createAppSession(next);else await session.switchWorkspace({mode,repository:next,principal:mode==='account'?authPrincipal:null});
- if(!session.snapshot())await session.load();syncState();localStorage.setItem('paw-diary:workspace-mode',mode);render();
+ if(!session){session=createAppSession(next);render();await session.load();}
+ else {const loading=session.switchWorkspace({mode,repository:next,principal:mode==='account'?authPrincipal:null});render();await loading;}
+ if(transition!==workspaceTransition||repository!==next)return false;
+ syncState();localStorage.setItem('paw-diary:workspace-mode',mode);render();
  if(newPet&&!pet())petModal(true);return true;
 }
 function initCloudAccount(){
  if(!PUBLIC_CONFIG.enabled)return null;
  if(auth)return auth;
  cloudApp=cloudbase.init({env:PUBLIC_CONFIG.environmentId,region:PUBLIC_CONFIG.region,accessKey:PUBLIC_CONFIG.publishableKey});auth=createCloudbaseAuth({app:cloudApp});
- accountUI=createAccountUI({auth,getGeneration:()=>session.generation,modal,closeModal,onSignedIn:async principal=>{authPrincipal=principal;await switchWorkspace('account',{fromLogin:true});},onSignedOut:async()=>{authPrincipal=null;if(workspaceMode!=='local')await switchWorkspace('local',{force:true});},onImportLocal:()=>openCloudMigration(),t:translate,document,onError:e=>toast(localizeError(e))});
- restoreAuthUnsubscribe=auth.subscribe(principal=>{if(!principal&&workspaceMode==='account'){authPrincipal=null;switchWorkspace('local',{force:true}).catch(e=>toast(localizeError(e)));}});return auth;
+ accountUI=createAccountUI({auth,getGeneration:()=>session.generation,modal,closeModal,onSignedIn:async principal=>{const current=await auth.getRequestSession();if(current?.principal?.userId!==principal.userId)throw accountBoundaryError();authPrincipal={userId:principal.userId};await switchWorkspace('account',{fromLogin:true});if(workspaceMode==='account'&&authPrincipal?.userId===principal.userId)reauthRequiredOwners.delete(principal.userId);},onSignedOut:async()=>{authPrincipal=null;if(workspaceMode!=='local')await switchWorkspace('local',{force:true});},onImportLocal:()=>openCloudMigration(),t:translate,document,onError:e=>toast(localizeError(e))});
+ restoreAuthUnsubscribe=auth.subscribe(handleAuthIdentityChange);return auth;
 }
-async function openAccount(){try{if(!initCloudAccount()){modal(UI_TEXT('登录与云同步'),UI_HTML`<div class="profile-details"><p data-ui-copy>云服务尚在验证中。你可以继续本地记录，资料不会自动上传。</p><p data-ui-copy>只开放实际验收通过的邮箱登录。</p></div><div class="form-actions"><button class="button" data-action="close">继续本地记录</button></div>`);return;}await accountUI.openAccount();}catch(e){toast(localizeError(e));}}
+async function openAccount(){
+ const originRepository=repository,originGeneration=session?.generation;
+ try{if(!initCloudAccount()){modal(UI_TEXT('登录与云同步'),UI_HTML`<div class="profile-details"><p data-ui-copy>云服务尚在验证中。你可以继续本地记录，资料不会自动上传。</p><p data-ui-copy>只开放实际验收通过的邮箱登录。</p></div><div class="form-actions"><button class="button" data-action="close">继续本地记录</button></div>`);return;}
+  const principal=await auth.getSession();if(repository!==originRepository||session?.generation!==originGeneration)return;
+  if(principal&&reauthRequiredOwners.has(principal.userId)){accountUI.openLogin();return;}
+  if(principal&&(workspaceMode!=='account'||authPrincipal?.userId!==principal.userId)){authPrincipal={userId:principal.userId};if(!await switchWorkspace('account'))return;}
+  await accountUI.openAccount();
+ }catch(error){
+  if(repository!==originRepository||session?.generation!==originGeneration)return;
+  if(error.code==='UNAUTHENTICATED'&&accountUI){if(workspaceMode==='account'&&authPrincipal)expireCurrentAccount(repository,authPrincipal,session.generation);accountUI.openLogin();return;}
+  toast(localizeError(error));
+ }
+}
 async function avatarModal(petId){
  if(workspaceMode==='demo'){toast(UI_TEXT('请先进入自己的本地档案，再上传私有照片。'));return;}
  const parent=session.snapshot().pets.find(p=>p.id===petId&&p.deletedAt===null);if(!parent)return;
  if(!modal(UI_TEXT('更换宠物头像'),UI_HTML`<form id="avatar-form">${field(UI_TEXT('选择照片'),'<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp" required>')}<p class="form-tip">支持 JPG / PNG / WebP，最大10MiB，保存用于展示的压缩图片。</p>${formActions(UI_TEXT('保存头像'))}</form>`))return;
- const form=$('#avatar-form');form.__pawContext.petId=petId;
- form.addEventListener('submit',async e=>{e.preventDefault();const blob=new FormData(form).get('avatar');await submitOperation(form,async repo=>{const context=form.__pawContext;return repo.media.save({petId:context.petId,kind:'avatar',blob,caption:'',baseRevision:context.baseRevision,operationId:context.operationId});},UI_TEXT('头像已保存。'));});
+ const form=$('#avatar-form'),input=form.querySelector('[name=avatar]');form.__pawContext.petId=petId;
+ let choice=0,lastIntent=null,preparedFile=null,preparedImage=null;
+ input.addEventListener('change',()=>{choice++;preparedFile=null;preparedImage=null;});
+ form.addEventListener('submit',async e=>{e.preventDefault();const context=form.__pawContext;if(saving||!form.isConnected||context.generation!==session.generation)return;const file=input.files[0],selectedChoice=choice;input.disabled=true;
+  try{await submitOperation(form,async repo=>{
+   if(preparedFile!==file||!preparedImage){preparedImage=await processImage(file,{kind:'avatar'});preparedFile=file;}
+   const digest=await crypto.subtle.digest('SHA-256',await preparedImage.blob.arrayBuffer()),sha256=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');
+   if(context.generation!==session.generation||!form.isConnected||selectedChoice!==choice)throw accountBoundaryError();
+   const intent=JSON.stringify({petId:context.petId,kind:'avatar',choice:selectedChoice,sha256});if(intent!==lastIntent){lastIntent=intent;context.operationId=uid();}
+   return repo.media.save({petId:context.petId,kind:'avatar',blob:preparedImage.blob,preparedImage,caption:'',baseRevision:context.baseRevision,operationId:context.operationId});
+  },UI_TEXT('头像已保存。'));}finally{if(form.isConnected&&context.generation===session.generation)input.disabled=false;}
+ });
 }
 
 let page='home',healthFilter='all',healthFrom='',healthTo='',reminderFilter='pending',nearbyFilter='all',communityFilter='all',postSearch='';
@@ -142,7 +202,7 @@ const dialog=$('#dialog');
 
 // 页面只读取可见资料；持久化、JSON备份和回收站始终读取完整V3。
 function syncState(){
-  const s=session.snapshot(); if(!s){state=null;return;}
+  const s=session.snapshot(); if(!s){state=null;return;}if(workspaceMode==='demo')assertDemoTypes(s);
   const visible=visibleHealth(s),previousPetId=state?.activePet;
   state={...s,...visible,activePet:visible.activePetId,city:s.profile.city,
     pets:visible.pets.map(p=>({...p,arrival:p.arrivalDate,image:avatarUrls.get(p.avatarAssetId)?.url??p.image})),
@@ -194,19 +254,19 @@ function route(){
   page=['home','health','nearby','community'].includes(target)?target:'home';management=transitionManagement(management,{type:'EXIT'});render({focus:true});window.scrollTo({top:0,behavior:'instant'});
 }
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
-function modal(title,html){
+function modal(title,html,{recovery=false}={}){
   if(dialog.open){if(!closeModal())return false;}
-  modalOrigin=token(document.activeElement);dirty=false;$('#dialog-title').dataset.uiSource=canonicalUiText(title);$('#dialog-title').textContent=title;$('#dialog-body').innerHTML=html;$('#dialog-body').querySelectorAll('input,textarea').forEach(el=>{if(!el.hasAttribute('autocomplete'))el.autocomplete='off';});$('#dialog-body').querySelectorAll('form').forEach(form=>{form.__pawContext=captureFormContext({repository,getGeneration:()=>session?.generation??0,petId:pet()?.id});});dialog.showModal();return true;
+  modalOrigin=token(document.activeElement);dirty=false;$('#dialog-title').dataset.uiSource=canonicalUiText(title);$('#dialog-title').textContent=title;$('#dialog-body').innerHTML=html;$('#dialog-body').querySelectorAll('input,textarea').forEach(el=>{if(!el.hasAttribute('autocomplete'))el.autocomplete='off';});$('#dialog-body').querySelectorAll('form').forEach(form=>{form.__pawContext=recovery?{generation:session?.generation??0,petId:null,entityId:null,baseRevision:null,operationId:uid(),intent:null}:captureFormContext({repository,getGeneration:()=>session?.generation??0,petId:pet()?.id});});dialog.showModal();return true;
 }
 function closeModal(force=false){if(!force&&(saving||dirty)){if(saving){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}if(!window.confirm(UI_TEXT('放弃这次尚未保存的修改？')))return false;}dialog.close();dirty=false;restoreFocus(modalOrigin);return true;}
 function field(label,html,full=false){return `<label class="field ${full?'full':''}"><span>${esc(label)}</span>${html}</label>`;}
 function formActions(label=UI_TEXT('保存记录')){return UI_HTML`<p class="form-error" role="alert" hidden></p><div class="form-actions"><button type="button" class="button secondary" data-action="close">取消</button><button type="submit" class="button">${icon('check')} ${esc(label)}</button></div>`;}
 function showFormError(form,error){const el=form?.querySelector('.form-error');const message=UI_TEXT('保存未成功：')+localizeError(error);if(error.code==='CONFLICT')showConflictReview(form);if(el){el.hidden=false;el.textContent=message;el.tabIndex=-1;el.focus();}else toast(message);}
 async function submitOperation(form,operation,message,after){
-  if(saving)return false;saving=true;const b=form.querySelector('[type=submit]'),label=b.innerHTML;b.disabled=true;b.textContent=UI_TEXT('正在保存…');
+  if(saving)return false;const submittedGeneration=session.generation;saving=true;const b=form.querySelector('[type=submit]'),label=b.innerHTML;b.disabled=true;b.textContent=UI_TEXT('正在保存…');
   try{const context=form.__pawContext??captureFormContext({repository,getGeneration:()=>session.generation,petId:pet()?.id});const result=await session.run(repo=>operation(bindFormRepository(repo,context,()=>session.generation)));syncState();loadError=null;closeModal(true);render();toast(message);if(after)after(result);return true;}
-  catch(error){showFormError(form,error);return false;}
-  finally{saving=false;b.disabled=false;b.innerHTML=label;}
+  catch(error){if(submittedGeneration===session.generation&&form.isConnected)showFormError(form,error);return false;}
+  finally{if(submittedGeneration===session.generation)saving=false;b.disabled=false;b.innerHTML=label;}
 }
 async function showConflictReview(form){
  if(!form||form.querySelector('.conflict-review'))return;
@@ -251,12 +311,12 @@ function homeHTML(){return heading(UI_TEXT('每一天，都是成长。'),UI_HTM
 function recordActions(r){return UI_HTML`<button class="text-button" data-action="edit-record" data-id="${esc(r.id)}">编辑</button><button class="delete-button" data-action="delete-record" data-id="${esc(r.id)}">移入回收站</button>`;}
 function healthHTML(){
   const records=filteredRecords();
-  return heading(UI_TEXT('照顾它的每一件小事。'),UI_TEXT('把健康放在心上，把记录留在这里。'),button(UI_TEXT('添加记录'),'record'))+UI_HTML`<div class="health-grid local-health"><section class="panel health-profile"><div class="panel-title"><div><h2>宠物档案</h2><p>${state.pets.length}只宠物 · ${management.petManage?UI_TEXT('选择管理，不切换当前宠物'):UI_TEXT('点击切换当前档案')}</p></div><button class="text-button" data-action="${management.petManage?'finish-pets':'manage-pets'}">${management.petManage?UI_TEXT('完成'):UI_TEXT('管理宠物')}</button></div>${petListHTML()}${managementToolbar('pets')}</section><section class="panel health-reminders"><div class="panel-title"><h2>健康待办</h2><div class="care-header-actions"><button class="text-button" data-action="${management.reminderManage?'finish-reminders':'manage-reminders'}">${management.reminderManage?UI_TEXT('完成'):UI_TEXT('管理与导出')}</button><button class="text-button" data-action="new-reminder">添加护理事项</button></div></div><div class="tabs reminder-tabs">${[['pending','待完成'],['completed','已完成'],['cancelled','已取消'],['all','全部事项']].map(([k,v])=>`<button class="tab ${reminderFilter===k?'active':''}" data-action="reminder-filter" data-value="${k}">${esc(UI_TEXT(v))}</button>`).join('')}</div>${remindersHTML()}${managementToolbar('reminders')}</section><section class="panel health-chart"><div class="panel-title"><h2>体重趋势</h2><button class="text-button" data-action="record-weight">称重记录 ${icon('plus')}</button></div>${chartHTML()}</section><section class="panel health-timeline"><div class="panel-title"><h2>成长足迹</h2></div>${timelineHTML(4)}</section><section class="panel full health-records"><div class="panel-title"><h2>全部成长记录</h2><div class="data-actions"><button class="text-button" data-action="trash">${icon('book')} 回收站</button><button class="text-button" data-action="export">${icon('download')} 导出备份</button><button class="text-button" data-action="import">恢复备份</button><button class="text-button" data-action="csv">导出 CSV</button></div></div><div class="tabs">${[['all','全部'],...Object.entries(types).map(([k,v])=>[k,v.label])].map(([k,v])=>`<button class="tab ${healthFilter===k?'active':''}" data-action="health-filter" data-value="${k}">${esc(UI_TEXT(v))}</button>`).join('')}</div><div class="date-filter"><label>从<input id="health-from" type="date" value="${healthFrom}"></label><label>到<input id="health-to" type="date" value="${healthTo}"></label><button class="text-button" data-action="clear-health">清空筛选</button><span>${records.length} 条记录</span></div>${records.length?UI_HTML`<div class="table-wrap records-table"><table><thead><tr><th>日期</th><th>类型</th><th>记录内容</th><th>备注</th><th>操作</th></tr></thead><tbody>${records.map(r=>`<tr><td>${r.date}</td><td>${esc(recordTypeLabel(r))}</td><td>${esc(recordTitle(r))}</td><td class="note-cell">${esc(r.note||'—')}</td><td>${recordActions(r)}</td></tr>`).join('')}</tbody></table></div><div class="records-cards">${records.map(r=>`<article class="record-card"><div class="record-meta"><time datetime="${r.date}">${r.date}</time><span>${esc(recordTypeLabel(r))}</span></div><h3>${esc(recordTitle(r))}</h3><p>${esc(r.note||UI_TEXT('没有备注'))}</p><div class="record-actions">${recordActions(r)}</div></article>`).join('')}</div>`:empty(UI_TEXT('这里还没有记录'),UI_TEXT('点击“添加记录”，开始完善健康档案。'))}</section></div>`;
+  return heading(UI_TEXT('照顾它的每一件小事。'),UI_TEXT('把健康放在心上，把记录留在这里。'),button(UI_TEXT('添加记录'),'record'))+UI_HTML`<div class="health-grid local-health"><section class="panel health-profile"><div class="panel-title"><div><h2>宠物档案</h2><p>${state.pets.length}只宠物 · ${management.petManage?UI_TEXT('选择管理，不切换当前宠物'):UI_TEXT('点击切换当前档案')}</p></div><button class="text-button" data-action="${management.petManage?'finish-pets':'manage-pets'}">${management.petManage?UI_TEXT('完成'):UI_TEXT('管理宠物')}</button></div>${petListHTML()}${managementToolbar('pets')}</section><section class="panel health-reminders"><div class="panel-title"><h2>健康待办</h2><div class="care-header-actions"><button class="text-button" data-action="${management.reminderManage?'finish-reminders':'manage-reminders'}">${management.reminderManage?UI_TEXT('完成'):UI_TEXT('管理与导出')}</button><button class="text-button" data-action="new-reminder">添加护理事项</button></div></div><div class="tabs reminder-tabs">${[['pending','待完成'],['completed','已完成'],['cancelled','已取消'],['all','全部事项']].map(([k,v])=>`<button class="tab ${reminderFilter===k?'active':''}" data-action="reminder-filter" data-value="${k}">${esc(UI_TEXT(v))}</button>`).join('')}</div>${remindersHTML()}${managementToolbar('reminders')}</section><section class="panel health-chart"><div class="panel-title"><h2>体重趋势</h2><button class="text-button" data-action="record-weight">称重记录 ${icon('plus')}</button></div>${chartHTML()}</section><section class="panel health-timeline"><div class="panel-title"><h2>成长足迹</h2></div>${timelineHTML(4)}</section><section class="panel full health-records"><div class="panel-title"><h2>全部成长记录</h2><div class="data-actions"><button class="text-button" data-action="trash">${icon('book')} 回收站</button><button class="text-button" data-action="export">${icon('download')} 导出备份</button><button class="text-button" data-action="import">恢复备份</button><button class="text-button" data-action="csv">导出 CSV</button></div></div><div class="tabs">${[['all','全部'],...recordTypeEntries().map(([k,v])=>[k,v.label])].map(([k,v])=>`<button class="tab ${healthFilter===k?'active':''}" data-action="health-filter" data-value="${k}">${esc(UI_TEXT(v))}</button>`).join('')}</div><div class="date-filter"><label>从<input id="health-from" type="date" value="${healthFrom}"></label><label>到<input id="health-to" type="date" value="${healthTo}"></label><button class="text-button" data-action="clear-health">清空筛选</button><span>${records.length} 条记录</span></div>${records.length?UI_HTML`<div class="table-wrap records-table"><table><thead><tr><th>日期</th><th>类型</th><th>记录内容</th><th>备注</th><th>操作</th></tr></thead><tbody>${records.map(r=>`<tr><td>${r.date}</td><td>${esc(recordTypeLabel(r))}</td><td>${esc(recordTitle(r))}</td><td class="note-cell">${esc(r.note||'—')}</td><td>${recordActions(r)}</td></tr>`).join('')}</tbody></table></div><div class="records-cards">${records.map(r=>`<article class="record-card"><div class="record-meta"><time datetime="${r.date}">${r.date}</time><span>${esc(recordTypeLabel(r))}</span></div><h3>${esc(recordTitle(r))}</h3><p>${esc(r.note||UI_TEXT('没有备注'))}</p><div class="record-actions">${recordActions(r)}</div></article>`).join('')}</div>`:empty(UI_TEXT('这里还没有记录'),UI_TEXT('点击“添加记录”，开始完善健康档案。'))}</section></div>`;
 }
 
 function recordModal(type='weight',editing=null){
   const r=editing,linked=r?pending().find(x=>x.originRecordId===r.id):null;
-  if(!modal(r?UI_TEXT('编辑成长记录'):UI_TEXT('记下这一次成长'),UI_HTML`<form id="record-form"><div class="form-grid">${field(UI_TEXT('记录类型'),`<select name="type" id="record-type">${Object.entries(types).map(([k,v])=>`<option value="${k}" ${k===(r?.type||type)?'selected':''}>${v.label}</option>`).join('')}</select>`)}${field(UI_TEXT('记录日期'),`<input name="date" type="date" value="${r?.date||today()}" max="${today()}" required>`)}<div id="type-fields" class="field full"></div>${field(UI_TEXT('备注 · 可选'),UI_HTML`<textarea name="note" maxlength="500" placeholder="记录今天的小细节…">${esc(r?.note||'')}</textarea>`,true)}</div><p class="form-tip">健康事项日期按实际安排填写；编辑不会复制记录。</p>${formActions()}</form>`))return;
+  if(!modal(r?UI_TEXT('编辑成长记录'):UI_TEXT('记下这一次成长'),UI_HTML`<form id="record-form"><div class="form-grid">${field(UI_TEXT('记录类型'),`<select name="type" id="record-type">${recordTypeEntries().map(([k,v])=>`<option value="${k}" ${k===(r?.type||type)?'selected':''}>${v.label}</option>`).join('')}</select>`)}${field(UI_TEXT('记录日期'),`<input name="date" type="date" value="${r?.date||today()}" max="${today()}" required>`)}<div id="type-fields" class="field full"></div>${field(UI_TEXT('备注 · 可选'),UI_HTML`<textarea name="note" maxlength="500" placeholder="记录今天的小细节…">${esc(r?.note||'')}</textarea>`,true)}</div><p class="form-tip">健康事项日期按实际安排填写；编辑不会复制记录。</p>${formActions()}</form>`))return;
   function fill(){const t=$('#record-type').value;$('#type-fields').innerHTML=t==='weight'?field(UI_TEXT('体重（kg）'),UI_HTML`<input name="value" type="number" inputmode="decimal" min="0.01" max="200" step="0.01" value="${r?.type==='weight'?r.value:''}" placeholder="例如：4.6…" required>`):(t==='other'?field(UI_TEXT('自定义记录类型'),UI_HTML`<input name="typeLabel" maxlength="20" value="${esc(r?.typeLabel??'')}" placeholder="例如：剪指甲" required>`):'')+field(t==='daily'?UI_TEXT('给这个瞬间起个名字'):UI_TEXT('记录名称'),UI_HTML`<input name="title" maxlength="60" value="${esc(r?.title||'')}" placeholder="例如：今天的护理…" required>`)+((t==='vaccine'||t==='deworm'||t==='other')?field(UI_TEXT('下一次日期 · 可选'),UI_HTML`<input name="nextDate" type="date" value="${linked?.dueDate||''}"><small>清空会取消此记录关联的待办；日期由你决定。</small>`):'');}
   fill();if(r){$('#record-form').__pawContext.petId=r.petId;$('#record-form').__pawContext.entityId=r.id;}$('#record-type').addEventListener('change',fill);
   $('#record-form').addEventListener('submit',async e=>{
@@ -264,18 +324,18 @@ function recordModal(type='weight',editing=null){
     let nextDate=hasNextDate?(d.get('nextDate')||null):undefined;
     if(r&&t!==r.type&&linked&&!hasNextDate){if(!window.confirm(UI_TEXT('更改记录类型会取消原关联的护理待办，是否继续？')))return;nextDate=null;}
     const input={...(r?{id:r.id}:{}),...(t==='other'?{typeLabel:d.get('typeLabel')}:{}),petId:editingPetId(e.target),type:t,occurredDate:d.get('date'),value:t==='weight'?Number(d.get('value')):null,title:t==='weight'?'体重记录':d.get('title').trim(),note:d.get('note').trim(),nextDate};
-    await submitOperation(e.target,repo=>repo.saveRecord(input),UI_TEXT('已保存记录，档案与时间线已更新。'));
+    if(workspaceMode==='demo'&&input.type==='other'){showFormError(e.target,Object.assign(new Error('DEMO_TYPE_UNSUPPORTED'),{code:'DEMO_TYPE_UNSUPPORTED'}));return;}await submitOperation(e.target,repo=>repo.saveRecord(input),UI_TEXT('已保存记录，档案与时间线已更新。'));
   });
 }
 function petModal(isNew=false,petId=pet()?.id){
   const p=isNew?{name:'',type:'dog',breed:'',sex:'暂不确定',birthday:null,estimatedAgeMonths:null,arrivalDate:null}:session.snapshot().pets.find(x=>x.id===petId);
   if(!p)return;
-  if(!modal(isNew?UI_TEXT('认识新的毛孩子'):UI_TEXT('宠物档案'),`<form id="pet-form"><div class="form-grid">${field(UI_TEXT('宠物名字'),`<input name="name" value="${esc(p.name)}" maxlength="20" required>`)}${field(UI_TEXT('宠物类型'),UI_HTML`<select name="type" id="pet-type"><option value="dog" ${p.type==='dog'?'selected':''}>狗狗</option><option value="cat" ${p.type==='cat'?'selected':''}>猫咪</option><option value="other" ${p.type==='other'?'selected':''}>其他</option></select>`)}<div class="field" id="pet-type-label"></div>${field(UI_TEXT('品种 · 可选'),`<input name="breed" value="${esc(p.breed)}" maxlength="30">`)}${field(UI_TEXT('性别'),`<select name="sex">${['男孩子','女孩子','暂不确定'].map(v=>`<option value="${esc(v)}" ${p.sex===v?'selected':''}>${esc(UI_TEXT(v))}</option>`).join('')}</select>`)}${field(UI_TEXT('年龄填写方式'),UI_HTML`<select name="ageMethod" id="age-method"><option value="birthday" ${p.birthday?'selected':''}>知道生日</option><option value="estimated" ${!p.birthday?'selected':''}>估计年龄</option></select>`)}<div id="age-field" class="field"></div>${field(UI_TEXT('来到家的日期 · 可选'),`<input name="arrivalDate" type="date" value="${p.arrivalDate||''}" max="${today()}">`)}</div>${formActions(UI_TEXT('保存档案'))}${!isNew&&workspaceMode!=='demo'?UI_HTML`<button type="button" class="text-button" data-action="avatar-pet" data-id="${esc(p.id)}">更换头像</button>`:''}</form>`))return;
+  if(!modal(isNew?UI_TEXT('认识新的毛孩子'):UI_TEXT('宠物档案'),`<form id="pet-form"><div class="form-grid">${field(UI_TEXT('宠物名字'),`<input name="name" value="${esc(p.name)}" maxlength="20" required>`)}${field(UI_TEXT('宠物类型'),UI_HTML`<select name="type" id="pet-type"><option value="dog" ${p.type==='dog'?'selected':''}>狗狗</option><option value="cat" ${p.type==='cat'?'selected':''}>猫咪</option>${workspaceMode==='demo'?'':UI_HTML`<option value="other" ${p.type==='other'?'selected':''}>其他</option>`}</select>`)}<div class="field" id="pet-type-label"></div>${field(UI_TEXT('品种 · 可选'),`<input name="breed" value="${esc(p.breed)}" maxlength="30">`)}${field(UI_TEXT('性别'),`<select name="sex">${['男孩子','女孩子','暂不确定'].map(v=>`<option value="${esc(v)}" ${p.sex===v?'selected':''}>${esc(UI_TEXT(v))}</option>`).join('')}</select>`)}${field(UI_TEXT('年龄填写方式'),UI_HTML`<select name="ageMethod" id="age-method"><option value="birthday" ${p.birthday?'selected':''}>知道生日</option><option value="estimated" ${!p.birthday?'selected':''}>估计年龄</option></select>`)}<div id="age-field" class="field"></div>${field(UI_TEXT('来到家的日期 · 可选'),`<input name="arrivalDate" type="date" value="${p.arrivalDate||''}" max="${today()}">`)}</div>${formActions(UI_TEXT('保存档案'))}${!isNew&&workspaceMode!=='demo'?UI_HTML`<button type="button" class="text-button" data-action="avatar-pet" data-id="${esc(p.id)}">更换头像</button>`:''}</form>`))return;
   $('#pet-form').__pawContext.entityId=isNew?null:p.id;
   function petTypeField(){const isOther=$('#pet-type').value==='other';$('#pet-type-label').hidden=!isOther;$('#pet-type-label').innerHTML=isOther?field(UI_TEXT('自定义宠物类型'),UI_HTML`<input name="typeLabel" maxlength="20" value="${esc(p.typeLabel??'')}" placeholder="例如：兔子" required>`):'';}petTypeField();$('#pet-type').addEventListener('change',petTypeField);
   function ageField(){$('#age-field').innerHTML=$('#age-method').value==='birthday'?field(UI_TEXT('生日'),`<input name="birthday" type="date" value="${p.birthday||''}" max="${today()}" required>`):field(UI_TEXT('估计年龄（月）'),UI_HTML`<input name="estimatedAgeMonths" type="number" inputmode="numeric" min="0" max="1200" step="1" value="${p.estimatedAgeMonths??''}" placeholder="例如：12…" required>`);}
   ageField();$('#age-method').addEventListener('change',ageField);
-  $('#pet-form').addEventListener('submit',async e=>{e.preventDefault();const d=new FormData(e.target),input={...(!isNew?{id:p.id}:{}),makeActive:isNew,name:d.get('name').trim(),type:d.get('type'),...(d.get('type')==='other'?{typeLabel:d.get('typeLabel')}:{}),breed:d.get('breed').trim(),sex:d.get('sex'),birthday:d.get('ageMethod')==='birthday'?d.get('birthday'):null,estimatedAgeMonths:d.get('ageMethod')==='estimated'?Number(d.get('estimatedAgeMonths')):null,arrivalDate:d.get('arrivalDate')||null};await submitOperation(e.target,async repo=>{const saved=await repo.savePet(input);if(isNew)await repo.selectPet(saved.id);return saved;},UI_TEXT('宠物档案已保存。'));});
+  $('#pet-form').addEventListener('submit',async e=>{e.preventDefault();const d=new FormData(e.target),input={...(!isNew?{id:p.id}:{}),makeActive:isNew,name:d.get('name').trim(),type:d.get('type'),...(d.get('type')==='other'?{typeLabel:d.get('typeLabel')}:{}),breed:d.get('breed').trim(),sex:d.get('sex'),birthday:d.get('ageMethod')==='birthday'?d.get('birthday'):null,estimatedAgeMonths:d.get('ageMethod')==='estimated'?Number(d.get('estimatedAgeMonths')):null,arrivalDate:d.get('arrivalDate')||null};if(workspaceMode==='demo'&&input.type==='other'){showFormError(e.target,Object.assign(new Error('DEMO_TYPE_UNSUPPORTED'),{code:'DEMO_TYPE_UNSUPPORTED'}));return;}await submitOperation(e.target,async repo=>{const saved=await repo.savePet(input);if(isNew)await repo.selectPet(saved.id);return saved;},UI_TEXT('宠物档案已保存。'));});
 }
 function switchPet(){modal(UI_TEXT('我的毛孩子'),state.pets.map(p=>`<button class="pet-option" data-action="select-pet" data-id="${esc(p.id)}">${img(p.image,'','',p.avatarAssetId)}<span><strong>${esc(p.name)} ${p.id===pet()?.id?UI_TEXT('· 正在记录'):''}</strong><small>${esc(p.breed||(petTypeLabel(p)))} · ${ageText(p)}</small></span></button>`).join('')+button(UI_TEXT('添加一只宠物'),'new-pet','soft'));}
 function reminderModal(id=null,defaults={}){
@@ -367,7 +427,7 @@ function emptySnapshot(){return {version:3,mode:'demo',activePetId:null,pets:[],
 function importModal(){if(workspaceMode!=='demo'){openPersonalImport();return;}
   if(!modal(UI_TEXT('恢复备份'),UI_HTML`<form id="import-form">${field(UI_TEXT('选择 JSON 备份'),'<input name="backup" type="file" accept="application/json,.json" required>')}<p class="form-tip">先预览新增与冲突；确认之前不会修改当前数据。</p>${formActions(UI_TEXT('预览恢复'))}</form>`))return;
   $('#import-form').addEventListener('submit',async e=>{e.preventDefault();if(saving)return;saving=true;const form=e.target,b=form.querySelector('[type=submit]');b.disabled=true;
-    try{const file=new FormData(form).get('backup');if(file.size>20*1024*1024)throw new Error(UI_TEXT('备份超过20MB，请缩小文件后再试。'));const incoming=validateBackup(await file.text()),current=state?session.snapshot():emptySnapshot(),preview=previewImport(current,incoming);saving=false;dirty=false;closeModal(true);
+    try{const file=new FormData(form).get('backup');if(file.size>20*1024*1024)throw new Error(UI_TEXT('备份超过20MB，请缩小文件后再试。'));const incoming=validateBackup(await file.text());if(form.__pawContext.generation!==session.generation||workspaceMode!=='demo'||!form.isConnected)throw accountBoundaryError();assertDemoTypes(incoming);const current=state?session.snapshot():emptySnapshot(),preview=previewImport(current,incoming);saving=false;dirty=false;closeModal(true);
       modal(UI_TEXT('恢复前请核对'),UI_HTML`<form id="restore-form"><p class="restore-summary">新增 ${preview.newPets.length} 只宠物、${preview.newRecords.length} 条记录、${preview.newReminders.length} 项提醒、${preview.newPosts.length} 篇本地日常。</p><p class="demo-note">${state?UI_TEXT('相同内容不会重复导入。冲突默认保留当前版本，勾选才更新；恢复或移入回收站的变化也需确认。'):UI_TEXT('当前档案无法读取，将保存原始字符串后恢复有效备份。')}</p>${preview.conflicts.map(c=>UI_HTML`<label class="conflict-option"><input name="conflict" type="checkbox" value="${esc(c.kind+':'+c.id)}"><span>${c.effect==='restore'?UI_TEXT('恢复已移入回收站的'):c.effect==='trash'?UI_TEXT('移入回收站'):UI_TEXT('更新')} ${esc(c.current.title||c.current.name||c.id)}<small>当前：${esc(c.current.note||c.current.title||c.current.name||'')}<br>备份：${esc(c.incoming.note||c.incoming.title||c.incoming.name||'')}</small></span></label>`).join('')}${formActions(UI_TEXT('确认恢复'))}</form>`);
       $('#restore-form').addEventListener('submit',async event=>{event.preventDefault();try{const accepted=new FormData(event.target).getAll('conflict'),merged=mergeBackup(current,incoming,{acceptedConflictIds:accepted});await submitOperation(event.target,repo=>repo.replaceSnapshot(merged),UI_TEXT('备份已恢复，原始数据已另行保留。'));}catch(error){showFormError(event.target,error);}});
     }catch(error){showFormError(form,error);}finally{saving=false;b.disabled=false;}
@@ -430,46 +490,72 @@ window.addEventListener('beforeunload',e=>{if(dialog.open&&(dirty||saving)){e.pr
 window.addEventListener('hashchange',route);
 
 function importSummary(preview){const c=preview.counts??{};return translate('backup.countSummary',{pets:c.pets??preview.newPets?.length??0,records:c.records??preview.newRecords?.length??0,reminders:c.reminders??preview.newReminders?.length??0,photos:c.photos??c.assets??preview.newAssets?.length??0});}
+function importItemLabel(archive,kind,id){
+ if(kind==='asset'){const metadata=archive.assets.find(a=>a.metadata.id===id)?.metadata;if(!metadata)return UI_TEXT('照片');const parent=archive.snapshot.pets.find(p=>p.id===metadata.petId);return metadata.caption||[parent?.name,UI_TEXT(metadata.kind==='avatar'?'头像':'照片')].filter(Boolean).join(' · ');}
+ const field={pet:'pets',record:'records',reminder:'reminders'}[kind],item=archive.snapshot[field]?.find(x=>x.id===id);return item?.name||item?.title||UI_TEXT('资料');
+}
+function importClosureMarkup(archive,preview,selection={}){
+ const closure=preview.closure??{petIds:preview.incoming?.snapshot?.pets.map(p=>p.id)??[],recordIds:preview.incoming?.snapshot?.records.map(r=>r.id)??[],reminderIds:preview.incoming?.snapshot?.reminders.map(r=>r.id)??[],assetIds:preview.incoming?.assets.map(a=>a.metadata.id)??[]};
+ const items=[];for(const [kind,key,label] of [['pet','petIds','宠物'],['record','recordIds','记录'],['reminder','reminderIds','护理事项'],['asset','assetIds','照片']])for(const id of closure[key]??[]){const dependency=!(selection[key]??[]).includes(id),duplicate=preview.duplicates?.some(d=>d.kind===kind&&d.sourceId===id);items.push(`<li>${esc(UI_TEXT(label))} · ${esc(importItemLabel(archive,kind,id))}${dependency?' · '+esc(UI_TEXT('关联依赖')):''}${duplicate?' · '+esc(UI_TEXT('已有资料')):''}</li>`);}
+ return `<section class="import-closure-summary"><h3>${esc(UI_TEXT('本次核对的资料'))}</h3><p class="demo-note" data-ui-copy>${esc(UI_TEXT('包含关联资料；已有内容保留，勾选冲突才更新。'))}</p><ul class="archive-preview-list">${items.join('')}</ul></section>`;
+}
 async function openPersonalImport({archive:provided=null,sourceMode=null}={}){
- if(!modal(UI_TEXT('恢复与迁移备份'),UI_HTML`<form id="personal-import-form">${provided?'':field(UI_TEXT('选择备份文件'),'<input name="backup" type="file" accept=".json,application/json" required>')}<p class="form-tip">先预览，不会自动上传示例或复活回收站。</p><div id="personal-import-preview"></div><p class="form-error" role="alert" hidden></p><div class="form-actions"><button type="button" class="button secondary" data-action="close">取消</button><button type="button" id="preview-personal-import" class="button">预览备份</button><button type="submit" id="confirm-personal-import" class="button" hidden>确认导入</button></div></form>`))return;
- const form=$('#personal-import-form'),previewArea=$('#personal-import-preview'),previewButton=$('#preview-personal-import'),confirmButton=$('#confirm-personal-import');
+ const recovering=!!loadError&&workspaceMode==='local',sourceRepository=repository,sourceWorkspace=workspaceMode;
+ if(!modal(UI_TEXT('恢复与迁移备份'),UI_HTML`<form id="personal-import-form">${provided?'':field(UI_TEXT('选择备份文件'),'<input name="backup" type="file" accept=".json,application/json" required>')}<p class="form-tip">${esc(UI_TEXT(recovering?'先核对完整备份；确认之前不会改变损坏数据。':'先预览，不会自动上传示例或复活回收站。'))}</p><div id="personal-import-preview"></div><p class="form-error" role="alert" hidden></p><div class="form-actions"><button type="button" class="button secondary" data-action="close">取消</button><button type="button" id="preview-personal-import" class="button">预览备份</button><button type="submit" id="confirm-personal-import" class="button" hidden>确认导入</button></div></form>`,{recovery:recovering}))return;
+ const form=$('#personal-import-form'),previewArea=$('#personal-import-preview'),previewButton=$('#preview-personal-import'),confirmButton=$('#confirm-personal-import'),ctx=form.__pawContext;
  let archive=provided,preview=null,selection=null;
+ const current=()=>form.isConnected&&ctx.generation===session.generation&&repository===sourceRepository&&workspaceMode===sourceWorkspace;
+ function requireCurrent(){if(!current())throw accountBoundaryError();}
  function inputSelection(){const all=Object.fromEntries(['pet','record','reminder','asset'].map(k=>[k,[]]));for(const el of form.querySelectorAll('[data-import-kind]:checked'))all[el.dataset.importKind].push(el.value);return {petIds:all.pet,recordIds:all.record,reminderIds:all.reminder,assetIds:all.asset,profile:!!form.querySelector('[name=migrate-city]')?.checked};}
  function accepted(){return [...form.querySelectorAll('[data-import-conflict]:checked')].map(el=>el.value);}
- async function previewNow(){try{
-  if(!archive){const file=new FormData(form).get('backup');if(!file?.size)throw Error(UI_TEXT('请选择有效备份文件。'));if(file.size>100*1024*1024)throw Error(UI_TEXT('备份超过100MiB上限'));archive=await validateArchive(await file.text());}
-  else archive=await validateArchive(archive);
-  if(!selection){selection={petIds:[],recordIds:[],reminderIds:[],assetIds:[]};const groups=[['pet','pets'],['record','records'],['reminder','reminders']];let markup=UI_HTML`<p>选择要导入的内容，关联依赖会在下一次预览中显示。</p><div class="archive-preview-list">`;
-   for(const [kind,field] of groups)for(const item of archive.snapshot[field])markup+=UI_HTML`<label class="archive-option"><input type="checkbox" data-import-kind="${kind}" value="${esc(item.id)}" ${sourceMode==='demo'?'':'checked'}>${esc(item.name||item.title)} ${item.deletedAt?UI_TEXT('· 在回收站'):''}</label>`;
-   for(const asset of archive.assets)markup+=UI_HTML`<label class="archive-option"><input type="checkbox" data-import-kind="asset" value="${esc(asset.metadata.id)}" ${sourceMode==='demo'?'':'checked'}>${esc(asset.metadata.caption||UI_TEXT(asset.metadata.kind==='avatar'?UI_TEXT('头像'):UI_TEXT('照片')))}</label>`;
-   markup+=UI_HTML`</div><label><input type="checkbox" name="migrate-city">同时迁移城市设置</label><div id="personal-import-result"></div>`;previewArea.innerHTML=markup;
+ function cloudPayload(){return {sourceWorkspaceId:archive.sourceWorkspaceId,snapshot:archive.snapshot,selection:{petIds:selection.petIds,recordIds:selection.recordIds,reminderIds:selection.reminderIds,assetIds:selection.assetIds},copyCity:selection.profile===true,assets:archive.assets.map(a=>a.metadata),acceptConflicts:accepted()};}
+ function showRecovery(){
+  const confirmed=!!form.querySelector('[name=confirm-corrupt-recovery]')?.checked;
+  previewArea.innerHTML=UI_HTML`<h3>按备份全量恢复</h3><p class="demo-note" data-ui-copy>这是全量替换，不是合并。备份之后的编辑和删除可能回退；照片和回收站将按备份原样恢复。</p><p class="demo-note" data-ui-copy>确认前可下载原坏数据；只有恢复成功后，原坏数据与媒体才会保留到恢复记录。</p><p>${esc(importSummary(preview))}</p>${preview.potentialRestorations.length?UI_HTML`<p>${esc(translate('backup.potentialRestorations',{count:preview.potentialRestorations.length}))}</p>`:''}<ul class="archive-preview-list">${preview.newPets.map(p=>`<li>${esc(p.name)}${p.deletedAt?' · '+esc(UI_TEXT('在回收站')):''}</li>`).join('')}</ul><button type="button" id="download-corrupt-raw" class="button secondary">下载原坏数据</button><label class="archive-option"><input type="checkbox" name="confirm-corrupt-recovery" ${confirmed?'checked':''}><span data-ui-copy>我理解全量恢复可能回退编辑与删除，确认按备份替换当前损坏档案。</span></label>`;
+  form.querySelector('#download-corrupt-raw').addEventListener('click',()=>download(preview.rawBackup,`paw-diary-original-${today()}.txt`,'text/plain;charset=utf-8'));
+  confirmButton.hidden=false;confirmButton.disabled=!confirmed;confirmButton.textContent=UI_TEXT('确认全量恢复');
+ }
+ function showNormal(){
+  const chosen=new Set(accepted()),conflicts=preview.conflicts??[],result=form.querySelector('#personal-import-result');
+  result.innerHTML=UI_HTML`<p data-ui-copy>预览已准备，未保存任何资料。</p><p>${esc(importSummary(preview))}</p>${importClosureMarkup(archive,preview,selection)}${conflicts.map(c=>{const id=sourceWorkspace==='account'?c.sourceId:c.id;if(typeof id!=='string'||!id)throw Object.assign(new Error('INVALID_INPUT'),{code:'INVALID_INPUT'});const key=c.kind+':'+id,label=importItemLabel(archive,c.kind,id),oldLabel=c.current?.name||c.current?.title||c.current?.caption||label;return UI_HTML`<label class="archive-option"><input type="checkbox" data-import-conflict value="${esc(key)}" ${chosen.has(key)?'checked':''}><span>${esc(label)} · ${esc(UI_TEXT(c.effect==='restore'?'恢复':c.effect==='trash'?'移入回收站':'覆盖更新'))}<small>${esc(UI_TEXT('当前：'))}${esc(oldLabel)}<br>${esc(UI_TEXT('备份：'))}${esc(label)}</small></span></label>`;}).join('')}`;
+  confirmButton.hidden=false;confirmButton.disabled=false;confirmButton.textContent=UI_TEXT('确认导入');
+ }
+ form.__pawLocaleRefresh=()=>{if(preview&&current()){if(recovering)showRecovery();else showNormal();previewButton.textContent=UI_TEXT('重新预览');}};
+ async function previewNow(){if(saving)return;previewButton.disabled=true;try{
+  if(!archive){const file=new FormData(form).get('backup');if(!file?.size)throw Error(UI_TEXT('请选择有效备份文件。'));if(file.size>100*1024*1024)throw Error(UI_TEXT('备份超过100MiB上限'));archive=await validateArchive(await file.text());}else archive=await validateArchive(archive);requireCurrent();
+  if(recovering){preview=await sourceRepository.previewCorruptArchiveRestore(archive);requireCurrent();showRecovery();previewButton.textContent=UI_TEXT('重新预览');dirty=true;return;}
+  if(!selection){selection={petIds:[],recordIds:[],reminderIds:[],assetIds:[]};let markup=UI_HTML`<p data-ui-copy>选择要导入的内容，关联依赖会在下一次预览中显示。</p><div class="archive-preview-list">`;
+   for(const [kind,field] of [['pet','pets'],['record','records'],['reminder','reminders']])for(const item of archive.snapshot[field])markup+=UI_HTML`<label class="archive-option"><input type="checkbox" data-import-kind="${kind}" value="${esc(item.id)}" ${sourceMode==='demo'?'':'checked'}>${esc(item.name||item.title)} ${item.deletedAt?UI_TEXT('· 在回收站'):''}</label>`;
+   for(const asset of archive.assets)markup+=UI_HTML`<label class="archive-option"><input type="checkbox" data-import-kind="asset" value="${esc(asset.metadata.id)}" ${sourceMode==='demo'?'':'checked'}>${esc(importItemLabel(archive,'asset',asset.metadata.id))}</label>`;
+   markup+=UI_HTML`</div><label><input type="checkbox" name="migrate-city"><span data-ui-copy>同时迁移城市设置</span></label><div id="personal-import-result"></div>`;previewArea.innerHTML=markup;
   }
   selection=inputSelection();
-  if(workspaceMode==='account'){preview=await repository.request('imports.preview',{sourceWorkspaceId:archive.sourceWorkspaceId,snapshot:archive.snapshot,selection,assets:archive.assets.map(a=>a.metadata),acceptConflicts:accepted()});}
-  else preview=await previewArchiveImport({repository,archive,selection});
-  const conflicts=preview.conflicts??[],result=$('#personal-import-result');
-  result.innerHTML=UI_HTML`<p>预览已准备，未保存任何资料。</p><p>${esc(importSummary(preview))}</p>${preview.dependencies?.length?UI_HTML`<p>包含 ${preview.dependencies.length} 项关联依赖，确认时将一并保存。</p>`:''}${conflicts.map(c=>UI_HTML`<label class="archive-option"><input type="checkbox" data-import-conflict value="${esc(c.kind+':'+c.id)}">${esc(c.incoming?.name||c.incoming?.title||(c.kind==='asset'?UI_TEXT('照片'):UI_TEXT('资料')))} · ${esc(UI_TEXT(c.effect==='restore'?UI_TEXT('恢复'):c.effect==='trash'?UI_TEXT('移入回收站'):UI_TEXT('覆盖更新')))}</label>`).join('')}`;
-  confirmButton.hidden=false;previewButton.textContent=UI_TEXT('重新预览');dirty=true;
- }catch(error){showFormError(form,error);}}
+  if(sourceWorkspace==='account')preview=await sourceRepository.request('imports.preview',cloudPayload());else preview=await previewArchiveImport({repository:sourceRepository,archive,selection});
+  requireCurrent();showNormal();previewButton.textContent=UI_TEXT('重新预览');dirty=true;
+ }catch(error){if(current())showFormError(form,error);}finally{if(current())previewButton.disabled=false;}}
  previewButton.addEventListener('click',previewNow);
- form.addEventListener('change',e=>{if(e.target.name==='backup'){archive=null;selection=null;preview=null;previewArea.innerHTML='';confirmButton.hidden=true;}else if(e.target.dataset.importKind||e.target.name==='migrate-city'){preview=null;confirmButton.hidden=true;}});
- form.addEventListener('submit',async e=>{e.preventDefault();if(!preview){showFormError(form,Error(UI_TEXT('请先重新预览当前选择。')));return;}
-  const ctx=form.__pawContext;if(ctx.generation!==session.generation){showFormError(form,Error(UI_TEXT('空间已切换，请重新打开。')));return;}
-  await submitOperation(form,async()=>{
-   if(workspaceMode==='local')return commitArchiveImport({repository,preview,acceptedConflictIds:accepted()});
-   const prepared=await repository.request('imports.prepare',{sourceWorkspaceId:archive.sourceWorkspaceId,snapshot:archive.snapshot,selection,assets:archive.assets.map(a=>a.metadata),acceptConflicts:accepted()},{baseRevision:repository.getRevision(),operationId:ctx.operationId+':prepare'});
-   const selected=new Set(selection.assetIds),tickets=[];
-   for(const asset of archive.assets){if(!selected.has(asset.metadata.id)&&!prepared.preview?.dependencies?.some(d=>d.kind==='asset'&&d.id===asset.metadata.id))continue;const existing=(prepared.preview?.conflicts??[]).find(c=>c.kind==='asset'&&c.id===asset.metadata.id);if(existing&&!(existing.effect==='restore'&&accepted().includes('asset:'+asset.metadata.id)))continue;
-    tickets.push(await repository.media.stageImport({batchId:prepared.batchId,metadata:asset.metadata,blob:asset.blob,baseRevision:repository.getRevision(),operationId:ctx.operationId+':asset:'+asset.metadata.id}));}
-   return repository.request('imports.commit',{batchId:prepared.batchId,assetTickets:tickets},{baseRevision:prepared.preview?.baseRevision??ctx.baseRevision,operationId:ctx.operationId+':commit'});
-  },UI_TEXT('导入已完成，原本地资料仍保留。'));
+ form.addEventListener('change',e=>{if(e.target.name==='backup'){archive=null;selection=null;preview=null;previewArea.replaceChildren();confirmButton.hidden=true;confirmButton.disabled=false;}else if(e.target.name==='confirm-corrupt-recovery'){confirmButton.disabled=!e.target.checked;}else if(e.target.dataset.importKind||e.target.name==='migrate-city'){preview=null;confirmButton.hidden=true;}});
+ form.addEventListener('submit',async e=>{e.preventDefault();if(!preview){showFormError(form,Error(UI_TEXT('请先重新预览当前选择。')));return;}if(!current())return;
+  if(recovering&&!form.querySelector('[name=confirm-corrupt-recovery]')?.checked){showFormError(form,Object.assign(new Error('RECOVERY_CONFIRMATION_REQUIRED'),{code:'RECOVERY_CONFIRMATION_REQUIRED',messageKey:'error.recoveryConfirmation'}));return;}
+  await submitOperation(form,async boundRepo=>{
+   if(recovering)return boundRepo.commitCorruptArchiveRestore(preview);
+   if(sourceWorkspace==='local')return commitArchiveImport({repository:boundRepo,preview,acceptedConflictIds:accepted()});
+   const acceptedKeys=accepted(),prepared=await boundRepo.request('imports.prepare',cloudPayload(),{baseRevision:preview.revision,operationId:ctx.operationId+':prepare'});requireCurrent();
+   const preparedPreview=prepared.preview,selected=new Set(preparedPreview.closure.assetIds),duplicates=new Set((preparedPreview.duplicates??[]).filter(d=>d.kind==='asset').map(d=>d.sourceId)),tickets=[];
+   for(const asset of archive.assets){const id=asset.metadata.id;if(!selected.has(id))continue;const conflict=(preparedPreview.conflicts??[]).find(c=>c.kind==='asset'&&c.sourceId===id);
+    if(duplicates.has(id)&&!(conflict?.effect==='restore'&&acceptedKeys.includes('asset:'+id)))continue;
+    tickets.push(await boundRepo.media.stageImport({batchId:prepared.batchId,metadata:asset.metadata,blob:asset.blob,baseRevision:preparedPreview.revision,operationId:ctx.operationId+':asset:'+id}));requireCurrent();}
+   return boundRepo.request('imports.commit',{batchId:prepared.batchId,assetTickets:tickets},{baseRevision:preparedPreview.revision,operationId:ctx.operationId+':commit'});
+  },UI_TEXT(recovering?'全量恢复已完成，原坏数据和媒体已保留恢复记录。':'导入已完成，原本地资料仍保留。'));
  });
  if(provided)await previewNow();
 }
 async function openCloudMigration(){
  if(workspaceMode!=='account')return;
  if(!modal(UI_TEXT('选择本地来源'),UI_HTML`<p class="demo-note">只复制你选择的资料；示例默认不勾选，原本地资料不会删除。</p><div class="form-actions"><button class="button secondary" id="migrate-personal">我的本地档案</button><button class="button secondary" id="migrate-demo">示例中的自建资料</button><button class="button" data-action="close">返回</button></div>`))return;
- async function choose(mode){try{const source=await getLocalRepository(mode);await source.snapshot();let archive;if(mode==='demo'){archive=await validateArchive(await source.getRawBackup());archive.sourceWorkspaceId='demo:explicit-selection';}else archive=await exportArchive({repository:source});closeModal(true);await openPersonalImport({archive,sourceMode:mode});}catch(error){toast(localizeError(error));}}
+ const originGeneration=session.generation,originRepository=repository,originPicker=$('#migrate-personal');let preparingSource=false;
+ const currentPicker=()=>originPicker.isConnected&&dialog.open&&session.generation===originGeneration&&repository===originRepository&&workspaceMode==='account';
+ async function choose(mode){if(preparingSource||!currentPicker())return;preparingSource=true;const buttons=[$('#migrate-personal'),$('#migrate-demo')];buttons.forEach(button=>button.disabled=true);try{const source=getLocalRepository(mode);await source.snapshot();if(!currentPicker())return;let archive;if(mode==='demo'){archive=await validateArchive(await source.getRawBackup());archive.sourceWorkspaceId='demo:explicit-selection';}else archive=await exportArchive({repository:source});if(!currentPicker())return;closeModal(true);await openPersonalImport({archive,sourceMode:mode});}catch(error){if(currentPicker())toast(localizeError(error));}finally{preparingSource=false;if(currentPicker())buttons.forEach(button=>button.disabled=false);}}
  $('#migrate-personal').addEventListener('click',()=>choose('local'));$('#migrate-demo').addEventListener('click',()=>choose('demo'));
 }
 

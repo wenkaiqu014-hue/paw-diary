@@ -31,12 +31,19 @@ export async function createIsolatedClient({
   sessionPath,
   label,
   cacheOnly = false,
-  captureLogin=false,
+  captureLogin = false,
 } = {}) {
   const worker = new Worker(
     new URL("./cloud-client-worker.js", import.meta.url),
     {
-      workerData: { envId, publicKey, sessionPath, label, cacheOnly, captureLogin },
+      workerData: {
+        envId,
+        publicKey,
+        sessionPath,
+        label,
+        cacheOnly,
+        captureLogin,
+      },
       env: workerEnvironment(),
       stdout: true,
       stderr: true,
@@ -84,13 +91,18 @@ export async function createIsolatedClient({
     }
     pending.clear();
   });
-  const readyTimeout=setTimeout(()=>rejectReady(new Error('REAL_CLOUD_WORKER_START_TIMED_OUT')),30000);
+  const readyTimeout = setTimeout(
+    () => rejectReady(new Error("REAL_CLOUD_WORKER_START_TIMED_OUT")),
+    30000,
+  );
   try {
     await ready;
   } catch (error) {
     await worker.terminate();
     throw error;
-  } finally {clearTimeout(readyTimeout);}
+  } finally {
+    clearTimeout(readyTimeout);
+  }
   const rpc = (operation, payload) => {
     if (closed) return Promise.reject(new Error("REAL_CLOUD_CLIENT_CLOSED"));
     worker.ref();
@@ -107,8 +119,12 @@ export async function createIsolatedClient({
   };
   const client = {
     invoke: (request) => rpc("invoke", request),
-    readiness:()=>rpc('readiness'),
+    readiness: () => rpc("readiness"),
     identityFlags: () => rpc("identityFlags"),
+    profileLookupFlags: () => rpc("profileLookupFlags"),
+    bindFixtureObject: (input) => rpc("bindFixtureObject",input),
+    directFixtureUrls: (assetId) => rpc("directFixtureUrls",{assetId}),
+    directFixtureDownload: (assetId) => rpc("directFixtureDownload",{assetId}),
     workspaceMatches: (id) => rpc("workspaceMatches", id),
     upload: (ticketId, bytes) => rpc("upload", { ticketId, bytes }),
     cacheProbeSet: (value) => rpc("cacheProbeSet", value),
@@ -148,8 +164,8 @@ export async function realClients() {
       "REAL_CLOUD_NOT_CONFIGURED: controlled A/B and real anonymous SDK sessions required",
     );
   try {
-    const information=await fs.stat(sessionPath);
-    if(!information.isFile())throw new Error('NOT_FILE');
+    const information = await fs.stat(sessionPath);
+    if (!information.isFile()) throw new Error("NOT_FILE");
   } catch {
     throw new Error("REAL_CLOUD_SESSION_FILE_UNREADABLE");
   }

@@ -41,7 +41,7 @@ with sync_playwright() as p:
     page.locator('[name=photos]').set_input_files(payload)
     page.locator('[name=photo-caption]').fill('上传失败原文保留')
     page.get_by_role('button',name='保存照片',exact=True).click()
-    expect(page.locator('.paw-photo-status')).to_contain_text('未保存')
+    expect(page.locator('.paw-photo-status')).to_contain_text('未确认保存')
     page.evaluate("async()=>{i18n.setLocale('en');await photoWall.render()}")
     expect(page.locator('[name=photo-caption]')).to_have_value('上传失败原文保留')
     assert page.locator('[name=photos]').evaluate('(el)=>el.files.length')==1

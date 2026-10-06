@@ -111,8 +111,13 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
       if(token!==scope()||destroyed)break;
       status.textContent=t('photo.saving',{current:i+1,total:entries.length});
       const entry=entries[i];
-      try{if(!entry.blob){const prepared=await prepareImage(entry.file,{kind:'photo'});entry.blob=prepared instanceof Blob?prepared:prepared.blob;}if(token!==scope())break;await media.save({petId,kind:'photo',blob:entry.blob,caption,...(getRevision?{baseRevision:getRevision()}:{}),operationId:entry.operationId});}
-      catch(error){failed.push(entry);onError(error);}
+      try{
+        if(!entry.blob){const prepared=await prepareImage(entry.file,{kind:'photo'});entry.blob=prepared instanceof Blob?prepared:prepared.blob;entry.preparedImage=prepared instanceof Blob?undefined:prepared;}
+        if(!entry.sha256){const digest=await crypto.subtle.digest('SHA-256',await entry.blob.arrayBuffer());entry.sha256=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');}
+        if(token!==scope()||destroyed)break;
+        const intent=JSON.stringify({petId,kind:'photo',caption,sha256:entry.sha256});if(entry.intent!==intent){entry.intent=intent;entry.operationId=globalThis.crypto?.randomUUID?.();}
+        await media.save({petId,kind:'photo',blob:entry.blob,preparedImage:entry.preparedImage,caption,...(getRevision?{baseRevision:getRevision()}:{}),operationId:entry.operationId});
+      }catch(error){if(token===scope()&&!destroyed){failed.push(entry);onError(error);}}
     }
     saving=false;if(destroyed)return;if(token!==scope()){uploadButton.disabled=fileInput.disabled=captionInput.disabled=!getPetId();labels();return;}
     selected=failed.map(entry=>entry.file);

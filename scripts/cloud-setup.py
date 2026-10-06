@@ -23,6 +23,7 @@ ENV_ID = 'paw-diary-d8g3p4tlsb305221d'
 REGION = 'ap-shanghai'
 COLLECTIONS = ('health_workspaces', 'health_receipts', 'media_assets', 'import_batches', 'import_maps')
 DOMAINS = ('wenkaiqu014-hue.github.io', 'localhost', '127.0.0.1')
+ACCEPTANCE_DOMAINS = ('localhost:4193', '127.0.0.1:4193')
 FUNCTIONS = ('paw-api', 'paw-stage2-readiness')
 ROOT = Path(__file__).resolve().parents[1]
 LOG = ROOT / 'test-results/stage2/cloud-ops.log'
@@ -209,6 +210,10 @@ class Operator:
         env = environments[0]
         if env.get('Region') != REGION or env.get('PackageId') != self.package_id or env.get('Status') != 'NORMAL':
             raise ValueError('Environment package or region changed unexpectedly')
+        databases = env.get('Databases') or []
+        postgres = env.get('PostgreSQL') or []
+        if not isinstance(databases, list) or len(databases) != 1 or not isinstance(postgres, list) or postgres:
+            raise ValueError('Exactly one document database and no PostgreSQL resource are required')
         if self.env_id != ENV_ID and env.get('Alias') != 'paw-diary-prod':
             raise ValueError('Paid project alias mismatch')
         billing = self.call('DescribeBillingInfo')
@@ -265,7 +270,7 @@ class Operator:
         # A five-device session limit permits the planned cross-browser tests.
         self.attempt('ModifyClient', {'Id': self.env_id, 'MaxDevice': 5})
         domains = self.call('DescribeAuthDomains').get('Domains') or []
-        required_domains = DOMAINS if self.env_id == ENV_ID else (DOMAINS[0],)
+        required_domains = DOMAINS if self.env_id == ENV_ID else (DOMAINS[0], *ACCEPTANCE_DOMAINS)
         missing = [d for d in required_domains if not any(x.get('Domain') == d and x.get('Status') == 'ENABLE' for x in domains)]
         if missing:
             self.attempt('CreateAuthDomain', {'Domains': missing})
@@ -305,6 +310,7 @@ class Operator:
         env = self.environment()
         domains = self.call('DescribeAuthDomains').get('Domains') or []
         has_domain = any(d.get('Domain') == DOMAINS[0] and d.get('Status') == 'ENABLE' for d in domains)
+        local_ready = self.env_id == ENV_ID or all(any(d.get('Domain') == local and d.get('Status') == 'ENABLE' for d in domains) for local in ACCEPTANCE_DOMAINS)
         has_storage_deny = bool(env.get('Storages'))
         for storage in env.get('Storages') or []:
             acl = self.storage_acl(storage['Bucket'])
@@ -320,6 +326,8 @@ class Operator:
         reasons = []
         if not has_domain:
             reasons.append('production-domain-not-configured')
+        if not local_ready:
+            reasons.append('local-acceptance-domains-not-configured')
         if not has_storage_deny:
             reasons.append('private-storage-deny-rule-not-configured')
         login = self.call('DescribeLoginConfig')
@@ -347,7 +355,7 @@ class Operator:
         for ready, reason in ((login_ready and provider_ready, 'email-provider-not-configured'), (client_ready, 'cross-device-limit-not-configured'), (collections_ready, 'private-collection-rules-not-configured'), (functions_ready, 'function-rules-not-configured')):
             if not ready:
                 reasons.append(reason)
-        setup_ready = has_domain and has_storage_deny and login_ready and provider_ready and client_ready and collections_ready and functions_ready
+        setup_ready = has_domain and local_ready and has_storage_deny and login_ready and provider_ready and client_ready and collections_ready and functions_ready
         reasons.append('real-email-and-private-access-not-validated')
         config = {'env': self.env_id, 'region': REGION, 'publishableKey': key['ApiKey'], 'keyType': 'publish_key', 'functionName': 'paw-api', 'cloudEnabled': False, 'platformSetupReady': setup_ready, 'readinessStatus': 'blocked' if len(reasons) > 1 else 'awaiting-real-private-email-validation', 'readinessReasons': reasons}
         PUBLIC_CONFIG.write_text(json.dumps(config, indent=2) + '\n', encoding='utf8')
@@ -361,6 +369,14 @@ class Operator:
         self.environment()
         if name not in FUNCTIONS:
             raise ValueError('Only project functions can be deployed')
+        required_values = {'TZ': 'Asia/Shanghai', 'PAW_CLOUD_ENV_ID': self.env_id}
+        if name == 'paw-api':
+            keys = self.call('DescribeApiKeyList', {'KeyType': 'publish_key', 'PageNumber': 1, 'PageSize': 10}).get('Data') or []
+            key = next((k for k in keys if k.get('Name') == 'publish_key' and isinstance(k.get('ApiKey'), str) and k['ApiKey']), None)
+            if not key:
+                raise RuntimeError('Verified publish_key is required before deploying the private API')
+            required_values['PAW_CLOUD_PUBLISHABLE_KEY'] = key['ApiKey']
+        environment = {'Variables': [{'Key': key, 'Value': value} for key, value in required_values.items()]}
         directory = Path(directory).resolve()
         allowed = (ROOT / 'test-results/stage2/functions').resolve()
         if allowed not in directory.parents or not (directory / 'index.js').is_file():
@@ -381,7 +397,7 @@ class Operator:
         if existing:
             result = self.attempt('UpdateFunctionCode', {'FunctionName': name, 'Namespace': self.env_id, 'Handler': 'index.main', 'InstallDependency': 'FALSE', 'Publish': 'FALSE', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'CodeSource': 'ZipFile'})
         else:
-            result = self.attempt('CreateFunction', {'FunctionName': name, 'Handler': 'index.main', 'MemorySize': 256, 'Timeout': 3, 'Runtime': 'Nodejs18.15', 'InstallDependency': 'FALSE', 'CodeSource': 'ZipFile', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'Environment': {'Variables': [{'Key': 'TZ', 'Value': 'Asia/Shanghai'}, {'Key': 'PAW_CLOUD_ENV_ID', 'Value': self.env_id}]}, 'AutoCreateClsTopic': 'FALSE', 'AutoDeployClsTopicIndex': 'FALSE', 'Description': 'Paw diary stage2 private health API' if name == 'paw-api' else 'Temporary stage2 identity flags only readiness probe'})
+            result = self.attempt('CreateFunction', {'FunctionName': name, 'Handler': 'index.main', 'MemorySize': 256, 'Timeout': 3, 'Runtime': 'Nodejs18.15', 'InstallDependency': 'FALSE', 'CodeSource': 'ZipFile', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'Environment': environment, 'AutoCreateClsTopic': 'FALSE', 'AutoDeployClsTopicIndex': 'FALSE', 'Description': 'Paw diary stage2 private health API' if name == 'paw-api' else 'Temporary stage2 identity flags only readiness probe'})
         if not result:
             raise RuntimeError('Function deployment failed; see safe API summary')
         for _ in range(12):
@@ -391,13 +407,13 @@ class Operator:
                 if status.get('Status') == 'Active':
                     variables = (status.get('Environment') or {}).get('Variables') or []
                     values = {v.get('Key'): v.get('Value') for v in variables}
-                    if values.get('TZ') != 'Asia/Shanghai' or values.get('PAW_CLOUD_ENV_ID') != self.env_id:
-                        updated = self.attempt('UpdateFunctionConfiguration', {'FunctionName': name, 'MemorySize': 256, 'Timeout': 3, 'Environment': {'Variables': [{'Key': 'TZ', 'Value': 'Asia/Shanghai'}, {'Key': 'PAW_CLOUD_ENV_ID', 'Value': self.env_id}]}}, service='scf')
+                    if any(values.get(key) != value for key, value in required_values.items()):
+                        updated = self.attempt('UpdateFunctionConfiguration', {'FunctionName': name, 'MemorySize': 256, 'Timeout': 3, 'Environment': environment}, service='scf')
                         if not updated:
                             raise RuntimeError('Function public environment configuration failed')
                         time.sleep(2)
                         continue
-                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', managementSecretsInjected=False)
+                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', publicKeyConfigured=name == 'paw-api', managementSecretsInjected=False)
                     return
                 if status.get('Status') in ('CreateFailed', 'UpdateFailed', 'DeployFailed'):
                     raise RuntimeError('Function entered failed state')
@@ -416,11 +432,42 @@ class Operator:
         flags = {key: value for key, value in returned.items() if isinstance(value, bool)} if isinstance(returned, dict) else {}
         emit('managementReadiness', invokeResult=result.get('InvokeResult'), errorCode=result.get('ErrMsg') if result.get('ErrMsg') in ('', 'Unhandled', 'Handled') else bool(result.get('ErrMsg')), duration=result.get('Duration'), flags=flags, realEmailUserVerified=False)
 
+    def cleanup_readiness(self):
+        """Remove only this session's temporary probe, after actual acceptance."""
+        self.environment()
+        name = 'paw-stage2-readiness'
+        try:
+            function = self.call('GetFunction', {'FunctionName': name, 'ShowCode': 'FALSE'}, service='scf')
+        except Exception as error:
+            if not hasattr(error, 'get_code') or not error.get_code().startswith('ResourceNotFound'):
+                raise
+            function = None
+        if function and function.get('Description') != 'Temporary stage2 identity flags only readiness probe':
+            raise ValueError('Temporary probe description changed; refusing to delete')
+        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}}
+        self.call('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps(rules)})
+        permissions = (self.call('DescribeResourcePermission', {'ResourceType': 'function'}).get('Data') or {}).get('PermissionList') or []
+        actual = json.loads(permissions[0].get('SecurityRule') or '{}') if permissions else {}
+        if actual != rules:
+            raise RuntimeError('Temporary probe access revocation did not persist')
+        if function:
+            self.call('DeleteFunction', {'FunctionName': name}, service='scf')
+        for _ in range(6):
+            try:
+                self.call('GetFunction', {'FunctionName': name, 'ShowCode': 'FALSE'}, service='scf')
+            except Exception as error:
+                if hasattr(error, 'get_code') and error.get_code().startswith('ResourceNotFound'):
+                    emit('readinessCleanupVerified', envId=self.env_id, temporaryFunctionAbsent=True, publicProbeRuleAbsent=True, privateApiTouched=False)
+                    return
+                raise
+            time.sleep(2)
+        raise RuntimeError('Temporary probe deletion not yet confirmed')
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env', default=ENV_ID)
-    parser.add_argument('command', choices=('inspect', 'configure', 'deploy', 'invoke-readiness', 'guard-check', 'refresh-public-config', 'recheck-paid-pending', 'pay-known-pending'), nargs='?', default='inspect')
+    parser.add_argument('command', choices=('inspect', 'configure', 'deploy', 'invoke-readiness', 'cleanup-readiness', 'guard-check', 'refresh-public-config', 'recheck-paid-pending', 'pay-known-pending'), nargs='?', default='inspect')
     parser.add_argument('--function', choices=FUNCTIONS)
     parser.add_argument('--bundle')
     parser.add_argument('--funds-confirmed-by-root', action='store_true', help='Use only after root explicitly confirms funds are ready; never implied by elapsed time')
@@ -444,6 +491,8 @@ def main():
         operator.refresh_public_config()
     elif args.command == 'invoke-readiness':
         operator.invoke_readiness()
+    elif args.command == 'cleanup-readiness':
+        operator.cleanup_readiness()
     else:
         getattr(operator, args.command)()
 

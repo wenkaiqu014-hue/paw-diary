@@ -1,4 +1,4 @@
-import { processImage as processDisplayImage } from "../media/process-image.js";
+import { processImage as processDisplayImage, inspectImageBlob } from "../media/process-image.js";
 const failure = (code) =>
   Object.assign(new Error("errors." + (code ?? "UNAVAILABLE").toLowerCase()), {
     code: code ?? "UNAVAILABLE",
@@ -31,6 +31,7 @@ export function createCloudMediaRepository({
   invoke,
   processImage = processDisplayImage,
   upload = putObject,
+  decodeImage = globalThis.createImageBitmap,
 } = {}) {
   if (!repository?.request) throw failure();
   return {
@@ -53,11 +54,29 @@ export function createCloudMediaRepository({
       petId,
       kind = "photo",
       blob,
+      preparedImage,
       caption = "",
       baseRevision = repository.getRevision(),
       operationId = globalThis.crypto.randomUUID(),
     } = {}) {
-      const image = await processImage(blob, { kind }),
+      let image;
+      if (preparedImage !== undefined) {
+        image = preparedImage;
+        const limit = kind === "avatar" ? 512 : 1920;
+        if (!image || !["avatar", "photo"].includes(kind) || !(image.blob instanceof Blob) ||
+            (blob !== undefined && blob !== image.blob) || image.bytes !== image.blob.size ||
+            image.mime !== image.blob.type || !Number.isInteger(image.width) || !Number.isInteger(image.height) ||
+            image.width < 1 || image.height < 1 || Math.max(image.width, image.height) > limit ||
+            typeof decodeImage !== "function") throw failure("INVALID_INPUT");
+        let decoded;
+        try {
+          await inspectImageBlob(image.blob, {maxBytes:1024*1024});
+          decoded = await decodeImage(image.blob, {imageOrientation:"from-image"});
+          if (decoded.width !== image.width || decoded.height !== image.height) throw failure("INVALID_INPUT");
+        } catch { throw failure("INVALID_INPUT"); }
+        finally { decoded?.close?.(); }
+      } else image = await processImage(blob, { kind });
+      const
         sha256 = await digest(image.blob);
       const staged = await repository.request(
         "media.prepare",
@@ -104,6 +123,12 @@ export function createCloudMediaRepository({
     },
     remove: ({ assetId, ...options }) =>
       repository.request("media.remove", { assetId }, options),
+    cleanupExpired: ({ assetIds, limit = 3, ...options } = {}) =>
+      repository.request(
+        "media.cleanup",
+        { limit, ...(assetIds ? { assetIds } : {}) },
+        options,
+      ),
     async read(assetId, { includeDeleted = false } = {}) {
       const result = await repository.request("media.read", {
         assetId,

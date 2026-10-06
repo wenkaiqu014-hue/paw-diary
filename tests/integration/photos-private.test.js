@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { realClients, read, write, requireSuccess } from "./cloud-harness.js";
+import {bindConfirmedFixture,requireDirectDenial} from "../helpers/cloud-direct-validation.js";
 test("real private storage upload/read/delete and A/B/anonymous/direct-object access denial", async () => {
   const { A, B, anonymous } = await realClients();
   const before = requireSuccess(await read(A)),
@@ -42,37 +43,34 @@ test("real private storage upload/read/delete and A/B/anonymous/direct-object ac
       pet.revision,
     ),
   );
-  const request = {
-    version: 1,
-    action: "media.read",
-    payload: { assetId: saved.data.id },
-  };
-  const content = requireSuccess(await A.invoke(request));
-  assert.equal(content.data.base64, bytes.toString("base64"));
-  assert.equal(content.data.url, undefined);
-  assert.equal(content.data.readURL, undefined);
-  assert.equal((await B.invoke(request)).error?.code, "FORBIDDEN");
-  assert.equal(
-    (await anonymous.invoke(request)).error?.code,
-    "UNAUTHENTICATED",
-  );
-  let ownerDirectAllowed = false;
   try {
-    const urls = await A.app.getTempFileURL({ fileList: [saved.data.fileRef] });
-    ownerDirectAllowed =
-      urls?.fileList?.some(
-        (file) =>
-          file.code === "SUCCESS" && typeof file.tempFileURL === "string",
-      ) === true;
-  } catch {}
-  assert.equal(ownerDirectAllowed, false);
-  let directAllowed = true;
-  try {
-    await anonymous.app.downloadFile({ fileID: saved.data.fileRef });
-  } catch {
-    directAllowed = false;
-  }
-  assert.equal(directAllowed, false);
+    const request = {
+      version: 1,
+      action: "media.read",
+      payload: { assetId: saved.data.id },
+    };
+    const content = requireSuccess(await A.invoke(request));
+    assert.equal(content.data.base64, bytes.toString("base64"));
+    assert.equal(content.data.url, undefined);
+    assert.equal(content.data.readURL, undefined);
+    assert.equal((await B.invoke(request)).error?.code, "FORBIDDEN");
+    assert.equal(
+      (await anonymous.invoke(request)).error?.code,
+      "UNAUTHENTICATED",
+    );
+    const identity = await A.identityFlags();
+    await bindConfirmedFixture({
+      envId:process.env.PAW_DIARY_CLOUD_ENV_ID ?? "paw-diary-d8g3p4tlsb305221d",
+      assetId:saved.data.id,petId:pet.data.id,
+      sha256:createHash("sha256").update(bytes).digest("hex"),bytes:bytes.length,
+      ownerUidHash:identity.uidHash,actors:[A,B,anonymous],
+    });
+    // The actual object already returned matching business bytes above; all direct reads are real caller SDKs.
+    for (const actor of [A,B,anonymous]) {
+      await requireDirectDenial(()=>actor.directFixtureUrls(saved.data.id),{kind:"storage"});
+      await requireDirectDenial(()=>actor.directFixtureDownload(saved.data.id),{kind:"storage"});
+    }
+  } finally {
   const deleted = requireSuccess(
     await write(A, "media.remove", { assetId: saved.data.id }, saved.revision),
   );
@@ -84,6 +82,7 @@ test("real private storage upload/read/delete and A/B/anonymous/direct-object ac
     { kind: "pet", ids: [pet.data.id] },
     deleted.revision,
   );
+  }
 });
 
 function pngChunk(type, body) {

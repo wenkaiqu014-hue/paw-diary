@@ -143,3 +143,10 @@ python3 scripts/cloud-setup.py --env NEW_ENV_ID refresh-public-config
 `node scripts/capture-cloud-sessions.mjs --help`说明命令；`--check`只校验已保存公开配置，无邮件/网络。正式命令要求public-config中的platformSetupReady=true，以stdin逐条输入request/verify，A/B各独立SDK Worker；不将邮箱/代码写代码或Shell历史。session写到Git忽略test-results/stage2/real-sessions.json，权限0600，仅envId及access/refresh，stdout不回显秘密。此工具按实际原始email_verified校验，不信SDK转换日期。
 
 匿名捕获另需Root批准精确环境短时开启provider，创建真实SDK匿名会话后finally恢复关闭并读回；本次尚未执行。实际邮箱登录UI仍需独立浏览器验收，捕获工具仅为后续真实integration会话准备，不等同已接通。所有集成仍须使用同一已核环境和公开key，账号不同的SDK不得共享全局缓存，管理密钥不得进入Worker。
+
+
+## 真实本地来源与临时探针清理准备
+
+后续paid配置同时添加wenkaiqu014-hue.github.io、localhost:4193、127.0.0.1:4193并严格读回，供真实浏览器验收，保持原公开0.2直至所有门槛通过；这些只是已写入脚本，尚未在paid环境实际执行。[安全来源文档](https://docs.cloudbase.net/envconfig/security/intro)支持端口且描述默认localhost，但本trial03:32的实际10SYSTEM列表没有localhost，不假设环境已有。原“只配生产域避免个人额度”不是确认安全域仅1个，不与网站自定义域名配额混同。
+
+函数deploy已改从同环境查询Name=publish_key再设置PAW_CLOUD_PUBLISHABLE_KEY，读回只输出是否匹配，不回显公开值或管理秘密。尚未部署此修复。验收完成可执行cleanup-readiness：只删除说明仍为Temporary stage2 identity flags only readiness probe的paw-stage2-readiness，先撤调用规则/读回，再删除/确认缺失；默认不可删除其他函数。依据[SCF当前API](https://cloud.tencent.com/document/product/583/18585)和当前SDK字段，离线guard通过；没有实际删除证明。

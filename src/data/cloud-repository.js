@@ -50,6 +50,7 @@ export function createCloudRepository({
     return next;
   };
   const send = async (request, retry = false) => {
+    if (id) request = { ...request, expectedWorkspaceId: id };
     let result;
     try {
       result = await invoke(request);

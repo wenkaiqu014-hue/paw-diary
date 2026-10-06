@@ -434,3 +434,54 @@ Root定向复验local/archive/media49项全部PASS/0skip/exit0，不替代UI；l
 03:07:35只读同笔付款状态仍1/未付、1990分/一月、paymentRequested=false，exit0，未付款/充值/创建paid环境；urllib3 LibreSSL提示未影响实际查询。Root真实集成四文件现运行5tests明确全部失败REAL_CLOUD_NOT_CONFIGURED/exit1/0skip，证据real-gates-not-configured.log，不能与单测绿色相加当全部通过。资金/受控邮箱仍异步待用户。
 
 Root同步AGENTS/PENDING/阶段2计划与新docs/verification/stage2-report.md为“实施中/未真实验收/未发布”，原只plan文字保留在历史而当前入口更新；README与package serve修为npm ci→构建→仅dist HTTP，不再指导直接服务SDK裸导入。新scripts/capture-cloud-sessions.mjs准备最终验收OTP捕获：每账户独立NodeWorker环境白名单不继承管理秘密，真实SDK OTP/verify callback，原始email_verified与UID一致，session只写ignored0600文件，stdout仅安全flags，不发送邮件直到平台ready+用户提供邮箱。--help/--check及node --check各exit0，configValid true/platformSetupReady false/networkCalled false。未运行真实收信/anon创建、不假称工具本身已跑通真实登录。一次SDK方法离线存在性探针初始化后定时器未退出，Root终止会话38662/exit130，再显式process.exit0的源码形状读取成功；无业务调用或账户写。一次skill路径误到.agents返回不存在，改当前清单.codex/skills/webapp-testing读取，未因旧路径安装重复技能。
+
+
+已本地归档4efde75：本地revision/损坏全量恢复49项实际复验、构建发布配置/README运行入口、当前阶段文档与受控会话捕获预备。不包含仍在工人编辑的app/backend，也没有push/合并main/发版。捕获工具在platformSetupReady=false时真实进程exit1并明确ACCEPTANCE_PLATFORM_NOT_READY，证明先于邮件请求拒绝；无邮件发送。
+
+Root读单轮审查修复差异发现函数原始邮箱查询需要PAW_CLOUD_PUBLISHABLE_KEY，但ops旧deploy只设置envId/TZ，因而真实请求会UNAVAILABLE。脚本补只查询当前env的publish_key、拒绝api_key、设置及严格读回匹配，输出仅publicKeyConfigured布尔。Python编译/diff检查exit0；离线实际deploy协议控制验证发布key配置及读回、不持久写拒绝、management型key在写API前拒绝、日志无key各通过，未调用云/付费。真实部署等cloud工人此wave完成再执行，不能把offline控制验收当真实配置。另提醒cloud工人同UID的profile网络失败须UNAVAILABLE且保草稿，不当UNAUTH退出；UID A变B则立即使旧A失效以保护隐私。
+
+UI检查用web-design-guidelines读取官方最新command.md，新增邮箱/OTP属性与ARIA/键盘/焦点/长文本定向核对；Impeccable此前context一次保持既有视觉，detector仅help预备，最终一次扫描等修复ready。source URL：https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md 。不新增对外已接通声明、不改变已确认品牌或为检查造新交互。
+
+一次Root guard-check命令误用node运行.py，ERR_UNKNOWN_FILE_EXTENSION/exit1且未执行脚本或云请求；改python3同命令guard-check成功exit0，无网络。
+
+
+2026-10-07 03:23:39（工具date）：Root英语响应式新增stage2-responsive.py实际四宽360/390/768/1440均exit0：四页、20字宠物/typeLabel、自定义记录草稿及dialog语言切换、编辑→头像入口、刷新偏好与demo原文不改。检查整页scrollWidth与控件边界；原数据表768内部auto横滚，实际mouse.wheel后操作按钮可达，不把计划内表滚动当整页横溢。初两次假定头像/宠物直接入口locator不存在导致超时，按实际管理宠物→编辑→头像修正；随后hashchange未等待active导航造成旧DOM被测及hover时重绘，先加导航active等待，再整体0。没有forceclick/截断内容/改产品断言隐去问题，未改CSS/设计世界。测试在固定4193前一候选产物上，UIwave完成后仍需统一最终复跑。已直接扫描全部tracked文件与os.environ当前可读管理/AI实际凭证值，结果PASS；只输出文件数/是否匹配，不回显实际值。
+
+
+2026-10-07 03:30:28（工具date）：固定app-YVB44MZI.js/style-E5NM6WZE.css统一复验，Root读取八旧脚本全部exit0、强化language全流程exit0、四宽Englishresponsive exit0。local-fixes真实corrupt/头像/旧表单/IDBabort四case无头9PASS+有头9PASS，manifest一致，有头4图工人view_image目检。透明原图5,564,152→684,001字节、最长边512且alpha0，错MIME和11,166,746字节超源失败保旧avatar；完整四媒体逐hash、回收deletedAt与原坏recovery完整；真实blobs.put下一事务abort证明完整导出/IDB不变、文件/caption保留、原form重试只一asset/rev。不是自然磁盘quota耗尽或真机验证。证据test-results/stage2/review-local-browser-report.md，root待最终hash更新后必要复验，不将已通过旧hash混作新hash证据。
+
+UI同wave追加实际RED：A发起本地导出hash暂停，平台切B清A后B新表单输入；A旧导出完成会close B新form/open迁移到B。接受这是已审查身份隔离范围，给choose按origin generation/repository/modal节点每awaitguard，正在RED→GREEN；不新增第二广审或无关视觉重构。
+
+Impeccable detector本次一次扫描index/style/account/photo exit0/0findings，但明确DEGRADED缺htmlparser2/css-select/css-tree/domutils，只regex，不能称完整干净/对比度已评估；原始json/stderr已留。人工DOM/真实浏览器/既有视觉依据补证，不以降级结果宣称WCAG合格。03:30:34同笔订单只读仍state1/未付1990分/1个月/paymentRequested=false，无付款或第二订单。
+
+为完成真实UI验收而保公开0.2不变，Root核安全来源官方：支持端口、文档写默认localhost、每环境最多50。03:32:27/03:32:46实际trial DescribeAuthDomains只有10 SYSTEM且无localhost，不能把文档默认当本环境已配置。脚本paid configure补生产域与精确localhost:4193/127.0.0.1:4193并读回，避免伪造Origin/提前发公开候选；未真正创建域/paid资源。此前仅生产域是未核额度的谨慎选择，不是个人版安全域只1个的事实，区别于网站自定义域名数。localhost服务实际HTTP200。仅本地验收构建可临时enabled=true（平台/来源到位后），正式配置仍全部真实门槛通过才启用。
+
+Root准备cleanup-readiness命令，仅核当前允许env及probe确切Description，先默认deny/paw-api auth规则撤probe并读回，再删除恰好该临时函数并确认ResourceNotFound；不会删私有API/namespace/用户数据。已按官方SCF DeleteFunction2018-04-16字段与当前PythonSDK3.1.177 FunctionName/Namespace/Qualifier核对，离线协议guard实际通过（描述变化/规则未持久化拒删除、确切probe删除及缺失读回），尚未云执行。相关源URL：https://docs.cloudbase.net/envconfig/security/intro 、https://cloud.tencent.com/document/product/583/18585 、https://cloud.tencent.com/document/product/876/137950 。
+
+
+03:41:46实际部署paw-api修复bundle成功exit0并Active，Node18.15/256MB/3s，envId/TZ/PAW_CLOUD_PUBLISHABLE_KEY严格读回匹配，仅输出publicKeyConfigured布尔，无管理秘密注入。Root云auth/private/import40/40复验0。获明确部署信号后cloud工人按批准范围新增2技术账号做flags-only新版raw探针：03:42:55–03:43:02，A平台UID/SDKUID/官方raw.sub一致，raw有email但缺email_verified、API明确UNAUTH（非UNAV）；诊断原要求缺省字段必须出现的shapeassert提前exit1，B未采完，不能称双账号探针通过或网络失败。username开关FALSE读回，自己创建两个账号Success2/Failed0/remaining0、私密600文件密码/token清除；没有邮件/匿名开关/paid动作/他人业务。原先converted_date=>verifiedtrue结论已更正，本次raw缺省不当已验证。
+
+只读进一步定位官方旧兼容Auth email_verified:boolean“用户是否经过邮箱验证”，并对照当前SDK3.10.1 UserProfile optional布尔及getUserInfo无参默认/v1/user/me链；SDK转换确认日期两分支created_at不可授权。新版HTTPv1Profile示例未列该字段，不能据此说绝无字段；真正本env OTP后是否true仍须实测。底层v2路径虽存在，未找到更可靠官方verified模型，不盲切、不用provider.bind/有效token/有email/UID/日期放宽。旧http-current-user缓存曾404，不构成证据，本轮从实际目录找到user-me正式原页补正。工人详细只读范围/SDK文件位置见auth-verification-research.md，没有通读全部长WebV3文档。
+
+Root对direct对象验收首次判断“publicAsset已剥fileRef所以undefined”错误，03:51:11实际读取88–100行确认仍保留fileRef并当场告工人/本日志更正；完整archive确实剥它，不能混同业务DTO。已实际RED复现的重要问题是catch-all将INVALID_PARAMS当权限拒绝，改严格官方权限码、网络/超时/无效/未知错误全部失败。GroundTruth增强为主进程FUJI只读本测试恰好已确认asset记录，核owner hash/pet/sha/bytes/状态及环境，仅内部绑定3真实SDK actor Worker，管理员不作为访问者、不进入Worker环境、不输出UID/fileRef/签名/秘密。新增3RED→GREEN，root下一完整复验纳入；真实入口仍0pass5fail/0skip缺session，未假绿。
+
+媒体失败恢复另6实际服务/controller RED→GREEN：同内容重试同key无重复，头像改图/失败照片改caption新key可完成，保存期头像input锁住且失败恢复FileList，旧scope上传失败不得进入新pet/账号的failed队列，不再把A旧图片写到B；完整preparedImage传给CloudMedia严格签名/bytes/decode尺寸验证后直接上传不重复JPEG编码。响应可能已提交但丢回执，词条改“未确认保存”而非断言未保存。UI已freeze并交回，Root构建app-3IRC24C5.js/style-E5NM6WZE.css、全部210单测0fail/0skip实际exit0。后续明确登录过期两条边界（SDK明确UNAUTH/服务端UNAUTH但SDK缓存仍A）正在实际App定向验证，属于计划的登录过期门槛，网络UNAV保输入及旧A不能清新B继续保持，不新广审或新产品功能。
+
+官方精确URL：https://docs.cloudbase.net/api-reference/webv2/authentication_v2 、https://docs.cloudbase.net/http-api/auth/user-me 、https://docs.cloudbase.net/http-api/auth/user-providers 、https://docs.cloudbase.net/http-api/auth/auth-token-introspect 、https://docs.cloudbase.net/http-api/auth/auth-verify-verification 。当前这些来源不能替代真实收码正向样本。
+
+
+## 阶段2最终本地候选与待人工真实验收交接
+
+2026-10-07 04:19:44 Asia/Shanghai（工具date）：最终固定app-ILE2BPQK.js/style-E5NM6WZE.css。Root fresh npm test210/210、0fail/0skip；40份生产/工具JS node --check、Python编译、git diff --check全exit0，7文档围栏/相对链接检查0；tracked+pending131文件与本环境实际管理/AI凭证值扫描PASS，仅输出是否匹配/数量。
+
+同产物Root八旧脚本全部exit0；新增account-workspaces/language/stage2-responsive/personal-media/review-local-fixes各0，跨模块fixture cloud-contract-ui15case、media-intent-ui6case、account4组、photo-wall7组各0。共17份浏览器脚本，新增本地/模拟SDK边界9份；不是17份真实云验收。review-local-fixes本轮新hash无头all9PASS、corrupt完整restore/PNG头像/旧表单CAS/真实IDBabort复验完整，样式沿旧hash已目检有头图。四宽中英/原文/FileList、原demo兼容、完整备份均通过。模拟平台/FakeSDK已在各脚本标明，不能替真实帐号。
+
+新增明确过期边界实际RED→GREEN：SDK明确UNAUTH、SDK缓存仍A但backend principal为空回UNAUTH，旧A迟到UNAUTH三case；即时清云A/代际失效回local，owner级内存reauth marker使主动账号入口可重码，验证成功才清marker，不自动signOut新B，unknown网络UNAV仍保输入。fixture首次再收码被正确60秒冷却挡，使用virtualclock等完整冷却而非绕控件；无真实验证码/邮件发生。对应15契约最终0，业务/界面均冻结。
+
+04:18:33同一known订单只读仍state1/未付1990分/1个月、paymentRequested=false；没付款/充值/新单。04:19:44原trial只读新guard确认NORMAL/MGO1/PG0、自动续费和超额false，仍到2027-04-07。根根据原采购docs:88明确ResourceTypes=[flexdb,cos,scf]及官方flexdb=文档型定义，决定保持同单，不因订单未回显类型否定已有原文或无故重建；原params未私存/无法订单级回证作为审计限制，未来订单保存规范params+hash。付费实际发货必须readback恰好DocDB1/PG0，否则止于检查不私自二买。新guard已代码/语法检查且本trial实跑0；没有CreateEnv试收费。
+
+Root真实integration当前四文件实际再跑exit1：0pass/5fail/0skip，全部REAL_CLOUD_NOT_CONFIGURED。未完成真实OTP正向raw verified、A/B及匿名、跨浏览器、真实DB/对象拒绝、近1MiB/3秒、私有迁移/图片备份云端场景与公开0.3部署；阶段2不勾完成，不进入3。异步资金与受控邮箱问题尚无用户回复，不能用等待当确认/付费，其他独立构建/修复/验收已完成。候选4193保持可供用户体验；只读管理与SDK未verified拒绝不当邮箱接通。临时readiness尚待真实验收后cleanup，不虚称删除。
+
+Agent原实现及单轮审查/定向修复都已回报结束，Root整合复验而非只引述。详细已同步stage2-report/PENDING/设计协议/阶段计划：Task2本地与Task6已有界面双语步骤可勾，其余任务真实门槛仍保留。下一步等资金/已有单支付、两个受控邮箱收码，再按操作说明配置同一真实paid环境/来源/存储、采正向flag和SDK session、序列真实测试、真实UI、全过后原URL0.3发版；工具/发布已有授权不重复问。源码与完整日志将本地Git归档，无push/main合并/tag/Release/公开更新。
+
+本轮DB来源核对完整URL：https://cloud.tencent.com/document/product/876/128117 、https://cloud.tencent.com/document/product/876/128592 。官方API缺省未明确，我们依据原文明确资源输入，不假设默认值。

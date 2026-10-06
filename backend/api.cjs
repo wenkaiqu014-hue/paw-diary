@@ -42,6 +42,12 @@ async function handleRequest(
       Array.isArray(request.payload)
     )
       throw new ApiError("INVALID_INPUT");
+    const workspaceId = `cloud:${hash({ ownerId: principal.userId, environmentId })}`;
+    if (
+      request.expectedWorkspaceId !== undefined &&
+      request.expectedWorkspaceId !== workspaceId
+    )
+      throw new ApiError("UNAUTHENTICATED", "errors.workspaceChanged");
     if (!store) throw new ApiError("UNAVAILABLE");
     const limit = request.action.startsWith("imports.")
       ? 100 * 1024 * 1024
@@ -49,7 +55,6 @@ async function handleRequest(
     if (Buffer.byteLength(JSON.stringify(request.payload)) > limit)
       throw new ApiError("INVALID_INPUT");
     const deps = { principal, store, storage, clock, idFactory };
-    const workspaceId = `cloud:${hash({ ownerId: principal.userId, environmentId })}`;
     const identify = (reply) => ({ ...reply, workspaceId });
     if (request.action === "health.snapshot") {
       const stored = await store.readOwned(principal);

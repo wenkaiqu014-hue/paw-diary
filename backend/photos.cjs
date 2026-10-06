@@ -149,6 +149,89 @@ async function cleanupRetired(deps, assetId) {
     /* Revoked metadata stays hidden; quota remains held until cleanup succeeds. */
   }
 }
+async function markExpired(tx, deps, { assetIds, limit = 3 } = {}) {
+  const { principal, clock } = deps,
+    now = Date.parse(clock());
+  if (!Number.isInteger(limit) || limit < 1 || limit > 3)
+    throw new ApiError("INVALID_INPUT");
+  let candidates;
+  if (assetIds !== undefined) {
+    if (!Array.isArray(assetIds) || !assetIds.length || assetIds.length > 3)
+      throw new ApiError("INVALID_INPUT");
+    candidates = [];
+    for (const id of new Set(assetIds)) {
+      const asset = ownedAsset(await tx.getMedia(requiredId(id)), principal, {
+        staging: true,
+        allowDeleted: true,
+      });
+      if (
+        !asset.staging ||
+        (!asset.deletedAt && Date.parse(asset.expiresAt) > now)
+      )
+        throw new ApiError("INVALID_INPUT");
+      candidates.push(asset);
+    }
+  } else
+    candidates = (await tx.listMedia())
+      .filter(
+        (asset) =>
+          asset.ownerId === principal.userId &&
+          asset.staging &&
+          (asset.deletedAt
+            ? asset.cleanupPending
+            : Date.parse(asset.expiresAt) <= now),
+      )
+      .slice(0, limit);
+  const work = [];
+  for (const asset of candidates) {
+    if (asset.deletedAt && !asset.cleanupPending) continue;
+    asset.deletedAt = asset.deletedAt ?? clock();
+    asset.cleanupPending = true;
+    await tx.putMedia(asset.id, asset);
+    work.push({ id: asset.id, fileRef: asset.fileRef, bytes: asset.bytes });
+  }
+  return work;
+}
+async function cleanupMarked(deps, work) {
+  let cleaned = 0,
+    pending = 0,
+    quotaReleasedBytes = 0;
+  for (const item of work) {
+    try {
+      const needsCleanup = await deps.store.transactionOwned(deps.principal, async (tx) => {
+        const asset = ownedAsset(await tx.getMedia(item.id), deps.principal, {staging:true, allowDeleted:true});
+        if (!asset.staging || !asset.deletedAt || asset.fileRef !== item.fileRef) throw new ApiError("FORBIDDEN");
+        return asset.cleanupPending;
+      });
+      if (!needsCleanup) continue;
+      await deps.storage.remove(item.fileRef);
+      const released = await deps.store.transactionOwned(
+        deps.principal,
+        async (tx) => {
+          const asset = ownedAsset(await tx.getMedia(item.id), deps.principal, {
+            staging: true,
+            allowDeleted: true,
+          });
+          if (
+            !asset.staging ||
+            !asset.deletedAt ||
+            asset.fileRef !== item.fileRef
+          )
+            throw new ApiError("FORBIDDEN");
+          if (!asset.cleanupPending) return 0;
+          asset.cleanupPending = false;
+          await tx.putMedia(asset.id, asset);
+          return asset.bytes;
+        },
+      );
+      quotaReleasedBytes += released;
+      if (released > 0) cleaned++;
+    } catch {
+      pending++;
+    }
+  }
+  return { cleaned, pending, quotaReleasedBytes };
+}
 async function handleMedia(request, deps) {
   const { principal, store, storage, clock, idFactory } = deps,
     p = request.payload,
@@ -156,10 +239,53 @@ async function handleMedia(request, deps) {
   if (["media.prepare", "media.confirm"].includes(action)) {
     const receipt = await priorReceipt(request, deps);
     if (receipt) {
+      if (action === "media.prepare") {
+        const ticket = await store.transactionOwned(principal, async (tx) =>
+          tx.getMedia(receipt.data.ticketId),
+        );
+        if (
+          !ticket ||
+          ticket.deletedAt ||
+          (ticket.staging &&
+            Date.parse(ticket.expiresAt) <= Date.parse(clock()))
+        )
+          throw new ApiError("INVALID_INPUT", "errors.uploadExpired");
+      }
       if (action === "media.confirm")
         await cleanupRetired(deps, receipt.data.id);
       return receipt;
     }
+  }
+  if (action === "media.cleanup") {
+    const result = await writeTransaction(
+      request,
+      deps,
+      async (tx, w) => ({
+        work: await markExpired(tx, deps, p),
+        cleaned: 0,
+        pending: 0,
+        quotaReleasedBytes: 0,
+      }),
+      { bump: false },
+    );
+    const outcome = await cleanupMarked(deps, result.data.work ?? []);
+    const data = {
+      ...result.data,
+      cleaned: (result.data.cleaned ?? 0) + outcome.cleaned,
+      pending: outcome.pending,
+      quotaReleasedBytes:
+        (result.data.quotaReleasedBytes ?? 0) + outcome.quotaReleasedBytes,
+    };
+    await store.transactionOwned(principal, async (tx) => {
+      const receipt = await tx.getReceipt(request.idempotencyKey);
+      if (receipt) {
+        receipt.data = data;
+        await tx.putReceipt(request.idempotencyKey, receipt);
+      }
+    });
+    const { work, ...publicResult } = data;
+    result.data = publicResult;
+    return result;
   }
   if (action === "media.list") {
     return store.transactionOwned(principal, async (tx) => {
@@ -240,6 +366,10 @@ async function handleMedia(request, deps) {
       (p.caption ?? "").length > 200
     )
       throw new ApiError("INVALID_INPUT");
+    const expired = await store.transactionOwned(principal, async (tx) =>
+      markExpired(tx, deps, { limit: 1 }),
+    );
+    await cleanupMarked(deps, expired);
     const ticketId = idFactory(),
       path = `private/${hash(principal.userId)}/${ticketId}`;
     return writeTransaction(
@@ -341,14 +471,16 @@ async function handleMedia(request, deps) {
       const asset = ownedAsset(
         await tx.getMedia(requiredId(p.assetId)),
         principal,
-        { allowDeleted: true },
+        { allowDeleted: true, staging: true },
       );
       if (!asset.deletedAt) {
         asset.deletedAt = clock();
         asset.cleanupPending = true;
         await tx.putMedia(asset.id, asset);
-        const parent = owned(w.snapshot, "pets", asset.petId);
-        if (parent.avatarAssetId === asset.id) parent.avatarAssetId = null;
+        if (!asset.staging) {
+          const parent = owned(w.snapshot, "pets", asset.petId);
+          if (parent.avatarAssetId === asset.id) parent.avatarAssetId = null;
+        }
       }
       return {
         assetId: asset.id,
@@ -359,6 +491,7 @@ async function handleMedia(request, deps) {
     const asset = await store.transactionOwned(principal, async (tx) =>
       ownedAsset(await tx.getMedia(p.assetId), principal, {
         allowDeleted: true,
+        staging: true,
       }),
     );
     if (asset.cleanupPending) {
@@ -367,6 +500,7 @@ async function handleMedia(request, deps) {
         await store.transactionOwned(principal, async (tx) => {
           const latest = ownedAsset(await tx.getMedia(asset.id), principal, {
             allowDeleted: true,
+            staging: true,
           });
           latest.cleanupPending = false;
           await tx.putMedia(latest.id, latest);

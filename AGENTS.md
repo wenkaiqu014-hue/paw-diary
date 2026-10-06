@@ -25,7 +25,7 @@
 
 发布事实：v0.2.0 annotated tag指向 `ceed8d3`，与最终Pages部署 `37497726088` 的源码一致；Release已公开、非draft/非prerelease。v0.1.0仍指向 `17cba15`，禁止移动。Release： https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.2.0 。后续文档提交不改变发布源码；本轮结束交接只做本地Git提交，续作先查本地main与origin/main差异，不以reset丢弃尚未推送的交接。
 
-阶段2已由用户明确“开始吧”授权实施，起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46（包含验收，不是完成保证）。当前在隔离 `.worktrees/stage2` / `feat/stage2-local-cloud` 工作，基点de67c55，主main领先origin的交接保留。入口 `docs/superpowers/plans/2026-10-06-02-cloud-identity.md`，设计在 `docs/superpowers/specs/2026-10-07-stage2-local-cloud-design.md`。本地个人/自定义类型/媒体备份/双语已实现并做合成数据浏览器检查；云端真实邮箱A/B、私有对象规则与正式发版仍未通过，审查修复正在进行，不能称阶段完成。实施日志与实际门槛以SESSION_LOG最新段为准。免登录个人健康/头像/照片墙/幻灯片、demo/local/account隔离、迁移确认、本次仅邮箱等已确认方向不重复访谈。邮箱人工收信按用户要求放验收环节，不阻断独立开发；不把用户一句ok当亲自跑完脚本。
+阶段2已由用户明确“开始吧”授权实施，起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46（包含验收，不是完成保证）。当前在隔离 `.worktrees/stage2` / `feat/stage2-local-cloud` 工作，基点de67c55，主main领先origin的交接保留。入口 `docs/superpowers/plans/2026-10-06-02-cloud-identity.md`，设计在 `docs/superpowers/specs/2026-10-07-stage2-local-cloud-design.md`。本地个人/自定义类型/媒体备份/双语已实现并做合成数据浏览器检查；云端真实邮箱A/B、私有对象规则与正式发版仍未通过，审查修复与最终本地/模拟边界复验已完成：210单测、8旧+9新浏览器脚本全部exit0，固定app-ILE2BPQK/style-E5NM6WZE。真实云门槛未过，不能称阶段完成。实施日志与实际门槛以SESSION_LOG最新段为准。免登录个人健康/头像/照片墙/幻灯片、demo/local/account隔离、迁移确认、本次仅邮箱等已确认方向不重复访谈。邮箱人工收信按用户要求放验收环节，不阻断独立开发；不把用户一句ok当亲自跑完脚本。
 
 阶段2除原登录/权限/跨设备/头像/确认迁移外，需镜像当前V3生命周期/排序，包含P1-09/P1-10自定义记录/宠物类型、N-06语言基础和N-08当前宠物私有照片墙/可控幻灯片。N-04只读使用帮助/宠物记录助手在阶段3；N-07国内地域搜索/主动辅助定位在阶段4；N-03每版一次新内容、遮罩高亮“下一步/跳过指引”及可安装网页在阶段5。用户要求全部现有想法在最终截止前实现，不能默认移到截止后；原约30小时估计不含新增，不是工期保证。
 

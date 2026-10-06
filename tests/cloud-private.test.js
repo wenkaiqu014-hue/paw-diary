@@ -518,3 +518,130 @@ test("workspace identifier is opaque, stable for one owner and environment, and 
   assert.notEqual(one.workspaceId, other.workspaceId);
   assert.notEqual(one.workspaceId, b.workspaceId);
 });
+test("expected workspace mismatch rejects every write before store and receipt access", async () => {
+  const request = { version: 1, action: "health.snapshot", payload: {} },
+    a = await handleRequest(request, {
+      principal: principal("A"),
+      store: memoryStore(),
+      environmentId: "env-one",
+    });
+  const store = {
+    readOwned() {
+      throw new Error("store accessed");
+    },
+    transactionOwned() {
+      throw new Error("transaction accessed");
+    },
+  };
+  for (const action of [
+    "pets.save",
+    "records.save",
+    "reminders.complete",
+    "media.prepare",
+    "media.confirm",
+    "media.remove",
+    "imports.prepare",
+    "imports.commit",
+    "health.snapshot",
+  ]) {
+    const result = await handleRequest(
+      {
+        version: 1,
+        action,
+        payload: {},
+        expectedWorkspaceId: a.workspaceId,
+        expectedRevision: 0,
+        idempotencyKey: "same",
+      },
+      { principal: principal("B"), store, environmentId: "env-one" },
+    );
+    assert.equal(result.error.code, "UNAUTHENTICATED");
+    assert.equal(result.error.messageKey, "errors.workspaceChanged");
+  }
+});
+test("expired owner staging quota is reclaimed before new upload and explicit cleanup is retryable", async () => {
+  const store = memoryStore();
+  let n = 0,
+    now = "2026-10-07T01:00:00.000Z",
+    failCleanup = true,
+    removalAttempts = 0;
+  const storage = {
+    async prepare(path) {
+      return { fileRef: path, upload: { fields: { key: path } } };
+    },
+    async remove() {
+      removalAttempts++;
+      if (failCleanup) throw new Error("offline");
+    },
+  };
+  const run = (action, payload = {}, revision, key = "k" + ++n, user = "A") =>
+    handleRequest(
+      {
+        version: 1,
+        action,
+        payload,
+        expectedRevision: revision,
+        idempotencyKey: key,
+      },
+      {
+        principal: principal(user),
+        store,
+        storage,
+        clock: () => now,
+        idFactory: () => `stage-${++n}`,
+      },
+    );
+  const p = await run("pets.save", pet("A"), 0);
+  const input = {
+    petId: p.data.id,
+    kind: "photo",
+    caption: "",
+    mime: "image/png",
+    bytes: 1024 * 1024,
+    sha256: "a".repeat(64),
+  };
+  let first;
+  for (let i = 0; i < 50; i++) {
+    const result = await run("media.prepare", input, 1);
+    assert.equal(result.ok, true);
+    first ??= result.data;
+  }
+  now = "2026-10-07T03:00:00.000Z";
+  const held = await run("media.prepare", input, 1);
+  assert.equal(held.ok, false);
+  assert.equal(held.error.messageKey, "errors.mediaQuota");
+  const foreign = await run(
+    "media.cleanup",
+    { assetIds: [first.ticketId] },
+    0,
+    undefined,
+    "B",
+  );
+  assert.equal(foreign.error.code, "FORBIDDEN");
+  failCleanup = false;
+  const cleaned = await run(
+    "media.cleanup",
+    { assetIds: [first.ticketId] },
+    1,
+    "cleanup",
+  );
+  assert.equal(cleaned.ok, true);
+  assert.equal(cleaned.data.quotaReleasedBytes, 1024 * 1024);
+  assert.equal(cleaned.revision, 1);
+  const removalsAfterSuccess = removalAttempts;
+  const retry = await run(
+    "media.cleanup",
+    { assetIds: [first.ticketId] },
+    1,
+    "cleanup",
+  );
+  assert.equal(retry.data.quotaReleasedBytes, 1024 * 1024);
+  assert.equal(retry.data.pending, 0);
+  assert.equal(removalAttempts, removalsAfterSuccess);
+  const next = await run("media.prepare", input, 1);
+  assert.equal(next.ok, true);
+  assert.equal(
+    (await run("media.confirm", { ticketId: first.ticketId }, 1)).ok,
+    false,
+  );
+});

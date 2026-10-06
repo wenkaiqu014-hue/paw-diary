@@ -27,7 +27,7 @@ python3 -m http.server 4178 --bind 127.0.0.1
 
 `index.html` 是应用外壳，`style.css` 定义响应式界面，`app.js` 包含数据与业务流程。数据变更通过 `update` / `commit`，页面按 `home` / `health` / `nearby` / `community` 分为四个渲染函数。后续可抽离为组件并将本地数据层替换成 API，保留同一部署地址。
 
-后续需求与验收见 ROADMAP.md。首次发布前须获得用户的发布指令；目前按用户要求暂不推送。
+后续需求与验收见 ROADMAP.md。用户已授权发布第一版，公开仓库为 https://github.com/wenkaiqu014-hue/paw-diary 。固定网页地址为 https://wenkaiqu014-hue.github.io/paw-diary/ ，部署结果见 SESSION_LOG.md。
 
 ## GitHub Pages 部署准备
 
@@ -38,6 +38,8 @@ python3 -m http.server 4178 --bind 127.0.0.1
 ## 验证
 
 `test_app.py` 用 Playwright 在真实 Chromium 上验证新增健康记录、刷新保存、待办完成、多宠物隔离、城市筛选、图片发帖、评论、点赞、搜索、导出以及手机布局。测试截图与备份写入被 Git 忽略的 test-results/。
+
+测试默认检查本地服务。设置 `PAW_DIARY_TEST_URL=https://wenkaiqu014-hue.github.io/paw-diary/` 可检查线上版本；该变量不是凭证。首版的本地和线上验证均已通过，详情及工作流记录见 SESSION_LOG.md。
 
 ## 素材来源
 

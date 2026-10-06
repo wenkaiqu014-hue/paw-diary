@@ -18,10 +18,30 @@
 
 发现并修正手机健康表格撑宽 grid 的问题，以及同日多次记录缺少创建时间排序的问题。新增 createdAt 保持同日记录的先后顺序。截图在 test-results/，测试文件不进入网站发布白名单。
 
-## 未完成与下一步
+## 首次部署前的未完成项
 
 当前没有公开部署链接。等用户明确要求发布后创建并保留固定仓库名，启用 Pages，推送并验证匿名可访问。之后按 ROADMAP.md 实施云端身份与数据、AI、引导、日历导出和真实社区。具体云端平台及 AI 计费账户未选定，也没有任何收费调用。
 
 ## 本地预览
 
 服务端口 4178，地址 http://127.0.0.1:4178/ 。本地服务不替代题目要求的公开部署链接。
+
+## 发布授权与首次推送
+
+2026-10-06 20:54（Asia/Shanghai）：用户补充「10 分钟内先 push 一版」并要求维护完整本地开发日志，解除此前暂不推送的限制。
+
+创建公开仓库 https://github.com/wenkaiqu014-hue/paw-diary ，首个提交 018f8dc 已推送至 main。仓库 API 返回 isPrivate=false，默认分支 main。GitHub Pages 已配置 build_type=workflow、public=true、https_enforced=true，固定网站地址 https://wenkaiqu014-hue.github.io/paw-diary/ 。部署检查尚在进行，网页可访问性不能仅凭配置确认。
+
+提交前检查 app.js 语法和暂存区 diff 均通过。首次提交因 Git 作者身份未设置而失败，随后仅在本仓库配置 GitHub 用户名与 GitHub noreply 邮箱，未改全局 Git 配置；再次提交与推送成功。
+
+## 公开部署与线上复验
+
+2026-10-06 20:55（Asia/Shanghai）：工作流 37466753978 成功，GitHub 回传的完成时间为 2026-10-06T12:55:10Z。运行详情 https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37466753978 。匿名 curl 请求网站返回 HTTP 200；Pages API 确认 public=true、https_enforced=true。
+
+随后用没有登录态的全新 Chromium 浏览器上下文，对 https://wenkaiqu014-hue.github.io/paw-diary/ 运行完整 test_app.py。退出码 0，全部九组验证通过，包括图片资源、数据保存、待办完成、多宠物隔离、城市/物种筛选、上传照片、评论点赞搜索、四页手机布局和同日称重排序。测试内容仅写入测试浏览器的 localStorage，不进入网站共享数据。线上版本仍是前端交互雏形，云端和 AI 尚未接入。
+
+test_app.py 已支持 PAW_DIARY_TEST_URL 参数，可复用同一套验证检查本地或公开部署。
+
+## 当前续作入口
+
+仓库与网站都已公开，用户已收到两个链接。保持仓库名 paw-diary 和上述 Pages URL 不变。按 ROADMAP.md 继续开发；下一阶段是访客/真实用户数据分离、身份认证和云端保存，平台选择与收费账户需接入前确认。开发日志按本项目 AGENTS.md 的要求持续追加。

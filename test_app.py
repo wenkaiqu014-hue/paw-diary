@@ -1,9 +1,10 @@
 """真实浏览器验证核心用户流程；截图与备份留在 test-results（不发布）。"""
 from pathlib import Path
 from datetime import date, timedelta
+import os
 from playwright.sync_api import sync_playwright, expect
 
-BASE = 'http://127.0.0.1:4178/'
+BASE = os.environ.get('PAW_DIARY_TEST_URL', 'http://127.0.0.1:4178/')
 OUT = Path(__file__).parent / 'test-results'
 OUT.mkdir(exist_ok=True)
 

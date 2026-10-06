@@ -45,3 +45,7 @@ test_app.py 已支持 PAW_DIARY_TEST_URL 参数，可复用同一套验证检查
 ## 当前续作入口
 
 仓库与网站都已公开，用户已收到两个链接。保持仓库名 paw-diary 和上述 Pages URL 不变。按 ROADMAP.md 继续开发；下一阶段是访客/真实用户数据分离、身份认证和云端保存，平台选择与收费账户需接入前确认。开发日志按本项目 AGENTS.md 的要求持续追加。
+
+## v0.1.0 版本准备
+
+用户要求创建 release 0.1.0 和 tag 后提交作品。准备 VERSION 与 CHANGELOG.md，版本冻结范围为已验证的前端交互雏形。计划以同一提交创建 annotated tag v0.1.0 并发布 GitHub Release；执行结果随后追加。公开地址保持不变。

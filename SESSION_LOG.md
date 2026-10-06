@@ -292,3 +292,7 @@ tests/e2e/health-layout.py先实际RED退出1：图表在完整记录之后。�
 固定站点https://wenkaiqu014-hue.github.io/paw-diary/ 匿名curl HTTP200，HTML及app.js?v=0.2.0逐字节SHA256与验证源匹配。随后8套完整脚本以该公开URL在新建匿名Chrome context运行，original/foundation/boundaries/regressions/layout/management/quality/cache全部退出0，包括迁移、下载、恢复和实际拖动；测试写入仅对应浏览器localStorage，无共享服务或生产用户数据。内置Web open该URL返回“not accessible via this tool”，原因未确认；已如实采用匿名curl与真实Chromium验证，不冒充网页读取器成功。公共验证日志在test-results/stage1-v0.2.0/public。
 
 工作树67份指定测试/截图/日志产物复制至主工作区test-results/stage1-v0.2.0并逐文件hash确认，另保存计划execution-ledger供恢复；不提交截图/JSON/CSV/ICS或完整会话。4178用户预览读取main新代码继续运行。本轮未调用云端/AI/定位、未重复操作Calendar。网页v0.2.0已部署验收，接下来创建并核对新tag/Release；v0.1.0仍不移动，用户后续视觉体验与阶段2启动仍另行确认。
+
+## 发布过程中收到的文案修正
+
+2026-10-07 00:41:19（Asia/Shanghai，工具date）：用户要求删除“ 不知道生日时填写估计月龄，不需要虚构实际生日。”（原句无开头空格），仅移除宠物表单这段说明，不改变年龄字段/验证。app语法/diff检查通过，主工作区原9组浏览器流程再次退出0；独立DOM打开添加宠物确认该句已不显示、估计月龄输入可用。为让此前看过首轮公开版的浏览器刷新能读取修正后的入口，app入口增加revision=1，业务模块版本仍0.2.0。Tag/Release尚未创建，因此纳入同一v0.2.0，不移动已有tag；接下来推送此修正、重新部署并确认最新公开内容，再创建tag/Release。

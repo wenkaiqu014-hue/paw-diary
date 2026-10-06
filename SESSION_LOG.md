@@ -55,3 +55,13 @@ test_app.py 已支持 PAW_DIARY_TEST_URL 参数，可复用同一套验证检查
 GitHub Release 发布成功，publishedAt=2026-10-06T12:56:56Z（北京时间 2026-10-06 20:56:56）。版本页 https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.1.0 。API 确认 tagName=v0.1.0、isDraft=false、isPrerelease=false。
 
 Annotated tag v0.1.0 指向提交 17cba15（包含 VERSION、CHANGELOG 和版本准备记录），tag 已推送到 origin。发布后再次匿名请求固定网页返回 HTTP 200。后续提交继续更新 main；不移动已发布的 v0.1.0 tag，新增版本创建新 tag。当前发布不改变网站内容或地址。
+
+## 已提交作品与待办整理
+
+2026-10-06 21:04（Asia/Shanghai，整理开始时间来自时钟工具）：用户明确表示已提交作品，并要求新建 pending 文件，按优先级写清后续工作。这里仅确认用户已提交，不推断笔试结束时间或修改窗口的具体截止时间。
+
+创建 PENDING.md，基于已确认的产品设计和当前代码能力列出 P0 版本保护、P1 健康成长主线、P2 真实社区/同城匹配、P3 验证/发版以及暂缓范围。各任务包含实际工作、依赖和验收；已发布能力与未开发能力分开，云端平台、收费账号、实际截止时间列为待确认信息。约 30 小时预算为规划估算。
+
+同步 AGENTS.md 的续作入口，以及 README.md、ROADMAP.md 的待办引用。本次只更新本地项目文档，不修改网页、v0.1.0 tag 或线上部署。文档纳入本地 Git 版本记录；未运行前端行为测试，因为页面代码没有改变。
+
+验证：git diff --check 通过；脚本检查 14 项任务标题唯一、7 项已完成基线，以及 AGENTS/README/ROADMAP/SESSION_LOG 对 PENDING.md 的引用，全部通过。下一步优先确认实际修改截止时间、云端平台与计费边界，并开展不依赖平台的数据层与手动档案完善。

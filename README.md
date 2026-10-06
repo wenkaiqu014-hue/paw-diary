@@ -29,6 +29,8 @@ python3 -m http.server 4178 --bind 127.0.0.1
 
 后续需求与验收见 ROADMAP.md。用户已授权发布第一版，公开仓库为 https://github.com/wenkaiqu014-hue/paw-diary 。固定网页地址为 https://wenkaiqu014-hue.github.io/paw-diary/ ，部署结果见 SESSION_LOG.md。
 
+用户已提交 v0.1.0 作品。后续执行待办见 PENDING.md，按优先级记录任务、依赖和验收标准；开发过程持续维护在 SESSION_LOG.md。
+
 ## GitHub Pages 部署准备
 
 代码可以部署到固定公开仓库的 GitHub Pages。仓库名确认后保留，后续只更新文件，不更改仓库名或网页域名。使用 `.github/workflows/pages.yml` 工作流，GitHub 仓库 Settings → Pages → Source 设为 GitHub Actions。

@@ -537,3 +537,8 @@ GitHub原页核对：TencentCloudBase/cloudbase-skills显示35stars，auth-web/a
 产物docs/superpowers/specs/2026-10-07-stage2-auth-recovery-design.md与plans/2026-10-07-stage2-auth-recovery.md。六任务：基线/来源/完整错误及一次一变矩阵；独立UIpending；证据驱动最小修复或责任调整；私密原子轮换持久化；五真实case+真实首登/跨浏览器；全部门槛后沿原URL发布。首诊断检查点建议45分钟，届时必须交根因证据或本地脱敏最小复现，不保证修复发版时长。每个正式执行checkbox保持未勾。
 
 文档自检实际git diff --check退出0，2新增文档本地链接检查0missing（当次检查plan103行、design43行；后续补充匿名验收边界）；规格覆盖/接口一致/五ReviewFocus映射自审完成。没有重新跑226单测，本轮非产品代码变更，历史验收状态仍以cb8bf6a报告为准。本地Git归档计划/日志，保持阶段2未完成与0.3未发布。下一轮先读专项计划再决定启动，不继续旧的盲刷新/重复收码。
+
+
+邮箱验证码有效期文档核对：用户指出CloudBase邮件未标注有效期并要求查官方文档。按catalog-official-product-docs从docs.cloudbase.net根入口与HTTP API导航定位验证码章节；当前HTML侧栏提取23个页面链接，但其他折叠产品/全站目录未完整枚举，不称查全。Web对无尾斜杠发送/校验页多次timeout，.md后缀实际返回404（不能沿用旧skill对raw .md的保证）；普通发送页curl+HTML article解析成功，之后带尾斜杠Web打开成功，精确核到出参expires_in单位秒、默认600（lines162–164/337–338），正文验证码特性确认600秒10分钟、使用后失效。只核官方发送接口即可支持本次默认有效期结论，不用其他腾讯产品OTP规则或AccessToken寿命充验证码寿命。
+
+官方来源：https://docs.cloudbase.net/http-api/auth/auth-send-verification/ 。本项目10分钟challenge窗口仍为本地规则，后续诊断计划须保留平台实际expires_in并明确发码计时；本轮只查文档与日志归档，未维修、发码、调用真实业务/认证API或更改云配置。更正此前未核平台TTL、只建议看邮件的答复：公开文档明确默认600秒。实际部署邮件回执TTL应以后续真实send响应为准，未为查TTL发新邮件。

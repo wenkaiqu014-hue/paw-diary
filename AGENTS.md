@@ -23,6 +23,10 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+当前最终公开版本v0.5.1，修复v0.5.0自定义select的程序赋值显示同步：source/tag b25dae8552535da6a96e86a8bf2fa657c40b3e2b，Pages37608531673于18:36:58完成，Release18:38:17公开；app-WMRLVTH5.js/style-WACPJKHL.css真实hash与本地一致。325单测、原URL两处语言显示/模式保留/标题focus复验通过。完整修订能力和v0.5.0历史见下段，旧tag不动，docs-only收口不重发应用。A最后18:32:26.044已checkpoint原600会话并关闭操作；公开Chrome匿名跨域实际读2MiB签名文件hash通过，先前真实5MiB Node生产client边界也通过。下一步仍阶段4及用户亲验，不重做已交付功能。
+
+最新修订v0.5.0已在原URL发布：325单测与实际本地/可信云验证，统一record/plan、3个自定义目录/可重复图标、三圆头像、原附件及整行排序/多宠当前默认。Pages37607465744源码17f7861、公开app-N5WIUUE5.js/style-WACPJKHL.css与本地一致；v0.5.0 tag017d813为相同业务源码加一份测试修订，Release18:29:34公开。old tags均保留。详情docs/verification/record-workflow-report.md和SESSION_LOG最新段，下面v0.4.0段是阶段3基础交付历史。附件paw-files30秒/读取20秒，>1MiB用60秒签名下载避免6MB响应限制；每项3个/单个5MiB/shared50MiB，URL不进入backup/AI。目录跨空间合并超3个明确拒绝先调整，未做专用活跃选择面板。真实模型日期缺失时需手动补填草稿，不能当自动提取成功。下一轮从main与阶段4入口续作，用户亲验/真机待项继续单列。
+
 阶段3本地、真实云端及原URL技术验收已完成，**v0.4.0已正式发布**。真实硅基模型为非Pro `Qwen/Qwen2.5-7B-Instruct`，三类生成已真实调用；独立paw-ai 40秒、模型25秒，密钥仅服务端。292/292单测最终复验通过、无跳过，主目录main与实施工作树均已验证，实际命令与结果由主agent记录；本地完整AI流程及真实A私有批次/引导/回顾保存刷新、助手来源与切本地清上下文已有证据，详见`docs/verification/stage3-report.md`。用户亲自体验仍待单独确认。
 
 阶段3源码/tag为d6c300538fbacb481e30e4e401e022591855cdf6；Pages37597581632成功，17:00:46部署；17:03:26 Release公开且非draft/非prerelease，公开app-2DXPBSHL.js/style-4KEKH45N.css与本地SHA一致、enabled/aiEnabled=true。旧v0.3.0源码/tag为4d7f2e956e8c95250549e3e07ba84bd1742368e6，旧v0.2.0为ceed8d3、v0.1.0为17cba15，禁止移动。发布后下一轮从主目录main的SESSION_LOG最新段、PENDING与`docs/superpowers/plans/2026-10-06-04-community-nearby.md`开始，不回旧stage2工作树重做业务。用户亲自体验、阶段5真机/读屏/日历实导仍未勾。

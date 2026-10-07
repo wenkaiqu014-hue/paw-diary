@@ -777,3 +777,23 @@ Root Task3约18:02开始，意图/AI plan单测RED5→GREEN8、parser新增RED1�
 冻结候选v0.5.0。原始安全证据test-results/refinement与record-refinement均Git忽略，/tmp/paw-refinement日志；私密env仅本机/service。stdin一次中文文档批量脚本Non-UTF8失败、0文档写，随后apply_patch成功；compound最后npm成功不能代表前面Python成功。此处尚未main整合/推送/新tag或Release，实际后续收口，不提前虚勾公开验收。已有本地/docs提交与worktree证据保留。
 
 来源URL：https://github.com/obra/superpowers ；https://github.com/vercel-labs/agent-skills ；https://github.com/anthropics/skills/tree/main/skills/webapp-testing ；https://cloud.tencent.com/document/product/583/56125 。
+
+## v0.5.0原站公开验收与Release收口
+
+2026-10-07 18:30:08（Root工具date/GitHub元数据）：17f7861aba3430f7efc09b59870d016dd402e8ec候选整合main/推送成功，Pages37607465744 success，18:27:23任务完成/18:27:24更新（10:27:23Z/24Z）。公开app-N5WIUUE5.js/style-WACPJKHL.css与worktree dist SHA完全一致，Root实际原URL两个全新匿名浏览器脚本record-workflow-public/record-dialog均exit0：新目录立即保存选用、PDF实际hash下载、删除附件再保存、计划不增加record、完成类型/备注/原计划附件、双语三宽无横溢/pageErrors0、两模式文字保留/标题初始focus。没有向公开云写匿名业务，个人流程是该浏览器本地IDB。
+
+Root主目录新鲜npm test325/325无skip、build/语法/diff通过，原test_app四页9组、stage3-home双语3宽/locale及新主线均GREEN。实际模型最终record-ai-plan-real退出0：dateEdited=true，补日期/编辑标题后planSaved=true/zeroNewRecord=true/pageErrors[]；第三次必要复验不当自动模型重试策略，不隐藏先前两次测试期望失败；并未宣称模型自动提取正确计划日。stage3 record/recap/assistant领域测试继承通过，未重复调回顾/助手。完整旧API/头像/照片逻辑保留，真实云A原文件/目录/备注事实前段已记。
+
+017d81310bd6638e792de5793ce93a82e3601989仅修真实AI草稿测试（明确编辑标题）；与部署17f7861业务相同，FF整合main并推，未重发Pages。创建v0.5.0新annotated tag指向017d813，旧v0.4.0仍d6c300538fbacb481e30e4e401e022591855cdf6，旧v0.1–v0.3未移动。Release18:29:34 Asia/Shanghai公开、isDraft/isPrerelease=false，targetCommitish main。未在技术门槛前建tag。发布至Release总用时18:00:04→18:29:34为29分30秒，整体一小时内；Task7从约18:11提前fresh review至发布的窗口超过15分钟，已主动说明，不能称七步全满足15分钟。其他独立核心交付及主Task3均处15分钟内，集中QA修复与部署另归Task7。
+
+同步版本package/lock/VERSION/CHANGELOG/README、修订报告/状态/AGENTS；完整发行说明docs/releases/v0.5.0.md会在docs-only收口归档，不改已发布tag/业务源码。下一步依main/PENDING进入阶段4社区/同城；用户亲验、真机/读屏/日历实导不代勾，最终10月8日20:00不变。阶段3旧工作树和本轮ignored证据保留，不reset旧原文，不清其他服务。
+
+公开事实来源URL：https://wenkaiqu014-hue.github.io/paw-diary/ ；https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37607465744 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.5.0 。
+
+2026-10-07 18:39:28（Root工具date，最终补丁事实）：必要收口检查实际复现页面先选English→开弹窗时native=en但visible=中文，RED不是语言值变错；程序.value赋值未触发custom select render。maintainSelects仅在可见caption与当前option不同时setValue刷新，避免MutationObserver无限自触发；新E2E同时钉页面→弹窗及弹窗→页面同步，保留原文字/模式/focus。325/325、build/diff、真实DOM GREEN后b25dae8552535da6a96e86a8bf2fa657c40b3e2b修补提交FF main/push。没有移动刚发v0.5.0，新增v0.5.1；Pages37608531673 success于18:36:58完成（10:36:58Z），app-WMRLVTH5.js/style-WACPJKHL.css实际HTTP hash与最新dist一致，原URLrecord-dialog fresh匿名exit0。Release18:38:17公开、非draft/非prerelease，source/tag确b25dae8；v0.1–v0.5.0全部解引用hash工具再次确认不动。
+
+原站签名文件CORS补验独立A worker18:31:49→18:32:26完成：真实2MiB合成PDF在全新Chrome/原URL页面fetch credentialsomit/redirecterror，browserCors/browserBytes/browserHash/anonymousPage全部true；页面未注入account token、URL仅evaluate参数、不输出日志。删除own确切asset、回收own receipt父项，最后18:32:26.044原600会话checkpoint并关闭操作/归还。无代码/规则变更，与先前actual5MiB生产Node client边界相互补足。
+
+最终公开技术交付18:00:04→18:38:17为38分13秒，整体一小时内；提前审查到集中QA/发布的Task7窗口超过15分钟，已向用户两次如实说明，不宣称所有单步≤15。用户的功能范围全部基础实现并公开验，目录超3合并需先调整而非专用挑选面板、模型缺日期需补填、真机与亲验仍单列。后续只收口docs/日志与本机服务，结束时间由工具记录，仍不重发应用或移动tag。
+
+最终发布URL：https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37608531673 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.5.1 。

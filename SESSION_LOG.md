@@ -875,3 +875,29 @@ Grilling首轮准备对齐公开身份颗粒度、找到同城宠友后的交流
 日志写入首次Python here-doc报Non-UTF-8 SyntaxError，退出1，未产生文件修改；python3 --version确认本机3.9.6、路径/usr/bin/python3。改用apply_patch写入中文文档，不将失败当完成。仅日志文档改动，结束前执行diff检查后纳入本地Git，不推送或发版。
 
 两个explorer最终回报已收到，均无文件修改：community_audit定位app.js:233 seed注入、:560非demo写拦截、backend/api.cjs:39强制Principal、cloudbase-store.cjs:23 owner限定、photos.cjs:332私有读和:378私有路径、weekly-recap.js:25分享仅预览复制。nearby_audit定位app.js:461–479六城/8条示例与私有城市选择，无真实发现；提出账号级公开资料、发现筛选与居住地分开、城市必选区可选等建议，尚非用户决定。可复用cloud-harness和session-checkpoint，B仍必须新真实会话。nearby调查发现test_app.py:37含旧体重预填断言，后续执行前需核对并修正与v0.6.1的冲突，不据此回退产品。两agent均只用rg/nl/sed/cat/git；community首次搜索不存在lib/functions退出2、nearby首次zsh未匹配通配符退出1，随后具体路径补读成功；宽输出截断亦已定向补足。Root采纳独立公开服务/store/client和公开媒体需设计的调查结论，未接受为已实现架构，也未把agent报告作测试验收。第一轮问题仍待用户回答，新spec/plan待对齐后形成。
+
+### 阶段4Grilling首轮答复与第二轮边界
+
+用户Q1–Q4：采纳账号级公开卡，并追加左下角/右上角头像菜单“个人资料”进入个人资料页面；采纳公开资料及作者帖子→评论交流；采纳保视觉补流程，并增加“全部用户／同城”；时间依初步估算，但明确先看plan再决定、不着急。未给新的硬工时，不把4–5小时估算当保证或新deadline。
+
+异步Q5–Q8均已答复：两页都提供全部／同城，浏览城市不修改个人所在地；昵称头像作为发帖身份，地域/猫狗/目的/短简介在主动加入发现后公开，邮箱只自己的页面显示，退出发现不抹已有帖子作者；匿名可浏览真实公开宠友，登录才写与加入；成长回顾默认安全简短摘要，编辑表单明确确认才发，不自动导入完整AI故事。Q9举报维护方式已提出：推荐真实入队＋个人隐藏，由项目维护者现云控制台手动处理，不承诺即时审核，等待答复。
+
+community_audit复用followup只读补查头像/账号入口：index.html:23左侧about-button打开说明、:26右侧span不可点击，style.css:8手机两处皆隐藏；建议新增可达手机头像菜单与#profile独立页面，保四原hash与账号登录UI。当前principal只暴露userId、无应用层email（cloudbase-auth.js:21–34、89–99），个人资料邮箱展示需从本人可信账号状态取安全字段，不能进入公开投影。现私有profile不是公开账号资料。新页面需单独保存/generation保护与未保存离页主题确认；不复用会自动关闭dialog的健康submitOperation。
+
+community_audit再次followup确认匿名通路：app.js:344–349现paw-ai为公开配置SDK callFunction，无HTTP endpoint；scripts/cloud-setup.py:484–489为paw-auth/paw-ai invoke:true、私有paw-api/paw-files auth!=null且默认拒绝。新paw-community可复用明确invoke规则与handler内公开read白名单，错误token拒绝不降级匿名，保持匿名provider=false和集合/对象deny；配置及cleanup规则生成都需保留新函数。此为代码/既有验收事实，不是本轮新云验收。nearby_audit继续只读联网核腾讯位置服务/高德官方目录、坐标系、逆地理、地域数据、个人额度与公开作品使用许可；未创建key/账号/调用位置业务。Root本轮rg首次误用src/public-config.js退出2，已rg --files找到src/config/public-config.js，无产品变更。
+
+### 阶段4Grilling收口与详细plan（产品未实施）
+
+2026-10-07 20:30:24 Asia/Shanghai（Root工具date，文档自检检查点）：Q9用户确认自行手动处理举报；Q10选腾讯位置服务、先按新增费用0元核实接入；Q11实施时配合位置账号/必要实名/Key及两个真实邮箱验证码；Q12选v0.7.0。Q1–Q12决策frontier已收口，按照用户“有问题继续Grill、没有则直接产出详细plan”和“先看看plan再说”把设计说明与plan一起交用户review，尚未启动产品实施。不是额外工具授权请求，也不提前部署/tag。
+
+新增spec 2026-10-07-stage4-community-profiles-nearby-design.md和同名plan，十任务覆盖独立公开服务/资料后端、头像菜单/#profile、主动公开媒体、帖子评论/desired-state点赞、社区UI、全国地域/主动定位、全部/同城宠友、举报与回顾确认、真实双账号/独立审查、原URL/v0.7.0。明确文件所有权/公共接口、去健康revision、错误token不降匿名、公开媒体带有效reference并核实际引用、作者昵称头像与退出发现附加资料分离、email仅可信本人服务端读取。只做设计选择，所有57个步骤未勾选。初步4–5小时经拆分调整为并行4–6小时/串行约5.5–8.5小时估算，账号等待另记，无新硬deadline或完成保证。
+
+nearby_audit按catalog-official-product-docs官方目录研究：腾讯56个index/48页面、定向读逆地理/转换/行政区/Key/额度/许可，未通读无关SDK/路线；Web三接口页Internal Error，同页标准库HTML补读成功；精确额度动态页/完整协议未读全。高德当前15万次/月共享与免费用途限制不能当公开运营无条件授权；腾讯精确免费额度/QPS/主体/适用用途/缓存许可列实施Task6前置实核。腾讯当前geocoder表无coord_type，WGS84需按文档转换(type1)再逆地理，不能沿记忆直接coord_type1。官方地域目录有版本字段及特殊层级，2026-09-17页面日期与20260911下载名不当同一内容版本。未下载ZIP/创建Key/实名/调用位置业务；实际账单、账号配额仍未读回。
+
+开源候选只读核：modood明确2023-06-30停更/WTFPL、uiwjs资料2021/2022/MIT，未验证覆盖或上游完整许可，不能当2026最新全国目录。计划选择腾讯服务端应用所需地域查询/有限缓存，实际缓存许可需核，不把原始全量表写公开仓库；无真实目录/定位不得用旧六城/mock代验。研究bs4缺失退出1后改标准库；raw JSON连接未返回，中断130、Web raw被restricted拒绝，未编造节点数量。全套官方/仓库来源及未读范围已归spec末尾URL清单。
+
+同步PENDING/AGENTS/PRODUCT/ROADMAP、stage4-handoff、总计划/04旧计划指向新入口，旧初稿标历史；同时纠正05旧v0.6.0候选已占用，阶段5版本另定。当前应用package/构件仍v0.6.1，不改VERSION/CHANGELOG或README宣称新功能。Root已内联自查需求→任务覆盖、接口、五条Review Focus及媒体验证reference；另复用community_audit作只读一致性复查，不开始实现。
+
+实际文档检查：git diff --check退出0；10份状态/设计/计划相对Markdown链接0missing，任务编号1–10、57未勾/0完成、占位扫描pass。首次任务regex写ASCII冒号而文档中文冒号导致AssertionError[]退出1，改regex支持非数字分隔后上述检查退出0；无产品代码变化所以未npm test/build/浏览器/云/模型，不将343旧证据当本轮验收。后续依据审阅后的plan执行，供应商/账号依赖透明保留；本轮文档/log纳入本地Git，不推送/部署/移动tag。
+
+community_audit文档一致性复查提出2项实质遗漏，Root已整合：client加getAuthorization=auth.getRequestSession并在顶层附当前可信authToken，独立community identity generation在现auth handler提前return前失效，不绑定健康空间；新增community-draft-handoff（单次tab内存30分钟、只准备公开的内容、显式login/profile意图、guest这次登录绑定实际owner、已绑定A不可给B、取消/退出/过期清除），使登录/补昵称返回同稿与普通账号切换清稿同时成立。Task1/5新增相应认证及handoff测试，spec/plan接口同步。Root定向读app.js:150–166和cloudbase-auth.getRequestSession确认真实token入口，未读值/会话。审查agent仅nl只读exit0，无代码/云/测试修改；Root修文档后再检查，不把文档review当产品安全验收。

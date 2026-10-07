@@ -74,7 +74,7 @@
 
 **Files:** `README.md`、`VERSION`、`CHANGELOG.md`、`ROADMAP.md`、`PENDING.md`、`SESSION_LOG.md`、部署运维文档；新增 `docs/demo-guide.md`。
 
-**Consumes:** 已通过的交付范围与final-report。**Produces:** 原URL上的稳定部署、新tag/Release、2–3分钟可执行体验说明。最终候选版本建议`v0.6.0`，阶段有删减时按实际功能命名，不把版本号当完成承诺。
+**Consumes:** 已通过的交付范围与final-report。**Produces:** 原URL上的稳定部署、新tag/Release、2–3分钟可执行体验说明。历史候选v0.6.0已发布占用，阶段4已选v0.7.0；阶段5发行号执行前另定，不复用旧tag，不把版本号当完成承诺。
 
 - [ ] Step 1：对照PENDING与验收报告逐项标状态；编写匿名示例→个人建档→AI确认→提醒/日历→回顾→同城分享体验路线，未完成分支从对外路线移除。
 - [ ] Step 2：运行 `git diff --check` 与发布产物检查，确认没有密钥或未实现能力声明；检查所需云端配置和实际服务状态。

@@ -1,5 +1,7 @@
 # 爪爪日记：48 小时迭代设计
 
+2026-10-07最新阶段4设计：[个人资料/真实社区/宠友发现](docs/superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md)，[十任务实施计划](docs/superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md)。Q1–Q12 Grilling已收口，计划待用户审阅、产品未实施；新增账号级个人资料页、两页全部／同城、匿名公开读与手动举报，腾讯位置服务先核0元条件，验收后v0.7.0。保现v0.6.1健康/AI/媒体语义，阶段5未代勾，最终截止不变。下文阶段历史保留。
+
 状态：用户已回答 Q1–Q9，并确认最终产品方向。用户随后授权「10 分钟内先 push 一版」。当前交互雏形已推送到公开仓库并部署到 GitHub Pages，匿名访问及线上浏览器操作验证均通过。固定链接：https://wenkaiqu014-hue.github.io/paw-diary/ 。
 
 用户已确认提交作品。后续任务的优先级、依赖、验收和执行状态统一维护在 PENDING.md；本文件保留产品设计与完整版本要求。

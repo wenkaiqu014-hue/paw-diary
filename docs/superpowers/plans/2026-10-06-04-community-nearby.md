@@ -1,5 +1,7 @@
 # 真实社区与同城匹配 Implementation Plan
 
+> **历史初稿：** 2026-10-07本session已完成Q1–Q12 Grilling，新入口为[个人资料/社区/宠友详细计划](2026-10-07-stage4-community-profiles-nearby.md)与[设计说明](../specs/2026-10-07-stage4-community-profiles-nearby-design.md)。用户已选腾讯位置服务先按新增费用0元核实、账号级个人资料页、两页全部／同城，发行v0.7.0。以下旧三任务/接口只保留历史，不直接执行；新计划待用户审阅，尚未实施。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 登录用户可以跨账户分享图文、评论点赞，并主动加入按城市/行政区/宠物/目的筛选的宠友发现。

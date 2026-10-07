@@ -2,6 +2,8 @@
 
 更新时间2026-10-07。仅整理交接，阶段4尚未实施；不把用户准备开新session当功能已验收。
 
+**本session后续（2026-10-07）：** Grilling Q1–Q12已对齐，新增[设计](../superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md)与[十任务计划](../superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md)，待用户审阅、尚未实施。用户新增个人资料页与两页全部／同城；已选腾讯位置服务先按新增费用0元核实、愿配合位置账号/两邮箱、举报手动维护、验收后v0.7.0。下文“定位服务/版本号待对齐”是交接当时状态；实际许可/额度/目录覆盖及B真会话仍需核，v0.6.1所有已交付语义保留。
+
 ## 从哪里开始
 
 从项目主目录main开始，先`git status --short --branch`核main/origin差异，保留未提交内容。读本页、SESSION_LOG最新两段、PENDING当前摘要和[阶段4计划](../superpowers/plans/2026-10-06-04-community-nearby.md)，必要时读[总计划](../superpowers/plans/2026-10-06-paw-diary-master.md)。不回旧工作树重做阶段2/3；不全量读旧会话或整个项目日志。

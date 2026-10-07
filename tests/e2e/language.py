@@ -92,16 +92,30 @@ with sync_playwright() as p:
     assert page.locator('.pet-entry.is-active').get_attribute('data-id')==selected
     page.locator('[data-action=account]').first.click()
     expect(page.locator('#dialog-title')).to_have_text('Sign in and cloud sync')
-    assert page.locator('#account-login-form').count()==0,'disabled account must not pretend live email login'
-    expect(page.locator('#dialog-body')).to_contain_text('Cloud service is being verified.')
+    cloud_enabled=page.evaluate('globalThis.__PAW_PUBLIC_CONFIG__?.enabled===true')
+    if cloud_enabled:
+        expect(page.locator('#account-login-form')).to_be_visible()
+        expect(page.locator('#account-login-form [name=code]')).to_be_disabled()
+        expect(page.locator('#account-login-form [name=email]')).to_have_value('')
+    else:
+        assert page.locator('#account-login-form').count()==0,'disabled account must not pretend live email login'
+        expect(page.locator('#dialog-body')).to_contain_text('Cloud service is being verified.')
     page.locator(MODAL_PICKER).select_option('zh-CN')
     expect(page.locator('#dialog-title')).to_have_text('登录与云同步')
-    expect(page.locator('#dialog-body')).to_contain_text('云服务尚在验证中。你可以继续本地记录，资料不会自动上传。')
-    expect(page.locator('#dialog-body')).to_contain_text('只开放实际验收通过的邮箱登录。')
+    if cloud_enabled:
+        expect(page.locator('#account-login-form')).to_be_visible()
+        expect(page.locator('#account-login-form [name=code]')).to_be_disabled()
+    else:
+        expect(page.locator('#dialog-body')).to_contain_text('云服务尚在验证中。你可以继续本地记录，资料不会自动上传。')
+        expect(page.locator('#dialog-body')).to_contain_text('只开放实际验收通过的邮箱登录。')
     page.locator(MODAL_PICKER).select_option('en')
     expect(page.locator('#dialog-title')).to_have_text('Sign in and cloud sync')
-    expect(page.locator('#dialog-body')).to_contain_text('Cloud service is being verified.')
-    page.locator('#dialog [data-action=close]').click()
+    if cloud_enabled:
+        expect(page.locator('#account-login-form')).to_be_visible()
+        page.locator('#dialog [data-account-action=close]').click()
+    else:
+        expect(page.locator('#dialog-body')).to_contain_text('Cloud service is being verified.')
+        page.locator('#dialog [data-action=close]').click()
     assert page.locator('.pet-entry.is-active').get_attribute('data-id')==selected
     assert not errors,errors
     print('PASS four route interface headings are English and locale preference survives refresh')

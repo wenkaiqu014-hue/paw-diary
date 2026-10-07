@@ -66,7 +66,8 @@ def save_session(path, env_id, label, session):
     temporary = None
     try:
         document = read_document(path, env_id)
-        document[label] = {k: session[k] for k in ('access_token', 'refresh_token', 'version', 'token_type', 'scope', 'expires_in', 'expires_at') if k in session}
+        previous = document.get(label, {})
+        document[label] = {**(previous if isinstance(previous, dict) else {}), **{k: session[k] for k in ('access_token', 'refresh_token', 'version', 'token_type', 'scope', 'expires_in', 'expires_at') if k in session}}
         fd, temporary = tempfile.mkstemp(prefix=path.name + '.', suffix='.tmp', dir=path.parent)
         with os.fdopen(fd, 'w') as output:
             json.dump(document, output, default=json_default)
@@ -199,6 +200,11 @@ class Acceptance:
         if page.locator('#account-actions-form:visible').count():
             page.locator('#account-actions-form [data-account-action=close]').click()
         page.wait_for_function("['云端档案','Cloud journal'].includes(document.querySelector('#workspace-badge')?.textContent?.trim())", timeout=15000)
+        # The workspace badge changes before its asynchronous snapshot load.
+        # Wait for an actual journal/empty-state view before fixture assertions.
+        page.locator('#main .pet-entry, #main .empty-health, #main .recovery-panel').first.wait_for(timeout=15000)
+        if page.locator('#main .recovery-panel').count():
+            raise SafeFailure('CLOUD_WORKSPACE_LOAD_FAILED')
         self.progress(label, 'product_cloud', privateWorkspace=True)
 
     def refresh(self, label, actor):
@@ -237,9 +243,44 @@ class Acceptance:
 
     def check(self, label, command):
         actor = self.actor(label)
-        observed = self.checkpoint(label, actor, 'check_checkpoint', required=False)
         page = actor['page']
+        viewport = command.get('viewport')
+        if viewport is not None:
+            if not isinstance(viewport, dict) or not all(isinstance(viewport.get(k), int) and 320 <= viewport[k] <= 2400 for k in ('width', 'height')):
+                raise SafeFailure('VIEWPORT_INVALID')
+            page.set_viewport_size(viewport)
+        locale = command.get('locale')
+        if locale is not None:
+            if locale not in ('en', 'zh-CN'):
+                raise SafeFailure('LOCALE_INVALID')
+            page.locator('#locale-select').select_option(locale)
+            page.wait_for_function('locale=>document.documentElement.lang===locale', arg=locale)
+        if isinstance(command.get('petName'), str):
+            page.locator('.pet-entry').filter(has_text=command['petName']).first.locator('[data-action=select-pet]').click()
+        if command.get('gallery') is True:
+            page.locator('.paw-photo-view').first.click()
+            page.locator('.paw-slideshow[open]').wait_for()
+            page.wait_for_function('(()=>{const image=document.querySelector(".paw-slideshow-image");return image?.complete&&image.naturalWidth>0;})()')
+        elif command.get('gallery') is False and page.locator('.paw-slideshow[open]').count():
+            page.locator('.paw-slideshow-heading button').first.click()
+        observed = self.checkpoint(label, actor, 'check_checkpoint', required=False)
         flags = dict(actor['config'], **observed['flags'], pageErrors=actor['errors'], sessionSaved=actor['saved'])
+        flags['galleryOpen'] = bool(page.locator('.paw-slideshow[open]').count())
+        flags['photoCount'] = page.locator('.paw-photo-tile').count()
+        flags['petCount'] = page.locator('.pet-entry').count()
+        flags['horizontalOverflow'] = page.evaluate('document.documentElement.scrollWidth>window.innerWidth+1')
+        screenshot = command.get('screenshot')
+        if screenshot is not None:
+            if not isinstance(screenshot, str):
+                raise SafeFailure('SCREENSHOT_PATH_INVALID')
+            target = (ROOT / screenshot).resolve()
+            if not target.is_relative_to((ROOT / 'test-results').resolve()) or target.suffix != '.png':
+                raise SafeFailure('SCREENSHOT_PATH_INVALID')
+            if page.locator('#account-login-form:visible').count() or re.search(r'\S+@\S+\.\S+', page.locator('body').inner_text()):
+                raise SafeFailure('SCREENSHOT_PRIVATE_FORM_VISIBLE')
+            target.parent.mkdir(parents=True, exist_ok=True)
+            page.screenshot(path=str(target), full_page=True)
+            flags['screenshotSaved'] = True
         flags['privateWorkspace'] = page.locator('#workspace-badge').inner_text().strip() in ('云端档案', 'Cloud journal')
         text = page.locator('#main').inner_text()
         if isinstance(command.get('mustIncludeText'), str):
@@ -313,8 +354,14 @@ def main():
                 except KeyboardInterrupt:
                     emit(ok=False, stage='interrupted', errorCode='INTERRUPTED', browserRetained=True)
                 except Exception as error:
+                    failed_stage = helper.stage
                     safe = str(error) if isinstance(error, SafeFailure) else 'BROWSER_OPERATION_FAILED'
-                    emit(ok=False, stage=helper.stage, errorCode=safe, elapsedMs=round((time.monotonic() - started) * 1000), browserRetained=True)
+                    for actor_label, actor in helper.actors.items():
+                        try:
+                            helper.checkpoint(actor_label, actor, 'error_checkpoint', required=False)
+                        except Exception:
+                            emit(label=actor_label, stage='error_checkpoint', ok=False, errorCode='SESSION_SAVE_FAILED', browserRetained=True)
+                    emit(ok=False, stage=failed_stage, errorCode=safe, elapsedMs=round((time.monotonic() - started) * 1000), browserRetained=True)
                     # Keep actors/pending challenges alive. Retrying check/resume
                     # is read/restore only; no automatic resend occurs.
                     if not line:

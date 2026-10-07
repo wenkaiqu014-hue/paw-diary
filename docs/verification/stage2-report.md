@@ -1,51 +1,48 @@
-# 阶段2候选验收与尚未完成项
+# 阶段2验收报告与发布状态
 
-阶段2本地候选与模拟外部边界技术检查已完成，真实邮箱/私有云验收未通过，尚未合并或发布。实施起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46；原最终截止2026-10-08 20:00不变。候选在.worktrees/stage2、分支feat/stage2-local-cloud，公开站及旧tag仍v0.2.0。
+阶段2发布前技术门槛已通过，v0.3.0尚未合并至main、推送、创建tag/Release或完成公开部署；固定公开站仍为v0.2.0。用户已授权最终修复与发布，发布负责人正在固定最终产物并复验。本报告将真实技术验证、公开发布和用户亲自体验分开记录。
 
-## 固定产物与本地能力
+实施起点为2026-10-07 01:38:46 Asia/Shanghai，原八小时目标09:38:46已超出，不把目标写成按时完成。全项目修改截止仍为2026-10-08 20:00。候选位于`.worktrees/stage2`、分支`feat/stage2-local-cloud`；当前技术验收产物为`app-HUKK2URO.js` / `style-E5NM6WZE.css`，本地验收启用了云入口。最终线上配置与资源hash由发布负责人在部署后核对，当前本地配置不代表公开站已启用。
 
-最终验收产物app-ILE2BPQK.js/style-E5NM6WZE.css，公开配置enabled=false；预览http://127.0.0.1:4193/paw-diary/。demo canonical原文和v1/v2保留，个人空间为独立IndexedDB，不自动种示例/迁移；多宠、自定义类型、护理生命周期、回收站/排序、头像、当前宠物照片墙和主动幻灯片、完整媒体JSON备份/显式恢复、双语已实现。
+## 已交付的候选能力
 
-Root同固定产物实际通过210/210单测、40份生产/工具JS语法、Python编译和git diff检查。8份原回归与9份新增浏览器脚本全部exit0；新增包括account-workspaces、language、四宽Englishresponsive、personal-media、review-local-fixes、以及外部SDK/平台模拟边界下的cloud-contract-ui、media-intent-ui、account、photo-wall。15项跨模块契约、6项回执/媒体意图场景、真实IDB事务abort和完整媒体归档均通过。模拟边界测试不能证明真实邮箱/云规则。
+不登录可创建自己的本地宠物档案，示例、个人与云端资料分开。支持多宠切换与排序、自定义宠物/记录类型、护理事项、编辑及回收站、头像、当前宠物照片墙、主动播放的幻灯片和中英文切换。示例仍使用规范键`paw-diary:v3:demo`，个人资料使用独立IndexedDB；旧v1/v2原文与备份保留。
 
-360/390/768/1440中英切换、用户原文/FileList/caption不变、示例原文隔离、长期回收/恢复/损坏源全量恢复、并发拒覆盖、缓存兼容均有证据。表格在平板内部横滚可实际操作，整页无横溢。真实原图5,564,152字节→684,001字节、头像最长边512且PNG透明度保留；坏MIME/超10MiB失败保旧头像；浏览器真实blobs.put事务abort后完整归档/IDB不变，原文件说明保留且重试只一新资产。不能称真实磁盘quota耗尽。
+邮箱验证码登录后使用自己的私有云档案。登录不自动上传本地资料，迁移先选择来源、查看预览、再明确确认。完整JSON备份包含照片与头像，恢复不默认复活已删除内容；损坏档案全量恢复另行确认，保留原坏资料与媒体。健康CSV与ICS维持可见数据语义。AI、真实社区、微信及手机号登录未接入。
 
-有头合成截图已目检，样式同最终hash；最后逻辑修复前的固定app-YVB44MZI证据明确区分，不冒充最终hash。真机软键盘/触控、读屏、原生200%缩放仍未做。Impeccable单次detector exit0/0发现，但缺解析依赖而DEGRADED，仅regex，不是完整无缺陷/WCAG验收。
+## 真实邮箱与私有云门槛
 
-## 审查与修复
+本轮真实网页登录完成受控账号A的已有用户登录，以及受控账号B的真正新用户注册；两者均完成刷新、关闭重开和会话恢复，SDK身份不同，页面未捕获错误为0。来源为发布负责人本轮受控浏览器执行记录，脱敏摘要保存在`test-results/stage2/auth-real-ui-report.json`（Git忽略），详情追加至[SESSION_LOG](../../SESSION_LOG.md)。报告不记录邮箱地址、验证码、UID或token。旧`final-real-browser.log`保留的是先前会话安装失败，不能拿该历史失败日志当本轮通过证据。
 
-单轮独立审查发现账号A→B旧草稿可能写B、local独立options revision未接、迁移sourceId/closure不匹配、过期staging占额、坏源恢复不可达、发布裸SDK等；一个修复批次逐个实际RED→GREEN，并复验整套。追加同范围的A迟到来源导出、明确登录过期、媒体内容改变重试和晚失败队列，均有实际行为证据。明确UNAUTH清旧资料/代际并允许主动重码，普通网络UNAV保输入，旧A迟到不清B、不自动退出B。
+五个真实集成用例全部通过，无跳过。测试由独立真实SDK用户调用，管理凭证仅核对环境及测试夹具，不代替访问者。可信平台UID与服务端实际OTP验证证明共同约束所有权，未登录、有UID的匿名用户、伪造验证声明及其他账号均不能获取私有资料；不依靠客户端flag、邮箱存在或转换日期作验证证明。
 
-服务端expectedWorkspaceId只作意图防错断言，owner取可信平台UID；authToken瞬时原始邮箱验证，不进业务payload/回执/hash/log。准备/确认/删除/恢复维持revision/幂等，媒体过期清理失败不假报释放；完整preparedImage经过实际尺寸/签名验证，不重复JPEG编码。
+| 真实测试 | 实际结果 | 本地证据（Git忽略） |
+| --- | --- | --- |
+| 邮箱身份、未登录/匿名隔离 | 1 PASS / 0 FAIL / 0 SKIP | `test-results/stage2/final-real-cloud-auth.log` |
+| A/B健康所有权、CAS、回执重试、直接数据库拒绝 | 1 PASS / 0 FAIL / 0 SKIP | `test-results/stage2/final-real-cloud-private.log` |
+| 私有照片读删、直接对象拒绝、近1MiB图片与运行限制 | 2 PASS / 0 FAIL / 0 SKIP | `test-results/stage2/final-real-photos-private.log` |
+| 确认迁移、deletedAt、图片批次与幂等提交 | 1 PASS / 0 FAIL / 0 SKIP | `test-results/stage2/final-real-cloud-import.log` |
 
-直接对象测试曾catch-all把INVALID_PARAMS当权限拒绝，现只明确官方权限码计denial；网络/超时/无效/未知都FAIL。Root先前以为publicAsset剥fileRef不准确，实际DTO保留、archive才剥，已更正；真实fixture另由主测试进程FUJI只读校验、内部绑定A/B/anon SDK，管理员不代替访问者。
+原环境`paw-diary-d8g3p4tlsb305221d`已由用户开通上海个人付费版，文档数据库1、PostgreSQL 0，自动续费与超额按量均关闭；合法来源、集合与对象直接访问拒绝规则已读回。匿名provider仅在14:24:55–14:25:20受控窗口采集拒绝用actor，随后恢复false并读回；邮箱only设置保留。费用和配置的操作证据见[云操作说明](../operations/cloud-setup.md)及SESSION_LOG，历史余额不足订单已关闭，不再等待资金或重复采购。
 
-## 真实环境事实与未过门槛
+## 本地回归与本轮修复
 
-原trial上海NORMAL/MGO1/PG0，邮箱代发与五集合deny/MaxDevice5已读回，生产安全来源和存储custom deny因FreePackageDenied未完成。03:41:46 paw-api修复部署Active且envId/TZ/publish_key公开变量严格读回，Node18.15/256MB/3秒。
+发布负责人最新单测246/246通过、0跳过。15项账号契约和6项媒体意图模拟边界整套通过，证据为`test-results/stage2/auth-final-contract-ui.log`、`auth-final-media-intent.log`。这些模拟检查补充真实用例中的迟到响应、旧草稿、失败重试和身份切换边界，不替代真实云端结果。
 
-真实技术probe仅A完成原始资料/SDK/平台UID比对，未验证标记缺省，API正确UNAUTHENTICATED。诊断shapeassert提前exit1，B未采完，不能称双账户通过。两个自己创建技术账号已删除/0remaining，Username关闭读回，密码/token已清除；没有发邮件。官方旧兼容文档与当前SDK有optional email_verified布尔依据，但本env真实OTP后是否true尚待实际样本；不从转换日期/provider.bind/有UID/email推断，不盲切未说明的v2。
+最终静态产物为`app-QWW76HLZ.js` / `style-E5NM6WZE.css`。旧八套加account-workspaces、personal-media、review-local-fixes共11套全部exit0，测试前后manifest一致，证据`test-results/stage2/release-final-static/summary.json`。Root另在该固定产物完成language全流程exit0，覆盖四入口双语、切语言保草稿及启用邮箱弹窗标题。真实云图库产品UI上传、刷新/重开、打开幻灯、暂停和退出已通过，有头1440/390及英文页面无横溢、pageerrors0；该组操作原hash为HUKK2URO，最终公开源仍须再次核验。原文隔离、IDB事务abort、透明头像压缩、完整媒体归档与缓存兼容已有证据，不当作真机或实际磁盘额度耗尽。
 
-真实集成入口现0pass/5fail/0skip，缺少受控A/B及真实匿名SDK会话。真实邮箱收信登录、同账号另浏览器、健康/媒体私有跨账号与直接访问拒绝、真实CAS/迁移备份、近1MiB/运行时限额仍未验收。这些未过前不公开0.3、不声称阶段完成。
+认证恢复的单轮独立审查窗口为13:16:19–14:01:19。本轮修复了同用户异步认证事件误判，以及刷新token轮换后工具未及时写回的问题；真正新用户返回省略`is_user`时按已核契约注册，`paw-auth`于14:21:26部署Active。相关修复有单测与真实登录/刷新证据，绝不通过写入假verified标志放宽权限。原技术探针曾仅A完成、资料缺验证字段、旧refresh返回`unauthorized_client`及浏览器安装失败，均属于此前失败，完整历史保留在SESSION_LOG。
 
-唯一上海个人版1月19.90元订单余额不足未付，无扣费/充值/paid环境；资金与两个受控邮箱协助异步等待用户。原采购记录明确ResourceTypes=[flexdb,cos,scf]，官方flexdb为文档DB；订单不回显类型且原params未存是审计限制，不等于原请求未指定。Root保留同单不无故重建，真正发货必须读回DocDB1/PG0，否则停止，不私自二次购买。自动续费/超额false保持，不升六个月119.39元。
+## 正式发布仍待完成
 
-## 恢复工作与证据
+- [x] 最终固定JS/CSS与公开配置已正常构建，启用实际邮箱云入口，白名单/语法检查与12套浏览器复验通过，hash与证据见上文。
+- [ ] 合并到原main并推送，完成原Pages工作流，核对源码提交与部署产物。
+- [ ] 在原URL以匿名新浏览器完成实际流程验收，保留四个hash入口。
+- [ ] 新建v0.3.0 tag与公开Release，核对目标提交与说明；不移动v0.1.0/v0.2.0。
+- [ ] 用户亲自体验确认；与助手技术验收单独记录。
 
-统一[SESSION_LOG](../../SESSION_LOG.md)、[云操作说明](../operations/cloud-setup.md)、[阶段2计划](../superpowers/plans/2026-10-06-02-cloud-identity.md)记录实际命令/失败/裁决。原始合成证据在Git忽略test-results/stage2/final-browser、review-local-browser、各worker报告；不记录邮箱/验证码/token/管理密钥。临时readiness诊断尚保留，真实验收结束按精确guard清理，无删除完成声明。
+上述发布步骤没有实际证据前不勾选、不填写虚构提交或工作流ID。原地址、回退方式见[部署与回滚](../operations/deploy-and-rollback.md)。发布完成与用户体验确认后按既定顺序衔接阶段3，不在本轮增加AI或真实社区。
 
-下一步先确认同单资金/实际发货，再配置合法生产及本地测试来源、严格存储规则；用两个受控邮箱真实OTP获取并复读原始verified标记，依次跑真实SDK集成与真实登录UI，全部通过后沿原仓库/URL正式发布0.3并匿名复验，才进入用户体验确认。
+## 尚未验证的最终阶段范围
 
-
-2026-10-07 10:33发布前实测更新：用户已自主开通原环境个人版，Mongo1/PG0，自动续费/超额均关闭；合法生产/本地来源、DB/对象deny、邮箱及会话限制与函数已读回。两邮箱实际OTP成功，官方v1资料仍没有严格验证标记，客户端/后端failclosed。因此私有云正向/跨账号/完整媒体真实验收未过，发布阻塞；未公开0.3，不以环境就绪或邮件到达替代。当前有真正匿名SDKuid拒私有snapshot的exit0证据。版本材料0.3.0为候选，后续必须解决可证明验证来源并完整真实验收，不能设置假flag/无依据放宽或重复要求验证码来代替设计修复。
-
-
-## 2026-10-07 追加最终验收的当前状态
-
-此前资金/免费套餐限制已经解除：用户升级原个人环境，旧待付订单已关闭，不再付款或新建环境。当前已部署独立paw-auth、七集合私有规则和server-mediated OTP验证证明；真实A/B OTP服务端核验成功。原profile缺少email_verified字段的兼容方案依据实际服务端OTP，并继续要求可信平台UID/固定原始资料UID/证明ownerUID一致，绝不信客户端verified声明。
-
-最新Root单测223/223通过、两个正式云函数bundle生成、语法及diff检查通过。捕获工具旧缓存造成会话提取失败，已补强制fresh用户读取与两个回归测试；当前仍在恢复A/B真实会话。新的浏览器契约14项通过，第15项因认证round-trip增加而提前切用户，修为等backend实际hold后定向通过，整套须按最终源重新复验。当前不宣称真实健康/照片/隔离验收通过，不发布0.3、cloudEnabled保持false。详见SESSION_LOG追加窗口；本段覆盖前述“仍等待资金”和“仅profile flag可验证”的当前状态，历史失败保留。
-
-最新固定候选为app-6N3IO3HV.js/style-E5NM6WZE.css，Root225/225单测、8份原浏览器回归、account-workspaces/language、15项账号契约/6项媒体意图整套均通过；以上仍不是A/B真实云权限门槛通过。静态候选enabled=false，尚未公开发布。
-
-最新收口：真实A/B旧SDK各自健康snapshot成功；同原设备refresh及带公开key刷新仍unauthorized_client，新SDK/浏览器会话安装失败。实际认证case0PASS/1FAIL/0SKIP，余4case未执行，阶段2未完成、0.3未发布。最新226单测/15账号契约/6媒体意图mock通过，候选app-CDVGJXPR.js/style-E5NM6WZE.css且enabled=false。此前版本遗漏归因撤回（原v1补metadata仍拒绝），根因待查。详情SESSION_LOG。
+真实手机软键盘与触控、原生200%缩放、读屏、Google/Outlook日历实导仍属阶段5。浏览器IDB事务中止不代表真实磁盘配额已耗尽。有头截图、四宽度桌面模拟和Impeccable降级regex检查均不作为真机或完整WCAG验收。

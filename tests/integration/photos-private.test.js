@@ -10,7 +10,7 @@ test("real private storage upload/read/delete and A/B/anonymous/direct-object ac
       await write(
         A,
         "pets.save",
-        { name: "stage2 photo acceptance", type: "cat" },
+        { name: "photo-test", type: "cat" },
         before.revision,
       ),
     );
@@ -127,7 +127,7 @@ test("real private byte response supports a validated image near the 1MiB limit 
       await write(
         A,
         "pets.save",
-        { name: "stage2 size acceptance", type: "cat" },
+        { name: "size-test", type: "cat" },
         before.revision,
       ),
     ),

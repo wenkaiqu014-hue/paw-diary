@@ -28,7 +28,7 @@ test("real cloud import binds photo tickets and complete health to owner batch w
       pets: [
         {
           id: "source-pet",
-          name: "stage2 import acceptance",
+          name: "import-test",
           type: "cat",
           birthday: null,
           estimatedAgeMonths: null,
@@ -107,7 +107,7 @@ test("real cloud import binds photo tickets and complete health to owner batch w
     ),
     petId = committed.snapshot.pets.find(
       (p) =>
-        p.name === "stage2 import acceptance" &&
+        p.name === "import-test" &&
         !before.data.pets.some((old) => old.id === p.id),
     )?.id;
   assert.ok(petId);

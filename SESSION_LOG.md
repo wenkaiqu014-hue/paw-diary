@@ -575,3 +575,19 @@ real_login_helper交付真实产品UI无头交互助手与SDK observer，正常/
 14:24:55–14:25:20按原批准的受控匿名窗口捕获一个真实SDK匿名actor，Root保存session600/isAnonymoustrue；touch停止信号提前finally恢复关闭，读回Emailtrue、Anonymous/Phone/UserNamefalse。仅测试拒绝门槛，不增加匿名云记录功能。
 
 真实A/B权限、媒体/迁移五case尚待新用户完成及actor关闭checkpoint后串行执行；公开0.2不变，local4193 candidate仅临时enabledtrue验证。修改最终单测246已fresh，contract15/media6正在同源码重跑；无0.3tag/发布完成声明。目标不复杂化，保基本邮箱流程/可信身份/数据主线，不新协议或供应商。
+
+## 真实注册登录与五项权限门槛通过、发布收口
+
+2026-10-07 14:42:27 Asia/Shanghai（工具date）：用户Gmail最新验证码已实际完成真正新用户产品UI注册，A已有账号登录和B首次注册均privateWorkspace、刷新及新browser-context restore通过，身份不同、pageerrors0；受控邮箱/验证码/UID/token不记录。源证据ignored auth-real-ui-report.json，两个actor stop checkpoint后关闭全部浏览器，串行真实SDK门槛避免旧RT并发消费。
+
+Root逐份检查final-real-cloud-auth.log 1PASS、final-real-cloud-private.log 1PASS、final-real-photos-private.log 2PASS、final-real-cloud-import.log 1PASS，共5PASS/0FAIL/0SKIP，覆盖可信身份、A/B/匿名拒绝、直接库/对象拒绝、CAS与幂等、近1MiB图片真实字节校验及确认迁移deletedAt。首次照片/迁移测试宠物夹具名超过20字符触发合法INVALID_INPUT，仅将夹具名缩为photo-test/size-test/import-test后复测；没有放宽产品字段或权限。
+
+有头真实A1440/390及英文页面恢复/刷新/SDK fresh读、无横溢与页面error0，8旧回归与account-workspaces退出0，证据real-browser/headed-final-summary-flags.json。language旧脚本假定禁用云入口；适配真实enabled分支后发现账户弹窗切语言标题不变的实际RED，Root定位localizeOpenDialog账户分支提前return跳过title更新，将统一title更新移到分支之前，不重建表单或清草稿，GREEN待最终hash复验。空云副标题从本地档案改为宠物档案并保持双语，避免错误指示存储位置。
+
+Root release-final-unit.log fresh246/246无skip、语法/diff0，148待归档文件与12已配置实际secret值比对0match。stage2_release_docs更新11份文档并freeze，发布ID仍待真实操作；real_login_helper补截图/viewport及失败checkpoint、保原actor metadata，正在补纯synthetic真实UI gallery与退出，不新发邮件。14:41:38管理SDK在skill-runtime缺依赖仅operatorFailure，改用已配置system python3成功14:41:55删除且读回仅本轮paw-stage2-readiness临时函数不存在、公共探针规则移除，保paw-auth与paw-api访问规则不变。
+
+目前main/公开仍v0.2.0、尚未0.3 tag/Release；源码公共config即将归档仅environmentId/region/publishableKey/enabled，管理secret不发布。发布前最后固定产物、语言及真实gallery复验，通过后沿原URL部署与公开验收。一次中文stdin日志追加编码失败且没有写入，改apply_patch保留事实。
+
+14:45:04工具date：Root将账户弹窗标题实际RED修复后，在隔离最终build及正常npm run build均产物app-QWW76HLZ/style-E5NM6WZE、cloudEnabled=true、公开白名单通过；隔离构建第一次使用/tmp而本机tmpdir为/var/folders被目录护栏拒绝，改os.tmpdir路径成功，未改护栏。Root language全流程GREEN且fresh246/246无skip。docs agent独立11/11最终浏览器脚本exit0、前后manifest一致，Root逐份检查summary；真实UI agent图库上传/刷新/重开/暂停/退出与1440/390/英文截图实际通过，Root实看手机截图。因验收runner等待badge过早误新建两只纯合成验收宠物，未触其他数据，agent负责仅自身重复夹具回收；A凭据待cleanup关闭后交接，B尚未退出验收。没有新发邮件。最后契约/媒体边界复测中，随后归档/合并/原站部署。
+
+最终15账号契约与6媒体意图模拟检查Root再次全PASS/退出0，release-final-contract-ui.log与release-final-media-intent.log。真实helper已冻结：只将本轮新增重复合成宠物回收，保留1只合成宠物及其记录/PNG供公开源最终验收；未改其他资料。B真实UI退出→本地→再次打开登录表单成功，已移除其失效tokens且保metadata sessionValid:false，后续不再将B当可恢复凭据。A最后SDK fresh/stop checkpoint保存600、全部contexts关闭并交接Root独占。根路径原站最终验收不需新发验证码，源码及全部改动开始Git归档。

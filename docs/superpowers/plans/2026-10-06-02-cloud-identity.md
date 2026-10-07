@@ -74,9 +74,9 @@
 
 - [x] Step1：读取当前Git领先交接、建立隔离worktree，不reset；记录实施起点和+8h目标。复用上方已经只读核对的用户专用环境，再复核可用状态，不重建同名环境或复用cloud1。管理调用按FUJI变量读取，不把EnvCharged字段当已支付金额或订单授权。建立任务ledger，邮箱/SDK/业务能力仍按本任务真实验证。
 - [x] Step2：写`tests/build.test.js`，用假secret sentinel断言dist没有backend/cloudfunctions/env/docs/tests/日志/secret值、新JS/CSS为哈希入口、四hash子路径可加载；旧缓存app/style/src来自固定v0.2.0白名单且hash相同。运行`node --test tests/build.test.js`，无build时RED，不用真实密钥作为断言输出。
-- [ ] Step3：实际核对并锁定SDK/esbuild/测试IDB依赖；build输出dist，函数另打包到Git忽略产物。前端只发布公开配置。执行时才创建项目所需集合/函数及默认拒绝直接读写规则；如果邮箱配置需额外费用先落实，不能用假邮件。
-- [ ] Step4：用两套可收验证码的真实邮箱走请求/验证/会话；以实测SDK uid对比服务端Principal，并测试无会话、伪造emailVerified、真实匿名uid拒绝。验证数据库事务、1MiB文档/响应、≤1MiB图片鉴权读取、免费3秒运行限制；只读测试配置，实际探针只在专用环境/测试实体上做，不读其他项目用户。必要资源变更限已批准账号/预算和执行范围。
-- [ ] Step5：运行`node --test tests/build.test.js`、`node --test tests/integration/cloud-auth.test.js`（真实适配、未配置应明确失败/退出非0而非skip PASS）、`npm run build`。记录API/版本/邮件到达和失败，日志无邮箱地址/验证码/token。Gate1：按用户后续要求将人工邮箱验证延至最终验收，独立工作持续推进；资源限制及时报告，真实前置未过阶段2仍不能通过。提交`build: verify email cloud setup and isolate static artifacts`。
+- [x] Step3：实际核对并锁定SDK/esbuild/测试IDB依赖；build输出dist，函数另打包到Git忽略产物。前端只发布公开配置。执行时才创建项目所需集合/函数及默认拒绝直接读写规则；如果邮箱配置需额外费用先落实，不能用假邮件。
+- [x] Step4：用两套可收验证码的真实邮箱走请求/验证/会话；以实测SDK uid对比服务端Principal，并测试无会话、伪造emailVerified、真实匿名uid拒绝。验证数据库事务、1MiB文档/响应、≤1MiB图片鉴权读取、免费3秒运行限制；只读测试配置，实际探针只在专用环境/测试实体上做，不读其他项目用户。必要资源变更限已批准账号/预算和执行范围。
+- [x] Step5：运行`node --test tests/build.test.js`、`node --test tests/integration/cloud-auth.test.js`（真实适配、未配置应明确失败/退出非0而非skip PASS）、`npm run build`。记录API/版本/邮件到达和失败，日志无邮箱地址/验证码/token。Gate1：按用户后续要求将人工邮箱验证延至最终验收，独立工作持续推进；资源限制及时报告，真实前置未过阶段2仍不能通过。构建与云前置已纳入候选及日志，最终Git发布归Task7，不要求使用原拟定提交标题。
 
 ## Task 2 local事务仓储、V3扩展与自定义类型（75分钟）
 
@@ -96,11 +96,11 @@
 
 **Consumes:** Task1身份/事务，Task2统一领域规则；明确action协议。**Produces:** 全部十个健康action、CloudRepository兼容方法、云端CAS/所有权/完整V3。
 
-- [ ] Step1：写测试A创建宠物/记录/事项，B直调其id读改/完成/移入恢复/排序均拒绝；无会话/匿名uid UNAUTHENTICATED；ownerId伪造不改变身份；空账号空数组；soft delete/完成历史/排序槽位同本地。
-- [ ] Step2：测试revision过期CONFLICT、批量混入 他人/不存在实体整批不写、重复完成一条记录、保存成功但丢响应同key重试返回原结果、同key不同payload INVALID_INPUT、幂等返回旧revision不得覆盖更晚的客户端视图。运行`node --test tests/cloud-private.test.js`RED。
-- [ ] Step3：服务端逐action规范输入，以Principal定位owner健康文档；事务先识别回执，再CAS及关联闭包；全量健康文档/回执同次保存。1MiB健康上限/64KiB常规输入超限拒绝，不截断。Client repository将envelope转错误及revision，选择只影响本设备；禁任意远端mutate。
-- [ ] Step4：运行单测；部署到已验证专用环境，用真实A/B及匿名用户运行`node --test tests/integration/cloud-private.test.js`。含两设备先后编辑、排序/恢复越权、直接数据库请求拒绝与完整回收站快照。mock PASS不算Gate3。
-- [ ] Step5：提交`feat: persist private V3 workspaces with revision checks`；记录实际权限/事务/失败修复及第3/5小时状态。
+- [x] Step1：写测试A创建宠物/记录/事项，B直调其id读改/完成/移入恢复/排序均拒绝；无会话/匿名uid UNAUTHENTICATED；ownerId伪造不改变身份；空账号空数组；soft delete/完成历史/排序槽位同本地。
+- [x] Step2：测试revision过期CONFLICT、批量混入 他人/不存在实体整批不写、重复完成一条记录、保存成功但丢响应同key重试返回原结果、同key不同payload INVALID_INPUT、幂等返回旧revision不得覆盖更晚的客户端视图。运行`node --test tests/cloud-private.test.js`RED。
+- [x] Step3：服务端逐action规范输入，以Principal定位owner健康文档；事务先识别回执，再CAS及关联闭包；全量健康文档/回执同次保存。1MiB健康上限/64KiB常规输入超限拒绝，不截断。Client repository将envelope转错误及revision，选择只影响本设备；禁任意远端mutate。
+- [x] Step4：运行单测；部署到已验证专用环境，用真实A/B及匿名用户运行`node --test tests/integration/cloud-private.test.js`。含两设备先后编辑、排序/恢复越权、直接数据库请求拒绝与完整回收站快照。mock PASS不算Gate3。
+- [x] Step5：私有V3实现已纳入隔离候选及日志，记录实际权限/事务/失败修复；最终Git发布归Task7，不要求拆成原拟定提交标题。
 
 ## Task 4 三空间会话、邮箱UI与确认迁移（75分钟）
 
@@ -108,11 +108,11 @@
 
 **Consumes:** AuthAdapter、三Repository、revision与MediaRepository；导入映射按owner+来源workspaceId+kind/id。**Produces:** switchWorkspace/refresh/generation、邮箱验证码流程、imports三action、明确迁移预览与重试。
 
-- [ ] Step1：写会话测试：demo/local/account完全分开；登录不自动上传；退出回local且本地内容不变；A迟到读/图片结果在退出/切B后不更新任何缓存；登录过期不退回显示A；云断网保留输入/当前成功快照；未保存表单空间切换必须明确处理。
-- [ ] Step2：写表单测试：为宠物A打开记录，拉取后选择B，保存仍归A或因版本冲突拒绝，绝不写B；切语言不丢表单；再登录新generation旧草稿拒绝保存。导入测试覆盖预置不勾、依赖闭包、回收站/排序、owner剥离与重映射、同次重试不重复、较旧预览不能覆盖新云编辑。运行`node --test tests/cloud-session.test.js tests/cloud-import.test.js`RED。
-- [ ] Step3：实现显式空间入口/个人空态/邮箱验证码/退出/过期重登；请求与媒体绑定generation。刷新/visibilitychange只拉取；打开表单捕获petId/baseRevision，保留输入及提示。local正常保存，不提示云同步成功；云读失败不种seed。
-- [ ] Step4：实现完整来源预览/选择/依赖确认，source旧原文永不清除；imports.prepare建立可重试批次，commit以预览revision事务保存健康/元数据/映射/回执。city需单独明确选择，新宠顺序追加，旧备份恢复deletedAt变化逐项确认。文件传输在Task5完整接入，不宣称对象字节和DB同事务。
-- [ ] Step5：单测与`PAW_DIARY_TEST_URL=http://127.0.0.1:4178/paw-diary/ /Users/wenkaiqu/.codex/skill-runtime/run python -u tests/e2e/account-workspaces.py`，其中账号流程真实邮箱。提交`feat: switch local and account workspaces with confirmed imports`。
+- [x] Step1：写会话测试：demo/local/account完全分开；登录不自动上传；退出回local且本地内容不变；A迟到读/图片结果在退出/切B后不更新任何缓存；登录过期不退回显示A；云断网保留输入/当前成功快照；未保存表单空间切换必须明确处理。
+- [x] Step2：写表单测试：为宠物A打开记录，拉取后选择B，保存仍归A或因版本冲突拒绝，绝不写B；切语言不丢表单；再登录新generation旧草稿拒绝保存。导入测试覆盖预置不勾、依赖闭包、回收站/排序、owner剥离与重映射、同次重试不重复、较旧预览不能覆盖新云编辑。运行`node --test tests/cloud-session.test.js tests/cloud-import.test.js`RED。
+- [x] Step3：实现显式空间入口/个人空态/邮箱验证码/退出/过期重登；请求与媒体绑定generation。刷新/visibilitychange只拉取；打开表单捕获petId/baseRevision，保留输入及提示。local正常保存，不提示云同步成功；云读失败不种seed。
+- [x] Step4：实现完整来源预览/选择/依赖确认，source旧原文永不清除；imports.prepare建立可重试批次，commit以预览revision事务保存健康/元数据/映射/回执。city需单独明确选择，新宠顺序追加，旧备份恢复deletedAt变化逐项确认。文件传输在Task5完整接入，不宣称对象字节和DB同事务。
+- [x] Step5：单测与`PAW_DIARY_TEST_URL=http://127.0.0.1:4178/paw-diary/ /Users/wenkaiqu/.codex/skill-runtime/run python -u tests/e2e/account-workspaces.py`，其中账号流程真实邮箱。三空间及迁移实现已纳入隔离候选及日志；真实网页登录另有本轮受控浏览器证据，不将模拟脚本当真实邮箱流程。最终Git发布归Task7。
 
 ## Task 5 私有/本地媒体、幻灯片与完整备份（75分钟）
 
@@ -120,11 +120,11 @@
 
 **Consumes:** Task2媒体事务、Task3身份/版本、Task4导入批次。**Produces:** 五个媒体action、头像/私有图墙/播放控件、带资产完整JSON导出/预览恢复。
 
-- [ ] Step1：写图片测试：JPEG/PNG/WebP输入10MiB上限、解码失败/假MIME拒绝；展示最长边1920/≤1MiB（头像512），透明度保留；10张批次/50MiB空间限额失败保留输入；本地IDB abort无孤立可见照片；父宠回收隐藏但保留Blob，恢复重现。
-- [ ] Step2：云测试A/B不能读对方asset、伪造fileId/错宠物确认拒绝，匿名/直接对象读取拒绝；media.read不返回外部签名URL；永久删除后读取拒绝/幂等、对象清理失败明确待重试且不报释放；替换头像失败旧头像仍在。备份tests验证含展示图片hash/关联、去owner/fileId/临时URL，漏文件/100MiB超限不生成假完整备份，V1/2/3兼容/旧导入不复活。运行`node --test tests/photos.test.js tests/archive.test.js`RED。
-- [ ] Step3：实现本地事务/云上传暂存确认/鉴权读字节、浏览器blob URL释放；avatar独立资产不做相册复用。图墙只当前宠物，批次进度与逐项失败可重试；幻灯片主动进入默认暂停，播放/暂停/上下张/Esc/焦点回退，最后照片删除退出；减少动画静态切换。
-- [ ] Step4：实现archive formatVersion=1完整JSON，资产base64+SHA256，云端逐文件读取成功才导出；另标明仅健康JSON。恢复先全部校验/预览，本地同一IDB事务，云走imports批次。运行`node --test tests/integration/photos-private.test.js`与`tests/e2e/photo-wall.py`，真实两个账号及本地refresh/浏览器存储失败/图片失败/切空间用例。
-- [ ] Step5：提交`feat: add private photo walls and complete media backups`，记录实际文件权限、删除清理边界与限制。
+- [x] Step1：写图片测试：JPEG/PNG/WebP输入10MiB上限、解码失败/假MIME拒绝；展示最长边1920/≤1MiB（头像512），透明度保留；10张批次/50MiB空间限额失败保留输入；本地IDB abort无孤立可见照片；父宠回收隐藏但保留Blob，恢复重现。
+- [x] Step2：云测试A/B不能读对方asset、伪造fileId/错宠物确认拒绝，匿名/直接对象读取拒绝；media.read不返回外部签名URL；永久删除后读取拒绝/幂等、对象清理失败明确待重试且不报释放；替换头像失败旧头像仍在。备份tests验证含展示图片hash/关联、去owner/fileId/临时URL，漏文件/100MiB超限不生成假完整备份，V1/2/3兼容/旧导入不复活。运行`node --test tests/photos.test.js tests/archive.test.js`RED。
+- [x] Step3：实现本地事务/云上传暂存确认/鉴权读字节、浏览器blob URL释放；avatar独立资产不做相册复用。图墙只当前宠物，批次进度与逐项失败可重试；幻灯片主动进入默认暂停，播放/暂停/上下张/Esc/焦点回退，最后照片删除退出；减少动画静态切换。
+- [x] Step4：实现archive formatVersion=1完整JSON，资产base64+SHA256，云端逐文件读取成功才导出；另标明仅健康JSON。恢复先全部校验/预览，本地同一IDB事务，云走imports批次。运行`node --test tests/integration/photos-private.test.js`与`tests/e2e/photo-wall.py`，真实两个账号及本地refresh/浏览器存储失败/图片失败/切空间用例。
+- [x] Step5：媒体实现已纳入隔离候选及日志，实际文件权限、删除清理边界与限制有真实测试证据；最终Git发布归Task7。
 
 ## Task 6 现有全站中英文（45分钟，可提前并行）
 
@@ -146,21 +146,23 @@
 
 - [ ] Step1：执行`npm test`、`node --check app.js`、`git diff --check`、`npm run build`、`npm run build:functions`；检查白名单/虚假secret扫描。所有新增集成测试分别运行，没真实环境必须非0或报告未执行，不用skip总结为全过。
 - [ ] Step2：服务dist父目录，使URL确为/paw-diary/，按README/skill-runtime启动验证服务（旧4178已未连通，先检查再启动，测试产物在test-results/stage2不提交）。现有八套脚本test_app.py、local-foundation/local-boundaries/local-regressions/health-layout/health-management/management-quality/cached-upgrade全部跑，保留demo路径断言；新account-workspaces/photo-wall/language以同静态产物运行。
-- [ ] Step3：独立只读审查最多一轮，聚焦身份/匿名/迟到、表单宠物归属、revision幂等、原文迁移、媒体权限/备份；Critical/Important真实复现后修复并重跑覆盖及完整相关套件。root负责整合复验，不把worker说完成当证据。
-- [ ] Step4：技术阶段验收：真实邮箱A/B与另一浏览器、直接数据库/对象拒绝、照片备份往返、语言、四宽度/键盘/焦点、失败重试/断网/缓存。真实手机键盘/原生200%/读屏未做则仍列阶段5，不把桌面模拟冒充；不重复日历导入。给用户3分钟个人流程验收路线，用户体验与技术状态分开。
+- [x] Step3：独立只读审查最多一轮，聚焦身份/匿名/迟到、表单宠物归属、revision幂等、原文迁移、媒体权限/备份；Critical/Important真实复现后修复并重跑覆盖及完整相关套件。root负责整合复验，不把worker说完成当证据。
+- [x] Step4：技术阶段验收：真实邮箱A/B与另一浏览器、直接数据库/对象拒绝、照片备份往返、语言、四宽度/键盘/焦点、失败重试/断网/缓存。真实手机键盘/原生200%/读屏未做则仍列阶段5，不把桌面模拟冒充；不重复日历导入。给用户3分钟个人流程验收路线，用户体验与技术状态分开。
 - [ ] Step5：按实际结果更新状态并本地Git归档，未过项列明。未来正式开始且按本计划交付时，前置/技术全通过后沿已有项目Git/部署授权发布候选v0.3.0到原地址、匿名复验、新tag/Release，用户亲自体验仍待确认的范围分开记录，不重复问工具权限。如用户未来明确只做本地/暂缓发布则尊重限制。正式实施已授权发布，但只在全部真实门槛通过后执行；未通过不称完成，不自动推进阶段3。
 
 ## 计划自检与执行交接
 
 - [x] 执行前：用户阅读本设计/计划并明确开始；保留主agent协调＋按需worker方式，不重复问模型/工具权限。
-- [ ] 实施前置：用户专用环境创建和管理只读访问已核对，邮箱代发/两套受控邮箱/可信身份/事务/图片私有读取/部署权限仍须实测，不用旧cloud1或截图代替业务测试。
-- [ ] 所有写action有revision+幂等，原六action遗漏已补；城市和当前宠物设备偏好不通过任意mutate跨云保存。
-- [ ] local/account备份含媒体，旧健康JSON仍兼容；photos在envelope，avatar引用已入schema，不被验证剥离。
-- [ ] spec每项映射Task1–7，五条Review Focus各有明确行为测试；退出门槛包括真实匿名平台用户，不只无token。
+- [x] 实施前置：原上海个人环境、两个受控邮箱、可信身份/事务/私有图片与函数部署实测通过；不以管理权限代替实际用户访问。
+- [x] 所有写action有revision+幂等，原六action遗漏已补；城市和当前宠物设备偏好不通过任意mutate跨云保存。
+- [x] local/account备份含媒体，旧健康JSON仍兼容；photos在envelope，avatar引用已入schema，不被验证剥离。
+- [x] spec每项映射Task1–7，五条Review Focus各有明确行为测试；退出门槛包括真实匿名平台用户，不只无token。
 
 当前已开始执行；checkbox只在对应完整步骤实际通过时更新。候选本地实现与合成验证不等于真实邮箱/私有云门槛通过；阶段2报告保留尚未完成和部署状态。
 
 
-### 认证恢复专项入口（2026-10-07，只规划）
+### 最新认证恢复与发布入口（2026-10-07）
 
-现有真实登录/刷新门槛仍未通过，后续先执行[认证恢复专项计划](2026-10-07-stage2-auth-recovery.md)。本轮仅建立来源/协议/UI状态诊断与条件修复分支，未运行探针或维修；原真实技术退出checkbox不因新增计划而勾选。服务器OTP证明和SDK会话责任的当前差异见[诊断设计](../specs/2026-10-07-stage2-auth-recovery-design.md)，先凭基线证据选路线，不猜协议或删除安全门槛。
+[认证恢复专项计划](2026-10-07-stage2-auth-recovery.md)已执行。旧用户邮箱登录、真正新用户注册、刷新重开以及五个真实云端用例全过；服务端真实OTP证明与可信UID保留，新用户is_user省略契约、同用户异步事件与轮换持久化已修复。原八小时目标已超出，不能写成按时完成。
+
+当前246项单测无跳过，15账号契约/6媒体模拟边界通过；早期八套旧浏览器结果对应先前hash。Task7 Step1/2保留未勾，发布负责人须以最终资源图复验后更新；Step5包括合并/推送、原URL部署/匿名验收与新tag/Release，尚未发生。当前技术产物app-HUKK2URO/style-E5NM6WZE，本地cloudEnabled=true仅验收，最终发布配置/hash及证据见[阶段2报告](../../verification/stage2-report.md)。用户体验确认与技术状态分开。

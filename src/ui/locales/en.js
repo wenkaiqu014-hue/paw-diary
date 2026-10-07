@@ -47,7 +47,7 @@ export default Object.freeze({
   "重试读取": "Retry loading",
   "可先导出原始文件，再选择有效备份恢复；恢复前会预览并保留原始字符串。": "Export the original data first, then preview a valid backup to restore it.",
   "认识你的毛孩子": "Meet your pet",
-  "先建一份本地档案，开始记录。": "Create a local journal to start recording.",
+  "先建一份宠物档案，开始记录。": "Create a pet journal to start recording.",
   "添加一只宠物": "Add a pet",
   "还没有宠物档案": "No pets yet",
   "可以添加宠物，或从回收站恢复原有档案。": "Add a pet or restore one from the trash.",

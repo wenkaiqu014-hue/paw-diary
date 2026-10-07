@@ -78,7 +78,7 @@ function applyLocaleChrome(){
  const footer=document.querySelector('footer');footer.firstChild.textContent=UI_TEXT('每一个普通的日子，都值得被记住。');footer.querySelector('span').textContent=UI_TEXT(workspaceMode==='demo'?UI_TEXT('示例内容 · 新增数据仅保存在当前浏览器'):workspaceMode==='local'?UI_TEXT('个人资料仅保存在当前浏览器'):UI_TEXT('个人健康与照片私有保存'));
 }
 function localizeOpenDialog(){
- if(!dialog.open)return;const body=$('#dialog-body');body.querySelector('form')?.__pawLocaleRefresh?.();if(body.querySelector('[data-account-form]')||body.querySelector('#account-login-form')||body.querySelector('#email-login-form')||body.querySelector('#account-actions-form')){accountUI?.refreshLocale();return;}
+ if(!dialog.open)return;const title=$('#dialog-title');title.textContent=UI_TEXT(title.dataset.uiSource??canonicalUiText(title.textContent));const body=$('#dialog-body');body.querySelector('form')?.__pawLocaleRefresh?.();if(body.querySelector('[data-account-form]')||body.querySelector('#account-login-form')||body.querySelector('#email-login-form')||body.querySelector('#account-actions-form')){accountUI?.refreshLocale();return;}
  for(const el of body.querySelectorAll('.field>span,.form-tip,.form-actions button,.demo-note,[data-ui-copy],option')){
   if(el.tagName==='OPTION'&&el.closest('select')?.name==='city')continue;
   if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.setAttribute('value',el.value);
@@ -87,7 +87,6 @@ function localizeOpenDialog(){
   if(el.tagName==='BUTTON'&&el.querySelector('svg')){const label=el.dataset.uiSource;el.innerHTML=icon('check')+' '+esc(UI_TEXT(label));}else el.textContent=UI_TEXT(el.dataset.uiSource);
  }
  for(const el of body.querySelectorAll('[placeholder],[aria-label]'))for(const attr of ['placeholder','aria-label'])if(el.hasAttribute(attr)){const key='ui'+attr.replace('-','');if(!el.dataset[key])el.dataset[key]=canonicalUiText(el.getAttribute(attr));el.setAttribute(attr,UI_TEXT(el.dataset[key]));}
- const title=$('#dialog-title');title.textContent=UI_TEXT(title.dataset.uiSource??canonicalUiText(title.textContent));
  accountUI?.refreshLocale();
 }
 function workspaceControls(){
@@ -239,7 +238,7 @@ function render({focus=false}={}){
   const activePhotoElement=photoHost?.contains(document.activeElement)?document.activeElement:null;const previous=token(document.activeElement);
   if(loadError){$('#main').innerHTML=heading(UI_TEXT('暂时无法读取档案'),UI_TEXT('原始数据已保留，没有替换为示例。'))+UI_HTML`<section class="panel recovery-panel"><p>${esc(loadError.message)}</p><div class="recovery-actions">${button(UI_TEXT('导出原始数据'),'raw-export','secondary','download')}${button(UI_TEXT('恢复备份'),'import','secondary','book')}${button(UI_TEXT('重试读取'),'retry')}</div><p class="demo-note">可先导出原始文件，再选择有效备份恢复；恢复前会预览并保留原始字符串。</p></section>`;}
   else if(!state){$('#main').innerHTML=heading(UI_TEXT('正在读取档案…'),UI_TEXT('请稍等，保留已有数据。'));}
-  else if(!pet()&&['home','health'].includes(page)){$('#main').innerHTML=heading(UI_TEXT('认识你的毛孩子'),UI_TEXT('先建一份本地档案，开始记录。'),button(UI_TEXT('添加一只宠物'),'new-pet'))+`<section class="panel empty-health">${empty(UI_TEXT('还没有宠物档案'),UI_TEXT('可以添加宠物，或从回收站恢复原有档案。'))}<div class="data-actions">${button(UI_TEXT('回收站'),'trash','secondary','book')}${button(UI_TEXT('导出备份'),'export','secondary','download')}${button(UI_TEXT('恢复备份'),'import','secondary','book')}</div></section>`;}
+  else if(!pet()&&['home','health'].includes(page)){$('#main').innerHTML=heading(UI_TEXT('认识你的毛孩子'),UI_TEXT('先建一份宠物档案，开始记录。'),button(UI_TEXT('添加一只宠物'),'new-pet'))+`<section class="panel empty-health">${empty(UI_TEXT('还没有宠物档案'),UI_TEXT('可以添加宠物，或从回收站恢复原有档案。'))}<div class="data-actions">${button(UI_TEXT('回收站'),'trash','secondary','book')}${button(UI_TEXT('导出备份'),'export','secondary','download')}${button(UI_TEXT('恢复备份'),'import','secondary','book')}</div></section>`;}
   else $('#main').innerHTML=({home:homeHTML,health:healthHTML,nearby:nearbyHTML,community:communityHTML}[page])();
   $('#page-label').textContent=({home:UI_TEXT('成长首页'),health:UI_TEXT('健康档案'),nearby:UI_TEXT('附近宠友'),community:UI_TEXT('社区日常')})[page];
   $('#city-label').textContent=state?.city||UI_TEXT('选择城市');$('#city-button').disabled=!state;

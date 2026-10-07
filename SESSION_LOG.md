@@ -701,3 +701,17 @@ UI本机web-design-guidelines+最新官方command.md核标签/键盘/dialog/焦�
 2026-10-07 16:58:54（Root工具date）：最终候选v0.4.0完整292/292单测无skip，正常build与function build、语法/diff0、206源码/公开产物文件真实Key扫描0match、Markdown相对链接0missing。最后四脚本回归先发现保存忙态保护引入“parse finally未重启确认按钮”，stage3-review与真实stage3-flow均RED disabled；同步parse结束字段/确认可用状态后，真实demo/date-lock/模糊下一日期显式选择DOM GREEN，实际AI/助手双语保留输入GREEN，双语三宽首页GREEN，最终真实local完整model flow再次GREEN（只必要一轮，不盲刷）。原test_app、language、personal-media最终检查均GREEN。此后不再修改业务，正式合并推送原main，再按实际manifest做线上验收。
 
 文档worker stage3_release_docs拥有10份状态/设计/计划/运维/阶段报告，读取实际flags明确A.realParse=false，不把可信A的SDK批次植入当登录UI解析成功；真实解析由匿名/local/供应商证明。文档更新单步超时/总时限、4h替代旧6–8h建议、阶段4main入口、用户亲验与stage5真机待项；Root独占SESSION/README/CHANGELOG/package/VERSION。292测试及前六基础能力代码通过；当前原URL仍旧v0.3.0、tag未创建，Release须公开复验后再做，不提前虚勾。合并main已由用户批准第7步授权；保留stage3验收工作树证据，不force删除。
+
+## v0.4.0正式发布与阶段3技术交付
+
+2026-10-07 17:03:48 Asia/Shanghai（Root工具date/GitHub元数据）：阶段3开发、技术验收与原URL发布完成。实施分支41cd624归档首页，再d6c3005归档完整AI/领域/前端/文档；主main干净且只ahead原两份交接提交，无远端新冲突。FF合并后主目录重新npm ci、npm test292/292无skip、npm run build、diff0，构件与候选一致；推原origin/main成功。发行源码和v0.4.0 annotated tag解引用`d6c300538fbacb481e30e4e401e022591855cdf6`。
+
+真实Pages37597581632 success，deploy完成17:00:46、job完成17:00:49 Asia/Shanghai（09:00:46Z/09:00:49Z），公开manifest app-2DXPBSHL.js/style-4KEKH45N.css、legacy0.2.0；Root实际HTTP读index公共config确认enabled/aiEnabled=true，公开JS/CSS SHA与主目录dist完全相同，无秘密值。随后原URL全新匿名context实际stage3-flow/home/locale/test_app四套全部exit0：真实模型草稿编辑确认、引导中断恢复与跳过、回顾生成/私有本地保存/刷新/安全预览、助手真实来源；双语三宽齐边/等列，原文保留、旧九组产品场景均通过。公开截图Root实际view_image，证据/tmp/paw-stage3-public-*.log与stage3工作树ignored flow/home；不是仅curl或mock。
+
+原URL可信A由同一独占会话worker复验17:02:31：trustedOwner/privateSnapshot/resumed/recapSaved/recapSourcesOwned/onboardingSaved/refreshPersisted/exitHistoryCleared/sessionCheckpointed全部true，pageErrors0/horizontalOverflowfalse/noNewFixture/noNewModelCall/mailSentfalse/B未碰。它是已生成真实回顾的公开源持久恢复复验，不冒称又调用模型；原URL匿名完整flow补真正新模型调用。源码cache/manifest稳定，A按每refresh轮换写回原600会话并关闭contexts、未signOut，root已接回，不再并发消费。公开证据stage3/cloud-public/public-persistence-summary.json、两截图，Root看1440图；合成夹具不当用户真实经历。
+
+实际新tag push成功，Release17:03:26 Asia/Shanghai（publishedAt09:03:26Z）公开isDraft=false/isPrerelease=false，targetCommitish main、tag目标确为d6c3005。旧v0.1.0仍17cba1530420e2d74cd9da872ee9b4ef078b379e、v0.2.0仍ceed8d3a0b3e411397afe186eacdaf973b07d67b、v0.3.0仍4d7f2e956e8c95250549e3e07ba84bd1742368e6，工具校验均不动。本轮没有新验证码、paid模型/采购或集团调用。Key只本机私密env+服务端paw-ai，源码/公开构件206文件0match。
+
+公开技术交付至Release的用时15:27:31→17:03:27为1小时35分56秒，整体在四小时内；提前独立审查/集中修复窗口超过单步一小时，如实向用户说明，不宣称所有单步约束达标。最终文档收口时间随后按工具记录，剩余用户亲验仍未代勾。下一轮主目录main从SESSION/PENDING/阶段4计划进入真实社区与同城，阶段5指南/新内容/PWA/真机等仍待，最终10月8日20:00不变。此后只同步最新版README/状态/验收/日志，docs-only不改已发布源码/tag/Pages；stage3证据工作树保留，临时服务4199结束时关闭，不清旧验收档案。
+
+发布来源URL：https://wenkaiqu014-hue.github.io/paw-diary/ ；https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37597581632 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.4.0 。

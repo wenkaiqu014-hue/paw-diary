@@ -21,10 +21,10 @@ from datetime import datetime, timezone, timedelta
 
 ENV_ID = 'paw-diary-d8g3p4tlsb305221d'
 REGION = 'ap-shanghai'
-COLLECTIONS = ('health_workspaces', 'health_receipts', 'media_assets', 'import_batches', 'import_maps')
+COLLECTIONS = ('health_workspaces', 'health_receipts', 'media_assets', 'import_batches', 'import_maps', 'auth_challenges', 'auth_verified')
 DOMAINS = ('wenkaiqu014-hue.github.io', 'localhost', '127.0.0.1')
 ACCEPTANCE_DOMAINS = ('localhost:4193', '127.0.0.1:4193')
-FUNCTIONS = ('paw-api', 'paw-stage2-readiness')
+FUNCTIONS = ('paw-api', 'paw-stage2-readiness', 'paw-auth')
 ROOT = Path(__file__).resolve().parents[1]
 LOG = ROOT / 'test-results/stage2/cloud-ops.log'
 PUBLIC_CONFIG = ROOT / 'test-results/stage2/public-config.json'
@@ -338,7 +338,7 @@ class Operator:
         for storage in env.get('Storages') or []:
             self.storage_acl(storage['Bucket'], write=True)
             self.storage_acl(storage['Bucket'])
-        self.attempt('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps({'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-stage2-readiness': {'invoke': True}})})
+        self.attempt('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps({'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-stage2-readiness': {'invoke': True}})})
         keys = self.attempt('DescribeApiKeyList', {'KeyType': 'publish_key', 'PageNumber': 1, 'PageSize': 10})
         data = (keys or {}).get('Data') or []
         if not data:
@@ -420,7 +420,8 @@ class Operator:
         if name not in FUNCTIONS:
             raise ValueError('Only project functions can be deployed')
         required_values = {'TZ': 'Asia/Shanghai', 'PAW_CLOUD_ENV_ID': self.env_id}
-        if name == 'paw-api':
+        function_timeout = 20 if name == 'paw-auth' else 3
+        if name in ('paw-api', 'paw-auth'):
             keys = self.call('DescribeApiKeyList', {'KeyType': 'publish_key', 'PageNumber': 1, 'PageSize': 10}).get('Data') or []
             key = next((k for k in keys if k.get('Name') == 'publish_key' and isinstance(k.get('ApiKey'), str) and k['ApiKey']), None)
             if not key:
@@ -447,7 +448,7 @@ class Operator:
         if existing:
             result = self.attempt('UpdateFunctionCode', {'FunctionName': name, 'Namespace': self.env_id, 'Handler': 'index.main', 'InstallDependency': 'FALSE', 'Publish': 'FALSE', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'CodeSource': 'ZipFile'})
         else:
-            result = self.attempt('CreateFunction', {'FunctionName': name, 'Handler': 'index.main', 'MemorySize': 256, 'Timeout': 3, 'Runtime': 'Nodejs18.15', 'InstallDependency': 'FALSE', 'CodeSource': 'ZipFile', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'Environment': environment, 'AutoCreateClsTopic': 'FALSE', 'AutoDeployClsTopicIndex': 'FALSE', 'Description': 'Paw diary stage2 private health API' if name == 'paw-api' else 'Temporary stage2 identity flags only readiness probe'})
+            result = self.attempt('CreateFunction', {'FunctionName': name, 'Handler': 'index.main', 'MemorySize': 256, 'Timeout': function_timeout, 'Runtime': 'Nodejs18.15', 'InstallDependency': 'FALSE', 'CodeSource': 'ZipFile', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'Environment': environment, 'AutoCreateClsTopic': 'FALSE', 'AutoDeployClsTopicIndex': 'FALSE', 'Description': 'Paw diary stage2 server email OTP proof' if name == 'paw-auth' else 'Paw diary stage2 private health API' if name == 'paw-api' else 'Temporary stage2 identity flags only readiness probe'})
         if not result:
             raise RuntimeError('Function deployment failed; see safe API summary')
         for _ in range(12):
@@ -457,13 +458,13 @@ class Operator:
                 if status.get('Status') == 'Active':
                     variables = (status.get('Environment') or {}).get('Variables') or []
                     values = {v.get('Key'): v.get('Value') for v in variables}
-                    if any(values.get(key) != value for key, value in required_values.items()):
-                        updated = self.attempt('UpdateFunctionConfiguration', {'FunctionName': name, 'MemorySize': 256, 'Timeout': 3, 'Environment': environment}, service='scf')
+                    if any(values.get(key) != value for key, value in required_values.items()) or status.get('Timeout') != function_timeout:
+                        updated = self.attempt('UpdateFunctionConfiguration', {'FunctionName': name, 'MemorySize': 256, 'Timeout': function_timeout, 'Environment': environment}, service='scf')
                         if not updated:
                             raise RuntimeError('Function public environment configuration failed')
                         time.sleep(2)
                         continue
-                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', publicKeyConfigured=name == 'paw-api', managementSecretsInjected=False)
+                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', publicKeyConfigured=name in ('paw-api','paw-auth'), managementSecretsInjected=False)
                     return
                 if status.get('Status') in ('CreateFailed', 'UpdateFailed', 'DeployFailed'):
                     raise RuntimeError('Function entered failed state')
@@ -494,7 +495,7 @@ class Operator:
             function = None
         if function and function.get('Description') != 'Temporary stage2 identity flags only readiness probe':
             raise ValueError('Temporary probe description changed; refusing to delete')
-        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}}
+        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}}
         self.call('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps(rules)})
         permissions = (self.call('DescribeResourcePermission', {'ResourceType': 'function'}).get('Data') or {}).get('PermissionList') or []
         actual = json.loads(permissions[0].get('SecurityRule') or '{}') if permissions else {}

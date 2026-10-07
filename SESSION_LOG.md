@@ -501,3 +501,18 @@ Agent原实现及单轮审查/定向修复都已回报结束，Root整合复验�
 匿名两次45秒短窗均finally恢复false；第二次Root真实SDK capture成功写private600，实际重新载入签名session后isAnonymoustrue，health.snapshot明确UNAUTHENTICATED，单独探针exit0；不是A/B邮箱通过。首次用--input-type=module父进程创建文件Worker继承execArgv失败，改ignored .mjs入口后正常，未将失败算权限拒绝。个人版读回平台SetupReadytrue、DocDB1PG0、autoRenewfalse/overrunfalse、production及精确local域、DB/storagedeny、Emailonly/MaxDevice5、两函数Active/pubkeyEnv均完成。用户自主开通原env，旧订单Status7关，不再支付/下新单。
 
 发布元信息VERSION/package/lock=0.3.0，CHANGELOG/README/回滚/docs/releases/v0.3.0均明确准备稿未上线；隔离构建不覆盖dist、无管理秘密/日志，4文档链接和版本一致检查0；首次outdir安全guard拒，改受允许专用临时目录后0。Rootfresh npm test210/210退出0、scripts语法及git diff0。workerops43相关unit0。与前轮210+17 browser证据区别：本轮没有真实CloudPrivate/Photo/Import正向；只有验证码接受与verified缺省阻塞、真正匿名拒绝。
+
+
+## 最终验收追加窗口与真实认证适配
+
+2026-10-07 10:37:40 Asia/Shanghai（当轮工具时间）：用户追加20分钟最终验收窗口，目标10:57:40。该窗口未能按时完成；Root已明确告知，不把未通过门槛写成完成。用户提供两账号新验证码，仅stdin使用，不记邮箱/代码/token。没有公开发布0.3、推送或新建收费环境。
+
+当前HTTP v1真实OTP后仍不返回email_verified，原严格flag路径不兼容。由Root协调cloud agent新增server-mediated OTP：服务器保留verification_id、核验code、用平台verification_token签发session，fixed Bearer GetMe确认UID/邮箱，再写server-only UID/emailHash/verifiedAt证明；业务owner仍可信SCFUID，raw profile与proof必须一致。七集合deny、public paw-auth仅三个认证动作、私有paw-api仍auth调用。challenge有10分钟期限/5次尝试/30秒lease/消费后拒绝重放，来源IP3次/10分钟；验证码/token不持久化。10:56:14两函数Active读回，auth20秒/private3秒。详情见operations/cloud-setup。
+
+真实Mongo事务doc.get.data是对象，而新AuthStore先按数组取，导致挑战读失败；根采实际shape、agent以RED/GREEN兼容对象/数组并重部署，没有发新码。随后原两组OTP实际被服务器接受并产生proof，但Node捕获工具仍ACCEPTANCE_IDENTITY_MISMATCH。查SDK3.10.1明确setSession刷新token后getSession仅取缓存convertedUser，缓存空/旧但非null会抑制fallback。Root新collectVerifiedSession强制getUser(true)后getSession，以当前token对fixed rawUID/可信auth.sessionUID三方一致；增加两行为测试（旧user被忽略/可信UID不一致拒绝）由缺模块RED到2PASS。不是把有email/日期推断验证。Agent正尝试安全复用旧Worker内真实session，尚未取得A/B最终捕获，不再次消费已用nonce。
+
+2026-10-07 11:09:39 Asia/Shanghai（工具date）：Root fresh npm test223/223、0fail/0skip，node --check app/helper/function-builder与git diff --check均exit0。正式npm run build:functions现在同时生成paw-api和paw-auth，两个bundleexit0，不再依赖ignored临时构建脚本。浏览器契约14PASS/1FAIL的末项检查到了新的服务端认证await使UI disabled早于健康请求发出；fixture只等按钮会过早切B，实际无A请求，不是旧A清B。改等真实fixture backend held===1后定向stale_expired_reply PASS，整套待最终前端freshuser修复后重跑。真实session/隔离/媒体门槛尚未通过，不能代以223单测。
+
+用户询问时间，Root明确当前未完、v0.3未发布；可复用session时剩余20–30分钟为估计并声明不确定性，承认多轮收码及20分钟目标未守住。下一步优先恢复现有会话、真实SDK串行五case、真实浏览器跨上下文，全部通过再决定发布。
+
+Root最终源复验：setSession后强制freshUser Web/Node同源缓存问题追加两实际RED/GREEN，原late-A epochguard保留。当前npm test225/225、0skip；正式两个函数bundle/staticbuild退出0，固定app-6N3IO3HV.js/style-E5NM6WZE.css。Root八旧浏览器回归全部0、account-workspaces/language各0、15项cloud-contract及6项media-intent整套全部PASS。新auth外部协议仍明确模拟平台边界，不当真云。tracked+pending139文件实际凭证值扫描0match、语法/diff0。照片真实测试的finally原引用try内request会ReferenceError，变量提升到try外，等待真云复验；不以静态修复宣称该真云测试通过。为避免再次收码，cloud agent隔离Inspector Worker PoC已成功，正准备受控恢复已有真实SDK会话；PoC不是真账号已恢复。

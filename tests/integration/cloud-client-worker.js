@@ -78,6 +78,7 @@ async function initialize() {
     refresh_token: session.refresh_token,
   });
   if (result?.error) throw fail("REAL_CLOUD_SESSION_REJECTED");
+  await freshUser(); // setSession/getSession initially use cached converted user; refresh before actor RPCs.
 }
 async function operation(name, payload) {
   if (name === "cacheProbeSet") {
@@ -100,13 +101,19 @@ async function operation(name, payload) {
     const session = (await auth.getSession())?.data?.session;
     const raw = await verifiedProfile.createPlatformProfileLookup({environmentId:envId,publishableKey:publicKey})(session?.access_token);
     const uid = typeof user?.id === "string" ? user.id : null;
+    let serverVerified = false;
+    if (uid && user?.is_anonymous === false && session?.access_token) {
+      const response = (await app.callFunction({name:"paw-auth",data:{action:"auth.session",payload:{},authToken:session.access_token}})).result;
+      const approval = typeof response === "string" ? JSON.parse(response) : response;
+      serverVerified = approval?.ok === true && approval?.data?.principal?.userId === uid;
+    }
     return {
       signedIn: !!uid,
       uidHash: uid
         ? createHash("sha256").update(`${envId}\0${uid}`).digest("hex")
         : null,
       emailPresent: typeof user?.email === "string" && !!user.email,
-      emailVerified: raw?.email_verified === true,
+      emailVerified: raw?.email_verified === true || serverVerified,
       isAnonymous: user?.is_anonymous === true,
     };
   }

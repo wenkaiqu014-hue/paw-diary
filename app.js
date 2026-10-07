@@ -158,7 +158,7 @@ async function switchWorkspace(mode,{newPet=false,fromLogin=false,force=false}={
 function initCloudAccount(){
  if(!PUBLIC_CONFIG.enabled)return null;
  if(auth)return auth;
- cloudApp=cloudbase.init({env:PUBLIC_CONFIG.environmentId,region:PUBLIC_CONFIG.region,accessKey:PUBLIC_CONFIG.publishableKey});auth=createCloudbaseAuth({app:cloudApp});
+ cloudApp=cloudbase.init({env:PUBLIC_CONFIG.environmentId,region:PUBLIC_CONFIG.region,accessKey:PUBLIC_CONFIG.publishableKey});auth=createCloudbaseAuth({app:cloudApp,invokeAuth:async request=>{const result=await cloudApp.callFunction({name:'paw-auth',data:request});if(result?.code&&![0,'0','SUCCESS'].includes(result.code))throw Object.assign(new Error('Auth transport unavailable'),{code:'UNAVAILABLE'});return typeof result.result==='string'?JSON.parse(result.result):result.result;}});
  accountUI=createAccountUI({auth,getGeneration:()=>session.generation,modal,closeModal,onSignedIn:async principal=>{const current=await auth.getRequestSession();if(current?.principal?.userId!==principal.userId)throw accountBoundaryError();authPrincipal={userId:principal.userId};await switchWorkspace('account',{fromLogin:true});if(workspaceMode==='account'&&authPrincipal?.userId===principal.userId)reauthRequiredOwners.delete(principal.userId);},onSignedOut:async()=>{authPrincipal=null;if(workspaceMode!=='local')await switchWorkspace('local',{force:true});},onImportLocal:()=>openCloudMigration(),t:translate,document,onError:e=>toast(localizeError(e))});
  restoreAuthUnsubscribe=auth.subscribe(handleAuthIdentityChange);return auth;
 }

@@ -43,12 +43,12 @@ test("real private storage upload/read/delete and A/B/anonymous/direct-object ac
       pet.revision,
     ),
   );
-  try {
-    const request = {
+  const request = {
       version: 1,
       action: "media.read",
       payload: { assetId: saved.data.id },
     };
+  try {
     const content = requireSuccess(await A.invoke(request));
     assert.equal(content.data.base64, bytes.toString("base64"));
     assert.equal(content.data.url, undefined);

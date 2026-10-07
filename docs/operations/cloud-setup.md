@@ -166,3 +166,13 @@ Root明确授权仅原fixed env的guard接受trial/personal，由实际读回Pac
 本次Root具体授权的匿名窗口实际10:19:26启用且读回，10:20:11由45秒硬deadline触发finally恢复，读回Anonymous=false、Email=true、Phone=false、UserName=false，命令exit0。窗口后再次refresh公共配置核验；匿名session是否成功捕获以及实际拒绝由Root真实SDK验收，不能因开关恢复或管理探针通过代称。
 
 10:25:39 Root因首个捕获助手的Node同名getter覆盖错误、匿名session未保存，具体授权第二次45秒匿名窗口；10:26:25 finally读回恢复Email true、Anonymous/Phone/UserName false，命令exit0。Root报告此次真实SDK匿名session已成功保存至私密600文件；本worker未读或输出该token。Root真实A/B邮箱OTP已获平台接受，但fixedGET当前v1资料的email_verified仍缺省/false，严格业务门槛不能放行。这是新的正向认证兼容阻塞事实，不能把管理Ready或邮箱收码成功写成云健康/隔离验收通过。未放宽为email/bind/loginType/日期即通过，未硬编码账号、未管理端伪标verified。
+
+### 2026-10-07 10:37–10:57 服务端实际 OTP 证明
+
+用户继续最终验收并由Root明确批准后，新增仅本环境的 `auth_challenges`、`auth_verified` 两集合（同样CUSTOM read/write false）和独立公开函数 `paw-auth`。公开认证函数只接受三个动作：requestEmailCode{email}->{id}；verifyEmailCode{id,code}->{session:{access_token,refresh_token},principal:{userId}}；session{}带顶层当前authToken->{principal:{userId}}。健康API仍仅认证调用可访问，owner仍可信SCF上下文UID；没有把email存在、loginType、provider.bind、日期或客户端verified声明当授权。
+
+服务器亲自走当前SDK与正式HTTPAPI的标准链：POST verification（email、usage=email）→POST verification/verify（服务器保留verification_id、收到code）→平台verification_token→既有用户signin（username=email、verification_token）或新用户signup（email、verification_token）→固定HTTPS GetMe检查原始UID与挑战邮箱。服务器生成并保存仅ownerId/emailHash/verifiedAt的证明，平台tokens只回当前用户、code和任何session/verification token不写库或日志。登录前verify调用可以无callerUID，owner身份来自平台新签发session的GetMe；随后SDKsetSession后的auth.session和所有健康动作必须再次与可信SCF UID及当前rawemailHash相同。rawverified布尔true旧路径保留，缺省只能匹配此服务端实际OTP证明。
+
+request由可信SCF来源IP散列计数，3次/10分钟；随机挑战nonce10分钟过期、最多5个验证尝试、30秒单次验证租约及消费后不可重放。新函数Node18.15/256MB/20秒，健康API暂保持3秒待真实用量测。10:49:09 paw-auth首次Active并读回公开key/env/TZ，没有管理秘密注入；同波七集合deny和函数规则配置、两bundle构建、两部署均exit0。
+
+真实复验暴露createAuthStore新实现只按array读取transaction doc.get，实际data是对象，导致挑战读取undefined而未调用平台verify。Root提供现场形状后，新增对象/数组兼容失败测试确实RED，再修为与已有cloudbase-store相同的兼容读取；没有清除挑战或发送新码。同时兼容平台SignedSession省略sub：若有sub须与fixedBearer GetMe UID一致；若省略，仅从平台验证过的Bearer GetMe派生UID，不用客户端UID。10:56:14 paw-auth和paw-api都重新Active并readback（健康函数内也包含旧AuthStore，故同时重部署）。最终相关49项unit/6项server-auth通过，语法/diff0，证据server-auth-*.log和otp-proof-*.log。生产诊断只phase/字段名/布尔/机器代码，不输出UID、邮箱、code或tokens。真实A/B验证和云私有Gate结果由Root最终采证，不能以本段部署与单测代称全部通过。

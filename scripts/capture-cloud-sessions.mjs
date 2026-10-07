@@ -3,6 +3,7 @@ import {isMainThread,Worker,parentPort,workerData} from 'node:worker_threads';
 import {readFile,writeFile,rename,mkdir,stat} from 'node:fs/promises';
 import {resolve,dirname} from 'node:path';
 import {createInterface} from 'node:readline';
+import {collectVerifiedSession} from './lib/capture-session.mjs';
 
 const labels=new Set(['A','B','anonymous']);
 const fail=code=>Object.assign(new Error(code),{code});
@@ -14,7 +15,8 @@ function validateConfig(config){
 
 if(!isMainThread){
  const cloudbase=(await import('@cloudbase/js-sdk')).default;
- const config=validateConfig(workerData.config),auth=cloudbase.init({env:config.env,region:config.region,accessKey:config.publishableKey,persistence:'none',debug:false}).auth();
+ const config=validateConfig(workerData.config),app=cloudbase.init({env:config.env,region:config.region,accessKey:config.publishableKey,persistence:'none',debug:false}),auth=app.auth();
+ const serverCall=async(action,payload,authToken)=>{const reply=await app.callFunction({name:'paw-auth',data:{action,payload,...(authToken?{authToken}:{})}});const result=typeof reply.result==='string'?JSON.parse(reply.result):reply.result;if(result?.ok!==true)throw fail('ACCEPTANCE_SERVER_AUTH_FAILED');return result.data;};
  let verify=null;
  parentPort.on('message',async({id,command})=>{
   try{
@@ -22,27 +24,20 @@ if(!isMainThread){
    if(command.op==='request'){
     if(workerData.label==='anonymous'||typeof command.email!=='string'||command.email.length>254||!/^\S+@\S+\.\S+$/.test(command.email.trim()))throw fail('ACCEPTANCE_EMAIL_INVALID');
     if(verify)throw fail('ACCEPTANCE_CHALLENGE_ALREADY_PENDING');
-    const reply=await auth.signInWithOtp({email:command.email.trim(),options:{shouldCreateUser:true}});
-    if(reply?.error||typeof reply?.data?.verifyOtp!=='function')throw fail('ACCEPTANCE_EMAIL_REQUEST_FAILED');
-    verify=reply.data.verifyOtp;result={requested:true};
+    const challenge=await serverCall('auth.requestEmailCode',{email:command.email.trim()});
+    if(typeof challenge?.id!=='string'||!challenge.id)throw fail('ACCEPTANCE_EMAIL_REQUEST_FAILED');
+    verify=async({token})=>serverCall('auth.verifyEmailCode',{id:challenge.id,code:token});result={requested:true};
    }else if(command.op==='verify'||command.op==='anonymous'){
     if(command.op==='verify'){
      if(!verify||typeof command.code!=='string'||!/^[0-9]{4,10}$/.test(command.code.trim()))throw fail('ACCEPTANCE_CODE_INVALID');
-     const reply=await verify({token:command.code.trim()});if(reply?.error)throw fail('ACCEPTANCE_CODE_REJECTED');
+     const reply=await verify({token:command.code.trim()});if(typeof reply?.session?.access_token!=='string'||typeof reply?.session?.refresh_token!=='string')throw fail('ACCEPTANCE_CODE_REJECTED');
+     const installed=await auth.setSession(reply.session);if(installed?.error)throw fail('ACCEPTANCE_SESSION_INVALID');
     }else{
      if(workerData.label!=='anonymous'||command.providerTemporarilyEnabled!==true)throw fail('ACCEPTANCE_ANONYMOUS_PROVIDER_NOT_CONFIRMED');
      const reply=await auth.signInAnonymously();if(reply?.error)throw fail('ACCEPTANCE_ANONYMOUS_LOGIN_FAILED');
     }
-    const reply=await auth.getSession(),session=reply?.data?.session,user=reply?.data?.user??session?.user??(await auth.getUser())?.data?.user;
-    if(reply?.error||typeof session?.access_token!=='string'||typeof session?.refresh_token!=='string'||!session.access_token||!session.refresh_token)throw fail('ACCEPTANCE_SESSION_INVALID');
-    const response=await fetch(`https://${config.env}.api.tcloudbasegateway.com/auth/v1/user/me`,{headers:{Authorization:`Bearer ${session.access_token}`},redirect:'error'});
-    if(!response.ok)throw fail('ACCEPTANCE_PROFILE_READ_FAILED');
-    const raw=await response.json();
-    const anonymous=workerData.label==='anonymous';
-    if(typeof user?.id!=='string'||user.id!==(raw?.sub??raw?.uid??raw?.id))throw fail('ACCEPTANCE_IDENTITY_MISMATCH');
-    if(anonymous?user.is_anonymous!==true:user.is_anonymous!==false||raw.email_verified!==true||typeof raw.email!=='string'||!raw.email)throw fail('ACCEPTANCE_IDENTITY_NOT_VERIFIED');
+    result=await collectVerifiedSession({auth,config,label:workerData.label,serverCall});
     verify=null;
-    result={session:{access_token:session.access_token,refresh_token:session.refresh_token},emailVerified:raw.email_verified===true,isAnonymous:anonymous};
    }else throw fail('ACCEPTANCE_COMMAND_INVALID');
    parentPort.postMessage({id,ok:true,result});
   }catch(error){parentPort.postMessage({id,ok:false,errorCode:codeOf(error)});}

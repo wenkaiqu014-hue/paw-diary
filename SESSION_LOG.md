@@ -545,3 +545,18 @@ GitHub原页核对：TencentCloudBase/cloudbase-skills显示35stars，auth-web/a
 
 
 最后一轮grill已发起：用户明确下一轮两步走，先45分钟审查，再修改；本轮仍不维修。使用grilling技能按决策frontier集中问四个未决取舍：审查包含临时探针/1–2次真实收码且用户在线的窗口；45分钟到点根因未证实的收口；原生SDK闭环通过而桥接失败时基于证据调整职责的范围；修改阶段预算在审查后再估或预设固定时长。每题给建议，但用户尚未回答，不记录为已确认。不重复平台、个人账号、邮箱方向、费用与原网址；最终项目截止不变，不要求用户查技术事实。此次只有访谈与日志归档，未发码/运行探针/改云/维修/安装/部署。
+
+
+## 45分钟审查启动与结论
+
+用户已同意最后grill四项建议并明确开始，要求不复杂化、只聚焦基本注册登录。工具计时13:16:19 Asia/Shanghai，首阶段检查点14:01:19。Root先只读原环境DescribeClient/GetProviders，默认Client.Id=env、AccessToken7200秒/Refresh2592000秒/MaxDevice5；email provider On TRUE，custom FALSE。旧EmailLogin字段文案是邮箱密码，不单独当OTP证据；这次实际provider及NativeOTP补证。未改任何云设置或新增收费资源。
+
+临时隔离浏览器nativeSDK基线使用本轮第1封QQ码（码/邮箱不记日志），发送/验证/signin成功、私有snapshot成功、首次token刷新HTTP200。临时Python saver误把SDK Date对象直接json.dumps，导致保存TypeError而不是平台登录失败；随后诊断脚本正常化日期，不能把此错误算401。系统级键盘取会话尝试未可靠锁定浏览器焦点，截图见前台非诊断页面；无法确认是否影响当前输入，已停用此方式、删除自建截图和停止临时4195接收器，后续只用隔离Playwright。没有将无关私人内容纳入日志。
+
+第2封QQ码用于Native请求叠加现桥接相同pubBearer验证/signin头的一次对照；登录、刷新、另浏览器setSession恢复及新的隔离NodeSDK恢复/私有snapshot都成功。故发布key请求头不是已证实根因，不据此改headers/重写认证。平台native基线及同头对照均证明现SDK/客户端可正常工作。
+
+明确缺陷1：SDK setSession会消耗并轮换refresh，integration/cloud-client-worker initialize成功后不回写real-sessions。受控实验Bridge文件ref刷新后被Restored消费，重复用旧Bridge文件精确返回unauthorized_client/errorNumber4022，使用当前值跨浏览器/Node成功。旧历史样本来源仍不全，但工具重复消费旧refresh的静态缺陷和实时复现足以最小修复。
+
+明确缺陷2：真实SDK+真实平台会话，模拟OTP响应边界测试当前AuthAdapter。trace before-install epochSame/challengeSame均true；after-checked principalPresent/principalMatches均true、epochSamefalse，返回UNAUTH。即同账号登录/刷新事件延迟到身份核验期间，导致verify对authEpoch任意变化误判，虽SDK/服务器身份已成功。临时无发码UI探针走实际public auth.session返回UNAUTH后busyfalse/errorVisibletrue，通用发码处理可恢复；旧真实发码pending还不能仅靠此探针称完全修复。SDK不await订阅Promise，未据锁内回调猜测改架构。
+
+Root及独立explorer完成锁定源码定位，两个邮件流程之外未额外发码。诊断证据test-results/stage2/audit-auth/native-baseline-events.json、events.json、audit-provider-client-flags.json、Native/Node私密会话（0600）；OTP模拟边界明确，不冒充完整真实UI输码。结论选择最小两处修复：会话原子持久化和同用户事件误判；保SDK/现服务器验证proof与所有权，不新增认证协议/供应商/provider。正式修复将在审查检查点后TDD执行，之后真实基础用户流程及原门槛按实测记录。

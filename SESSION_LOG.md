@@ -601,3 +601,17 @@ Root release-final-unit.log fresh246/246无skip、语法/diff0，148待归档文
 阶段2最终验收交接：实际工作树.worktrees/stage2，feat/stage2-local-cloud最新cb8bf6a（认证改动194d66e，server OTP dc8c293）。226单测及最新15账号契约/6媒体mock通过；真实A/B旧SDK各自snapshot成功，但同设备refresh仍unauthorized_client，新浏览器恢复和完整真实权限/媒体未过。阶段2未完成、0.3未发布，原公开0.2保留。候选默认enabled=false；完整证据与下一步见工作树SESSION_LOG及docs/verification/stage2-report.md。续作先比main/origin并进入该工作树，不reset丢交接，不重复采购或无准备反复发码。
 
 2026-10-07认证恢复仅规划交接：阶段2工作树最新36d11e4，只新增/更新6份计划、设计和日志，未维修/发码/运行探针/改云/安装/部署。下一轮先读.worktrees/stage2/docs/superpowers/plans/2026-10-07-stage2-auth-recovery.md与对应diagnostic-design。使用Superpowers形成官方NativeSDK vs server桥接新鲜基线、独立UIpending、证据选择最小修复、轮换安全持久化、新用户及五真实case的六任务计划；诊断首轮45分钟为检查点，不是发版保证。GitHub已核官方CloudBase auth技能与wshobson高star通用技能，仅研究未安装；当前根因unknown、阶段2未完成/0.3未发布。完整本轮研究与来源保留工作树SESSION_LOG。
+
+## v0.3.0正式发布与阶段2技术交付
+
+2026-10-07 14:48:50 Asia/Shanghai（工具date及GitHub元数据）：全部已授权的阶段2开发与技术验收已完成。实现工作树归档c04e03b；合并main时AGENTS当前状态取最新，SESSION_LOG保留双方完整内容，额外三段main历史交接单独补录，不reset。合并结果重新npm ci、npm test246/246无skip、npm run build、diff检查均退出0；固定app-QWW76HLZ/style-E5NM6WZE与候选一致。merge源码4d7f2e956e8c95250549e3e07ba84bd1742368e6已推原main。
+
+原Pages工作流37583390404 success，deploy步骤2026-10-07 14:46:53 Asia/Shanghai完成；公开asset-manifest/index实际核对QWW76HLZ/E5与enabled=true、公开key存在、资源图一致，无管理秘密。独立agent在原URL全新匿名context跑原八套+account-workspaces/personal-media/review-local-fixes/language共12/12 PASS，前后manifest一致，详细ignored证据仍留工作树test-results/stage2/release-public/summary.json及每套日志。Root实际原URL restore A→fresh SDK及服务器核验→reload→私有1只宠物/1照片→打开并等待幻灯图片自然尺寸非零→关闭→390页面，无pageerror/横溢，截图已实际view_image，证据release-public-real-ui.log与release-public-real-summary.json。解析日志初次将同一stage的完成标志也计入check，断言失败；限定完整flags记录后实际两次check通过，非产品或登录失败。没有新发验证码或用管理身份代替A。
+
+新annotated tag v0.3.0实际解引用4d7f2e9，与部署源码一致；push成功，Release已公开、isDraft=false/isPrerelease=false，发布时间2026-10-07 14:48:48 Asia/Shanghai（GitHub publishedAt 06:48:48Z）。旧v0.2.0仍ceed8d3a0b3e411397afe186eacdaf973b07d67b、v0.1.0仍17cba1530420e2d74cd9da872ee9b4ef078b379e。地址https://wenkaiqu014-hue.github.io/paw-diary/；Release https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.3.0；工作流https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37583390404。
+
+当前246单测、五真实SDK云case、15账户契约/6媒体边界、12最终本地与12匿名公开套件均通过，真实已有账号登录/新账号注册/刷新重开/B退出及图库也已验证。受控账号A保留一只纯合成验收宠物及其合成记录/PNG，另一只本轮误建夹具已仅移回收站，未触其他资料；B退出后失效tokens已移除，A最后600 checkpoint留ignored目录，全部验收contexts关闭。临时readiness函数和公有探针规则已删除读回，匿名provider恢复关闭。公共配置验收工件从历史false更新为实际验证true，管理环境/费用未新增。
+
+阶段2技术交付与0.3公开发布完成，用户亲自体验仍未替其勾选。docs agent正在主main同步11份状态文档及云操作说明，后续仅文档提交不改变已部署源码/tag。下一轮先看main最新SESSION/PENDING，阶段3按原计划接AI录入/回顾/只读助手，不从旧工作树重做阶段2；真实社区属阶段4。真机软键盘/触控、读屏、原生200%及Google/Outlook日历实导仍阶段5。原八小时阶段2目标超时的历史保留，不声称按原工时完成。
+
+主main文档收口：stage2_release_docs交付并冻结原11份状态文档及operations/cloud-setup共12份，Root核对报告/AGENTS/PENDING的发布事实与下一轮入口，diff检查退出0；局部链接0missing。Root再次148源码/文档文件比对12个已配置实际管理/模型secret值0match。最终归档仅13份Markdown（含Root SESSION_LOG），不修改业务、公开资源、发行tag或再触发Pages。4198隔离最终产物HTTP服务已在验收结束Ctrl-C停止，4193可用候选预览与旧工作树ignored私有证据保留，不删除验收档案。阶段2开发/技术验收/正式发布已收口，用户可从原公开URL体验；本轮没有开始阶段3实现。

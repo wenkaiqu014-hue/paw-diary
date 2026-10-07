@@ -144,11 +144,12 @@
 
 **Consumes:** 前六任务及真实前置全部通过；**Produces:** 真实验收报告、可回退候选、明确完成/未完成项。
 
-- [ ] Step1：执行`npm test`、`node --check app.js`、`git diff --check`、`npm run build`、`npm run build:functions`；检查白名单/虚假secret扫描。所有新增集成测试分别运行，没真实环境必须非0或报告未执行，不用skip总结为全过。
-- [ ] Step2：服务dist父目录，使URL确为/paw-diary/，按README/skill-runtime启动验证服务（旧4178已未连通，先检查再启动，测试产物在test-results/stage2不提交）。现有八套脚本test_app.py、local-foundation/local-boundaries/local-regressions/health-layout/health-management/management-quality/cached-upgrade全部跑，保留demo路径断言；新account-workspaces/photo-wall/language以同静态产物运行。
+- [x] Step1：执行`npm test`、`node --check app.js`、`git diff --check`、`npm run build`、`npm run build:functions`；检查白名单/虚假secret扫描。所有新增集成测试分别运行，没真实环境必须非0或报告未执行，不用skip总结为全过。
+- [x] Step2：服务dist父目录，使URL确为/paw-diary/，按README/skill-runtime启动验证服务（旧4178已未连通，先检查再启动，测试产物在test-results/stage2不提交）。现有八套脚本test_app.py、local-foundation/local-boundaries/local-regressions/health-layout/health-management/management-quality/cached-upgrade全部跑，保留demo路径断言；新account-workspaces/photo-wall/language以同静态产物运行。
 - [x] Step3：独立只读审查最多一轮，聚焦身份/匿名/迟到、表单宠物归属、revision幂等、原文迁移、媒体权限/备份；Critical/Important真实复现后修复并重跑覆盖及完整相关套件。root负责整合复验，不把worker说完成当证据。
 - [x] Step4：技术阶段验收：真实邮箱A/B与另一浏览器、直接数据库/对象拒绝、照片备份往返、语言、四宽度/键盘/焦点、失败重试/断网/缓存。真实手机键盘/原生200%/读屏未做则仍列阶段5，不把桌面模拟冒充；不重复日历导入。给用户3分钟个人流程验收路线，用户体验与技术状态分开。
-- [ ] Step5：按实际结果更新状态并本地Git归档，未过项列明。未来正式开始且按本计划交付时，前置/技术全通过后沿已有项目Git/部署授权发布候选v0.3.0到原地址、匿名复验、新tag/Release，用户亲自体验仍待确认的范围分开记录，不重复问工具权限。如用户未来明确只做本地/暂缓发布则尊重限制。正式实施已授权发布，但只在全部真实门槛通过后执行；未通过不称完成，不自动推进阶段3。
+- [x] Step5：main合并并推送发行源码4d7f2e9，原Pages37583390404成功、14:46:53部署；原URL12套匿名及真实私有恢复/刷新/图库验收通过，v0.3.0 tag/Release于14:48:48公开。旧tag保留，后续日志/文档归档不改变发行源码。
+- [ ] 用户亲自体验确认；与技术交付及发布完成分开记录。
 
 ## 计划自检与执行交接
 
@@ -158,11 +159,11 @@
 - [x] local/account备份含媒体，旧健康JSON仍兼容；photos在envelope，avatar引用已入schema，不被验证剥离。
 - [x] spec每项映射Task1–7，五条Review Focus各有明确行为测试；退出门槛包括真实匿名平台用户，不只无token。
 
-当前已开始执行；checkbox只在对应完整步骤实际通过时更新。候选本地实现与合成验证不等于真实邮箱/私有云门槛通过；阶段2报告保留尚未完成和部署状态。
+当前阶段2技术交付及正式发布均完成，checkbox按实际证据维护；用户亲自体验仍未勾，阶段2报告保留最终阶段尚未验证范围。
 
 
 ### 最新认证恢复与发布入口（2026-10-07）
 
 [认证恢复专项计划](2026-10-07-stage2-auth-recovery.md)已执行。旧用户邮箱登录、真正新用户注册、刷新重开以及五个真实云端用例全过；服务端真实OTP证明与可信UID保留，新用户is_user省略契约、同用户异步事件与轮换持久化已修复。原八小时目标已超出，不能写成按时完成。
 
-当前246项单测无跳过，15账号契约/6媒体模拟边界通过；早期八套旧浏览器结果对应先前hash。Task7 Step1/2保留未勾，发布负责人须以最终资源图复验后更新；Step5包括合并/推送、原URL部署/匿名验收与新tag/Release，尚未发生。当前技术产物app-HUKK2URO/style-E5NM6WZE，本地cloudEnabled=true仅验收，最终发布配置/hash及证据见[阶段2报告](../../verification/stage2-report.md)。用户体验确认与技术状态分开。
+246项单测无跳过，5个真实云端case、15账号契约/6媒体模拟边界、最终QWW76HLZ/E5的12套本地与12套原URL匿名浏览器均通过；Root原URL真实私有恢复/刷新及图库实测通过，enabled=true。Task7技术/发布步骤已勾；v0.3.0源码/tag4d7f2e9、Pages37583390404成功、14:46:53部署、14:48:48公开Release。旧工作树只保留实施证据，下一轮从主目录main的[阶段3计划](2026-10-06-03-ai-onboarding-recaps.md)续作，用户亲自体验单独确认。详见[阶段2报告](../../verification/stage2-report.md)。

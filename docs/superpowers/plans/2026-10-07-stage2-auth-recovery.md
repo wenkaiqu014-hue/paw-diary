@@ -4,7 +4,7 @@
 
 **Goal:** 取得可复现的认证根因，修复登录/刷新/恢复闭环，完成阶段2真实技术退出门槛并沿原地址发布。
 
-**Architecture:** CloudBase SDK负责邮箱signIn/signUp、会话安装与刷新；服务端paw-auth负责真实OTP验证、短期回执及可信UID绑定证明。paw-api继续要求平台可信UID与实际验证证明，不信客户端verified声明。
+**Architecture:** 服务端paw-auth调用平台标准邮箱signIn/signUp签发，会话由锁定CloudBase SDK安装与刷新；服务端保留真实OTP验证、短期回执及可信UID绑定证明。paw-api继续要求平台可信UID与实际验证证明，不信客户端verified声明。
 
 **Tech Stack:** 原生ESM、@cloudbase/js-sdk 3.10.1、@cloudbase/node-sdk 3.18.3、Node测试、Python Playwright、现有CloudBase函数与私有存储。
 
@@ -62,13 +62,13 @@
 - [x] A已有用户登录、B真正新用户注册、各自刷新与重开；身份不同，pageerrors=0；旧final-real-browser.log仍是此前失败，不当当前证据。
 - [x] A/B健康与媒体隔离、未登录/真实匿名拒绝、直接数据库/对象拒绝、CAS/回执、近1MiB私有图与deletedAt/图片批次幂等迁移均实测通过。
 - [x] 13:16:19–14:01:19完成单轮独立审查及修复，本轮最新246单测无跳过、15账号契约/6媒体模拟边界通过。
-- [ ] 发布负责人以最终固定hash重新完成全部构建/白名单/语法与八套旧浏览器及新增界面复验，填写证据；早期hash结果不冒充最终产物。
+- [x] 发布负责人以最终固定hash重新完成全部构建/白名单/语法与八套旧浏览器及新增界面复验，填写证据；早期hash结果不冒充最终产物。
 
 ## Task 6：原URL发布与用户交接
 
 - [x] 报告列清真实技术门槛已通过与真机/触控/读屏/200%缩放/Google及Outlook实导等阶段5未验范围。
-- [ ] 合并/推送原main，完成原URL的Pages部署、匿名新浏览器验收，核对最终源码/hash/工作流。
-- [ ] 新建v0.3.0 tag与公开Release，旧tag不移动；填写真实发行时间与目标提交。
+- [x] 合并/推送原main，完成原URL的Pages部署、匿名新浏览器验收，核对最终源码/hash/工作流。
+- [x] 新建v0.3.0 tag与公开Release，旧tag不移动；填写真实发行时间与目标提交。
 - [ ] 用户亲自体验确认，之后按既定顺序衔接阶段3；本轮不扩展AI、真实社区或复杂认证。
 
-主agent管理共享业务、云配置、最终复验、Git/部署和SESSION_LOG；文档worker更新状态，不自行部署或修改业务。当前技术候选app-HUKK2URO/style-E5NM6WZE、本地cloudEnabled=true仅验收；最终固定产物与公开配置待发布负责人核对。公开仍v0.2.0，v0.3.0未发布，早期资金/邮箱/profile布尔/refresh阻塞保留为历史。
+主agent管理共享业务、云配置、最终复验、Git/部署和SESSION_LOG；文档worker仅更新状态。最终QWW76HLZ/E5、enabled=true已在原URL发布，12本地与12公开匿名浏览器全过，Root真实私有恢复/刷新及图库读图也通过。源码/tag4d7f2e9与Pages37583390404一致，14:46:53部署、14:48:48 Release公开且非draft/非prerelease，旧tag不变；readiness14:41:55已删除且公共规则读回移除。用户亲自体验仍未勾。下一轮从主目录main的[阶段3计划](2026-10-06-03-ai-onboarding-recaps.md)续作，不再从旧工作树重复实施；早期资金/邮箱/profile布尔/refresh阻塞仅作历史，AI与真实社区未完成。

@@ -1,6 +1,20 @@
 # 阶段2 CloudBase 管理与部署
 
-本页记录实际环境配置，不能作为真实邮箱、跨账号隔离或照片权限验收通过的依据。更新依据为 `test-results/stage2/cloud-ops.log` 的北京时间工具记录；该目录被 Git 忽略。管理脚本为 `scripts/cloud-setup.py`，默认只读，写操作需指定子命令。
+## 当前运行状态（2026-10-07正式发布后）
+
+阶段2技术交付及v0.3.0正式发布已完成。仍使用用户原环境`paw-diary-d8g3p4tlsb305221d` / ap-shanghai / NORMAL / baas_personal，文档数据库1、PostgreSQL 0，自动续费false、超额按量false。原余额不足待付订单已关闭，没有创建第二环境，不重复采购或等待资金。管理凭证仍只从FUJI环境变量读取，不回显、不进静态产物或函数配置。
+
+当前邮箱only，用户名/手机号/匿名均关闭；合法生产/本地来源、七集合和对象存储直接读写deny已核对。`paw-api`维持可信身份调用，公开`paw-auth`仅处理真实邮箱OTP与会话确认；有UID的匿名、未登录与跨账号直读写均经真实用例拒绝。身份依赖可信平台UID、平台原始资料与服务端实际OTP证明，不依赖profile布尔缺省、日期或客户端verified字段。服务端调用标准verification→verify→signIn/signUp，客户端SDK安装并刷新会话；新用户is_user省略契约、同用户迟到事件及工具refresh轮换持久化已修复。
+
+最后一次匿名拒绝用actor捕获窗口为14:24:55–14:25:20，最终provider已恢复false。临时`paw-stage2-readiness`于14:41:55删除，读回确认函数缺失且公共调用规则移除；不重新部署该探针。公开配置产物现为cloudEnabled=true、readinessStatus通过、reasons空，正式前端enabled=true；这些状态以已完成的真实邮箱/私有访问验收为依据，不以管理Ready代替。没有管理密钥进入前端或函数环境。
+
+发行源码及v0.3.0 tag为4d7f2e956e8c95250549e3e07ba84bd1742368e6，原Pages37583390404成功、14:46:53部署；14:48:48 Release公开且非draft/非prerelease。正式产物QWW76HLZ/E5，246单测、五个真实集成用例、15账号/6媒体模拟边界、12套本地与12套公开匿名浏览器全部通过；Root原URL真实私有恢复/刷新和图库读图另有证据。源码白名单148文件与12个实际secret值扫描0match；报告不保存这些secret值。详细范围见[阶段2报告](../verification/stage2-report.md)及SESSION_LOG。
+
+后续从主目录main的[阶段3计划](../superpowers/plans/2026-10-06-03-ai-onboarding-recaps.md)继续，AI供应商/额度另定，AI和真实社区未接入。用户亲自体验仍待确认；真机、读屏、200%缩放与Google/Outlook实导留阶段5。旧`.worktrees/stage2`保留Git忽略证据；4198临时验收服务已停止。纯文档交接不改变tag发行源码，也不重新触发Pages。
+
+## 历史操作记录与失败（保留追溯）
+
+以下为各当时窗口的原始操作说明，包括体验版限制、报价/余额不足、新环境备选、旧验证方式与待清理探针。它们已被上方当前状态覆盖，不作为后续采购、部署readiness或继续等待邮箱的指令。所有精确结果以对应ignored日志与SESSION_LOG时间段为准；本页管理证据始终不能独立代替真实用户验收。原管理脚本为scripts/cloud-setup.py，默认只读。
 
 ## 环境与凭证边界
 

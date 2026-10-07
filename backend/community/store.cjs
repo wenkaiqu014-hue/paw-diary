@@ -39,4 +39,4 @@ function createCommunityStore({db}={}){
   listComments:f=>list('comments',f,{postId:f.postId,deletedAt:null},'createdAt','id',(c,f)=>c.deletedAt===null&&c.postId===f.postId),
   listOwnHidden:(ownerId,filters={})=>list('hidden',{...filters,ownerId},{ownerId},'createdAt','id',(h,f)=>h.ownerId===f.ownerId&&h.hidden!==false)};
 }
-module.exports={createCommunityStore,createMemoryCommunityStore,collections,hashOwner,hash,livePost,pageConfig,page};
+module.exports={matchesPostFilters:matchPost,createCommunityStore,createMemoryCommunityStore,collections,hashOwner,hash,livePost,pageConfig,page};

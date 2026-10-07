@@ -4,15 +4,15 @@ const {createLocationLimits}=require('./limits.cjs');
 const {coordinates}=require('./tencent-location.cjs');
 const error=code=>Object.assign(new Error(code),{code});
 const DAY=24*3600000;
-function createRegionsService({store,client,clock=()=>new Date(),providerReady=false,freeDaily=0,freeMonthly=0,limits=createLocationLimits({store,clock,freeDaily,freeMonthly}),refreshMs=DAY}={}){
+function createRegionsService({store,client,clock=()=>new Date(),sleep,providerReady=false,freeDaily=0,freeMonthly=0,queueWaitMs,limits=createLocationLimits({store,clock,sleep,freeDaily,freeMonthly,queueWaitMs}),refreshMs=DAY}={}){
  let refreshing=null;
  const now=()=>new Date(clock());
  async function load(){
   let cached;try{cached=await store.readDirectory();}catch{throw error('REGION_UNAVAILABLE');}
   const stale=!cached||now().getTime()-Date.parse(cached.updatedAt)>=refreshMs;
   if(stale&&providerReady&&client?.getDistrictDirectory){
-   refreshing??=(async()=>{if(store.claimRefresh&&!await store.claimRefresh(now().getTime()))return;await limits.reserveUpstream();const items=await client.getDistrictDirectory();if(!Array.isArray(items)||!items.length)throw error('REGION_UNAVAILABLE');const version=createHash('sha256').update(JSON.stringify(items)).digest('hex');await store.writeDirectory({items,version,updatedAt:now().toISOString()});})().finally(()=>{refreshing=null;});
-   try{await refreshing;cached=await store.readDirectory();}catch{/* Last-good cache remains usable; no supplier exception or URL escapes. */}
+   refreshing??=(async()=>{if(store.claimRefresh&&!await store.claimRefresh(now().getTime()))return;const items=await limits.callUpstream(()=>client.getDistrictDirectory());if(!Array.isArray(items)||!items.length)throw error('REGION_UNAVAILABLE');const version=createHash('sha256').update(JSON.stringify(items)).digest('hex');await store.writeDirectory({items,version,updatedAt:now().toISOString()});})().finally(()=>{refreshing=null;});
+   try{await refreshing;cached=await store.readDirectory();}catch(failure){if(!cached&&failure?.code==='LOCATION_RATE_LIMITED')throw failure;/* Last-good cache remains usable; no supplier exception or URL escapes. */}
   }
   if(!cached)return null;return {...cached,stale:now().getTime()-Date.parse(cached.updatedAt)>=refreshMs};
  }
@@ -25,8 +25,8 @@ function createRegionsService({store,client,clock=()=>new Date(),providerReady=f
    const point=coordinates(payload);if(!providerReady||!client?.translateGps||!client?.reverse)throw error('REGION_UNAVAILABLE');
    await limits.reserveSuggestion({visitorId:context.visitorId??payload.visitorId,ipHash:context.ipHash});
    const directory=await load();if(!directory)throw error('REGION_UNAVAILABLE');
-   await limits.reserveUpstream();let translated;try{translated=coordinates(await client.translateGps(point));}catch{throw error('REGION_UNAVAILABLE');}
-   await limits.reserveUpstream();let region;try{region=await client.reverse(translated);}catch{throw error('REGION_UNAVAILABLE');}
+   let translated;try{translated=coordinates(await limits.callUpstream(()=>client.translateGps(point)));}catch(failure){if(['LOCATION_RATE_LIMITED','LOCATION_QUOTA_EXCEEDED'].includes(failure?.code))throw failure;throw error('REGION_UNAVAILABLE');}
+   let region;try{region=await limits.callUpstream(()=>client.reverse(translated));}catch(failure){if(['LOCATION_RATE_LIMITED','LOCATION_QUOTA_EXCEEDED'].includes(failure?.code))throw failure;throw error('REGION_UNAVAILABLE');}
    // Identify this exception only by the supplier's region code, never a guessed rectangle.
    if(String(region.districtId).startsWith('71'))return {...metadata(directory),suggestion:null,reason:'LOCATION_MANUAL_REQUIRED'};
    const district=directory.items.find(r=>r.level==='district'&&r.id===region.districtId),city=directory.items.find(r=>r.level==='city'&&r.id===(district?.parentId??region.districtId));

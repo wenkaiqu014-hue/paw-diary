@@ -951,3 +951,49 @@ core Task4独立新计时21:26:06→22:06:06，brief已生成；真实帖子/com
 Root已从process.env读取Key/SK真实请求腾讯directory成功（1次上游，无输出Key/坐标；首次误把normalized array作object打印keys导致大量索引，未涉及私密内容，后续只打印行数/摘要）；转换/逆地理及CloudBase业务实际验收尚未执行。所有400/436/441等新测试计数按各时点真实输出区分，不机械恢复v0.6.1旧343或称当前最终验收。最新源文档与报告/checkpoints以execution/ledger为续作入口。
 
 来源：https://github.com/obra/superpowers ；https://github.com/anthropics/skills ；https://github.com/vercel-labs/agent-skills ；https://github.com/jpeg-js/jpeg-js ；https://lbs.qq.com/faq/accountQuota/faqQuota ；https://lbs.qq.com/faq/accountQuota/faqKey ；https://lbs.qq.com/dev/console/quotaImprove 。
+
+### 阶段4真实SDK与页面集成检查点
+
+2026-10-07 22:45:02 Asia/Shanghai（clock14:45:02Z）。Root已本地checkpoint761c3ae（41文件，公开后端/地域/媒体/测试/必要文档），应用未发版、主main未整合。Task1技术门槛21:49:15（39分02秒）通过，但包含Git收口到21:52:41共42分28秒，超过用户40分钟2分28秒；Task2/3/6/8的完整页面/云联验跨其原窗口，未代勾“十步都≤40”。总hard结束仍02:10:13，不延期。用户已获如实进度说明。
+
+cloud configure-community21:37:20十集合deny+publicinvoke读回保原规则/对象/匿名provider；paw-community30s21:42:31 Active。第一次真SDK3 action全INVALID_INPUT，Root按systematic debugging只加安全keys/type布尔诊断、不含内容/UID/token/IP；21:46现场eventKeys action/payload/tcbContext/version确定平台注入tcbContext根因。core先新增2RED→entry9GREEN，仅entry删除该meta不信任其身份/不删除caller未知字段；全部临时diagnostic删除。21:48:37最终Active，Root21:49:15真实匿名profiles/posts成功空列表、匿名save UNAUTH、无diagnostic。原private函数未重部署。构建某次yield时未等新bundle结束即开始部署，随后严格await构建、诊断与最终SDK读回重新证明实际源码，未把中途hash当最终发布构件。
+
+Root有头A/B与Node SDK操作串行维护同actor：A从原600会话恢复，fresh checkpoint即时写回；B用户当次Gmail OTP一次请求/一次验证成功，echo disabled/no stdout值，新600会话再merge原actor文件，不复用过期B或旧验证码。不在日志记录实际地址/OTP/token。原capture helperplain stdin EOF只打印ready即退出，改tty+stty-echo保持交互；verify成功后EOT结束，未signOut。Root真实auth.getOwn/profileOwn成功；最初hasOwnProfile布尔只表示default projection非空，后明确查authorId，A/B此前都未建公开profile。
+
+Root真实核心SDK脚本test-results/stage4/real-core.mjs（36秒，独立A/B/anonymous Workers+close）12flags全true：不同真实邮箱主体、真directory viaSDK、公开投影无email/owner、重复发布同post、B读A、公开JPEG字节SHA、B编辑拒绝、desired like重复1、真实comment、report queue+个人hide不影响A/可恢复、退出发现撤卡而作者仍显示、删帖后媒体读拒。只明确合成2profile/1post/1comment/1JPEG/1report；确切receipt600保存，post已软删/图已remove、两profile退出发现，后续待运维exact cleanup恢复未建profile基线；未碰用户健康内容。公共头像个人页真实测试另新2x2JPEG，原assets不当用户真实照片。
+
+Root standalone腾讯4上游（1首目录+3真实验证）与地区SDK成功：3573规范化选择节点/393city级节点（含特殊层级，不称393行政市）；coords和Keys未打印/未入store。匿名真正SDK regions.suggest已成功返回地区建议，证明该场景可信IPhash可用，不需返回actualIP诊断；合成公开测试点而非用户GPS。首次Node--input-type=module runner导致Worker继承flag失败exit7、未请求；改.mjs真实成功，没改harness掩失败。Key6000/day5QPS和app100/day1000month限额如前，供应商账单未读回不称实际0账单。
+
+Task4 core21:26→21:37本地交付，region独立审实际复现初筛后post编辑导致不符同城条件仍hydration输出；core23/24tests RED→GREEN复用唯一matchesPostFilters二次核，保cursor；22:04:15独立33项+交错0越界复验，0未解决Important。此修复尚需Root下一次bundle部署，旧live无新增越权但不冒充已同步。Task8后端12tests/可信FUJI CLI与core22项独审0Important，实际管理处置/回顾分享UI仍待验。
+
+Task5 media21:39:46→22:00:40初代码交付17tests/511full，core22:09review2Important真实controller/Chrome复现（post失败后换图丢cleanup ref；comment pending可edit导致1评论count2）。Root先send_message给已idle worker未触发新turn，实际修复未开始；22:31 list_agents纠正后用followup_task明确触发，调度错误/单步超时如实记录，不能按旧报告自评通过。media22:32:01→22:42:35修复24tests/526full GREEN，owner-safe exact cleanup队列和busy guard、公共header browse API；core已被正式followup作scoped re-review，A->B->A repo重建下queue恢复还要核，不假定复活disposedclient。Root修mobile search flex100%/正文14–15px/长标题wrap/44px触点；final headful待收口。
+
+Tiny Task7 returned.setBrowseRegion曾send给idle未触发，22:32明确followup后<2分钟RED→GREEN，Chrome3宽外部城市清区/零profileWrites通过。public headercity改浏览偏好独立，不再走旧health cityModal；城市all不参与查询。region当前转QPS fix：core受控真实service8visitor同DB复现16 suppliercalls/4ms，day/月原子不等于5QPS；新增sharedDB lease+完成250ms间隙、bounded1250ms、LOCATION_RATE_LIMITED，24tests GREEN，独立发现late sleep wake先acquire绕bound，worker正补同一finding。无未核IPfallback、无坐标/Key落日志，SDK sourceTCB_SOURCE_IP可选字段原文已查。
+
+Root profile4Important及locale保存尾项已由region独立真实Chrome复验resolved；model6 GREEN。主App保独立community identity generation在auth提前return前失效；#profile/menu/mobile入口、dirty主题确认/native beforeunload、新公开两页及单次handoff接线，原四hash保留。有头真A UI stage4：profile保存刷新、2x2真实上传avatar owner-read刷新、email不进公开preview、继续编辑/放弃主题确认、三宽五route/手机头像入口、0pageErrors，14.8秒完成并checkpoint600。B已真实browser恢复同私密文件，正在同场景不重复OTP。用户LBS窗口一直只读，无代点击。
+
+Root test_app第一次旧friend-card精确3counts在新真实空列表0失败（旧示例断言不是产品回退理由）；分支按communityEnabled检查真实loading/empty/read和独立草稿，其它private健康原检查保留。第二次empty feed0高度be_visible失败，改attached+真实status/aria-busy=false，不伪造post撑高。最终整App有头旧健康/多宠/备份/删取消/同日称重/原四页两宽/noErrors实跑exit0。新长文本/两语言三宽由独立fixtures及后续真实UI继续验。实际tests最新526/526无skip，Root几次独立fresh365/441/506/520/526各有原log，不将历史count作为最终。
+
+回顾分享Root另新增2行为tests先RED→GREEN：current actual records排除回收/未来、不含护理明细/完整story/image/private IDs，edited文本仅草稿纯文本；weekly-recap添加当前scope守卫及发布表单回调，示例只允许copy不自动写真实社区。新helper/主接线需独立review/真取消与发布验收。仍未发布0.7，未移动旧tag。
+
+### 阶段4集中验收继续
+
+2026-10-07 23:13:58 Asia/Shanghai（clock15:13:58Z）。Root恢复检查当前stage4工作树，未新开同业务任务；已按照既有Superpowers验证/独立审查流程继续。真实B已完成一次OTP登录，无需再次消费用户验证码；用户给的邮箱和验证码不进入日志。
+
+Root新增actual-source VM回归：有效B授权login shortcut现在await统一handleAuthIdentityChange，账号健康workspace返回switch promise，使private owner协调结束才续接；同hash profile明确render。3wiringtests和regiontests合计20通过。此前Root草稿queue绑定owner/generation、取消重新登录守卫继续通过，reviewer独立11项复验关闭其最后Important。公开示例摘要随locale刷新，保留实际编辑器而不全页重建；定位限流/额度/权限/超时有具体手选文案。Shell Python一次含unicode脚本缺encoding失败，未写文件；加coding声明重跑成功，execution/ledger已更新真实A/B与cloud状态，避免compact继续误用旧“B未登录”段。
+
+Task9从23:12集中收口目标23:52，Root仍遵守总结束02:10:13。media复用agent23:11追加profile已隐藏列表/恢复，接口为community.hidden.list和community.hide(hidden:false)，不是猜测不存在unhide；同时独立审Root回顾桥接。core写正式真实integration测试，actor实际请求由Root串行执行；community_audit23:11:32开始20分钟整App/权限只读review。它观察新增hidden4RED是worker TDD过程，未误判完成。Root真实GUI48108停止并checkpoint原600会话，新21838正在仅恢复A执行回顾分享；不并行同actorSDK/GUI刷新。
+
+Root测试helper新增recap真实路径：依据已有真实记录的简短分享预览、取消无发布、再次进入并最终确认1帖，纯状态输出和600 exactreceipt；不自动保存完整AI故事，不记录私有原文。helper改动py_compile和publicbuild exit0；结果尚待实际输出，不能先称通过。package仍0.6.2，原URL尚未更新。
+
+2026-10-07 23:25:10 Asia/Shanghai检查点：正式tests/integration/community.test.js真实1/1成功，29.06秒，14flag全通过且0skip；环境缺失在worker另实跑明确FAIL REAL_COMMUNITY_SESSIONS_REQUIRED，不能用skip冒绿色。Root npm test fresh542/542、0fail/skip；build/functions、syntax/diff均exit0。最终原health test_app有头8组PASS：体重/同日多笔、record/plan/健康完成、备份/删除取消、多宠隔离和4路由原体验保留。language.py旧native-visible/select_option及旧record.other入口断言已不适用v0.6.2自绘select/类型目录；Root基于实际当前controls改choose辅助与type-catalog创建自定义类型，等待异步新值、当前Save按钮文案，不改产品复活旧逻辑。最后有头language两组通过，原用户中文宠物类型/自定义记录类型/标题/备注/私有照片待上传文件与说明跨语言/刷新保留。
+
+Root实际回顾share13.2秒briefOnly/cancelNoPublish/confirmOnePost/pageErrors0通过。media独审发现80字符首行被slice丢20字符：新增行为test RED→移除slice→3GREEN，保全文本交community60字验证且错误保输入；新按钮locale刷新/原shareHint已更新，0material复核。真实Chrome英文截图发现publicSurface locale分支未更新外部breadcrumb/workspace/city/assistant，新增refreshPublicChrome只更新外部，不销毁编辑器。首次helper.check用语言option临时变量label遮蔽actor导致新增English会话键；stop仍写回A，Root修option_label并在actor全部停止后只删除这轮引入的English键，600保留，无凭证输出。新复验A已成功en/pageErrors0/overflowfalse并safecheckpoint。
+
+Root全站公开E2E新增tests/e2e/stage4.py：真实publicCloud匿名读取、三route×两语言×三宽、无横溢出/手机头像、手选真实北京、tab键盘/头像Esc焦点返还、站内放弃确认与未发草稿locale保留。首次native region-city.select_option因Root自绘select隐藏失败，修实际click控制；新增community弹窗也提供实际可用的语言选择（全局picker在native modal下不可点），通过onLocaleChange:setLocale注入并保持live值。最终PASS、0pageErrors；GPS权限拒绝明确为浏览器模拟，仅证明拒绝文案/用户点击前0次定位，不冒充真实手机GPS；图片和私有/公开完整云证据另记。
+
+B real UI新discovery15.06秒：已隐藏内容列表恢复后帖重现、checkbox主动加入且显示本人卡“这是你”、退出恢复原状态、0pageErrors；已stop并600 checkpoint原会话。最后退出的存储值会在清理前另读回，避免把toast旧文案当保存完成。Root以B真实主体举报本轮UI图文合成帖，专用FUJI CLI 23:21:35.245实际hide/resolved；匿名post和图片均拒，真实B评论/点赞均NOT_FOUND，管理不进入public路由。确切refs/回执只保ignored600文件；清理只这些合成内容，不影响健康。
+
+来源补读：腾讯个人配额FAQ原页Q8区分个人学习非企业/组织、企业/非公益组织商业许可；authorizationFaq再次Web Internal Error未读到完整许可，不称全查清。既有Key配额已分配、无新增购买；应用低于当前账户额度，不等于查过账单为0。Web Interface Guidelines当前169行已从官方repo读取；Impeccable detector对本轮6目标一次运行exit0无findings输出。界面修订有三宽实际截图与独审，不做另一次无理由重设计。
+
+后续：core独审新profile hidden＋Root分享/chrome、community_audit finalreview进行中；media已交hidden11m04补充和分享0material复核，另15分钟独占README/CHANGELOG/community运维文档准备。Root仍独占APP/发布/版本/日志/报告与实际cleanup。stage4未发布，Git下一checkpoint包含已验证源码，不把待发布写成公开交付。

@@ -1,0 +1,12 @@
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const {handleCommunity}=require('../../backend/community/gateway.cjs'),{createMemoryCommunityStore}=require('../../backend/community/store.cjs'),{handlePosts}=require('../../backend/community/posts.cjs'),{handleInteractions}=require('../../backend/community/interactions.cjs'),{handleReports}=require('../../backend/community/reports.cjs'),{handleCommunityMedia}=require('../../backend/community/media.cjs');
+export async function createCommunityAcceptanceFixture({failAtPostRead=false}={}){
+ const store=createMemoryCommunityStore(),objects=new Map();let serial=0,failed=false;
+ const principal=actor=>actor==='anonymous'?null:{userId:'synthetic-'+actor,emailVerified:true,isAnonymous:false};
+ const storage={prepare:async p=>({fileRef:p,upload:{url:'https://synthetic.invalid/'+p}}),read:async id=>objects.get(id),remove:async id=>objects.delete(id)};
+ const regions={normalize:async p=>({...p,cityName:'北京',districtName:null}),dispatch:async()=>({items:[{id:'110000',name:'北京',level:'city',parentId:null}],nextCursor:null})};
+ const clients=Object.fromEntries(['A','B','anonymous'].map(actor=>[actor,{async community(request){if(failAtPostRead&&!failed&&actor==='B'&&request.action==='community.get'){failed=true;throw Object.assign(Error('synthetic transport'),{code:'UNAVAILABLE'});}const handlers={community:(r,d)=>['community.report','community.hide','community.hidden.list'].includes(r.action)?handleReports(r.action,r.payload,d):handlePosts(r.action,r.payload,d),comments:(r,d)=>handleInteractions(r.action,r.payload,d),likes:(r,d)=>handleInteractions(r.action,r.payload,d),regions:(r,d)=>regions.dispatch(r.action,r.payload,d),'community.media':(r,d)=>handleCommunityMedia(r.action,r.payload,{...d,clock:()=>Date.now(),fetch:async(url,input)=>{objects.set(url.slice('https://synthetic.invalid/'.length),Buffer.from(input.body));return{ok:true};}})};return handleCommunity(request,{principal:principal(actor),hasCredential:actor!=='anonymous',store,storage,regions,handlers,getOwnAccountInfo:async()=>({email:actor+'@synthetic.invalid'}),clock:Date.now,idFactory:()=> 'synthetic-id-'+(++serial)});},async close(){}}]));
+ for(const actor of['A','B'])await clients[actor].community({version:1,action:'profiles.saveOwn',payload:{nickname:'Existing '+actor,bio:'Prior private preference',cityId:null,districtId:null,petTypes:[],purposes:[],discoverable:false},expectedRevision:0,idempotencyKey:'fixture-profile-'+actor});
+ return{store,clients};
+}

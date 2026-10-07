@@ -241,9 +241,156 @@ class Acceptance:
             old['context'].close()
         self.progress(label, 'reopen_verified', reopenedBrowserContext=True, sessionSaved=actor['saved'])
 
+    def stage4(self, label, command):
+        actor=self.actor(label)
+        page=actor['page']
+        page.goto(self.args.url.rstrip('/')+'/#profile',wait_until='networkidle')
+        page.locator('[data-profile-form]').wait_for(timeout=15000)
+        page.locator('[name=nickname]').fill('阶段4页面验收'+label)
+        page.locator('[name=bio]').fill('纯合成验收简介')
+        if command.get('image'):
+            page.locator('[name=avatar]').set_input_files(str(ROOT/command['image']))
+        page.locator('[data-profile-form] [type=submit]').click()
+        page.wait_for_function('document.querySelector("#toast")?.textContent.includes("资料已保存")',timeout=35000)
+        self.checkpoint(label,actor,'stage4_profile_saved')
+        page.reload(wait_until='networkidle')
+        page.locator('[data-profile-form]').wait_for(timeout=15000)
+        if page.locator('[name=nickname]').input_value()!='阶段4页面验收'+label:
+            raise SafeFailure('PROFILE_REFRESH_MISMATCH')
+        if command.get('image'):
+            page.wait_for_function('(()=>{const i=document.querySelector("[data-profile-preview] img");return i?.complete&&i.naturalWidth>0;})()',timeout=20000)
+        own_email=page.locator('[data-own-email]').inner_text()
+        if own_email and own_email!='—' and own_email in page.locator('[data-profile-preview]').inner_text():
+            raise SafeFailure('PUBLIC_PREVIEW_EMAIL_LEAK')
+        page.locator('[name=nickname]').fill('尚未保存的名称')
+        page.locator('nav [data-page=home]').click()
+        page.locator('#discard-dialog').wait_for()
+        page.locator('[data-discard-keep]').click()
+        if page.locator('[name=nickname]').input_value()!='尚未保存的名称':
+            raise SafeFailure('PROFILE_DISCARD_LOST_INPUT')
+        page.locator('nav [data-page=community]').click()
+        page.locator('[data-discard-confirm]').click()
+        page.locator('[data-community-write]').wait_for(timeout=15000)
+        page.locator('[data-community-write]').click()
+        page.locator('.community-editor-dialog').wait_for()
+        page.keyboard.press('Escape')
+        for width in (1440,768,390):
+            page.set_viewport_size({'width':width,'height':1000})
+            for route in ('home','health','nearby','community','profile'):
+                page.goto(self.args.url.rstrip('/')+'/#'+route,wait_until='networkidle')
+                if page.evaluate('document.documentElement.scrollWidth>document.documentElement.clientWidth+1'):
+                    raise SafeFailure('PUBLIC_PAGE_OVERFLOW')
+            if not page.locator('#owner-profile-button').is_visible():
+                raise SafeFailure('MOBILE_PROFILE_ENTRY_HIDDEN')
+        self.checkpoint(label,actor,'stage4_checkpoint')
+        emit(label=label,stage='stage4',profileSavedRefresh=True,avatarOwnerRead=bool(command.get('image')),publicEmailExcluded=True,customDiscard=True,publicPagesThreeWidths=True,mobileProfileMenu=True,pageErrors=actor['errors'])
+
+    def discovery(self,label,command):
+        actor=self.actor(label);page=actor['page']
+        receipt=json.loads((ROOT/'test-results/stage4/ui-recap-receipt.json').read_text())
+        page.goto(self.args.url.rstrip('/')+'/#community',wait_until='networkidle')
+        card=page.locator('.community-card').filter(has_text=receipt['title']);card.wait_for(timeout=20000)
+        card.get_by_role('button',name='\u4e0d\u60f3\u770b\u8fd9\u7bc7',exact=True).click()
+        card.wait_for(state='hidden',timeout=20000)
+        page.evaluate("location.hash='profile'")
+        hidden=page.locator('[data-profile-hidden]');hidden.wait_for(timeout=15000)
+        row=hidden.locator('li').filter(has_text=receipt['title']);row.wait_for(timeout=20000)
+        row.get_by_role('button',name='\u6062\u590d\u663e\u793a',exact=True).click();row.wait_for(state='hidden',timeout=20000)
+        page.evaluate("location.hash='community'")
+        card=page.locator('.community-card').filter(has_text=receipt['title']);card.wait_for(timeout=20000)
+        page.evaluate("location.hash='profile'")
+        form=page.locator('[data-profile-form]');form.wait_for(timeout=15000)
+        prior=form.locator('[name=discoverable]').is_checked()
+        form.locator('[name=discoverable]').check();form.locator('[type=submit]').click()
+        page.wait_for_function('document.querySelector("#toast")?.textContent.includes("\u8d44\u6599\u5df2\u4fdd\u5b58")',timeout=35000)
+        self.attach(page)
+        own=page.evaluate("async()=>{const r=await __realAuthAcceptance.community({version:1,action:'profiles.getOwn',payload:{}});if(!r.ok)throw new Error('OWN_PROFILE_FAILED');return {authorId:r.data.authorId,nickname:r.data.nickname};}")
+        page.evaluate("location.hash='nearby'")
+        page.get_by_text(own['nickname'],exact=True).first.wait_for(timeout=20000)
+        page.get_by_text('\u8fd9\u662f\u4f60',exact=True).wait_for(timeout=20000)
+        page.evaluate("location.hash='profile'")
+        form=page.locator('[data-profile-form]');form.wait_for(timeout=15000)
+        form.locator('[name=discoverable]').set_checked(prior);form.locator('[type=submit]').click()
+        page.wait_for_function('document.querySelector("#toast")?.textContent.includes("\u8d44\u6599\u5df2\u4fdd\u5b58")',timeout=35000)
+        page.evaluate("location.hash='nearby'")
+        page.wait_for_timeout(1500)
+        if not prior and page.get_by_text('\u8fd9\u662f\u4f60',exact=True).count():raise SafeFailure('DISCOVERY_OPTOUT_STILL_VISIBLE')
+        self.checkpoint(label,actor,'discovery_checkpoint')
+        emit(label=label,stage='discovery',hideRestoreUI=True,joinedOwnCard=True,priorDiscoveryRestored=True,pageErrors=actor['errors'])
+
+    def recap(self,label,command):
+        actor=self.actor(label);page=actor['page'];title='stage4-recap-ui-'+str(int(time.time()))
+        page.goto(self.args.url.rstrip('/')+'/#home',wait_until='networkidle')
+        share=page.locator('[data-recap-share]')
+        if not share.count():
+            generate=page.locator('[data-recap-generate]')
+            if not generate.count() or generate.is_disabled():raise SafeFailure('RECAP_REAL_RECORDS_REQUIRED')
+            generate.click();share.wait_for(timeout=50000)
+        story=page.locator('.recap-story p').first.inner_text()
+        share.click();preview=page.locator('#recap-share-text').input_value()
+        if story and story in preview:raise SafeFailure('RECAP_FULL_STORY_SHARED')
+        page.locator('#recap-share-form').get_by_role('button',name='\u53d1\u5e03\u5230\u793e\u533a',exact=True).click()
+        editor=page.locator('.community-editor-dialog');editor.wait_for()
+        editor.locator('[name=title]').fill(title)
+        editor.locator('[data-dialog-close]').click()
+        page.get_by_role('alertdialog').get_by_role('button',name='\u786e\u8ba4',exact=True).click()
+        editor.wait_for(state='hidden')
+        self.attach(page)
+        count=page.evaluate("async title=>{const r=await __realAuthAcceptance.community({version:1,action:'community.list',payload:{scope:'all',query:title,limit:20}});if(!r.ok)throw new Error('PUBLIC_READ_FAILED');return r.data.items.length;}",title)
+        if count:raise SafeFailure('CANCELLED_RECAP_PUBLISHED')
+        page.evaluate("location.hash='home'")
+        page.locator('[data-recap-share]').wait_for(timeout=15000)
+        page.locator('[data-recap-share]').click()
+        page.locator('#recap-share-form').get_by_role('button',name='\u53d1\u5e03\u5230\u793e\u533a',exact=True).click()
+        editor=page.locator('.community-editor-dialog');editor.locator('[name=title]').fill(title)
+        editor.locator('[type=submit]').click();editor.wait_for(state='hidden',timeout=35000)
+        self.attach(page)
+        items=page.evaluate("async title=>{const r=await __realAuthAcceptance.community({version:1,action:'community.list',payload:{scope:'all',query:title,limit:20}});if(!r.ok)throw new Error('PUBLIC_READ_FAILED');return r.data.items;}",title)
+        if len(items)!=1:raise SafeFailure('RECAP_CONFIRMED_POST_COUNT')
+        item=items[0]['post']
+        receipt=ROOT/'test-results/stage4/ui-recap-receipt.json';receipt.write_text(json.dumps({'postId':item['id'],'revision':item['revision'],'title':title}));receipt.chmod(0o600)
+        self.checkpoint(label,actor,'recap_checkpoint')
+        emit(label=label,stage='recap',briefOnly=True,cancelNoPublish=True,confirmOnePost=True,pageErrors=actor['errors'])
+
+    def social(self,label,command):
+        actor=self.actor(label);page=actor['page'];title='stage4-real-ui-'+str(int(time.time()))
+        page.goto(self.args.url.rstrip('/')+'/#community',wait_until='networkidle')
+        page.locator('[data-community-write]').click()
+        editor=page.locator('.community-editor-dialog')
+        editor.locator('[name=title]').fill(title)
+        editor.locator('[name=text]').fill('Synthetic browser proof <script>literal</script>')
+        editor.locator('input[type=file]').set_input_files(str(ROOT/'test-results/stage4/ui-avatar.jpg'))
+        editor.locator('[type=submit]').click()
+        editor.wait_for(state='hidden',timeout=35000)
+        page.get_by_role('heading',name=title,exact=True).wait_for(timeout=15000)
+        page.reload(wait_until='networkidle')
+        page.get_by_role('heading',name=title,exact=True).wait_for(timeout=15000)
+        self.attach(page)
+        posts=page.evaluate("async title=>{const r=await __realAuthAcceptance.community({version:1,action:'community.list',payload:{scope:'all',query:title,limit:20}});if(!r.ok)throw new Error('PUBLIC_READ_FAILED');return r.data.items;}",title)
+        item=next((x for x in posts if x['post']['title']==title),None)
+        if not item:raise SafeFailure('POST_NOT_PERSISTED')
+        record={'postId':item['post']['id'],'revision':item['post']['revision'],'assetId':item['post'].get('imageAssetId'),'title':title}
+        path=ROOT/'test-results/stage4/ui-social-receipt.json';path.write_text(json.dumps(record));path.chmod(0o600)
+        card=page.locator('.community-card').filter(has_text=title)
+        card.get_by_role('button',name='\u67e5\u770b\u8be6\u60c5',exact=True).click()
+        detail=page.locator('.community-detail-dialog')
+        detail.locator('[name=comment]').fill('Synthetic UI comment')
+        detail.locator('[data-community-comment-form] [type=submit]').click()
+        page.wait_for_function('document.querySelector(".community-detail-dialog [name=comment]")?.value===""',timeout=25000)
+        if detail.locator('script').count():raise SafeFailure('PUBLIC_TEXT_EXECUTED')
+        detail.locator('[data-dialog-close]').click()
+        record['commentPassed']=True;path.write_text(json.dumps(record));path.chmod(0o600)
+        self.checkpoint(label,actor,'social_checkpoint')
+        emit(label=label,stage='social',uiPostSavedRefresh=True,uiImageUploaded=True,uiComment=True,pureText=True,pageErrors=actor['errors'])
+
     def check(self, label, command):
         actor = self.actor(label)
         page = actor['page']
+        route=command.get('route')
+        if route is not None:
+            if route not in ('community','nearby'):raise SafeFailure('PUBLIC_ROUTE_INVALID')
+            page.evaluate('(route)=>{location.hash=route}',route)
+            page.wait_for_timeout(800)
         viewport = command.get('viewport')
         if viewport is not None:
             if not isinstance(viewport, dict) or not all(isinstance(viewport.get(k), int) and 320 <= viewport[k] <= 2400 for k in ('width', 'height')):
@@ -253,7 +400,10 @@ class Acceptance:
         if locale is not None:
             if locale not in ('en', 'zh-CN'):
                 raise SafeFailure('LOCALE_INVALID')
-            page.locator('#locale-select').select_option(locale)
+            select=page.locator('#locale-select')
+            option_label=select.evaluate('(s,v)=>Array.from(s.options).find(o=>o.value===v).textContent',locale)
+            root=select.locator('..');root.locator('.select-trigger').click()
+            root.get_by_role('option',name=option_label,exact=True).click()
             page.wait_for_function('locale=>document.documentElement.lang===locale', arg=locale)
         if isinstance(command.get('petName'), str):
             page.locator('.pet-entry').filter(has_text=command['petName']).first.locator('[data-action=select-pet]').click()
@@ -346,7 +496,7 @@ def main():
                     if op == 'stop':
                         helper.stop()
                         break
-                    if label not in LABELS or op not in ('request', 'verify', 'resume', 'check'):
+                    if label not in LABELS or op not in ('request', 'verify', 'resume', 'check', 'stage4', 'social', 'recap', 'discovery'):
                         raise SafeFailure('COMMAND_INVALID')
                     helper.stage = op
                     getattr(helper, op)(label, command)

@@ -8,18 +8,20 @@
 
 详细临时ledger/brief/report仅本plan的`.superpowers/sdd/2026-10-07-stage4-community-profiles-nearby/`。长期日志统一SESSION_LOG；compact后先读本页、ledger最新记录、git status、各worker报告，不重新派已完成任务。
 
-| 步骤 | 状态 | 开始/结束 | 责任 |
-| --- | --- | --- | --- |
-| 1 独立公开服务/资料后端 | 基础验收通过 | 21:10:13 / 21:49:15 | core＋Root，后续双账号整体验收在9 |
-| 2 头像菜单/个人资料 | 集成中 | 21:14:18 / —，截止21:54:18 | Root，6model和三宽fixture通过，真实账号待接 |
-| 3 公开媒体 | 本地/独立复审通过，真实云待验 | 21:12:48 / —，截止21:52:48 | media＋core复审，31专项GREEN |
-| 4 互动后端 | 本地/入口通过，真共享待验 | 21:26:06 / —，截止22:06:06 | core，19专项/41交叉通过 |
-| 5 社区UI | 并行实施中 | 21:39:46 / —，截止22:19:46 | media worker，Root接线 |
-| 6 全国地域/定位 | 模块/真实供应商通过，云前端待验 | 21:13:41 / —，截止21:53:41 | region＋Root，官方3573节点/393city级 |
-| 7 宠友发现 | 并行实施中 | 21:39:55 / —，截止22:19:55 | region worker，Root接线 |
-| 8 举报/回顾分享 | 后端/独立复审通过，分享UI待接 | 21:30:18 / —，截止22:10:18 | region＋core复审，12专项GREEN |
-| 9 真实验收/独立审查 | 未开始 | — | Root＋fresh reviewer |
-| 10 原URL/v0.7.0 | 未开始 | — | Root |
+| 步骤 | 当前真实状态 | 责任 |
+| --- | --- | --- |
+| 1 独立公开服务/资料后端 | 基础及真实双账号通过；技术39m02s，Git收口42m28s超时 | core＋Root |
+| 2 头像菜单/个人资料 | 本地与A/B真实页面、头像刷新通过；账号续接审查补丁复验中，完整窗口超40m | Root |
+| 3 公开媒体 | 独立复审、真实JPEG字节SHA/删后撤销通过；完整窗口超40m | media＋core |
+| 4 互动后端 | 实际A/B帖/评/赞/个人隐藏通过，同城hydrate竞态修复已同步云 | core |
+| 5 社区UI | 实际A页面图片发帖刷新/评论通过；独立复审关闭，完整70m超时 | media＋Root |
+| 6 全国地域/定位 | 真实目录3573节点/393city级、SDK建议与shared5QPS门槛通过；真实设备GPS未验 | region＋Root |
+| 7 宠友发现 | 单元/三宽及外部浏览城市刷新通过；真实SDK opt-in/opt-out通过 | region |
+| 8 举报/回顾分享 | 举报队列/个人隐藏真实SDK通过；管理处置、回顾整App及隐藏恢复UI待收口 | region＋Root |
+| 9 真实验收/独立审查 | 23:12开始集中收口，目标23:52；formal integration及整App审查进行中 | Root＋reviewers |
+| 10 原URL/v0.7.0 | 尚未发布 | Root |
+
+用户40分钟要求部分步骤已超时，如SESSION_LOG记录，不能声称十步都满足；总结束仍02:10:13，不延期。
 
 接口责任：Root独占app.js/index.html/style.css、全局locale、构建/云权限/部署/Git；workers只写指派模块及测试，禁止Git提交/额外子agent，报告包含RED/GREEN命令与时间。共享store与绑定签名先按plan，任何调整先发Root确认并同步ledger。
 
@@ -32,3 +34,7 @@ Cloud实际：21:37:20十个新集合deny/publicinvoke并读回，原private/obj
 本轮GitHub只读查证技能仓库star：obra/superpowers296215、anthropics/skills180002、vercel-labs/agent-skills32029（21:10检查点gh API）。每步启动前定位本地对应技能并记录用途，不为凑数安装重复技能。来源：https://github.com/obra/superpowers ；https://github.com/anthropics/skills ；https://github.com/vercel-labs/agent-skills 。
 
 当前尚未完成步骤，不把本地mock或旧验收代勾公开云/实际定位/真实双账号。
+
+23:12续作更新：前述21:49历史段保留证据，当前communityEnabled已打开；最新云paw-community Active22:49:06，zipSHA9e6be688e53a3ec946eb9b0939c6f66cab7a8faa7813463adfe67581f51dc953。完整单元533（下一检查点可能新增）；A/B真实SDK12flag成功；真实profile A/B页面成功、Aavatar owner-read成功；真实UI A post/photo/refresh/comment成功且0pageErrors。完整原健康test_app通过。Root actualauth helper48108已stop，A最近checkpoint原stage2路径600；B新会话已merge同文件，两actor均从这个文件串行恢复，绝不复用旧B/旧验证码。当前私密receipt仅test-results/stage4，后续exactcleanup已知合成profile/post/image/report，不碰健康。
+
+Root最近审查修复：公开草稿queue绑定owner/generation单次消费；A重新登录用户主动取消清handoff；已有有效B授权时await身份协调私有workspace，samehashprofile明确重绘，3 actualsource tests通过。上一次ledger“未恢复A”等是历史，勿照它重新请求OTP。

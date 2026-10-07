@@ -145,6 +145,14 @@ async function operation(name, payload) {
         .digest("hex")}`
     );
   }
+  if (name === "community") {
+    const session = await auth.getSession();
+    const request = {...payload,...(session?.data?.session?.access_token?{authToken:session.data.session.access_token}:{})};
+    const raw = (await app.callFunction({name:"paw-community",data:request})).result;
+    const result = typeof raw === "string" ? JSON.parse(raw) : raw;
+    if(typeof result?.ok!=="boolean")throw fail("REAL_CLOUD_API_REPLY_INVALID");
+    return result;
+  }
   if (name === "invoke") {
     const session = await auth.getSession();
     const request = {

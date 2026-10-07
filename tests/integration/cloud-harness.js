@@ -119,6 +119,7 @@ export async function createIsolatedClient({
   };
   const client = {
     invoke: (request) => rpc("invoke", request),
+    community: (request) => rpc("community", request),
     readiness: () => rpc("readiness"),
     identityFlags: () => rpc("identityFlags"),
     profileLookupFlags: () => rpc("profileLookupFlags"),

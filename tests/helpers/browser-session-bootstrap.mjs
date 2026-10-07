@@ -27,6 +27,6 @@ globalThis.__realAuthAcceptance={
   return {session:credentials(s),identity:typeof user?.id==='string'?user.id:null,flags:{sdkReady:true,sdkVersionExpected:${JSON.stringify(version)}==='3.10.1',sdkError:!!initial?.error||!!reply?.error||profileReadFailed,userRefreshed,profileReadFailed,hasAccess:!!s?.access_token,hasRefresh:!!s?.refresh_token,signedIn:!!user?.id,isAnonymous:user?.is_anonymous===true}};
  },
  async install(tokens){const result=await deadline(auth().setSession(tokens));return {installed:!result?.error,sdkError:!!result?.error};}
-};`;
+};globalThis.__realAuthAcceptance.community=async request=>{const sdk=auth(),session=(await sdk.getSession())?.data?.session;const raw=await app.callFunction({name:'paw-community',data:{...request,...(session?.access_token?{authToken:session.access_token}:{})}});let reply=raw.result??raw;if(typeof reply==='string')reply=JSON.parse(reply);return reply;};`;
 await build({stdin:{contents:source,resolveDir:resolve(new URL('../..',import.meta.url).pathname),sourcefile:'browser-session-observer.js'},bundle:true,format:'iife',platform:'browser',target:'es2022',minify:true,outfile:resolve(output),logLevel:'silent'});
 console.log(JSON.stringify({bootstrapBuilt:true,sdkVersionExpected:version==='3.10.1'}));

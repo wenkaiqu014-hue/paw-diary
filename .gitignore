@@ -3,3 +3,12 @@ test-results/
 node_modules/
 .impeccable/
 .worktrees/
+
+dist/
+.env
+.env.*
+!.env.example
+.superpowers/
+
+__pycache__/
+*.pyc

@@ -25,7 +25,7 @@
 
 发布事实：v0.2.0 annotated tag指向 `ceed8d3`，与最终Pages部署 `37497726088` 的源码一致；Release已公开、非draft/非prerelease。v0.1.0仍指向 `17cba15`，禁止移动。Release： https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.2.0 。后续文档提交不改变发布源码；本轮结束交接只做本地Git提交，续作先查本地main与origin/main差异，不以reset丢弃尚未推送的交接。
 
-阶段2已获用户明确“开始吧”授权，起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46，原最终截止不变。本地候选与单轮审查修复已完成，210项单测、8旧+9新浏览器脚本全0；真实邮箱/私有云门槛未通过，公开仍0.2。**续作必须进入 `.worktrees/stage2` / `feat/stage2-local-cloud`，HEAD3f7d01c、实现3d14cc6；main仅同步日志与入口，业务未合并/推送，勿从main旧源重做或reset。**完整实施日志已同步SESSION_LOG，详细候选报告与当前计划在工作树docs/verification/stage2-report.md、PENDING.md。候选4193仍提供 `/paw-diary/`，固定app-ILE2BPQK/style-E5NM6WZE、cloud disabled。FUJI管理凭证可用，trial已部署函数；19.90个人版一月唯一订单余额不足未付，资金/两个受控邮箱异步待用户，不能用等待当付费确认。仅邮箱、免登录个人/头像/照片、多空间隔离/确认迁移/双语等既有方向不重复访谈，不将本地mock当真实完成，不推进阶段3。
+阶段2已由用户授权完整实施和最终修复/发布。实施起点2026-10-07 01:38:46 Asia/Shanghai，八小时目标09:38:46已超出，全项目截止不变。续作继续进入`.worktrees/stage2` / `feat/stage2-local-cloud`，先查当前HEAD和main/origin差异，勿从main旧源码重做或reset。当前发布前技术门槛已通过：246单测无跳过、真实邮箱旧用户登录与真正新用户注册/刷新/重开、A/B健康与媒体隔离、直接DB/对象拒绝、近1MiB私有图、CAS/回执/确认迁移五个真实case全过；15账号契约/6媒体模拟边界通过。当前技术产物app-HUKK2URO/style-E5NM6WZE，本地cloudEnabled=true仅验收，最终hash与公开配置由发布负责人固定复验。v0.3.0尚未合并/推送/tag/Release或公开验收，公开仍v0.2.0。具体证据见docs/verification/stage2-report.md与SESSION_LOG最新段；发布与用户体验确认后按顺序衔接阶段3，本轮不新增AI/真实社区。免登录个人、照片/头像、三空间、确认迁移、仅邮箱方向不重复访谈。
 
 阶段2除原登录/权限/跨设备/头像/确认迁移外，需镜像当前V3生命周期/排序，包含P1-09/P1-10自定义记录/宠物类型、N-06语言基础和N-08当前宠物私有照片墙/可控幻灯片。N-04只读使用帮助/宠物记录助手在阶段3；N-07国内地域搜索/主动辅助定位在阶段4；N-03每版一次新内容、遮罩高亮“下一步/跳过指引”及可安装网页在阶段5。用户要求全部现有想法在最终截止前实现，不能默认移到截止后；原约30小时估计不含新增，不是工期保证。
 
@@ -37,7 +37,7 @@
 
 续作先读 `SESSION_LOG.md` 最新阶段与 `PENDING.md` 当前状态，再读总计划 `docs/superpowers/plans/2026-10-06-paw-diary-master.md`。按当次任务进入00–05对应子计划，必要时查 `ROADMAP.md`、`PRODUCT.md`、`DESIGN.md`，不自动通读Daily其他项目、无关旧会话或全部项目历史。
 
-用户已自行创建专用CloudBase环境 `paw-diary-d8g3p4tlsb305221d`。2026-10-07 01:27:19按用户明确指定FUJI变量只读DescribeEnvs/DescribeBillingInfo成功：上海/NORMAL/baas_trial体验版、云数据库资源1/PG资源0，到期2027-04-07 23:59:59，自动续费/超额按量false。**本项目后续管理调用固定从 `TENCENTCLOUD_FUJI_SECRET_ID` / `TENCENTCLOUD_FUJI_SECRET_KEY` 读取**，不默认替换成此前查cloud1的TENCENTCLOUD_SECRET_*或集团凭证；不回显/提交实际值。环境ID允许作为公开配置，不能把EnvCharged=yes当此次实际付费金额，也不能将只读成功当邮箱/部署权限/业务私有访问已通过。用户接受免费先验证、必要基础云约20元/月；本轮没有开通/配置/付费动作，额外费用仍按具体范围落实。文本AI供应商/额度与匿名体验在阶段3定，密钥仅服务端。
+用户专用CloudBase环境固定为`paw-diary-d8g3p4tlsb305221d` / ap-shanghai，已由用户开通个人付费版，文档数据库1、PostgreSQL 0，自动续费与超额按量false；原余额不足订单已关闭，不重复采购、不再等待资金。**后续管理调用固定从`TENCENTCLOUD_FUJI_SECRET_ID` / `TENCENTCLOUD_FUJI_SECRET_KEY`读取**，不用其他个人/集团凭证代替，不回显/提交实际值。合法来源、集合/对象deny与邮箱only已读回；14:24:55–14:25:20曾为匿名拒绝验收临时捕获actor，最终匿名provider已恢复false。身份验证采用可信平台UID与服务端真实OTP证明，不依赖缺省profile布尔、日期或客户端verified声明。新用户省略is_user契约、同用户迟到事件和refresh轮换写回已修复，旧错误仅作历史。操作依据见docs/operations/cloud-setup.md及SESSION_LOG；管理成功仍不能替代新业务的实际用户验收。AI供应商/额度与匿名体验阶段3另定，密钥仅服务端。
 
 ## 使用哪些技能
 
@@ -91,7 +91,7 @@
 
 ## 验证与数据规则
 
-当前原生HTML/CSS/JS，业务数据保存在localStorage。示例标签保留，不能把本地交互写成云端同步、真实社区或实际AI已接通。
+当前原生HTML/CSS/JS经esbuild构建；示例保存在localStorage，免登录个人使用IndexedDB，登录后私有档案经可信身份API访问CloudBase。公开v0.2.0仍是本地版本，候选真实云技术验收通过不等于正式发布。示例标签保留，AI/真实社区未接入。
 
 基础检查 `node --check app.js`、`git diff --check`。当前本机浏览器验证入口：`/Users/wenkaiqu/.codex/skill-runtime/run python -u test_app.py`；线上检查可设置 `PAW_DIARY_TEST_URL`。后续构建/单元测试和真实环境验证按阶段计划更新，本地mock通过不等于实际云端/模型可用。
 

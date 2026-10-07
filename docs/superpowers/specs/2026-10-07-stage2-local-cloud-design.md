@@ -58,7 +58,7 @@ LocalRepository保留getRawBackup/replaceSnapshot作为本地恢复入口；Clou
 
 刷新/回到前台拉取云端数据，不开启实时watch。有打开表单时保留输入与其`{petId,entityId,baseRevision,generation}`；不重新渲染表单使其换宠物、丢失输入。保存捕获的petId，后续切宠物不改变它；空间已改变拒绝保存旧表单。语言切换只更新界面文字，不变用户输入。
 
-写请求为`{version:1,action,payload,expectedRevision,idempotencyKey}`，身份只取已验证的平台调用上下文。Principal同时要求真实已验证邮箱账号，不能把匿名平台用户的非空uid当邮箱登录；必要时通过平台可信用户查询确认身份类型。服务端先校验请求/身份及幂等payload hash，同一合法请求已有回执直接返回原结果；否则在事务内比较expectedRevision、验证全部关联归属、执行领域变换并保存revision+1及回执。重复key配不同请求拒绝，不覆盖回执。CONFLICT保留输入，拉取最新数据后由用户重新决定；不自动最后写入覆盖。
+写请求为`{version:1,action,payload,authToken,expectedWorkspaceId,expectedRevision,idempotencyKey}`。审查修复中加expectedWorkspaceId作为本次意图防错断言，必须等于server由可信owner+env派生的空间值，在任何Store/回执前校验，不作为授权/owner选择。authToken仅当前官方SDK会话的瞬时Bearer，用固定env官方原始资料查询校验email_verified严格true且UID与平台上下文相同，移除后才进业务hash/回执，不cache/log。身份所有权仍只取已验证的平台调用上下文。Principal同时要求真实已验证邮箱账号，不能把匿名平台用户的非空uid当邮箱登录；必要时通过平台可信用户查询确认身份类型。服务端先校验请求/身份及幂等payload hash，同一合法请求已有回执直接返回原结果；否则在事务内比较expectedRevision、验证全部关联归属、执行领域变换并保存revision+1及回执。重复key配不同请求拒绝，不覆盖回执。CONFLICT保留输入，拉取最新数据后由用户重新决定；不自动最后写入覆盖。
 
 云健康文档建议设1MiB序列化上限（不含照片文件），单次普通action输入64KiB；这是工程保护阈值，不是已核实的平台硬上限，Task1验证响应/文档/事务能承载它。超过限制明确拒绝并保留本地/备份，不截断。迁移用批次暂存和最终事务，不能把大备份一口塞进callFunction请求。
 

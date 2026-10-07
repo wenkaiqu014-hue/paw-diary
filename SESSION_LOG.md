@@ -489,6 +489,113 @@ Agent原实现及单轮审查/定向修复都已回报结束，Root整合复验�
 最终候选源码已本地提交3d14cc6（完整review修复、权限测试防假绿、210单测/17浏览器检查与实际限制），未push/合并main/打tag或Release。独立fixture4197已关闭并清其临时目录，候选4193保留；dist public配置仍false。主main将仅追加本地交接入口，完整本轮日志保留本分支SESSION_LOG；续作切到.worktrees/stage2并先读本报告/日志，不从main旧业务代码重复构建。
 
 
+## 二十分钟发布前准备窗口
+
+2026-10-07 10:14:02 Asia/Shanghai（工具date）：用户确认已补余额、自主开通云环境，提供两受控邮箱用于验证码验收，要求20分钟内完成0.3.0发布前准备；邮箱地址仅用于实际调用、不记日志或Git。新窗口至10:34:02，未据此自动公开发布。沿using-superpowers/executing-plans/verification，已知ValueError前用systematic-debugging查实际状态。
+
+独立分工：cloud负责cloud-setup和运维说明及真实配置，local_fixes仅版本元数据/README/回滚/Release候选说明，不Git/推送/发tag/新云或回退peer；Root负责真实OTP/SDK/浏览器集成，业务源暂冻结。known旧待付单已Status7关单，未再付款/下单；原固定env实际被用户开为personal/NORMAL/上海/DocDB1PG0，到期2026-11-07，原autoRenewfalse但overruntrue。Root批准仅原env接受读回personal并关闭overrun、无更换凭证/新env/自动费用操作。10:16:36 ModifyEnvExtra EnableOverrunFALSE成功、读回autoRenewfalse/overrunfalse，后续按个人版配合法生产与4193本地来源/邮箱/私有规则、部署读回。其余实际验收未通过不宣称。
+
+
+10:33窗口收口：两个受控邮箱验证码均由平台成功接受，真实session有token且SDKUID与fixed GET raw.sub匹配，但profile未返回严格email_verified=true，A/B捕获分别ACCEPTANCE_IDENTITY_NOT_VERIFIED，不能称登录/私有业务验收通过。第一次Node helper用了同名getUserInfo返回调用context导致UID mismatch（不是邮箱码错）；改优先SDKuser仍同误，最终根因Node导出覆盖旧getter，已改固定官方Bearer GET，harness.identityFlags同步修正。用户最新两轮码均不写日志/Git；没有把Node context false当raw证明。不能放宽授权、用绑定/有email/日期或凭空verified真值通过。当前10:34目标仅发布材料/环境准备完成，真云门槛阻塞未解决，不公开0.3、cloudEnabled仍false。
+
+匿名两次45秒短窗均finally恢复false；第二次Root真实SDK capture成功写private600，实际重新载入签名session后isAnonymoustrue，health.snapshot明确UNAUTHENTICATED，单独探针exit0；不是A/B邮箱通过。首次用--input-type=module父进程创建文件Worker继承execArgv失败，改ignored .mjs入口后正常，未将失败算权限拒绝。个人版读回平台SetupReadytrue、DocDB1PG0、autoRenewfalse/overrunfalse、production及精确local域、DB/storagedeny、Emailonly/MaxDevice5、两函数Active/pubkeyEnv均完成。用户自主开通原env，旧订单Status7关，不再支付/下新单。
+
+发布元信息VERSION/package/lock=0.3.0，CHANGELOG/README/回滚/docs/releases/v0.3.0均明确准备稿未上线；隔离构建不覆盖dist、无管理秘密/日志，4文档链接和版本一致检查0；首次outdir安全guard拒，改受允许专用临时目录后0。Rootfresh npm test210/210退出0、scripts语法及git diff0。workerops43相关unit0。与前轮210+17 browser证据区别：本轮没有真实CloudPrivate/Photo/Import正向；只有验证码接受与verified缺省阻塞、真正匿名拒绝。
+
+
+## 最终验收追加窗口与真实认证适配
+
+2026-10-07 10:37:40 Asia/Shanghai（当轮工具时间）：用户追加20分钟最终验收窗口，目标10:57:40。该窗口未能按时完成；Root已明确告知，不把未通过门槛写成完成。用户提供两账号新验证码，仅stdin使用，不记邮箱/代码/token。没有公开发布0.3、推送或新建收费环境。
+
+当前HTTP v1真实OTP后仍不返回email_verified，原严格flag路径不兼容。由Root协调cloud agent新增server-mediated OTP：服务器保留verification_id、核验code、用平台verification_token签发session，fixed Bearer GetMe确认UID/邮箱，再写server-only UID/emailHash/verifiedAt证明；业务owner仍可信SCFUID，raw profile与proof必须一致。七集合deny、public paw-auth仅三个认证动作、私有paw-api仍auth调用。challenge有10分钟期限/5次尝试/30秒lease/消费后拒绝重放，来源IP3次/10分钟；验证码/token不持久化。10:56:14两函数Active读回，auth20秒/private3秒。详情见operations/cloud-setup。
+
+真实Mongo事务doc.get.data是对象，而新AuthStore先按数组取，导致挑战读失败；根采实际shape、agent以RED/GREEN兼容对象/数组并重部署，没有发新码。随后原两组OTP实际被服务器接受并产生proof，但Node捕获工具仍ACCEPTANCE_IDENTITY_MISMATCH。查SDK3.10.1明确setSession刷新token后getSession仅取缓存convertedUser，缓存空/旧但非null会抑制fallback。Root新collectVerifiedSession强制getUser(true)后getSession，以当前token对fixed rawUID/可信auth.sessionUID三方一致；增加两行为测试（旧user被忽略/可信UID不一致拒绝）由缺模块RED到2PASS。不是把有email/日期推断验证。Agent正尝试安全复用旧Worker内真实session，尚未取得A/B最终捕获，不再次消费已用nonce。
+
+2026-10-07 11:09:39 Asia/Shanghai（工具date）：Root fresh npm test223/223、0fail/0skip，node --check app/helper/function-builder与git diff --check均exit0。正式npm run build:functions现在同时生成paw-api和paw-auth，两个bundleexit0，不再依赖ignored临时构建脚本。浏览器契约14PASS/1FAIL的末项检查到了新的服务端认证await使UI disabled早于健康请求发出；fixture只等按钮会过早切B，实际无A请求，不是旧A清B。改等真实fixture backend held===1后定向stale_expired_reply PASS，整套待最终前端freshuser修复后重跑。真实session/隔离/媒体门槛尚未通过，不能代以223单测。
+
+用户询问时间，Root明确当前未完、v0.3未发布；可复用session时剩余20–30分钟为估计并声明不确定性，承认多轮收码及20分钟目标未守住。下一步优先恢复现有会话、真实SDK串行五case、真实浏览器跨上下文，全部通过再决定发布。
+
+Root最终源复验：setSession后强制freshUser Web/Node同源缓存问题追加两实际RED/GREEN，原late-A epochguard保留。当前npm test225/225、0skip；正式两个函数bundle/staticbuild退出0，固定app-6N3IO3HV.js/style-E5NM6WZE.css。Root八旧浏览器回归全部0、account-workspaces/language各0、15项cloud-contract及6项media-intent整套全部PASS。新auth外部协议仍明确模拟平台边界，不当真云。tracked+pending139文件实际凭证值扫描0match、语法/diff0。照片真实测试的finally原引用try内request会ReferenceError，变量提升到try外，等待真云复验；不以静态修复宣称该真云测试通过。为避免再次收码，cloud agent隔离Inspector Worker PoC已成功，正准备受控恢复已有真实SDK会话；PoC不是真账号已恢复。
+
+真实会话恢复补充：cloud agent通过精确旧Worker Inspector断点，从已有平台SDK强制fresh profile并核fixed rawUID=可信CF principalUID，将A/B真实credentials写600文件，anonymous保留，无新邮件/UID/token输出；fileflags Root实读通过。随后Root串行真云入口立即fail REAL_CLOUD_SESSION_REJECTED（0PASS/1FAIL/0SKIP）；有头Web同会话SDKsetSession也failed，不能称恢复可复用。已检查公钥/环境传递正确且access_token不等于publickey。安全机器诊断unauthorized_client，不等于invalid_refresh_token；SDKsetSession会refresh。捕获缺session.version确系缺陷并有RED/GREEN修复，但再从RAM拿平台metadata，A/B实际version=v1，补齐仍不能解释拒绝，因此Root先前“版本遗漏导致刷新拒绝”判断不成立，撤回归因并继续调查客户端/设备绑定。上述file存在/metadata修复不是真业务验收通过。
+
+Root仅本地4193临时构建enabled=true做真实Web检查，未推公开。真实UI邮箱request调用确使受控邮箱收到新邮件，但UI未能在30秒内启用code，测试失败并关闭浏览器；用户后续给新码，Root先核对应最新server challenge存在，未擅用已消费旧挑战。该新挑战稍后已过期，不称该码验收成功、不在日志保留它。另一次诊断用不可投递example.invalid探测，未获UI有效响应；不得称成功发信。尚需查实际UItransport异步响应/验证码流程，不能只测mock。
+
+2026-10-07 11:27:53 Asia/Shanghai（工具date）：用户要求汇报并十分钟内收口，目标11:37:53。Root答复将在窗口结束给明确通过/未过/发布结论，未保证强行过门槛；真实权限不通过仍不得发版。既有候选归档dc8c293，运行时manifest补a562c5f，尚未merge/main源码push/tag/Release。
+
+最终十分钟窗口结论（11:27:53–11:37:53）：Root实读inspector-same-device-flags.log，真实旧A/B SDKactor health.snapshot均成功、各空档案，fresh/raw/可信proofUID一致；同原设备refresh均unauthorized_client。加pubBearer原生刷新HTTP400相同错误，无positive刷新证据。根因未定位，版本遗漏不是已证实原因（实际v1）。首个真实认证case0PASS/1FAIL/0SKIP，其余4真实case未继续执行；有头Webrestore失败、验证码UI未过，新QQ挑战已过期未消费，不记码。Root最终226单测/最新15账号契约/6媒体意图mock全过，hash app-CDVGJXPR.js/style-E5NM6WZE.css，build及语法/diff通过、local enabled=false恢复。八旧回归/account-workspaces/language是此前6N3hash证据，不冒充CDVG全套。源码归档194d66e，公开0.2/main业务/push/tag/Release未动。下一步先查实际V1客户端刷新授权，再完整真云与真实浏览器验收；无需反复收码。官方页面Web读取失败，未以摘要充精确结论。最后一条追加日志因stdin编码报错未写成，立即用ASCII Unicode转义补录，未丢源码提交。
+
+
+## 认证恢复专项：只分析与规划
+
+2026-10-07 11:53:19 Asia/Shanghai（工具date）：用户要求使用Superpowers分析下一步，必要时GitHub寻找认证技能；本轮只规划，不开始正式维修。应用using-superpowers/systematic-debugging/writing-plans，brainstorming只审视认证责任边界；独立explorer auth_plan_audit只读现有代码和锁定3.10.1 sourcemap，未执行测试/网络/读会话秘密/改文件。Root只读日志、代码与公开GitHub，未发码、未运行认证探针、未调用云API/更改配置、未安装技能/MCP/依赖、未构建或发布。
+
+研究主结论：原生SDK OTP与当前paw-auth桥接必须分样本比较，历史RAM来源尚需台账；同设备refresh失败不能排除凭据撤销/轮换，access有效不证明refresh有效。UI邮件到达仅证明send副作用，request返回、challenge落库、epoch/generation采纳及解除busy需独立采证。原stage2设计SDK会话责任与现server-proof实现需对齐；新用户无旧proof必须验收，不能只靠已有A/B。SDK公开signIn(username,verification_token)/signUp(email,verification_token)接口存在，跨服务器验证token兼容性未实测，故仅列条件分支，不自动采用。没有根因结论或真实修复成功声明。
+
+GitHub原页核对：TencentCloudBase/cloudbase-skills显示35stars，auth-web/auth-tool 2.34.8为本栈专项参考（内置SDK会话优先；示例latest需映射锁定3.10.1）；wshobson/agents显示约40.3k，auth-implementation-patterns作通用AuthN/AuthZ参考；better-auth/skills显示222，其create-auth针对另一框架，本轮不迁移。skill-installer只读了解安装方式，未安装；官方queryAppAuth/manageAppAuth未出现在当前工具列表，不假称调用成功。公开源完整链接均在新增设计末尾。原生agent列表此只读任务只有一个实例，未作legacy meta/TaskStop完整扫描或声称其通过。
+
+产物docs/superpowers/specs/2026-10-07-stage2-auth-recovery-design.md与plans/2026-10-07-stage2-auth-recovery.md。六任务：基线/来源/完整错误及一次一变矩阵；独立UIpending；证据驱动最小修复或责任调整；私密原子轮换持久化；五真实case+真实首登/跨浏览器；全部门槛后沿原URL发布。首诊断检查点建议45分钟，届时必须交根因证据或本地脱敏最小复现，不保证修复发版时长。每个正式执行checkbox保持未勾。
+
+文档自检实际git diff --check退出0，2新增文档本地链接检查0missing（当次检查plan103行、design43行；后续补充匿名验收边界）；规格覆盖/接口一致/五ReviewFocus映射自审完成。没有重新跑226单测，本轮非产品代码变更，历史验收状态仍以cb8bf6a报告为准。本地Git归档计划/日志，保持阶段2未完成与0.3未发布。下一轮先读专项计划再决定启动，不继续旧的盲刷新/重复收码。
+
+
+邮箱验证码有效期文档核对：用户指出CloudBase邮件未标注有效期并要求查官方文档。按catalog-official-product-docs从docs.cloudbase.net根入口与HTTP API导航定位验证码章节；当前HTML侧栏提取23个页面链接，但其他折叠产品/全站目录未完整枚举，不称查全。Web对无尾斜杠发送/校验页多次timeout，.md后缀实际返回404（不能沿用旧skill对raw .md的保证）；普通发送页curl+HTML article解析成功，之后带尾斜杠Web打开成功，精确核到出参expires_in单位秒、默认600（lines162–164/337–338），正文验证码特性确认600秒10分钟、使用后失效。只核官方发送接口即可支持本次默认有效期结论，不用其他腾讯产品OTP规则或AccessToken寿命充验证码寿命。
+
+官方来源：https://docs.cloudbase.net/http-api/auth/auth-send-verification/ 。本项目10分钟challenge窗口仍为本地规则，后续诊断计划须保留平台实际expires_in并明确发码计时；本轮只查文档与日志归档，未维修、发码、调用真实业务/认证API或更改云配置。更正此前未核平台TTL、只建议看邮件的答复：公开文档明确默认600秒。实际部署邮件回执TTL应以后续真实send响应为准，未为查TTL发新邮件。
+
+
+最后一轮grill已发起：用户明确下一轮两步走，先45分钟审查，再修改；本轮仍不维修。使用grilling技能按决策frontier集中问四个未决取舍：审查包含临时探针/1–2次真实收码且用户在线的窗口；45分钟到点根因未证实的收口；原生SDK闭环通过而桥接失败时基于证据调整职责的范围；修改阶段预算在审查后再估或预设固定时长。每题给建议，但用户尚未回答，不记录为已确认。不重复平台、个人账号、邮箱方向、费用与原网址；最终项目截止不变，不要求用户查技术事实。此次只有访谈与日志归档，未发码/运行探针/改云/维修/安装/部署。
+
+
+## 45分钟审查启动与结论
+
+用户已同意最后grill四项建议并明确开始，要求不复杂化、只聚焦基本注册登录。工具计时13:16:19 Asia/Shanghai，首阶段检查点14:01:19。Root先只读原环境DescribeClient/GetProviders，默认Client.Id=env、AccessToken7200秒/Refresh2592000秒/MaxDevice5；email provider On TRUE，custom FALSE。旧EmailLogin字段文案是邮箱密码，不单独当OTP证据；这次实际provider及NativeOTP补证。未改任何云设置或新增收费资源。
+
+临时隔离浏览器nativeSDK基线使用本轮第1封QQ码（码/邮箱不记日志），发送/验证/signin成功、私有snapshot成功、首次token刷新HTTP200。临时Python saver误把SDK Date对象直接json.dumps，导致保存TypeError而不是平台登录失败；随后诊断脚本正常化日期，不能把此错误算401。系统级键盘取会话尝试未可靠锁定浏览器焦点，截图见前台非诊断页面；无法确认是否影响当前输入，已停用此方式、删除自建截图和停止临时4195接收器，后续只用隔离Playwright。没有将无关私人内容纳入日志。
+
+第2封QQ码用于Native请求叠加现桥接相同pubBearer验证/signin头的一次对照；登录、刷新、另浏览器setSession恢复及新的隔离NodeSDK恢复/私有snapshot都成功。故发布key请求头不是已证实根因，不据此改headers/重写认证。平台native基线及同头对照均证明现SDK/客户端可正常工作。
+
+明确缺陷1：SDK setSession会消耗并轮换refresh，integration/cloud-client-worker initialize成功后不回写real-sessions。受控实验Bridge文件ref刷新后被Restored消费，重复用旧Bridge文件精确返回unauthorized_client/errorNumber4022，使用当前值跨浏览器/Node成功。旧历史样本来源仍不全，但工具重复消费旧refresh的静态缺陷和实时复现足以最小修复。
+
+明确缺陷2：真实SDK+真实平台会话，模拟OTP响应边界测试当前AuthAdapter。trace before-install epochSame/challengeSame均true；after-checked principalPresent/principalMatches均true、epochSamefalse，返回UNAUTH。即同账号登录/刷新事件延迟到身份核验期间，导致verify对authEpoch任意变化误判，虽SDK/服务器身份已成功。临时无发码UI探针走实际public auth.session返回UNAUTH后busyfalse/errorVisibletrue，通用发码处理可恢复；旧真实发码pending还不能仅靠此探针称完全修复。SDK不await订阅Promise，未据锁内回调猜测改架构。
+
+Root及独立explorer完成锁定源码定位，两个邮件流程之外未额外发码。诊断证据test-results/stage2/audit-auth/native-baseline-events.json、events.json、audit-provider-client-flags.json、Native/Node私密会话（0600）；OTP模拟边界明确，不冒充完整真实UI输码。结论选择最小两处修复：会话原子持久化和同用户事件误判；保SDK/现服务器验证proof与所有权，不新增认证协议/供应商/provider。正式修复将在审查检查点后TDD执行，之后真实基础用户流程及原门槛按实测记录。
+
+
+## 最小修复与真实网页验收进展
+
+用户继续明确开始，优先基本注册登录。Root整合auth_event_fix仅auth adapter/tests的pendingVerifications修复：目标UID同用户异步事件允许，真B/退出/B→A使attempt失效，preinstall/challenge及fresh/raw/server/current检查保留，finally清理。Root写session-file私密0600/原子合并/跨Worker锁及session-checkpoint；实际RED→GREEN覆盖更新新RT、A/B并发不丢、Date ISO、env/权限拒绝、先轮换后operation失败仍写回。只读auth_delta_review两Important（失败路径漏写、原actor metadata删除）都以RED→GREEN修复；checkpoint失败升为明确失败，避免权限拒绝假绿。Root17focused/全235通过，追加review回归后全238通过；不是只引用worker。
+
+real_login_helper交付真实产品UI无头交互助手与SDK observer，正常/异常/刷新/重开均保存latest到private sessionfile，不自动发码，日期转换与多actor合并原子锁，源码语法及本地边界自检通过。observer后来增加getSession/getUser(true)/getSession freshness，当前已加载旧observer的页面identity需结合真实产品privateWorkspace检查，不把cacheduser单独当授权证据。
+
+真实QQ页面已完成发码→验证码提交→SDK及服务器核验→privateWorkspace→刷新恢复，助手stage verify_checkpoint/refresh_verified全true，latest凭据600保存。用户误将QQ码回复到新邮箱问题后澄清，按当前QQ请求验证，没有把数字当邮箱。新注册输入随后用户提供第三个受控邮箱（地址不记日志）。第一次新用户发码邮件到了但UI拒，限定mgt只读确认无pending挑战；已发现发送接口is_user可选而service强制boolean，导致新用户字段missing/null时发信后拒绝。
+
+官方https://docs.cloudbase.net/http-api/auth/auth-send-verification/明确false/空为未注册。新增missing/null/false→signup、true→signin及UID/emailproof负样本，实际RED9pass5fail→14pass，Root全246/246、0skip退出0。仅email-auth.cjs允许null/undefined为false，仍要求validverification_id且非bool非空拒；证明与所有权检查未弱化。14:21:23更新paw-auth、14:21:26 Active20s且env/TZ/pubkey读回，无管理secret注入。用户给第一次新邮箱码但该请求未保存verification_id，不能沿用；明确说明后再发一次，实际UI codeInputEnabled true，此次挑战及新码待用户提供。不因收到邮件称注册成功。
+
+14:24:55–14:25:20按原批准的受控匿名窗口捕获一个真实SDK匿名actor，Root保存session600/isAnonymoustrue；touch停止信号提前finally恢复关闭，读回Emailtrue、Anonymous/Phone/UserNamefalse。仅测试拒绝门槛，不增加匿名云记录功能。
+
+真实A/B权限、媒体/迁移五case尚待新用户完成及actor关闭checkpoint后串行执行；公开0.2不变，local4193 candidate仅临时enabledtrue验证。修改最终单测246已fresh，contract15/media6正在同源码重跑；无0.3tag/发布完成声明。目标不复杂化，保基本邮箱流程/可信身份/数据主线，不新协议或供应商。
+
+## 真实注册登录与五项权限门槛通过、发布收口
+
+2026-10-07 14:42:27 Asia/Shanghai（工具date）：用户Gmail最新验证码已实际完成真正新用户产品UI注册，A已有账号登录和B首次注册均privateWorkspace、刷新及新browser-context restore通过，身份不同、pageerrors0；受控邮箱/验证码/UID/token不记录。源证据ignored auth-real-ui-report.json，两个actor stop checkpoint后关闭全部浏览器，串行真实SDK门槛避免旧RT并发消费。
+
+Root逐份检查final-real-cloud-auth.log 1PASS、final-real-cloud-private.log 1PASS、final-real-photos-private.log 2PASS、final-real-cloud-import.log 1PASS，共5PASS/0FAIL/0SKIP，覆盖可信身份、A/B/匿名拒绝、直接库/对象拒绝、CAS与幂等、近1MiB图片真实字节校验及确认迁移deletedAt。首次照片/迁移测试宠物夹具名超过20字符触发合法INVALID_INPUT，仅将夹具名缩为photo-test/size-test/import-test后复测；没有放宽产品字段或权限。
+
+有头真实A1440/390及英文页面恢复/刷新/SDK fresh读、无横溢与页面error0，8旧回归与account-workspaces退出0，证据real-browser/headed-final-summary-flags.json。language旧脚本假定禁用云入口；适配真实enabled分支后发现账户弹窗切语言标题不变的实际RED，Root定位localizeOpenDialog账户分支提前return跳过title更新，将统一title更新移到分支之前，不重建表单或清草稿，GREEN待最终hash复验。空云副标题从本地档案改为宠物档案并保持双语，避免错误指示存储位置。
+
+Root release-final-unit.log fresh246/246无skip、语法/diff0，148待归档文件与12已配置实际secret值比对0match。stage2_release_docs更新11份文档并freeze，发布ID仍待真实操作；real_login_helper补截图/viewport及失败checkpoint、保原actor metadata，正在补纯synthetic真实UI gallery与退出，不新发邮件。14:41:38管理SDK在skill-runtime缺依赖仅operatorFailure，改用已配置system python3成功14:41:55删除且读回仅本轮paw-stage2-readiness临时函数不存在、公共探针规则移除，保paw-auth与paw-api访问规则不变。
+
+目前main/公开仍v0.2.0、尚未0.3 tag/Release；源码公共config即将归档仅environmentId/region/publishableKey/enabled，管理secret不发布。发布前最后固定产物、语言及真实gallery复验，通过后沿原URL部署与公开验收。一次中文stdin日志追加编码失败且没有写入，改apply_patch保留事实。
+
+14:45:04工具date：Root将账户弹窗标题实际RED修复后，在隔离最终build及正常npm run build均产物app-QWW76HLZ/style-E5NM6WZE、cloudEnabled=true、公开白名单通过；隔离构建第一次使用/tmp而本机tmpdir为/var/folders被目录护栏拒绝，改os.tmpdir路径成功，未改护栏。Root language全流程GREEN且fresh246/246无skip。docs agent独立11/11最终浏览器脚本exit0、前后manifest一致，Root逐份检查summary；真实UI agent图库上传/刷新/重开/暂停/退出与1440/390/英文截图实际通过，Root实看手机截图。因验收runner等待badge过早误新建两只纯合成验收宠物，未触其他数据，agent负责仅自身重复夹具回收；A凭据待cleanup关闭后交接，B尚未退出验收。没有新发邮件。最后契约/媒体边界复测中，随后归档/合并/原站部署。
+
+最终15账号契约与6媒体意图模拟检查Root再次全PASS/退出0，release-final-contract-ui.log与release-final-media-intent.log。真实helper已冻结：只将本轮新增重复合成宠物回收，保留1只合成宠物及其记录/PNG供公开源最终验收；未改其他资料。B真实UI退出→本地→再次打开登录表单成功，已移除其失效tokens且保metadata sessionValid:false，后续不再将B当可恢复凭据。A最后SDK fresh/stop checkpoint保存600、全部contexts关闭并交接Root独占。根路径原站最终验收不需新发验证码，源码及全部改动开始Git归档。
+
+
+## Historical main handoff preserved during merge
+
+
 主main交接（2026-10-07 04:22:32 Asia/Shanghai，工具date）：仅同步完整阶段2实施日志与续作入口；业务源码留feat/stage2-local-cloud / .worktrees/stage2，HEAD3f7d01c、实现3d14cc6，未合并/push/发版。main原有5个领先交接保留；本次只本地文档提交。下一步cd隔离工作树读最新SESSION/PENDING与候选验收报告，待资金/两受控邮箱完成真实云门槛，不从main旧源重做或reset掉现有工作。
 
 阶段2最终验收交接：实际工作树.worktrees/stage2，feat/stage2-local-cloud最新cb8bf6a（认证改动194d66e，server OTP dc8c293）。226单测及最新15账号契约/6媒体mock通过；真实A/B旧SDK各自snapshot成功，但同设备refresh仍unauthorized_client，新浏览器恢复和完整真实权限/媒体未过。阶段2未完成、0.3未发布，原公开0.2保留。候选默认enabled=false；完整证据与下一步见工作树SESSION_LOG及docs/verification/stage2-report.md。续作先比main/origin并进入该工作树，不reset丢交接，不重复采购或无准备反复发码。

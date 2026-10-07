@@ -17,8 +17,8 @@ export function validateBackup(raw) {
   }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('备份格式无效');
   if (parsed.version !== 1 && parsed.version !== 2 && parsed.version !== 3) throw new Error('不支持此备份版本');
-  if ((parsed.mode !== undefined && parsed.mode !== 'demo') || parsed.ownerId != null || parsed.profile?.ownerId != null) {
-    throw new Error('本阶段仅支持本地示例备份，请勿导入账户资料');
+  if ((parsed.mode !== undefined && !['demo','local'].includes(parsed.mode)) || parsed.ownerId != null || parsed.profile?.ownerId != null) {
+    throw new Error('请先将账户资料导出为可迁移备份，再预览确认导入');
   }
   for (const { field } of collections) {
     if (Array.isArray(parsed[field]) && parsed[field].some(item => item?.ownerId != null)) {
@@ -95,7 +95,7 @@ export function mergeBackup(current, backup, { acceptedConflictIds = [] } = {}) 
   return validateSnapshot(local);
 }
 
-const csvFields = ['id', 'petId', 'type', 'occurredDate', 'value', 'unit', 'title', 'note', 'createdAt', 'updatedAt'];
+const csvFields = ['id', 'petId', 'type', 'typeLabel', 'occurredDate', 'value', 'unit', 'title', 'note', 'createdAt', 'updatedAt'];
 function csvCell(value) {
   let text = String(value ?? '');
   // CSV quoting alone does not disable spreadsheet formulas. Preserve text as text.

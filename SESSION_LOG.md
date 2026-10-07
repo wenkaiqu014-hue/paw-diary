@@ -542,3 +542,6 @@ GitHub原页核对：TencentCloudBase/cloudbase-skills显示35stars，auth-web/a
 邮箱验证码有效期文档核对：用户指出CloudBase邮件未标注有效期并要求查官方文档。按catalog-official-product-docs从docs.cloudbase.net根入口与HTTP API导航定位验证码章节；当前HTML侧栏提取23个页面链接，但其他折叠产品/全站目录未完整枚举，不称查全。Web对无尾斜杠发送/校验页多次timeout，.md后缀实际返回404（不能沿用旧skill对raw .md的保证）；普通发送页curl+HTML article解析成功，之后带尾斜杠Web打开成功，精确核到出参expires_in单位秒、默认600（lines162–164/337–338），正文验证码特性确认600秒10分钟、使用后失效。只核官方发送接口即可支持本次默认有效期结论，不用其他腾讯产品OTP规则或AccessToken寿命充验证码寿命。
 
 官方来源：https://docs.cloudbase.net/http-api/auth/auth-send-verification/ 。本项目10分钟challenge窗口仍为本地规则，后续诊断计划须保留平台实际expires_in并明确发码计时；本轮只查文档与日志归档，未维修、发码、调用真实业务/认证API或更改云配置。更正此前未核平台TTL、只建议看邮件的答复：公开文档明确默认600秒。实际部署邮件回执TTL应以后续真实send响应为准，未为查TTL发新邮件。
+
+
+最后一轮grill已发起：用户明确下一轮两步走，先45分钟审查，再修改；本轮仍不维修。使用grilling技能按决策frontier集中问四个未决取舍：审查包含临时探针/1–2次真实收码且用户在线的窗口；45分钟到点根因未证实的收口；原生SDK闭环通过而桥接失败时基于证据调整职责的范围；修改阶段预算在审查后再估或预设固定时长。每题给建议，但用户尚未回答，不记录为已确认。不重复平台、个人账号、邮箱方向、费用与原网址；最终项目截止不变，不要求用户查技术事实。此次只有访谈与日志归档，未发码/运行探针/改云/维修/安装/部署。

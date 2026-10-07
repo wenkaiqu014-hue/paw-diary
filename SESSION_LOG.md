@@ -833,3 +833,9 @@ Root真实final-growth.py：普通游玩plan defaultunchecked，不进health、�
 函数一致性：Photo worker API/files使用新健康分类schema；Root为recap hash一致部署paw-ai，最终19:33:41 Active40s/模型25s，包含新helper说明/来源分类；FUJI管理凭证、SF仅server环境、无auth部署/规则/采购/集团账单变动。模型未调用，实际服务代码/权限与旧字段仍保持。新候选v0.6.0，343单测/语法/build/diff/实际本地主线通过，下一步原URL匿名三宽与新tag/Release；未提前虚勾公开与亲验，硬30分钟仍为19:42:31。
 
 技能来源URL：https://github.com/obra/superpowers ；https://github.com/vercel-labs/agent-skills ；https://github.com/anthropics/skills/tree/main/skills/webapp-testing 。原始安全证据在本树ignored test-results/final-growth与/tmp/paw-growth-*.log。
+
+2026-10-07 19:40:26（Root工具date/GitHub）：v0.6.0最后收尾公开完成。e917ae68736fb530a3e5cf16d2952570a9b9d9ce源码FF main/push，Pages37615281921 success于19:37:21完成；Root全新匿名原URLfinal-growth.py exit0，各普通plan位置/healthtoggle/完成/vax默认/allDates/photoRenameRefresh/两框同高/三宽/pageErrors[]全true。343/343无skip、旧四页9组、独立审查0Critical/Important。首次hash读回本地缺远端app-CM3CZ744文件，由本地node_modules symlink路径打包与CI不同导致；确认unlink仅link、全新npm ci/build后公开app-CM3CZ744.js/style-UOJBG5XR.css实际SHA一致。之前不能当一致证据，工作树真实依赖保留Git忽略。
+
+v0.6.0新tag解引用e917ae6、Release19:39:41公开isDraft/isPrerelease=false，旧v0.1–v0.5.2不移动。19:12:31→19:39:41为27分10秒，在30分钟内；随后仅README/AGENTS/PENDING/报告/plan/log docs-only归档，不重新发布业务。A最后19:31:43.057已checkpoint原600/关闭操作，三个worker及review都完成，无额外model/OTP/付费采购。停止本轮4197前核PID命令/cwd，只动本轮预览；保留本地截图/安全日志与工作树，最终10月8日20:00不变，用户亲验及phase4/5继续待验。
+
+发布来源URL：https://wenkaiqu014-hue.github.io/paw-diary/ ；https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37615281921 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.6.0 。

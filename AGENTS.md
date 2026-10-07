@@ -23,6 +23,8 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+当前最终v0.6.0：source/tag e917ae68736fb530a3e5cf16d2952570a9b9d9ce，Pages37615281921于19:37:21完成，Release19:39:41公开；app-CM3CZ744.js/style-UOJBG5XR.css原URL SHA与全新npm ci本地构件一致。343单测/原URL三宽0错误、真实云分类和photo name/archive通过。reminder.includeInHealth optionalbool，plan新vax/deworm默认true其余false；普通计划以未完成标记在成长足迹/完整列表，不能生成未来record。旧关联/未知类型保health、不根据名字猜；photo displayName独立caption，只改metadata。所有date输入用native加等宽空mask，保原生值/选择/键盘。API/files/AI已同步新schema/facts，A最后19:31:43.057已600 checkpoint归还，无验证码/model新请求；下一步main与阶段4，亲验/真机仍独立待项。下方v0.5.*为历史，最新执行见final-growth报告及SESSION_LOG。
+
 最终最新v0.5.2，source/tag f93784da10a95b09e8d5472bbb1eb4e309790688，Pages37610740744于18:57:15完成，Release18:59:00公开；app-27BPJ62W.js/style-XRVVHCCW.css原URL实际hash匹配，329单测/原URL三宽真实UI验收。用户18:43轮最新确认**record仅成长记录、plan仅待办**，移除同时加入/下次日期；旧关联仍保留，AI不隐式建待办。新增类型五行与三圆icon-only、原地管理/plus、文件选择按钮和三卡字体统一已交付，不能按旧spec恢复checkbox。当前轮20分钟从18:43:25计，到Release15分35秒，文档随后收口；下方v0.5.1/v0.5.0是历史，详SESSION_LOG。没有新模型调用、后台部署或收费采购，旧tags不动；继续阶段4/5与用户亲验。
 
 当前最终公开版本v0.5.1，修复v0.5.0自定义select的程序赋值显示同步：source/tag b25dae8552535da6a96e86a8bf2fa657c40b3e2b，Pages37608531673于18:36:58完成，Release18:38:17公开；app-WMRLVTH5.js/style-WACPJKHL.css真实hash与本地一致。325单测、原URL两处语言显示/模式保留/标题focus复验通过。完整修订能力和v0.5.0历史见下段，旧tag不动，docs-only收口不重发应用。A最后18:32:26.044已checkpoint原600会话并关闭操作；公开Chrome匿名跨域实际读2MiB签名文件hash通过，先前真实5MiB Node生产client边界也通过。下一步仍阶段4及用户亲验，不重做已交付功能。

@@ -641,3 +641,21 @@ Root读取using-superpowers、brainstorming、grilling、writing-plans，以及S
 当前待用户决策：免登录AI边界、费用上限、引导触发方式、回顾范围/风格及首页修复程度；供应商/实际免费额度仍须官方查证后选定，不把规划预算当报价。原五任务保持未勾，新首页要求同步PENDING。只运行文档diff检查，不重跑业务测试（尚无产品改动）；文档归档结果随后追加。当前没有可用内置计划工具，详细计划将按writing-plans维护可勾选文件，不虚报工具状态。
 
 stage3_code_facts完整报告已收到并定向整合：提醒跨行、照片墙全宽及外边距差异需实际几何验收；现有saveProfile不保存引导状态，须定义新接口；模型调用不能直接借仓储自动重试通路，避免重复计费；切宠物未改变session.generation，迟到AI响应还须核petId及revision；npm test不运行integration目录，真实模型smoke须单独执行。Root未将这些只读发现当浏览器或云端通过。读取kill-race-dupes作防御参考，当前工具注册只见一个调查agent，未见重复；未使用shell终止任何agent。`git diff --check`退出0，改动仅SESSION_LOG/PENDING两份文档；按项目要求本地Git归档，不推送或部署，不修改v0.3.0发行源码/tag。第一轮grill待用户回答，之后补供应商官方事实与需求分支，再落设计和详细计划。
+
+## 阶段3grill确认、设计计划与本机供应商环境
+
+2026-10-07 15:20:11（Asia/Shanghai，工具date；研究与截图工具时间分别记于各证据）：用户Q1–Q6全部按建议，另要求同行卡片尽量等宽；明确可自主派agent、有头截图，计划不偏离主线、满足基本需求，不为少见情况过度设计。确认免登录少量真实AI/登录更多、开发AI验收≤20元和上线AI≤20元/月预算、非强制可恢复三步、最近7/30天/自选温暖回顾、内存短对话助手、保留视觉调整首页。本轮不重做阶段2认证/照片，不加一般健康咨询、向量库或Agent框架。用户随后通过异步问题选择硅基免费优先，由其准备实名账号/Key，DeepSeek不接入；供应商选择已定，不再重复询问。
+
+Root应用catalog-official-product-docs、dev-browser/webapp-testing、Impeccable布局规划（context只运行一次，不提前跑完工detector）和writing-plans。三项独立调查均只读：stage3_free_model_research查官方目录/免费规则/接口/价格及GitHub技能；stage3_home_visual负责原URL全新示例context有头Chrome/三宽几何截图；复用stage3_code_facts窄查现有公开函数网关/规则/IP/认证边界。无产品文件worker修改，不覆盖他人，全部完整报告已收到；Root实际查看1440/390截图并读summary，未以agent回报代替自己的证据核对。
+
+首页有头检查2026-10-07 15:10:42工具记录：原URL示例1440列宽694.48/408.52px，护理跨三行与下一个右卡间377.65px空白；说明栏齐边差1440/768/390各2/14/3px（390初报6px为总宽，已纠正为每侧3px），三宽无pageErrors/横溢。默认Chromium未安装，agent改已安装Chrome channel，无依赖安装；退出0。截图与report/summary/script在Git忽略test-results/stage3/planning。示例无照片墙，不声称已验个人照片墙。设计定为1100px及以上两等列、低于1100单列，护理不跨行，gap24/16、全宽统计/时间线/个人照片、社区末尾轻入口；这是新设计，尚未实现。
+
+供应商研究15:09:54–15:12:40（agent工具时间）核硅基存在免费账单0与实名/固定限速，但登录模型广场无法公开取得当前个人Key0价ID和RPM/TPM，合作案例不当个人Key免费证据；魔搭新魔粒机制不能沿用每日2000次。DeepSeek当次官方deepseek-flash关闭思考、小上下文100次高峰0.88元仅估算；用户未选，不发请求。目录覆盖与全部原文URL保存在docs/research/2026-10-07-stage3-text-ai.md，未通读全部无关页。GitHub REST当次wshobson/agents40,260stars、anthropics/skills179,961stars，已有技能足够，本轮不安装/扩大Express、TypeScript或日志架构。公开事实与真实账号可用、零价型号、模型smoke分开。
+
+用户提供硅基Key并明确授权放系统环境，询问是否会随开源公开，要求计划完成后一起回答。实际值通过getpass隐藏输入保存本机`~/.config/paw-diary/secrets.zsh`、0600（目录0700），`~/.zshrc`只添加读取该私密文件的source行；变量名SILICONFLOW_API_KEY。不将实际值写入项目源码/计划/日志/前端config，未部署或调用供应商。应用计划由部署脚本os.environ读取该变量，只注入paw-ai服务端TEXT_AI_API_KEY，浏览器仍调用公开函数。用户在对话提供Key不等于提交Git仓库；真实Key/API有效性尚未测试。
+
+首次新shell验证脚本用字符串拼接嵌套单引号，子Python报错，导致configured=false和AssertionError；zsh本身语法及文件权限已通过，不能据此判Key无效。Root读取systematic-debugging，受控重现确认错误在验证Python，改shlex.quote后重新检查exit0：new_shell_configured/private_file_0600/zsh_syntax_valid均true，仅输出布尔，无回显密钥。普通定向读不存在tests/onboarding.test.js和误写deploy.yml路径返回失败，随后按rg确认当前语言文件src/ui/locales/及pages.yml/VERSION；这些是探索命令失败，无产品或云变更。
+
+新增spec与七任务plan，接口明确：独立paw-ai/事务限额；确认记录走saveRecordBatch；引导/私有回顾用可选profile.stage3与已有V3；默认7天回顾/安全预览复制；只读内存助手。计划写文件所有权、纯函数/仓储签名、正常主线RED→GREEN、真实模型与原URL门槛、一次独立审查和发版；6–8小时仅建议估算，截止不变。同步AGENTS/PENDING/PRODUCT/ROADMAP/DESIGN/交互说明/总计划，原03计划标历史初稿。用户要求先交付设计计划，本轮一并形成供审阅，不另插一个空设计确认；实施前保留writing-plans明确的计划审阅步骤，协作方式已授权，不再问。
+
+Root按verification-before-completion自检：`git diff --check`退出0；文档脚本检查11份文档围栏/相对链接（0missing），七任务及接口名/1100断点/环境变量在spec和plan一致，无TBD/TODO；对tracked与非忽略新文件扫描实际提供Key，0match。当前改动全为Markdown，未npm test/build/业务浏览器回归，因为尚未改产品代码；原URL截图是现状检查不是新功能验收。新shell环境检查成功不等于模型接通。随后本地提交设计/计划/研究及日志，不推送/部署/移动tag；具体归档hash以Git输出为准。尚未完成：用户审阅计划、账号免费型号/限速、真实smoke、Task1–7及用户亲自体验。

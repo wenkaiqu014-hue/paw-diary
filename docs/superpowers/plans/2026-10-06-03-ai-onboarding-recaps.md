@@ -1,5 +1,7 @@
 # AI 记录引导与成长回顾 Implementation Plan
 
+> **历史初稿：**2026-10-07用户新session完成grill后，执行入口已更新为[阶段3详细计划](2026-10-07-stage3-ai-growth.md)及[新设计](../specs/2026-10-07-stage3-ai-growth-design.md)。下文保留初稿供追溯；其登录/草稿暂存/运行时/供应商待定文字不覆盖新版决定。当前只完成规划，未实现或验收。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 用户完成建档、自然语言记第一笔和设提醒，并生成可核对事实的每周成长回顾。

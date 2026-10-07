@@ -797,3 +797,15 @@ Root主目录新鲜npm test325/325无skip、build/语法/diff通过，原test_ap
 最终公开技术交付18:00:04→18:38:17为38分13秒，整体一小时内；提前审查到集中QA/发布的Task7窗口超过15分钟，已向用户两次如实说明，不宣称所有单步≤15。用户的功能范围全部基础实现并公开验，目录超3合并需先调整而非专用挑选面板、模型缺日期需补填、真机与亲验仍单列。后续只收口docs/日志与本机服务，结束时间由工具记录，仍不重发应用或移动tag。
 
 最终发布URL：https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37608531673 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.5.1 。
+
+## 用户20分钟UI修订：类型子面板、附件按钮、用途互斥
+
+2026-10-07 18:43:25 Asia/Shanghai（Root工具date）：用户提供实际截图，要求新增类型五行排版（返回/类型名称/输入/图标/三圆图标按钮）、默认第一书本，无文字或native radio；管理在原选项位置左checkbox右六点、底部返回/列表末plus回新增；文件选择按钮轻优化、健康三卡右上统一。用户20分钟deadline19:03:25。Root用bounded brainstorming反映精确要求，不另开架构/访谈；仅用途提一次可选澄清，用户明确选择record只记录/plan只待办，取消record的同时加入与下次日期；保留旧关联。已有会话授权沿用。
+
+隔离.worktrees/ui-polish / feature/record-ui-polish从0ef7a3f，npm ci和325基线通过。本机Impeccable polish/craft-floor、TDD/浏览器、GitHub Vercel/obra仓库复核，复用不安装。类型worker独占picker与测试，不碰app/style；18:45:49约2分24秒交付：新增/管理隐藏原options、替换内容，五行/3icon-only按钮/defaultbook/箭头键；管理checkbox后inline删除而不加底部按钮，内置disabled，plus不参与排序，满额灰提示。组件真实RED→GREEN/12测试。Root新增CSS使panel单列、label同格式、46px圆按钮，以及原生file-selector-button主题；三卡CTA四字添加待办/添加称重/添加记录+相同plus，全部13px/600/44px。首实际DOM检测care旧12px override，修specificity→GREEN；首次截图发现generic button后序radius6盖圆形，补specificity并加circle radius/46x46断言→GREEN。Root看1440/390截图，768同批无横溢。
+
+用途已由用户确认后实施：record无joinTodo/nextDate UI，不要求未来日期；recordIntent未传控制字段时nextDate undefined，避免编辑时取消旧关联；实际旧record-linked pending保持ID/status/date单测通过。AI当前app separatePurposes=true，隐藏下一次/跳提醒字段、确认record仅event；旧helper默认兼容原语义。修改用途后禁止按旧解析用途保存，提示手动或重新整理；plan确认文字改待办。无新后台接口、部署、凭证、模型调用或医疗策略。数据V3和旧nextDate仓储入口仍保留，不篡改旧记录/计划。
+
+Root record-intent/AI tests各RED→GREEN，最终329/329无skip；实际Chrome record-ui-polish五行/圆形/无radio/管理原地/plus/defaultbook、file button8px/44px、已发生疫苗0待办/计划1待办0新record/三卡字体/1440/768/390/pageErrors[]；旧四页test_app9组调整为分别保存疫苗record和未来plan后全GREEN。模式保留/语言原标题focus脚本GREEN。具体安全日志/tmp/paw-polish-*.log与ignored test-results/ui-polish；子agent未Git，Root整合。当前准备v0.5.2原站公开验证，不提前代勾Release/用户亲验。旧tags保持，最终10月8日20:00不变。
+
+本轮技能来源URL：https://github.com/vercel-labs/agent-skills ；https://github.com/obra/superpowers 。

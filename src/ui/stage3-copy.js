@@ -1,6 +1,7 @@
 import {getLocale} from './i18n.js';
 export const escapeStage3=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const copy={
+ confirmPlan:['确认保存所选待办','Save selected to-dos'],purposeChanged:['用途已变更，请切回手动填写，或关闭后按新用途重新整理草稿。','The purpose changed. Use manual entry or reopen the form to organize drafts for the new purpose.'],
  aiTitle:['一句话记录','Record in a sentence'],manual:['手动填写','Fill manually'],ai:['一句话记录','Record in a sentence'],
  consent:['点击整理后，原句和必要宠物信息会发送给硅基流动。草稿确认前不会保存。','When you organize this text, it and necessary pet details are sent to SiliconFlow. Drafts are saved only after confirmation.'],
  input:['想记下什么？','What would you like to record?'],currentPet:['当前宠物：{name}；未提名字时按这只宠物整理。','Current pet: {name}; unnamed events are organized for this pet.'],example:['例如：昨天称重4.6公斤，今天做了驱虫。','Example: Weighed 4.6 kg yesterday and dewormed today.'],
@@ -39,7 +40,7 @@ const copy={
  missing:['有信息尚待补充，请核对下面的字段。','Some information is missing. Review the fields below.']
 };
 export function stage3Text(key,params={}){let text=copy[key]?.[getLocale()==='en'?1:0]??key;for(const [name,value]of Object.entries(params))text=text.replaceAll('{'+name+'}',String(value));return text;}
-export function stage3Error(error){return stage3Text(error?.code==='WORKSPACE_CHANGED'?'changed':error?.code==='CONFLICT'?'conflict':['RATE_LIMITED','QUOTA_EXCEEDED','QUOTA_EXHAUSTED'].includes(error?.code)?'limited':error?.code==='INVALID_INPUT'?'invalid':'unavailable');}
+export function stage3Error(error){return stage3Text(error?.code==='PURPOSE_CHANGED'?'purposeChanged':error?.code==='WORKSPACE_CHANGED'?'changed':error?.code==='CONFLICT'?'conflict':['RATE_LIMITED','QUOTA_EXCEEDED','QUOTA_EXHAUSTED'].includes(error?.code)?'limited':error?.code==='INVALID_INPUT'?'invalid':'unavailable');}
 export function refreshStage3Copy(root){for(const node of root.querySelectorAll('[data-s3-key]'))node.textContent=stage3Text(node.dataset.s3Key);}
 
 export function stage3Help(source){const key=({'help-record':'helpRecord','help-backup':'helpBackup','help-account':'helpAccount','help-reminder':'helpReminder','help-recap':'helpRecap'})[source.id];return key?{title:stage3Text(key+'Title'),text:stage3Text(key)}:{title:source.label||source.title||stage3Text('help'),text:source.text||stage3Text('assistantWelcome')};}

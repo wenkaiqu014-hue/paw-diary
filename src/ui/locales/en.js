@@ -1,5 +1,9 @@
 // Interface copy only. User-entered content is never translated.
 export default Object.freeze({
+"添加待办":"Add to-do",
+"添加称重":"Add weight",
+"已发生只保存成长记录；未来事项请使用安排计划。":"Events are saved as records. Use Schedule a plan for future to-dos.",
+
 "安排待办":"Schedule to-do",
 "记录已发生":"Record an event",
 "安排计划":"Schedule a plan",

@@ -1,5 +1,9 @@
 // Interface copy only. User-entered content is never translated.
 export default Object.freeze({
+"添加待办":"添加待办",
+"添加称重":"添加称重",
+"已发生只保存成长记录；未来事项请使用安排计划。":"已发生只保存成长记录；未来事项请使用安排计划。",
+
 "安排待办":"安排待办",
 "记录已发生":"记录已发生",
 "安排计划":"安排计划",

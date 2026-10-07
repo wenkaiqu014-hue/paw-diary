@@ -233,6 +233,22 @@ body:has(dialog[open]) .assistant-launcher{visibility:hidden}
 .recap-range input,.recap-range select,.recap-history select{font-size:16px}
 .care-home .hero-copy{justify-content:flex-start}
 
+/* Compact type editing replaces the option list instead of appending another list. */
+.type-catalog-panel{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.type-catalog-back{justify-self:start}.type-catalog-name-label,.type-catalog-icons-label{display:block;font-size:13px;line-height:1.5;color:var(--ink);margin:0}
+.type-catalog-name-input{width:100%;min-width:0;min-height:46px;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#f8faf6}
+.type-catalog-icons{display:flex;align-items:center;justify-content:flex-start;gap:12px;margin:0}
+.type-catalog-icons .type-catalog-icon-option{width:46px;height:46px;flex:none;display:grid;place-items:center;border:2px solid var(--line);border-radius:50%;background:#fff;color:var(--green);padding:0;cursor:pointer}
+.type-catalog-icon-option[aria-pressed=true]{border-color:var(--green);background:#edf3e9}.type-catalog-icon-option .type-catalog-icon{display:flex}.type-catalog-icon-option svg{width:22px;height:22px}
+.type-catalog-save{justify-self:start}.type-catalog-list{min-width:0}.type-catalog-row{gap:6px}.type-catalog-row .type-catalog-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.type-catalog-row .type-catalog-remove{min-height:34px;padding:4px 6px;font-size:12px;color:#925126;flex:none}.type-catalog-row .type-catalog-handle{flex:none}.type-catalog-row>input,.type-catalog-row>.type-catalog-icon{flex:none}
+.type-catalog-plus-row{padding:6px 0}.type-catalog-plus{display:grid;place-items:center;width:100%;min-height:44px;border:1px dashed var(--line);border-radius:6px;background:#f8faf6;color:var(--green)}
+.type-catalog-plus svg{width:20px;height:20px}
+.attachment-picker input[type=file]{font:inherit;font-size:13px;color:var(--muted);margin-top:8px;width:100%;min-height:44px}
+input[type=file]::file-selector-button{font:inherit;font-weight:600;color:var(--green);background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;min-height:44px;margin-right:10px;cursor:pointer}
+input[type=file]::file-selector-button:hover{background:#edf3e9}.health-grid .card-entry-action{display:inline-flex;align-items:center;justify-content:flex-end;gap:6px;font-size:13px;font-weight:600;min-height:44px;color:var(--green);white-space:nowrap}.card-entry-action .icon{width:18px;height:18px}
+.health-grid .care-header-actions .text-button{font-size:13px;font-weight:600;min-height:44px}
+
 .ai-reminder-choice{display:flex;gap:8px;align-items:center;min-height:44px}.ai-reminder-choice input{width:18px;height:18px}
 
 /* Shared selectors and the two entry modes keep the existing form palette. */

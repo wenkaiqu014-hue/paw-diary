@@ -13,7 +13,8 @@ with sync_playwright() as p:
  page.locator('main [data-action=record]').first.click()
  expect(page.locator('#dialog-locale-select').locator('..').locator('.select-value')).to_have_text('English')
  expect(page.locator('#record-type')).to_have_value('daily')
- expect(page.locator('[name=joinTodo]')).not_to_be_checked()
+ expect(page.locator('[name=joinTodo]')).to_have_count(0)
+ expect(page.locator('[name=nextDate]')).to_have_count(0)
  assert page.evaluate('document.activeElement.id')=='dialog-title'
  page.locator('#record-form [name=title]').fill('合成日常')
  page.locator('#record-form [name=note]').fill('模式切换保留此原文')

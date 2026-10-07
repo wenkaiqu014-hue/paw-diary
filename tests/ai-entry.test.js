@@ -2,6 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 const pet={id:'p',name:'Milo',type:'cat',deletedAt:null};
 const draft={draftId:'d',petId:'p',type:'weight',occurredDate:'2026-10-06',value:4.6,unit:'kg',title:'体重记录',note:'',nextDate:null,missingFields:[],sourceText:'4.6kg'};
+test('changing purpose after parsing cannot save a draft under its former purpose',async()=>{
+ const {createDraftSession}=await import('../src/features/ai-entry.js');let purpose='record',writes=0;const snapshot={version:3,mode:'local',pets:[pet],records:[],reminders:[],posts:[],profile:{city:'深圳'},activePetId:'p'};
+ const entry=createDraftSession({purpose:()=>purpose,repository:{saveRecordBatch:async()=>{writes++}},getSnapshot:()=>snapshot,request:async()=>({today:'2026-10-07',drafts:[draft]})});await entry.parse('4.6kg','p','zh-CN');purpose='plan';await assert.rejects(entry.confirm([draft],['d']),e=>e.code==='PURPOSE_CHANGED');assert.equal(writes,0);
+});
+test('separate record purpose saves only an event even if AI mentions a next reminder',async()=>{
+ const {createDraftSession}=await import('../src/features/ai-entry.js');let saved;
+ const snapshot={version:3,mode:'local',pets:[pet],records:[],reminders:[],posts:[],profile:{city:'深圳'},activePetId:'p'};
+ const entry=createDraftSession({separatePurposes:true,repository:{saveRecordBatch:async inputs=>{saved=inputs;return {records:inputs,reminders:[]}}},getSnapshot:()=>snapshot,request:async()=>({today:'2026-10-07',drafts:[]})});
+ await entry.parse('今天驱虫，下次再做','p','zh-CN');await entry.confirm([{...draft,type:'deworm',value:null,unit:null,nextDate:'2026-11-07'}],['d']);assert.equal(saved[0].nextDate,undefined);
+ await entry.confirm([{...draft,type:'deworm',value:null,unit:null,nextDate:null,missingFields:['nextDate']}],['d']);assert.equal(saved[0].nextDate,undefined);
+});
 test('every selected plan is validated before the first reminder is written',async()=>{
  const {createDraftSession}=await import('../src/features/ai-entry.js');let writes=0;
  const snapshot={version:3,mode:'local',pets:[pet],records:[],reminders:[],posts:[],profile:{city:'深圳'},activePetId:'p'};

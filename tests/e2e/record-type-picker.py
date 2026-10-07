@@ -16,6 +16,16 @@ with sync_playwright() as p:
  assert page.locator('select option[value="other"]').count()==0
  for index in range(3):
   page.locator('[role=combobox]').click();page.get_by_role('button',name='新增',exact=True).click()
+  assert page.locator('.select-options').is_hidden(),'Add replaces the standard options'
+  assert page.locator('.type-catalog-icon-option input').count()==0,'Icon choices are icon-only buttons'
+  assert page.locator('.type-catalog-icon-option[aria-pressed="true"]').get_attribute('data-icon-key')=='book'
+  assert page.locator('.type-catalog-icon-option').all_inner_texts()==['','','']
+  assert page.evaluate('[...document.querySelector(".type-catalog-add-panel").children].slice(0,5).map(x=>x.className).join("|").includes("type-catalog-back|type-catalog-name-label|type-catalog-name-input|type-catalog-icons-label|type-catalog-icons")')
+  if index==0:
+   page.locator('.type-catalog-icon-option').first.focus();page.keyboard.press('ArrowRight')
+   assert page.locator('.type-catalog-icon-option[aria-pressed="true"]').get_attribute('data-icon-key')=='paw'
+   page.get_by_role('button',name='返回',exact=True).click();page.get_by_role('button',name='新增',exact=True).click()
+   assert page.locator('.type-catalog-icon-option[aria-pressed="true"]').get_attribute('data-icon-key')=='book','Entering Add always resets to the first icon'
   page.locator('input[name="catalog-name"]').fill('护理'+str(index));page.get_by_role('button',name='保存类型',exact=True).click()
   page.wait_for_function('(n)=>window.writes===n',arg=index+1)
   expect(page.locator('[role=combobox]')).to_have_attribute('aria-expanded','false')
@@ -23,17 +33,20 @@ with sync_playwright() as p:
  assert page.get_by_role('button',name='新增',exact=True).is_disabled()
  assert '最多添加3个' in page.locator('.type-catalog-hint').inner_text()
  page.get_by_role('button',name='管理',exact=True).click()
+ assert page.locator('.select-options').is_hidden(),'Manage replaces the standard options'
+ assert page.locator('.type-catalog-remove').count()==0,'Delete is only shown for a checked row'
+ assert page.locator('.type-catalog-plus').count()==1
  checkboxes=page.locator('.type-catalog-row input[type="checkbox"]')
  assert checkboxes.count()==7
  for index in range(4):assert checkboxes.nth(index).is_disabled()
- checkboxes.nth(4).check();page.get_by_role('button',name='删除所选',exact=True).click();page.wait_for_function('window.writes===4')
+ checkboxes.nth(4).check();page.once('dialog',lambda d:d.accept());page.get_by_role('button',name='删除',exact=True).click();page.wait_for_function('window.writes===4')
  assert page.locator('.type-catalog-row').count()==6
  page.locator('.type-catalog-handle').last.focus();page.keyboard.press('ArrowUp');page.wait_for_function('window.writes===5')
  page.get_by_role('button',name='返回',exact=True).click();assert page.get_by_role('button',name='新增',exact=True).is_enabled()
  assert page.locator('input[name="record-title"]').input_value()=='原有未保存内容'
  page.get_by_role('button',name='管理',exact=True).click()
  page.evaluate('window.picker.setValue([...document.querySelectorAll(".type-catalog-row")].at(-1).dataset.typeId);window.changedType=document.querySelector("select").value')
- page.locator('.type-catalog-row input[type="checkbox"]').last.check();page.get_by_role('button',name='删除所选',exact=True).click();page.wait_for_function('window.writes===6')
+ page.locator('.type-catalog-row input[type="checkbox"]').last.check();page.once('dialog',lambda d:d.accept());page.get_by_role('button',name='删除',exact=True).click();page.wait_for_function('window.writes===6')
  assert page.evaluate('window.changedType===document.querySelector("select").value'),'deleted current choice must dispatch change for dependent fields'
  page.get_by_role('button',name='返回',exact=True).click()
  page.evaluate('document.querySelector("select").__historicalRecord={type:"other",customTypeId:"custom:1",typeLabel:"护理0",iconKey:"book"};window.picker.refreshCatalog()')

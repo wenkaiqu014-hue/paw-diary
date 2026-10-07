@@ -66,3 +66,11 @@
 ## 自检
 
 全部附件需求分别落本地契约、可信云和完整恢复三项；父项重试、跨宠权限和原文件hash有明确测试。worker只拥有新attachments模块/函数及测试，Root整合共享media/archive/schema/app/scripts，互不回退。每项仅做已确认图片/PDF基本用途，不扩展识别/文件搜索/通用盘。
+
+## 最终执行状态
+
+- [x] Task1：本地附件契约/事务/回收保留/原字节；RED→GREEN。
+- [x] Task2：可信paw-files30秒、owner/父项/hash/容量/幂等，真实云验证。
+- [x] Task3：统一表单/失败不重复父项/完整备份映射/旧v1读取，实际浏览器验证。
+
+实际接口namespace为attachments.*、metadata文件名为filename（保留name兼容），公开repository.attachments；源码按责任集成不另加框架。大于1MiB附件因SCF response6MB改60秒签名下载、client bounded fetch校bytes/hash，不把URL存backup；真实5MiB生产client和原URLChrome2MiB CORS分别通过。Task5核心交付18:10:41处15分钟内，后续边界修复/补验归Task7，Task7窗口超限如实记录。已随v0.5.1发布，详情修订报告；最终A checkpoint18:32:26.044。

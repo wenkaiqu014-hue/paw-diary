@@ -8,7 +8,7 @@
 
 **Tech Stack:** 原生HTML/CSS/ESM、esbuild、node:test、fake-indexeddb、Python Playwright、现有CloudBase JS3.10.1/Node3.18.3；不增加前端框架。
 
-**Spec:** [完整设计](../specs/2026-10-07-record-workflow-refinement-design.md)。用户审阅后实施，当前仅文档。
+**Spec:** [完整设计](../specs/2026-10-07-record-workflow-refinement-design.md)。用户已批准并实施，最终v0.5.1公开验收见[报告](../../verification/record-workflow-report.md)。下文保留实施前的文件/步骤设计，实际调整以执行记录为准。
 
 ## Global Constraints
 
@@ -122,3 +122,17 @@ Root独占app.js、style.css、index.html、共享schema/仓储/备份集成与�
 类型限制/图标重复/历史兼容覆盖Task1/2；四入口与日期/待办/AI计划覆盖Task3；焦点头像覆盖Task4；附件全链覆盖配套；排序多宠覆盖Task6；状态/时间/发布覆盖Task7。接口与spec字段一致，未预建示例标签。单步目标不是保证，配套三个任务独立计时，实际超时须当时报告。
 
 执行方式沿用户已授权：Root协调、需要时独立worker和浏览器，勿再问协作菜单。按writing-plans先请用户审阅这份具体计划和设计，确认后开始业务实施；本轮文档不部署应用。
+
+## 最终执行状态
+
+用户随后批准实施并将预算改为每编号步骤15分钟、整体1小时；原30–45分钟估计及前轮19:27窗口不再作为本轮约束。18:00:04开始，v0.5.1于18:38:17公开，38分13秒；第7步从提前审查起计超过15分钟，单步时限未全部达到，已明确报告。
+
+- [x] Task1：目录/历史兼容/三仓储/服务端校验及基础恢复。
+- [x] Task2：全站select/type picker、四内置/3名额/可重复图标/键盘管理。
+- [x] Task3：统一record/plan/complete、日期/待办开关、模式保留；AI缺字段要求补填。
+- [x] Task4：标题focus/三圆头像、取消与部分失败仅重试媒体。
+- [x] Task5：原文件/可信云/完整恢复，真实5MiB及浏览器签名下载验证。
+- [x] Task6：整行排序/键盘、多宠默认当前/CSV/按行编辑。
+- [x] Task7：325单测、实际主线/独立审查/必要修复/原URL/v0.5.1 Release；单步时间超限单列。
+
+actual脚本为record-dialog/record-workflow-public、select-control/record-type-picker、pet-avatar-refinement/multi-pet-records及record-ai-plan-real；具体命令/失败/复验/源码hash在SESSION_LOG，未将原计划未执行的逐字命令当执行证据。跨空间目录超3个明确拒绝先调整，无专用活跃选择面板；用户亲验/真机仍待后续阶段。

@@ -11,3 +11,50 @@ test('trusted platform UID plus server proof replaces absent optional raw bool, 
 
 test('official signed session without optional sub binds proof to fixed Bearer profile UID',async()=>{const f=fixture(),s=f.service(),c=await s.handle(f.request,f.context);f.platform.sign=async()=>({access_token:'issued',refresh_token:'refresh'});const r=await s.handle({action:'auth.verifyEmailCode',payload:{id:c.data.id,code:'123456'}},f.context);assert.equal(r.ok,true);assert.equal(r.data.principal.userId,'A');});
 test('real transaction document get object and query array both unwrap stored proof values',async()=>{for(const shape of ['object','array']){const value={kind:'challenge',id:'nonce'};const doc={_id:'opaque',value};const db={runTransaction:async fn=>fn({collection:()=>({doc:()=>({get:async()=>({data:shape==='object'?doc:[doc]})})})})};const store=createAuthStore({db});assert.deepEqual(await store.transaction(tx=>tx.get('c:nonce')),value);}});
+
+for(const [name,flag,path] of [['missing',undefined,'signup'],['null',null,'signup'],['false',false,'signup'],['true',true,'signin']]){
+ test(`optional is_user ${name} selects ${path} only after platform code verification and binds proof`,async()=>{
+  const {createEmailPlatform,emailHash}=require('../backend/email-auth.cjs'),f=fixture(),httpCalls=[];
+  Object.assign(f.platform,createEmailPlatform({environmentId:'synthetic-test',publishableKey:'synthetic-public-key',fetch:async(url,options)=>{
+   const endpoint=new URL(url).pathname,body=options.body?JSON.parse(options.body):null;httpCalls.push({endpoint,body});
+   let response;
+   if(endpoint==='/auth/v1/verification')response={verification_id:'platform-id',...(flag===undefined?{}:{is_user:flag})};
+   else if(endpoint==='/auth/v1/verification/verify'){
+    assert.deepEqual(body,{verification_id:'platform-id',verification_code:'123456'});response={verification_token:'platform-proof'};
+   }else if(endpoint===`/auth/v1/${path}`){
+    assert.deepEqual(body,path==='signup'?{email:'a@example.test',verification_token:'platform-proof'}:{username:'a@example.test',verification_token:'platform-proof'});
+    response={sub:'A',access_token:'issued-A',refresh_token:'issued-refresh'};
+   }else if(endpoint==='/auth/v1/user/me'){
+    assert.equal(options.headers.Authorization,'Bearer issued-A');response={sub:'A',email:'a@example.test'};
+   }else throw Error('Unexpected platform endpoint');
+   return Response.json(response);
+  }}));
+  const s=f.service(),challenge=await s.handle(f.request,f.context);assert.equal(challenge.ok,true);
+  assert.equal(f.docs.get('c:'+challenge.data.id).isUser,flag===true);
+  const result=await s.handle({action:'auth.verifyEmailCode',payload:{id:challenge.data.id,code:'123456'}},f.context);
+  assert.deepEqual(result.data?.principal,{userId:'A'});
+  assert.deepEqual(httpCalls.map(call=>call.endpoint),['/auth/v1/verification','/auth/v1/verification/verify',`/auth/v1/${path}`,'/auth/v1/user/me']);
+  assert.deepEqual(f.docs.get('p:A'),{kind:'verified',ownerId:'A',emailHash:emailHash('a@example.test'),verifiedAt:'2026-10-07T02:00:00.000Z'});
+ });
+}
+
+test('optional is_user still rejects non-boolean non-null values and malformed verification IDs',async()=>{
+ for(const response of [{verification_id:'platform-id',is_user:'false'},{verification_id:'platform-id',is_user:'true'},{verification_id:'platform-id',is_user:0},{verification_id:'platform-id',is_user:1},{verification_id:'platform-id',is_user:{}},{verification_id:'platform-id',is_user:[]},{verification_id:''},{verification_id:null},{is_user:null},{verification_id:42}]){
+  const f=fixture();f.platform.send=async()=>response;
+  assert.deepEqual(await f.service().handle(f.request,f.context),{ok:false,error:{code:'UNAVAILABLE',messageKey:'errors.unavailable'}});
+  assert.equal([...f.docs.values()].some(doc=>doc.kind==='challenge'),false);
+ }
+});
+
+for(const failure of ['missing verified token','foreign profile UID','foreign profile email']){
+ test(`new-user signup with ${failure} never stores verified identity proof`,async()=>{
+  const f=fixture();f.platform.send=async()=>({verification_id:'platform-id'});
+  if(failure==='missing verified token')f.platform.verify=async()=>({});
+  else if(failure==='foreign profile UID')f.platform.profile=async()=>({sub:'B',email:'a@example.test'});
+  else f.platform.profile=async()=>({sub:'A',email:'foreign@example.test'});
+  const s=f.service(),challenge=await s.handle(f.request,f.context);assert.equal(challenge.ok,true);
+  const result=await s.handle({action:'auth.verifyEmailCode',payload:{id:challenge.data.id,code:'123456'}},f.context);
+  assert.equal(result.ok,false);assert.equal([...f.docs.values()].some(doc=>doc.kind==='verified'),false);
+  if(failure==='missing verified token')assert.equal(f.calls.some(call=>Object.hasOwn(call,'verification_token')),false);
+ });
+}

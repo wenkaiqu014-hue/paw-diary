@@ -560,3 +560,18 @@ GitHub原页核对：TencentCloudBase/cloudbase-skills显示35stars，auth-web/a
 明确缺陷2：真实SDK+真实平台会话，模拟OTP响应边界测试当前AuthAdapter。trace before-install epochSame/challengeSame均true；after-checked principalPresent/principalMatches均true、epochSamefalse，返回UNAUTH。即同账号登录/刷新事件延迟到身份核验期间，导致verify对authEpoch任意变化误判，虽SDK/服务器身份已成功。临时无发码UI探针走实际public auth.session返回UNAUTH后busyfalse/errorVisibletrue，通用发码处理可恢复；旧真实发码pending还不能仅靠此探针称完全修复。SDK不await订阅Promise，未据锁内回调猜测改架构。
 
 Root及独立explorer完成锁定源码定位，两个邮件流程之外未额外发码。诊断证据test-results/stage2/audit-auth/native-baseline-events.json、events.json、audit-provider-client-flags.json、Native/Node私密会话（0600）；OTP模拟边界明确，不冒充完整真实UI输码。结论选择最小两处修复：会话原子持久化和同用户事件误判；保SDK/现服务器验证proof与所有权，不新增认证协议/供应商/provider。正式修复将在审查检查点后TDD执行，之后真实基础用户流程及原门槛按实测记录。
+
+
+## 最小修复与真实网页验收进展
+
+用户继续明确开始，优先基本注册登录。Root整合auth_event_fix仅auth adapter/tests的pendingVerifications修复：目标UID同用户异步事件允许，真B/退出/B→A使attempt失效，preinstall/challenge及fresh/raw/server/current检查保留，finally清理。Root写session-file私密0600/原子合并/跨Worker锁及session-checkpoint；实际RED→GREEN覆盖更新新RT、A/B并发不丢、Date ISO、env/权限拒绝、先轮换后operation失败仍写回。只读auth_delta_review两Important（失败路径漏写、原actor metadata删除）都以RED→GREEN修复；checkpoint失败升为明确失败，避免权限拒绝假绿。Root17focused/全235通过，追加review回归后全238通过；不是只引用worker。
+
+real_login_helper交付真实产品UI无头交互助手与SDK observer，正常/异常/刷新/重开均保存latest到private sessionfile，不自动发码，日期转换与多actor合并原子锁，源码语法及本地边界自检通过。observer后来增加getSession/getUser(true)/getSession freshness，当前已加载旧observer的页面identity需结合真实产品privateWorkspace检查，不把cacheduser单独当授权证据。
+
+真实QQ页面已完成发码→验证码提交→SDK及服务器核验→privateWorkspace→刷新恢复，助手stage verify_checkpoint/refresh_verified全true，latest凭据600保存。用户误将QQ码回复到新邮箱问题后澄清，按当前QQ请求验证，没有把数字当邮箱。新注册输入随后用户提供第三个受控邮箱（地址不记日志）。第一次新用户发码邮件到了但UI拒，限定mgt只读确认无pending挑战；已发现发送接口is_user可选而service强制boolean，导致新用户字段missing/null时发信后拒绝。
+
+官方https://docs.cloudbase.net/http-api/auth/auth-send-verification/明确false/空为未注册。新增missing/null/false→signup、true→signin及UID/emailproof负样本，实际RED9pass5fail→14pass，Root全246/246、0skip退出0。仅email-auth.cjs允许null/undefined为false，仍要求validverification_id且非bool非空拒；证明与所有权检查未弱化。14:21:23更新paw-auth、14:21:26 Active20s且env/TZ/pubkey读回，无管理secret注入。用户给第一次新邮箱码但该请求未保存verification_id，不能沿用；明确说明后再发一次，实际UI codeInputEnabled true，此次挑战及新码待用户提供。不因收到邮件称注册成功。
+
+14:24:55–14:25:20按原批准的受控匿名窗口捕获一个真实SDK匿名actor，Root保存session600/isAnonymoustrue；touch停止信号提前finally恢复关闭，读回Emailtrue、Anonymous/Phone/UserNamefalse。仅测试拒绝门槛，不增加匿名云记录功能。
+
+真实A/B权限、媒体/迁移五case尚待新用户完成及actor关闭checkpoint后串行执行；公开0.2不变，local4193 candidate仅临时enabledtrue验证。修改最终单测246已fresh，contract15/media6正在同源码重跑；无0.3tag/发布完成声明。目标不复杂化，保基本邮箱流程/可信身份/数据主线，不新协议或供应商。

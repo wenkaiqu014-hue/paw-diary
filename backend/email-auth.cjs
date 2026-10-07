@@ -10,8 +10,9 @@ function createAuthService({store,platform,principalForToken,clock=Date.now,idFa
   if(typeof p.email!=='string'||p.email.length>254||!/^\S+@\S+\.\S+$/.test(p.email.trim())||typeof context.ip!=='string'||!context.ip||context.ip.length>128)throw new ApiError('INVALID_INPUT');
   const email=p.email.trim(),id=idFactory(),rateKey='r:'+digest(context.ip);
   await store.transaction(async tx=>{let rate=await tx.get(rateKey);if(!rate||rate.until<=now)rate={kind:'rate',count:0,until:now+600000};if(rate.count>=3)throw new ApiError('INVALID_INPUT');rate.count++;await tx.put(rateKey,rate);});
-  const remote=await platform.send(email);if(typeof remote?.verification_id!=='string'||!remote.verification_id||typeof remote.is_user!=='boolean')throw new ApiError('UNAVAILABLE');
-  await store.transaction(tx=>tx.put('c:'+id,{kind:'challenge',id,email,verificationId:remote.verification_id,isUser:remote.is_user,expiresAt:now+600000,attempts:0,leaseUntil:0,consumed:false}));
+  const remote=await platform.send(email);if(typeof remote?.verification_id!=='string'||!remote.verification_id||(remote.is_user!=null&&typeof remote.is_user!=='boolean'))throw new ApiError('UNAVAILABLE');
+  // The platform omits is_user (or returns null) for a new account; only true signs in.
+  await store.transaction(tx=>tx.put('c:'+id,{kind:'challenge',id,email,verificationId:remote.verification_id,isUser:remote.is_user===true,expiresAt:now+600000,attempts:0,leaseUntil:0,consumed:false}));
   return{ok:true,data:{id}};
  }
  if(request.action==='auth.verifyEmailCode'){

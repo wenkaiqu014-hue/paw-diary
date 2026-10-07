@@ -1,9 +1,10 @@
 // Acceptance helper only. Emails/codes arrive over stdin; tokens never go to stdout.
 import {isMainThread,Worker,parentPort,workerData} from 'node:worker_threads';
-import {readFile,writeFile,rename,mkdir,stat} from 'node:fs/promises';
-import {resolve,dirname} from 'node:path';
+import {readFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
 import {createInterface} from 'node:readline';
 import {collectVerifiedSession} from './lib/capture-session.mjs';
+import {updateSessionFile} from './lib/session-file.mjs';
 
 const labels=new Set(['A','B','anonymous']);
 const fail=code=>Object.assign(new Error(code),{code});
@@ -72,12 +73,8 @@ if(!isMainThread){
   try{await ready;}catch(error){await worker.terminate();workers.delete(label);throw error;}finally{clearTimeout(timer);}
   return value;
  }
- async function save(label,session){
-  let document={envId:config.env};
-  try{const info=await stat(output);if(!info.isFile()||(info.mode&0o77)!==0)throw fail('ACCEPTANCE_SESSION_FILE_NOT_PRIVATE');document=JSON.parse(await readFile(output,'utf8'));if(document.envId!==config.env)throw fail('ACCEPTANCE_SESSION_ENV_MISMATCH');}catch(error){if(error.code!=='ENOENT')throw error;}
-  document[label]=session;await mkdir(dirname(output),{recursive:true});
-  const temp=output+'.'+process.pid+'.tmp';await writeFile(temp,JSON.stringify(document),{mode:0o600,flag:'wx'});await rename(temp,output);
- }
+ async function save(label,session){await updateSessionFile(output,{envId:config.env,label,session});}
+
  const stop=async()=>{await Promise.all([...workers.values()].map(({worker})=>worker.terminate()));};
  process.once('SIGINT',async()=>{await stop();process.exit(130);});
  process.once('SIGTERM',async()=>{await stop();process.exit(143);});

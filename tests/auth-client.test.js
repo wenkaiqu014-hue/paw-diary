@@ -59,3 +59,47 @@ test('issued session metadata reaches SDK refresh while untrusted response field
  assert.deepEqual(await auth.verifyEmailCode({challenge,code:'123456'}),{userId:'A'});
  assert.deepEqual(installed,{access_token:'issued-A',refresh_token:'refresh-A',...metadata});
 });
+
+test('same-user SDK event after setSession receipt while refreshing the fresh user still verifies',async()=>{
+ const f=fixture(),original=f.sdk.getUser;
+ f.sdk.getUser=async force=>{await Promise.resolve();void f.emit('SIGNED_IN',{user:{id:'A',email:'synthetic@example.invalid',is_anonymous:false},access_token:'issued-A'});return original(force);};
+ const auth=createCloudbaseAuth({app:{auth:()=>f.sdk},invokeAuth:f.invokeAuth});auth.subscribe(()=>{});
+ const challenge=await auth.requestEmailCode({email:'synthetic@example.invalid'});
+ assert.deepEqual(await auth.verifyEmailCode({challenge,code:'123456'}),{userId:'A'});
+});
+
+function pendingSessionProof(){
+ const f=fixture();let entered,release,wait=true;
+ const proofStarted=new Promise(resolve=>entered=resolve),proofGate=new Promise(resolve=>release=resolve);
+ const auth=createCloudbaseAuth({app:{auth:()=>f.sdk},invokeAuth:async request=>{
+  if(request.action==='auth.session'&&wait){wait=false;entered();await proofGate;}
+  return f.invokeAuth(request);
+ }});auth.subscribe(()=>{});
+ return {f,auth,proofStarted,release};
+}
+
+test('same-user SIGNED_IN and TOKEN_REFRESHED delivered during server proof do not reject verification',async()=>{
+ const {f,auth,proofStarted,release}=pendingSessionProof(),challenge=await auth.requestEmailCode({email:'synthetic@example.invalid'});
+ const pending=auth.verifyEmailCode({challenge,code:'123456'});await proofStarted;
+ void f.emit('SIGNED_IN',{user:{id:'A',email:'synthetic@example.invalid',is_anonymous:false},access_token:'issued-A'});
+ void f.emit('TOKEN_REFRESHED',{user:{id:'A',email:'synthetic@example.invalid',is_anonymous:false},access_token:'issued-A'});
+ release();assert.deepEqual(await pending,{userId:'A'});
+});
+
+for(const interruption of ['different UID','signed out','different UID then original UID','explicit signOut without SDK event']){
+ test(`${interruption} during server proof invalidates pending email verification`,async()=>{
+  const {f,auth,proofStarted,release}=pendingSessionProof(),challenge=await auth.requestEmailCode({email:'synthetic@example.invalid'});
+  const pending=auth.verifyEmailCode({challenge,code:'123456'});await proofStarted;
+  if(interruption==='explicit signOut without SDK event')await auth.signOut();
+  else if(interruption==='signed out'){f.setUser(null);void f.emit('SIGNED_OUT',null);}
+  else{
+   f.setUser({id:'B',email:'b@example.invalid',is_anonymous:false});f.setRaw({sub:'B',email:'b@example.invalid'});f.setToken('issued-B');f.setProof('B');
+   void f.emit('SIGNED_IN',{user:{id:'B',email:'b@example.invalid',is_anonymous:false},access_token:'issued-B'});
+   if(interruption==='different UID then original UID'){
+    f.setUser({id:'A',email:'synthetic@example.invalid',is_anonymous:false});f.setRaw({sub:'A',email:'synthetic@example.invalid'});f.setToken('issued-A');f.setProof('A');
+    void f.emit('TOKEN_REFRESHED',{user:{id:'A',email:'synthetic@example.invalid',is_anonymous:false},access_token:'issued-A'});
+   }
+  }
+  release();await assert.rejects(pending,{code:'UNAUTHENTICATED'});
+ });
+}

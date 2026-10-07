@@ -3,6 +3,8 @@ import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import cloudbase from "@cloudbase/js-sdk";
 import verifiedProfile from "../../backend/verified-profile.cjs";
+import {updateSessionFile} from "../../scripts/lib/session-file.mjs";
+import {withSessionCheckpoint} from "../../scripts/lib/session-checkpoint.mjs";
 const {
   envId,
   publicKey,
@@ -32,6 +34,12 @@ async function freshUser() {
   if (result?.error) throw fail("REAL_CLOUD_USER_READ_FAILED");
   return result?.data?.user ?? null;
 }
+async function persistCurrentSession(){
+  if(cacheOnly||label==="unauthenticated")return;
+  const result=await auth.getSession();
+  if(result?.error)throw fail("REAL_CLOUD_SESSION_READ_FAILED");
+  await updateSessionFile(sessionPath,{envId,label,session:result?.data?.session});
+}
 async function initialize() {
   if (cacheOnly || label === "unauthenticated") return;
   let document;
@@ -58,14 +66,7 @@ async function initialize() {
       typeof result?.data?.session?.refresh_token !== "string"
     )
       throw fail("REAL_CLOUD_PASSWORD_LOGIN_REJECTED");
-    const latest = JSON.parse(await fs.readFile(sessionPath, "utf8"));
-    latest[label] = {
-      ...latest[label],
-      access_token: result.data.session.access_token,
-      refresh_token: result.data.session.refresh_token,
-    };
-    await fs.writeFile(sessionPath, JSON.stringify(latest), { mode: 0o600 });
-    await fs.chmod(sessionPath, 0o600);
+    await persistCurrentSession();
     return;
   }
   if (
@@ -77,10 +78,12 @@ async function initialize() {
   if (result?.error) {
     const error = result.error;
     const machine = value => typeof value === 'string' && /^[A-Za-z0-9_.-]{1,100}$/.test(value) ? value : typeof value === 'number' ? value : null;
-    await fs.appendFile(new URL('../../test-results/stage2/sdk-session-install-flags.jsonl',import.meta.url),JSON.stringify({label,phase:'setSession',errorCode:machine(error.code),errorType:machine(error.error),errorNumber:machine(error.error_code),status:typeof error.status==='number'?error.status:null,errorFieldNames:Object.keys(error).filter(k=>/^[A-Za-z_][A-Za-z0-9_]{0,60}$/.test(k)),dataFieldNames:Object.keys(result.data??{})})+'\n',{mode:0o600});
+    await fs.appendFile(new URL('../../test-results/stage2/sdk-session-install-flags.jsonl',import.meta.url),JSON.stringify({label,phase:'setSession',errorCode:machine(error.code),errorType:machine(error.error),errorNumber:machine(error.errorCode??error.error_code),status:typeof error.status==='number'?error.status:null,errorFieldNames:Object.keys(error).filter(k=>/^[A-Za-z_][A-Za-z0-9_]{0,60}$/.test(k)),dataFieldNames:Object.keys(result.data??{})})+'\n',{mode:0o600});
     throw fail("REAL_CLOUD_SESSION_REJECTED");
   }
-  await freshUser(); // setSession/getSession initially use cached converted user; refresh before actor RPCs.
+  await persistCurrentSession(); // setSession already consumed the file refresh token.
+  await freshUser(); // Refresh normalized cache before actor RPCs.
+  await persistCurrentSession();
 }
 async function operation(name, payload) {
   if (name === "cacheProbeSet") {
@@ -274,7 +277,7 @@ let queue = Promise.resolve();
 parentPort.on("message", (message) => {
   const run = queue.then(async () => {
     try {
-      const data = await operation(message.operation, message.payload);
+      const data = await withSessionCheckpoint(()=>operation(message.operation, message.payload),persistCurrentSession);
       parentPort.postMessage({ id: message.id, ok: true, data });
     } catch (error) {
       parentPort.postMessage({

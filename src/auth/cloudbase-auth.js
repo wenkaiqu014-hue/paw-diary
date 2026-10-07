@@ -36,7 +36,8 @@ function publicSession(user, raw, requireVerified = true) {
 export function createCloudbaseAuth({ app, invokeAuth } = {}) {
   if (!app || typeof app.auth !== "function") throw safeError();
   const sdk = app.auth(),
-    challenges = new Map();
+    challenges = new Map(),
+    pendingVerifications = new Set();
   let counter = 0,
     confirmedUserId = null,
     authEpoch = 0;
@@ -138,16 +139,21 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
         // Preserve only platform-supplied OAuth routing/expiry metadata. Never
         // invent a token version or turn provider/profile fields into proof.
         for(const key of ['token_type','version','scope','expires_at','expires_in'])if(Object.hasOwn(issued,key))credentials[key]=issued[key];
-        const installed=await sdk.setSession(credentials);if(installed?.error)throw authFailure(installed.error);
-        const installedEpoch=authEpoch;
-        // SDK 3.10.1 setSession/getSession reads getUser(false), so explicitly
-        // refresh the normalized user before retaining a verification candidate.
-        const fresh=await sdk.getUser(true);if(fresh?.error)throw authFailure(fresh.error);
-        const current=await sdk.getSession();if(current?.error)throw authFailure(current.error);
-        const user=fresh?.data?.user;
-        const principal=await checked(user,current?.data?.session);
-        if(installedEpoch!==authEpoch||!principal||principal.userId!==reply.principal.userId)throw safeError("UNAUTHENTICATED");
-        confirmedUserId=principal.userId;challenges.delete(challenge.id);return principal;
+        // setSession can deliver its own same-user auth events after resolving.
+        // Remember every intervening foreign/empty identity, even if A returns.
+        const verification={userId:reply.principal.userId,invalidated:false};
+        pendingVerifications.add(verification);
+        try{
+          const installed=await sdk.setSession(credentials);if(installed?.error)throw authFailure(installed.error);
+          // SDK 3.10.1 setSession/getSession reads getUser(false), so explicitly
+          // refresh the normalized user before retaining a verification candidate.
+          const fresh=await sdk.getUser(true);if(fresh?.error)throw authFailure(fresh.error);
+          const current=await sdk.getSession();if(current?.error)throw authFailure(current.error);
+          const user=fresh?.data?.user;
+          const principal=await checked(user,current?.data?.session);
+          if(verification.invalidated||challenges.get(challenge.id)!==verify||!principal||principal.userId!==reply.principal.userId)throw safeError("UNAUTHENTICATED");
+          confirmedUserId=principal.userId;challenges.delete(challenge.id);return principal;
+        }finally{pendingVerifications.delete(verification);}
       }
       const result = await verify({ token: code.trim() });
       if (result?.error) throw authFailure(result.error);
@@ -169,6 +175,9 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
         const current = ++epoch,
           user = session?.user;
         authEpoch++;
+        for(const verification of pendingVerifications){
+          if(!user||user.id!==verification.userId)verification.invalidated=true;
+        }
         if (!user) {
           confirmedUserId = null;
           if (active) listener(null);

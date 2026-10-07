@@ -6,6 +6,7 @@ import {recordIntent} from './src/domain/record-intent.js';
 import {isHealthTodo} from './src/domain/health-plans.js';
 import {growthEntries,exportGrowthCsv} from './src/ui/growth-entries.js';
 import {enhanceDateInput} from './src/ui/date-input.js';
+import {createDiscardConfirm} from './src/ui/discard-confirm.js';
 import {mountRecordDialog} from './src/ui/record-dialog.js';
 import {enhanceSelect} from './src/ui/select-control.js';
 import {enhanceRecordTypeSelect} from './src/ui/record-type-picker.js';
@@ -166,7 +167,7 @@ function boundCloudRepository(principal){
  }});return bound;
 }
 async function switchWorkspace(mode,{newPet=false,fromLogin=false,force=false}={}){
- if(dialog.open&&!fromLogin){if(force)closeModal(true);else if(!closeModal())return false;}
+ if(dialog.open&&!fromLogin){if(force)closeModal(true);else if(!closeModal(false,()=>switchWorkspace(mode,{newPet,fromLogin,force}).catch(error=>toast(localizeError(error)))))return false;}
  const transition=++workspaceTransition;
  stage3Assistant?.reset();
  photoWall?.destroy();photoWall=null;photoHost=null;photoPetId=null;clearAvatarUrls();
@@ -276,15 +277,18 @@ function render({focus=false}={}){
 }
 function route(){
   const target=location.hash.slice(1);if(target==='main'){history.replaceState(null,'',`#${page}`);$('#main').focus();return;}
-  if(dialog.open&&!closeModal()){history.replaceState(null,'',`#${page}`);return;}
+  if(dialog.open&&!closeModal(false,()=>{history.replaceState(null,'',`#${target}`);route();})){history.replaceState(null,'',`#${page}`);return;}
   page=['home','health','nearby','community'].includes(target)?target:'home';recordPetIds=null;recordPetSelectionManual=false;management=transitionManagement(management,{type:'EXIT'});render({focus:true});window.scrollTo({top:0,behavior:'instant'});
 }
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
 function modal(title,html,{recovery=false}={}){
-  if(dialog.open){if(!closeModal())return false;}
+  if(dialog.open){const trigger=lastModalTrigger;if(!closeModal(false,()=>{if(trigger?.isConnected)trigger.click();}))return false;}
   modalOrigin=token(document.activeElement);dirty=false;$('#dialog-title').dataset.uiSource=canonicalUiText(title);$('#dialog-title').textContent=title;$('#dialog-body').innerHTML=html;$('#dialog-body').querySelectorAll('input,textarea').forEach(el=>{if(!el.hasAttribute('autocomplete'))el.autocomplete='off';});$('#dialog-body').querySelectorAll('form').forEach(form=>{form.__pawContext=recovery?{generation:session?.generation??0,petId:null,entityId:null,baseRevision:null,operationId:uid(),intent:null}:captureFormContext({repository,getGeneration:()=>session?.generation??0,petId:pet()?.id});});dialog.showModal();focusDialogTitle(dialog);return true;
 }
-function closeModal(force=false){if(!force&&dialog.querySelector('[data-ai-saving]')){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}if(!force&&(saving||dirty)){if(saving){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}if(!window.confirm(UI_TEXT('放弃这次尚未保存的修改？')))return false;}dialog.querySelector('form')?.__pawCleanup?.();dialog.close();if(dialog.querySelector('#unified-record-dialog')){unifiedRecordDialog?.destroy();unifiedRecordDialog=null;}dirty=false;restoreFocus(modalOrigin);return true;}
+let lastModalTrigger=null;
+const discardConfirmation=createDiscardConfirm({getLocale});
+document.addEventListener('click',event=>{if(!event.target.closest('#discard-dialog'))lastModalTrigger=event.target.closest('button,a');},true);
+function closeModal(force=false,onDiscard=null){if(!force&&dialog.querySelector('[data-ai-saving]')){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}if(!force&&(saving||dirty)){if(saving){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}const generation=session?.generation;discardConfirmation.ask(accepted=>{if(accepted&&generation===session?.generation){closeModal(true);onDiscard?.();}});return false;}if(force)discardConfirmation.dismiss();dialog.querySelector('form')?.__pawCleanup?.();dialog.close();if(dialog.querySelector('#unified-record-dialog')){unifiedRecordDialog?.destroy();unifiedRecordDialog=null;}dirty=false;restoreFocus(modalOrigin);return true;}
 function field(label,html,full=false){return `<label class="field ${full?'full':''}"><span>${esc(label)}</span>${html}</label>`;}
 function formActions(label=UI_TEXT('保存记录')){return UI_HTML`<p class="form-error" role="alert" hidden></p><div class="form-actions"><button type="button" class="button secondary" data-action="close">取消</button><button type="submit" class="button">${icon('check')} ${esc(label)}</button></div>`;}
 function showFormError(form,error){const el=form?.querySelector('.form-error');const message=UI_TEXT('保存未成功：')+localizeError(error);if(error.code==='CONFLICT')showConflictReview(form);if(el){el.hidden=false;el.textContent=message;el.tabIndex=-1;el.focus();}else toast(message);}

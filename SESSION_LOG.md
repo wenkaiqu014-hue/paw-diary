@@ -839,3 +839,13 @@ Root真实final-growth.py：普通游玩plan defaultunchecked，不进health、�
 v0.6.0新tag解引用e917ae6、Release19:39:41公开isDraft/isPrerelease=false，旧v0.1–v0.5.2不移动。19:12:31→19:39:41为27分10秒，在30分钟内；随后仅README/AGENTS/PENDING/报告/plan/log docs-only归档，不重新发布业务。A最后19:31:43.057已checkpoint原600/关闭操作，三个worker及review都完成，无额外model/OTP/付费采购。停止本轮4197前核PID命令/cwd，只动本轮预览；保留本地截图/安全日志与工作树，最终10月8日20:00不变，用户亲验及phase4/5继续待验。
 
 发布来源URL：https://wenkaiqu014-hue.github.io/paw-diary/ ；https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37615281921 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.6.0 。
+
+## 用户指定v0.6.1：取消体重预填与站内放弃确认
+
+2026-10-07 19:52:51 Asia/Shanghai（Root工具date）：用户明确指定下一版0.6.1，10分钟到20:02:51；取消新建和切换类型时自动填写体重记录，保留用户输入切换不丢；未保存站内确认改中部主题弹窗。隔离.worktrees/modal-061 / fix/record-title-and-discard，本机已读Superpowers/Impeccable/浏览器及Github Vercel/obra核对，复用不安装。Root只前端修，不部署后端/调用模型或账号。
+
+实际原表单两个预填点（初始weight默认和change赋值）均移除；已有记录名称正常显示，weight名称可空、保存仍用既有默认标题，不让HTML required阻止用户仅称重。其它类型姓名用户原文切换保留。新discard-confirm原生站内dialog样式白底森林绿、默认继续编辑/放弃修改，取消和Esc返回原输入，确认才close；保护saving/AI-saving与会话generation，force账号切换dismiss旧确认。路由/空间/点击触发的新modal保留继续动作；浏览器刷新/关页beforeunload原生提示保留，平台不允许页面自绘替代，不移除数据保护。
+
+新增modal-061.py实际Chrome：原weight自动名称RED→空与用户名称保持GREEN；关闭/继续/Esc/确认/空weight保存/343单测无skip、1440/390中部/0pageErrors/0nativeDialogs均通过。第一次中心断言用innerWidth包含7px滚动条导致误差，实际dialog center可用clientWidth正常；改用clientWidth严格断言后GREEN，未改产品去硬偏移。源码语法/build/diff通过。准备v0.6.1原站公开复验后创建tag/Release，不移动v0.6.0；最终截止与未验真机/亲验仍单列。
+
+技能来源URL：https://github.com/vercel-labs/agent-skills ；https://github.com/obra/superpowers 。本轮证据ignored test-results/modal-061与/tmp/paw-061-*.log。

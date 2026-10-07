@@ -1,3 +1,4 @@
+import {mapStage3State,mergeStage3State} from './stage3-state.js';
 import { migrateV1, migrateV2, validateSnapshot } from './schema.js?v=0.2.0';
 
 // A legacy file with no timestamps must produce the same IDs/order on every import.
@@ -91,6 +92,7 @@ export function mergeBackup(current, backup, { acceptedConflictIds = [] } = {}) 
   if (!local.pets.some(pet=>pet.id===local.activePetId&&pet.deletedAt===null)) {
     local.activePetId=!hadLocalPets&&local.pets.some(pet=>pet.id===incoming.activePetId&&pet.deletedAt===null)?incoming.activePetId:local.pets.find(pet=>pet.deletedAt===null)?.id??null;
   }
+  if(incoming.profile.stage3!==undefined){const metadata=mapStage3State(incoming.profile.stage3,{pet:id=>local.pets.some(p=>p.id===id)?id:null,record:id=>local.records.some(r=>r.id===id)?id:null,reminder:id=>local.reminders.some(r=>r.id===id)?id:null});local.profile.stage3=mergeStage3State(local.profile.stage3,metadata.state);}
   // Validate combined links too: independently valid snapshots may conflict after merging.
   return validateSnapshot(local);
 }

@@ -1,3 +1,4 @@
+import {normalizeStage3State} from './stage3-state.js';
 export const RECORD_TYPES = ['weight','vaccine','deworm','daily','other'];
 export const clone = value => structuredClone(value);
 function fail(message) { throw new Error(message); }
@@ -66,6 +67,7 @@ export function validateSnapshot(raw) {
   for(const r of reminders){if(!petIds.has(r.petId))fail('事项没有对应宠物');for(const field of ['originRecordId','completionRecordId']){if(!r[field])continue;const record=recordMap.get(r[field]);if(!record && (field==='completionRecordId'||r.status==='pending'))fail('事项没有对应记录');if(record&&record.petId!==r.petId)fail('事项与记录宠物归属不一致');}}
   const activePetId=raw.activePetId??null;if(activePetId!==null&&!petIds.has(activePetId))fail('当前宠物不存在');if(activePetId!==null&&pets.find(p=>p.id===activePetId).deletedAt!==null)fail('当前宠物已在回收站');if(pets.some(p=>p.deletedAt===null)&&activePetId===null)fail('请选择当前宠物');
   object(raw.profile,'个人资料');const profile=clone(raw.profile);profile.city=profile.city==null?'深圳':requiredText(profile.city,'城市');
+  if(profile.stage3!==undefined)profile.stage3=normalizeStage3State(profile.stage3);
   for(const p of raw.posts){
     object(p,'帖子');requiredText(p.id,'帖子ID');limited(requiredText(p.title,'帖子标题'),'帖子标题',60);limited(requiredText(p.text,'帖子正文'),'帖子正文',1500);requiredText(p.author,'帖子作者');validDate(p.date,'帖子日期');
     if(!Number.isInteger(p.likes)||p.likes<0||typeof p.liked!=='boolean')fail('帖子点赞数据无效');

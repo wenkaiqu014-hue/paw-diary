@@ -2,19 +2,22 @@ import {clone,migrateV1,migrateV2,validateSnapshot,normalizePet,todayAt,isoTime}
 import {applyRecord,removeRecord,defaultId} from '../domain/records.js?v=0.2.0';
 import {applyReminder,completeReminder as finishReminder} from '../domain/reminders.js?v=0.2.0';
 import {moveToTrash as trash,restoreFromTrash as restore,reorderPets as reorder} from '../domain/lifecycle.js?v=0.2.0';
+import {applyRecordBatch} from '../domain/ai-drafts.js';
+import {applyOnboarding} from '../domain/onboarding.js';
+import {prepareSavedRecap,applySavedRecap} from '../domain/recap-facts.js';
 import {createSeedState} from './seed.js?v=0.2.0';
 export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>new Date().toISOString(),idFactory=defaultId,seedFactory=createSeedState}={}) {
   if(!storage||typeof storage.getItem!=='function'||typeof storage.setItem!=='function')throw new Error('本地存储不可用');
-  let state=null,queue=Promise.resolve(),expectedRaw=null;
+  let state=null,queue=Promise.resolve(),expectedRaw=null,receipts={};
   const serial=operation=>{const pending=queue.then(operation);queue=pending.catch(()=>{});return pending;};
   const changed=()=>new Error('资料已在另一窗口更新，请先复制当前输入，再刷新读取后重试。');
-  const persist=async (candidate,expected=expectedRaw,sources=[])=>{
+  const persist=async (candidate,expected=expectedRaw,sources=[],nextReceipts=receipts)=>{
     const checked=validateSnapshot(candidate);if(checked.mode!=='demo')throw new Error('演示仓储只接受本地演示数据');
     for(const source of sources){const read=storage.getItem(source.key),actual=read&&typeof read.then==='function'?await read:read;if(actual!==source.raw)throw changed();}
     // Keep a synchronous localStorage compare and write in the same task.
     const read=storage.getItem(key),actual=read&&typeof read.then==='function'?await read:read;
     if(actual!==expected)throw changed();
-    const raw=JSON.stringify(checked);await storage.setItem(key,raw);state=checked;expectedRaw=raw;return checked;
+    const raw=JSON.stringify({...checked,...(Object.keys(nextReceipts).length?{_operationReceipts:nextReceipts}:{})});await storage.setItem(key,raw);state=checked;receipts=clone(nextReceipts);expectedRaw=raw;return checked;
   };
   const preserve=async(prefix,raw)=>{
     const existing=await storage.getItem(prefix);
@@ -27,7 +30,7 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
   const initialize=async()=>{
     if(state)return state;
     const saved=await storage.getItem(key);
-    if(saved!==null){const checked=validateSnapshot(saved);if(checked.mode!=='demo')throw new Error('本地演示数据模式无效');state=checked;expectedRaw=saved;return state;}
+    if(saved!==null){const checked=validateSnapshot(saved);if(checked.mode!=='demo')throw new Error('本地演示数据模式无效');state=checked;const internal=JSON.parse(saved)._operationReceipts;receipts=internal&&typeof internal==='object'&&!Array.isArray(internal)?internal:{};expectedRaw=saved;return state;}
     const v2Key='paw-diary:v2:demo',v2=await storage.getItem(v2Key);
     if(v2!==null){const migrated=migrateV2(v2);return persist(migrated,null,[{key:v2Key,raw:v2}]);}
     const v1Key='paw-diary:v1',legacy=await storage.getItem(v1Key);
@@ -50,6 +53,13 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
       if(input.makeActive===true||!next.activePetId)next.activePetId=pet.id;await persist(next);return clone(pet);
     }),
     saveRecord:input=>operation(async()=>{const next=applyRecord(state,input,{now:clock(),idFactory});await persist(next);return clone(input.id?state.records.find(r=>r.id===input.id):state.records[0]);}),
+    saveRecordBatch:(inputs,options={})=>operation(async()=>{
+      const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw new Error('操作标识无效');const signature=JSON.stringify({action:'records.saveBatch',inputs});
+      if(Object.hasOwn(receipts,operationId)){if(receipts[operationId].signature!==signature)throw new Error('同一操作标识对应不同内容');return clone(receipts[operationId].result);}
+      const result=applyRecordBatch(state,inputs,{now:clock(),idFactory}),data={records:result.records,reminders:result.reminders};const nextReceipts={...receipts,[operationId]:{signature,result:clone(data)}};await persist(result.snapshot,expectedRaw,[],nextReceipts);return clone(data);
+    }),
+    saveOnboarding:input=>operation(async()=>{const result=applyOnboarding(state,input,{now:clock()});await persist(result.snapshot);return clone(result.progress);}),
+    saveRecap:input=>operation(async()=>{const recap=await prepareSavedRecap(state,input);await persist(applySavedRecap(state,recap));return clone(recap);}),
     deleteRecord:id=>operation(async()=>{await persist(removeRecord(state,id,{now:clock()}));}),
     moveToTrash:input=>operation(async()=>{await persist(trash(state,input,{now:clock()}));return clone(state);}),
     restoreFromTrash:input=>operation(async()=>{await persist(restore(state,input));return clone(state);}),
@@ -64,8 +74,8 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
       if(original===null){for(const legacyKey of ['paw-diary:v2:demo','paw-diary:v1']){const raw=await storage.getItem(legacyKey);sources.push({key:legacyKey,raw});if(raw!==null){original=raw;break;}}}
       if(state&&currentRaw!==expectedRaw)throw changed();
       if(original!==null){const prefix=`paw-diary:recovery-backup:${isoTime(clock())}`;let backupKey=prefix,n=0;while(await storage.getItem(backupKey)!==null)backupKey=`${prefix}:${++n}`;await storage.setItem(backupKey,original);}
-      await persist(checked,currentRaw,sources);return clone(state);
+      await persist(checked,currentRaw,sources,{});return clone(state);
     }),
-    getRawBackup:()=>serial(async()=>{for(const sourceKey of [key,'paw-diary:v2:demo','paw-diary:v1']){const saved=await storage.getItem(sourceKey);if(saved!==null)return saved;}return JSON.stringify(state);})
+    getRawBackup:()=>serial(async()=>{for(const sourceKey of [key,'paw-diary:v2:demo','paw-diary:v1']){const saved=await storage.getItem(sourceKey);if(saved!==null){if(sourceKey===key){try{const parsed=JSON.parse(saved);if(parsed._operationReceipts!==undefined)return JSON.stringify(validateSnapshot(parsed));}catch{}}return saved;}}return JSON.stringify(state);})
   };
 }

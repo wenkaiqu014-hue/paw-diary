@@ -1,3 +1,10 @@
+import {createAiClient} from './src/ai/client.js';
+import {createAiContext} from './src/ai/context.js';
+import {createAiEntry} from './src/features/ai-entry.js';
+import {createOnboarding} from './src/features/onboarding.js';
+import {createWeeklyRecap} from './src/features/weekly-recap.js';
+import {createAssistantPanel} from './src/features/assistant-panel.js';
+import {stage3Text as S3,stage3Error,refreshStage3Copy,stage3Help} from './src/ui/stage3-copy.js';
 import cloudbase from '@cloudbase/js-sdk';
 import {createLocalRepository} from './src/data/local-repository.js';
 import {createCloudRepository} from './src/data/cloud-repository.js';
@@ -78,7 +85,7 @@ function applyLocaleChrome(){
  const footer=document.querySelector('footer');footer.firstChild.textContent=UI_TEXT('每一个普通的日子，都值得被记住。');footer.querySelector('span').textContent=UI_TEXT(workspaceMode==='demo'?UI_TEXT('示例内容 · 新增数据仅保存在当前浏览器'):workspaceMode==='local'?UI_TEXT('个人资料仅保存在当前浏览器'):UI_TEXT('个人健康与照片私有保存'));
 }
 function localizeOpenDialog(){
- if(!dialog.open)return;const title=$('#dialog-title');title.textContent=UI_TEXT(title.dataset.uiSource??canonicalUiText(title.textContent));const body=$('#dialog-body');body.querySelector('form')?.__pawLocaleRefresh?.();if(body.querySelector('[data-account-form]')||body.querySelector('#account-login-form')||body.querySelector('#email-login-form')||body.querySelector('#account-actions-form')){accountUI?.refreshLocale();return;}
+ if(!dialog.open)return;const title=$('#dialog-title');title.textContent=UI_TEXT(title.dataset.uiSource??canonicalUiText(title.textContent));const body=$('#dialog-body');refreshStage3Copy(body);body.querySelector('form')?.__pawLocaleRefresh?.();if(body.querySelector('#ai-entry-form,#assistant-form,#recap-share-form'))return;if(body.querySelector('[data-account-form]')||body.querySelector('#account-login-form')||body.querySelector('#email-login-form')||body.querySelector('#account-actions-form')){accountUI?.refreshLocale();return;}
  for(const el of body.querySelectorAll('.field>span,.form-tip,.form-actions button,.demo-note,[data-ui-copy],option')){
   if(el.tagName==='OPTION'&&el.closest('select')?.name==='city')continue;
   if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.setAttribute('value',el.value);
@@ -145,6 +152,7 @@ function boundCloudRepository(principal){
 async function switchWorkspace(mode,{newPet=false,fromLogin=false,force=false}={}){
  if(dialog.open&&!fromLogin){if(force)closeModal(true);else if(!closeModal())return false;}
  const transition=++workspaceTransition;
+ stage3Assistant?.reset();
  photoWall?.destroy();photoWall=null;photoHost=null;photoPetId=null;clearAvatarUrls();
  const next=mode==='account'?boundCloudRepository(authPrincipal):getLocalRepository(mode);
  workspaceMode=mode;repository=next;loadError=null;state=null;management=transitionManagement(management,{type:'EXIT'});
@@ -244,7 +252,7 @@ function render({focus=false}={}){
   $('#city-label').textContent=state?.city||UI_TEXT('选择城市');$('#city-button').disabled=!state;
   document.querySelectorAll('nav a').forEach(a=>{const active=a.dataset.page===page;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
   if(state&&pet()&&workspaceMode!=='demo'&&['home','health'].includes(page)){$('#main').insertAdjacentHTML('beforeend',UI_HTML`<section class="panel photo-wall-panel"><h2>我们的照片墙</h2><p class="photo-wall-description">当前宠物的私有照片；保存展示版，原图请在设备中另存。</p></section>`);}
-  workspaceControls();maintainPhotoWall();refreshAvatarViews();
+  workspaceControls();maintainPhotoWall();refreshAvatarViews();maintainStage3();
   if(activePhotoElement?.isConnected&&!dialog.open)activePhotoElement.focus({preventScroll:true});else if(focus)restoreFocus(null);else if(previous&&!dialog.open)restoreFocus(previous);
 }
 function route(){
@@ -257,13 +265,13 @@ function modal(title,html,{recovery=false}={}){
   if(dialog.open){if(!closeModal())return false;}
   modalOrigin=token(document.activeElement);dirty=false;$('#dialog-title').dataset.uiSource=canonicalUiText(title);$('#dialog-title').textContent=title;$('#dialog-body').innerHTML=html;$('#dialog-body').querySelectorAll('input,textarea').forEach(el=>{if(!el.hasAttribute('autocomplete'))el.autocomplete='off';});$('#dialog-body').querySelectorAll('form').forEach(form=>{form.__pawContext=recovery?{generation:session?.generation??0,petId:null,entityId:null,baseRevision:null,operationId:uid(),intent:null}:captureFormContext({repository,getGeneration:()=>session?.generation??0,petId:pet()?.id});});dialog.showModal();return true;
 }
-function closeModal(force=false){if(!force&&(saving||dirty)){if(saving){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}if(!window.confirm(UI_TEXT('放弃这次尚未保存的修改？')))return false;}dialog.close();dirty=false;restoreFocus(modalOrigin);return true;}
+function closeModal(force=false){if(!force&&dialog.querySelector('[data-ai-saving]')){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}if(!force&&(saving||dirty)){if(saving){toast(UI_TEXT('正在保存，请等待结果后再关闭。'));return false;}if(!window.confirm(UI_TEXT('放弃这次尚未保存的修改？')))return false;}dialog.close();dirty=false;restoreFocus(modalOrigin);return true;}
 function field(label,html,full=false){return `<label class="field ${full?'full':''}"><span>${esc(label)}</span>${html}</label>`;}
 function formActions(label=UI_TEXT('保存记录')){return UI_HTML`<p class="form-error" role="alert" hidden></p><div class="form-actions"><button type="button" class="button secondary" data-action="close">取消</button><button type="submit" class="button">${icon('check')} ${esc(label)}</button></div>`;}
 function showFormError(form,error){const el=form?.querySelector('.form-error');const message=UI_TEXT('保存未成功：')+localizeError(error);if(error.code==='CONFLICT')showConflictReview(form);if(el){el.hidden=false;el.textContent=message;el.tabIndex=-1;el.focus();}else toast(message);}
 async function submitOperation(form,operation,message,after){
   if(saving)return false;const submittedGeneration=session.generation;saving=true;const b=form.querySelector('[type=submit]'),label=b.innerHTML;b.disabled=true;b.textContent=UI_TEXT('正在保存…');
-  try{const context=form.__pawContext??captureFormContext({repository,getGeneration:()=>session.generation,petId:pet()?.id});const result=await session.run(repo=>operation(bindFormRepository(repo,context,()=>session.generation)));syncState();loadError=null;closeModal(true);render();toast(message);if(after)after(result);return true;}
+  try{const context=form.__pawContext??captureFormContext({repository,getGeneration:()=>session.generation,petId:pet()?.id});const result=await session.run(repo=>operation(bindFormRepository(repo,context,()=>session.generation)));syncState();loadError=null;try{await trackStage3Write(form,result);}catch{toast(S3('progressDeferred'));}syncState();closeModal(true);render();toast(message);if(after)after(result);return true;}
   catch(error){if(submittedGeneration===session.generation&&form.isConnected)showFormError(form,error);return false;}
   finally{if(submittedGeneration===session.generation)saving=false;b.disabled=false;b.innerHTML=label;}
 }
@@ -306,7 +314,43 @@ function managementToolbar(kind){
 
 function timelineHTML(limit=3){const list=petRecords().slice(0,limit);return list.length?`<ol class="timeline">${list.map(r=>`<li><span class="event-icon">${icon(types[r.type]?.icon)}</span><div class="timeline-content"><h3>${esc(recordTitle(r))}<time datetime="${r.date}">${shortDate(r.date)}</time></h3><p>${esc(r.note||UI_TEXT('把今天的小小成长记下来。'))}</p><span class="small-badge">${esc(recordTypeLabel(r))}</span></div></li>`).join('')}</ol>`:empty(UI_TEXT('时间线等你写下第一笔'),UI_TEXT('健康记录和日常瞬间都会出现在这里。'));}
 function petSummary(){const p=pet();return UI_HTML`<section class="pet-hero"><div class="hero-copy"><button class="pet-picker" data-action="switch-pet">${icon('paw')} 我的毛孩子 ${icon('down')}</button><h2>你好呀，${esc(p.name)}。</h2><p>${p.arrival?UI_HTML`我们已经一起度过 ${Math.max(0,-dayDiff(p.arrival))} 个有你陪伴的日子。`:UI_TEXT('来到家的日期可以稍后补充。')}</p><div class="pet-tags"><span class="tag">${esc(p.breed||(petTypeLabel(p)))}</span><span class="tag">${ageText(p)}</span></div><button class="text-button" data-action="edit-pet">查看宠物档案 ${icon('chevron')}</button></div><div class="hero-image">${img(p.image,p.name+UI_TEXT('的宠物照片'),'',p.avatarAssetId)}<span class="hero-caption">一起长大，一直陪伴</span></div></section>`;}
-function homeHTML(){return heading(UI_TEXT('每一天，都是成长。'),UI_HTML`和${esc(pet().name)}一起，把平凡的日子变成珍贵的回忆。`,button(UI_TEXT('记一笔'),'record'))+UI_HTML`<div class="home-grid care-home">${petSummary()}<section class="panel home-reminders"><div class="panel-title"><div><h2>接下来的小事</h2><p>日期由你设置，照顾按自己的节奏</p></div>${icon('calendar')}</div>${remindersHTML(true)}</section><div class="stats-strip"><div class="stat"><div class="stat-label">${icon('weight')} 最近体重</div><strong>${latestWeight()??'—'}<small>kg</small></strong><p>${weights().length?UI_TEXT('已记录 ')+weights().length+UI_TEXT(' 次'):UI_TEXT('等待第一次记录')}</p></div><div class="stat"><div class="stat-label">${icon('book')} 成长足迹</div><strong>${petRecords().length}<small>条</small></strong><p>记录平常的日子</p></div><div class="stat"><div class="stat-label">${icon('calendar')} 待办事项</div><strong>${pending().length}<small>项</small></strong><p>由你安排下一次</p></div></div><section class="panel home-chart"><div class="panel-title"><h2>体重的变化</h2><button class="text-button" data-action="record-weight">添加记录 ${icon('plus')}</button></div>${chartHTML()}</section><section class="panel home-recap"><div class="panel-title"><h2>${esc(UI_TEXT('成长回顾'))}</h2>${icon('book')}</div><div data-weekly-recap><p class="demo-note">${esc(UI_TEXT('依据已保存的记录，回看一起成长的日子。'))}</p></div></section><section class="panel home-timeline"><div class="panel-title"><h2>我们的成长时间线</h2><a href="#health" class="text-button">全部足迹 ${icon('chevron')}</a></div>${timelineHTML()}</section><section class="panel community-teaser">${img('assets/walk.jpg',UI_TEXT('两只狗狗一起玩耍'))}<div class="teaser-copy"><h3>快乐，也可以一起长大。</h3><p>探索同城示例宠友。</p><a href="#nearby" class="text-button">遇见附近的毛孩子 ${icon('chevron')}</a></div></section></div>`;}
+function homeHTML(){return heading(UI_TEXT('每一天，都是成长。'),UI_HTML`和${esc(pet().name)}一起，把平凡的日子变成珍贵的回忆。`,button(UI_TEXT('记一笔'),'record'))+UI_HTML`<section class="panel onboarding-card" data-home-onboarding hidden></section><div class="home-grid care-home">${petSummary()}<section class="panel home-reminders"><div class="panel-title"><div><h2>接下来的小事</h2><p>日期由你设置，照顾按自己的节奏</p></div>${icon('calendar')}</div>${remindersHTML(true)}</section><div class="stats-strip"><div class="stat"><div class="stat-label">${icon('weight')} 最近体重</div><strong>${latestWeight()??'—'}<small>kg</small></strong><p>${weights().length?UI_TEXT('已记录 ')+weights().length+UI_TEXT(' 次'):UI_TEXT('等待第一次记录')}</p></div><div class="stat"><div class="stat-label">${icon('book')} 成长足迹</div><strong>${petRecords().length}<small>条</small></strong><p>记录平常的日子</p></div><div class="stat"><div class="stat-label">${icon('calendar')} 待办事项</div><strong>${pending().length}<small>项</small></strong><p>由你安排下一次</p></div></div><section class="panel home-chart"><div class="panel-title"><h2>体重的变化</h2><button class="text-button" data-action="record-weight">添加记录 ${icon('plus')}</button></div>${chartHTML()}</section><section class="panel home-recap"><div class="panel-title"><h2>${esc(UI_TEXT('成长回顾'))}</h2>${icon('book')}</div><div data-weekly-recap><p class="demo-note">${esc(UI_TEXT('依据已保存的记录，回看一起成长的日子。'))}</p></div></section><section class="panel home-timeline"><div class="panel-title"><h2>我们的成长时间线</h2><a href="#health" class="text-button">全部足迹 ${icon('chevron')}</a></div>${timelineHTML()}</section><section class="panel community-teaser">${img('assets/walk.jpg',UI_TEXT('两只狗狗一起玩耍'))}<div class="teaser-copy"><h3>快乐，也可以一起长大。</h3><p>探索同城示例宠友。</p><a href="#nearby" class="text-button">遇见附近的毛孩子 ${icon('chevron')}</a></div></section></div>`;}
+
+let stage3Client,stage3Entry,stage3Onboarding,stage3Recap,stage3Assistant;
+function stage3Scope(){return {repository,generation:session?.generation,mode:workspaceMode,workspaceId:repository?.getWorkspaceId?.(),petId:pet()?.id??null,ownerId:workspaceMode==='account'?authPrincipal?.userId:null};}
+async function stage3Request(action,payload={}){
+ if(!PUBLIC_CONFIG.aiEnabled)throw Object.assign(new Error('UNAVAILABLE'),{code:'UNAVAILABLE'});
+ initCloudAccount();if(!cloudApp)throw Object.assign(new Error('UNAVAILABLE'),{code:'UNAVAILABLE'});
+ stage3Client??=createAiClient({getScope:stage3Scope,getAuthorization:()=>auth?.getRequestSession(),invoke:data=>cloudApp.callFunction({name:PUBLIC_CONFIG.aiFunctionName,data})});
+ const next={...payload};if(workspaceMode==='account')delete next.context;else if(action!=='ai.quota')next.context=createAiContext(session.snapshot(),pet()?.id??null);
+ return stage3Client.request(action,next);
+}
+async function stage3Changed(){await session.load();syncState();render();}
+function stage3Source(source){
+ if(source.kind==='help'){const help=stage3Help(source);modal(S3('help'),`<div data-readonly-ai><h3>${esc(help.title)}</h3><p class="form-tip">${esc(help.text)}</p><div class="form-actions"><button type="button" class="button secondary" data-action="close">${esc(S3('close'))}</button></div></div>`);return;}
+ const visible=visibleHealth(session.snapshot()),item=(source.kind==='record'?visible.records:visible.reminders).find(r=>r.id===source.id&&r.petId===pet()?.id);
+ if(!item){toast(S3('changed'));return;}
+ modal(S3('basis'),`<div data-readonly-ai><h3>${esc(item.title)}</h3><p>${esc(item.occurredDate||item.dueDate)}</p><p class="source-note">${esc(item.note||'')}</p><div class="form-actions"><a href="#health" class="button secondary" onclick="document.getElementById('dialog').close()">${esc(S3('viewHealth'))}</a><button type="button" class="button" data-action="close">${esc(S3('close'))}</button></div></div>`);
+}
+function maintainStage3(){
+ if(!state||loadError||!session){document.getElementById('stage3-assistant-launcher')?.setAttribute('hidden','');return;}
+ const common={request:stage3Request,getSnapshot:()=>session.snapshot(),getRepository:()=>repository,getScope:stage3Scope,getLocale,openModal:modal,onSource:stage3Source,onChanged:stage3Changed};
+ stage3Onboarding??=createOnboarding({...common,onPet:()=>petModal(true),onRecord:()=>recordModal(),onReminder:()=>reminderModal(),onError:message=>toast(message)});
+ stage3Entry??=createAiEntry({...common,onSaved:async result=>{await session.load();syncState();const ids=result.records.filter(r=>r.petId===pet()?.id).map(r=>r.id);try{if(ids.length)await stage3Onboarding.noteSaved({type:'RECORDS_SAVED',recordIds:ids});}catch{toast(S3('progressDeferred'));}await session.load();syncState();closeModal(true);render();toast(S3('saved'));}});
+ stage3Recap??=createWeeklyRecap(common);stage3Assistant??=createAssistantPanel(common);stage3Assistant.syncScope();
+ if(page==='home'){
+  let host=document.querySelector('[data-home-onboarding]');if(!host){const emptyHost=document.querySelector('.empty-health');if(emptyHost){emptyHost.insertAdjacentHTML('afterbegin','<div class="onboarding-card" data-home-onboarding hidden></div>');host=emptyHost.querySelector('[data-home-onboarding]');}}
+  stage3Onboarding.mount(host);const recapHost=document.querySelector('[data-weekly-recap]');if(recapHost)stage3Recap.mount(recapHost);
+ }
+ let launcher=document.getElementById('stage3-assistant-launcher');if(!launcher){launcher=document.createElement('button');launcher.id='stage3-assistant-launcher';launcher.type='button';launcher.className='button assistant-launcher';launcher.dataset.action='open-assistant';document.body.append(launcher);}launcher.hidden=!PUBLIC_CONFIG.aiEnabled;launcher.innerHTML=icon('comment')+' '+esc(S3('assistant'));
+}
+async function trackStage3Write(form,result){
+ if(!stage3Onboarding||!form?.isConnected||form.__pawContext?.generation!==session.generation)return;
+ if(form.id==='pet-form')await stage3Onboarding.noteSaved({type:'PET_SAVED',petId:result.id});
+ else if(form.id==='record-form')await stage3Onboarding.noteSaved({type:'RECORDS_SAVED',recordIds:[result.id]});
+ else if(form.id==='reminder-form')await stage3Onboarding.noteSaved({type:'REMINDER_SAVED',reminderId:result.id});
+}
+
 function recordActions(r){return UI_HTML`<button class="text-button" data-action="edit-record" data-id="${esc(r.id)}">编辑</button><button class="delete-button" data-action="delete-record" data-id="${esc(r.id)}">移入回收站</button>`;}
 function healthHTML(){
   const records=filteredRecords();
@@ -315,7 +359,7 @@ function healthHTML(){
 
 function recordModal(type='weight',editing=null){
   const r=editing,linked=r?pending().find(x=>x.originRecordId===r.id):null;
-  if(!modal(r?UI_TEXT('编辑成长记录'):UI_TEXT('记下这一次成长'),UI_HTML`<form id="record-form"><div class="form-grid">${field(UI_TEXT('记录类型'),`<select name="type" id="record-type">${recordTypeEntries().map(([k,v])=>`<option value="${k}" ${k===(r?.type||type)?'selected':''}>${v.label}</option>`).join('')}</select>`)}${field(UI_TEXT('记录日期'),`<input name="date" type="date" value="${r?.date||today()}" max="${today()}" required>`)}<div id="type-fields" class="field full"></div>${field(UI_TEXT('备注 · 可选'),UI_HTML`<textarea name="note" maxlength="500" placeholder="记录今天的小细节…">${esc(r?.note||'')}</textarea>`,true)}</div><p class="form-tip">健康事项日期按实际安排填写；编辑不会复制记录。</p>${formActions()}</form>`))return;
+  if(!modal(r?UI_TEXT('编辑成长记录'):UI_TEXT('记下这一次成长'),UI_HTML`<form id="record-form"><div class="record-mode-tabs"><span data-s3-key="manual">${esc(S3('manual'))}</span><button type="button" class="button secondary" data-action="ai-entry" data-s3-key="ai" ${PUBLIC_CONFIG.aiEnabled?'':'disabled'}>${esc(S3('ai'))}</button></div><div class="form-grid">${field(UI_TEXT('记录类型'),`<select name="type" id="record-type">${recordTypeEntries().map(([k,v])=>`<option value="${k}" ${k===(r?.type||type)?'selected':''}>${v.label}</option>`).join('')}</select>`)}${field(UI_TEXT('记录日期'),`<input name="date" type="date" value="${r?.date||today()}" max="${today()}" required>`)}<div id="type-fields" class="field full"></div>${field(UI_TEXT('备注 · 可选'),UI_HTML`<textarea name="note" maxlength="500" placeholder="记录今天的小细节…">${esc(r?.note||'')}</textarea>`,true)}</div><p class="form-tip">健康事项日期按实际安排填写；编辑不会复制记录。</p>${formActions()}</form>`))return;
   function fill(){const t=$('#record-type').value;$('#type-fields').innerHTML=t==='weight'?field(UI_TEXT('体重（kg）'),UI_HTML`<input name="value" type="number" inputmode="decimal" min="0.01" max="200" step="0.01" value="${r?.type==='weight'?r.value:''}" placeholder="例如：4.6…" required>`):(t==='other'?field(UI_TEXT('自定义记录类型'),UI_HTML`<input name="typeLabel" maxlength="20" value="${esc(r?.typeLabel??'')}" placeholder="例如：剪指甲" required>`):'')+field(t==='daily'?UI_TEXT('给这个瞬间起个名字'):UI_TEXT('记录名称'),UI_HTML`<input name="title" maxlength="60" value="${esc(r?.title||'')}" placeholder="例如：今天的护理…" required>`)+((t==='vaccine'||t==='deworm'||t==='other')?field(UI_TEXT('下一次日期 · 可选'),UI_HTML`<input name="nextDate" type="date" value="${linked?.dueDate||''}"><small>清空会取消此记录关联的待办；日期由你决定。</small>`):'');}
   fill();if(r){$('#record-form').__pawContext.petId=r.petId;$('#record-form').__pawContext.entityId=r.id;}$('#record-type').addEventListener('change',fill);
   $('#record-form').addEventListener('submit',async e=>{
@@ -446,7 +490,7 @@ document.addEventListener('click',async e=>{
   }
   const a=el.dataset.action,id=el.dataset.id,v=el.dataset.value;
   try{if(workspaceMode!=='demo'&&['post','invite-post','like','comments','delete-post'].includes(a)){modal(UI_TEXT('真实社区尚未开放'),UI_HTML`<p class="demo-note">当前可只读浏览示例。真实发布和互动将在社区阶段接通。</p><div class="form-actions"><button class="button secondary" data-action="workspace-demo">去示例体验</button><button class="button" data-action="close">返回</button></div>`);return;}switch(a){
-    case 'workspace-local':await switchWorkspace('local',{newPet:true});break;case 'workspace-demo':await switchWorkspace('demo');break;case 'account':await openAccount();break;case 'avatar-pet':await avatarModal(id||pet()?.id);break;case 'record':recordModal();break;case 'record-weight':recordModal('weight');break;case 'record-daily':recordModal('daily');break;
+    case 'workspace-local':await switchWorkspace('local',{newPet:true});break;case 'workspace-demo':await switchWorkspace('demo');break;case 'account':await openAccount();break;case 'avatar-pet':await avatarModal(id||pet()?.id);break;case 'record':recordModal();break;case 'ai-entry':stage3Entry?.open();break;case 'open-assistant':stage3Assistant?.open();break;case 'record-weight':recordModal('weight');break;case 'record-daily':recordModal('daily');break;
     case 'edit-record':recordModal(null,state.records.find(r=>r.id===id));break;case 'edit-pet':petModal(false,id||pet()?.id);break;case 'new-pet':if(dialog.open&&!closeModal())break;petModal(true);break;case 'switch-pet':switchPet();break;
     case 'select-pet':if(busyActions.has(a))break;busyActions.add(a);try{await session.run(repo=>repo.selectPet(id));management=transitionManagement(management,{type:'PET_CHANGED'});syncState();if(dialog.open)closeModal(true);render();toast(UI_HTML`开始记录${pet().name}的成长。`);}finally{busyActions.delete(a);}break;
     case 'manage-pets':management=transitionManagement(management,{type:'ENTER_PETS'});render();restoreFocus({action:'finish-pets'});break;
@@ -471,7 +515,7 @@ document.addEventListener('click',async e=>{
     case 'retry':await boot();break;case 'close':closeModal();break;
   }}catch(error){toast(UI_TEXT('操作未成功：')+error.message);}
 });
-document.addEventListener('input',e=>{if(dialog.contains(e.target))dirty=true;if(e.target.id==='post-search'){postSearch=e.target.value;const cursor=e.target.selectionStart;render();$('#post-search').focus();$('#post-search').setSelectionRange(cursor,cursor);}});
+document.addEventListener('input',e=>{if(dialog.contains(e.target)&&!e.target.closest('[data-readonly-ai]'))dirty=true;if(e.target.id==='post-search'){postSearch=e.target.value;const cursor=e.target.selectionStart;render();$('#post-search').focus();$('#post-search').setSelectionRange(cursor,cursor);}});
 document.addEventListener('change',e=>{
   if(e.target.name==='managed-pet'||e.target.name==='managed-reminder'){management=transitionManagement(management,{type:e.target.name==='managed-pet'?'TOGGLE_PET':'TOGGLE_REMINDER',id:e.target.value});render();return;}
   if(e.target.id==='health-from'||e.target.id==='health-to'){const from=$('#health-from').value,to=$('#health-to').value;if(from&&to&&from>to){toast(UI_TEXT('开始日期不能晚于结束日期。'));$('#health-from').value=healthFrom;$('#health-to').value=healthTo;return;}healthFrom=from;healthTo=to;render();}

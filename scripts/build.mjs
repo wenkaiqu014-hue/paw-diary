@@ -15,7 +15,7 @@ if(!app||!style)throw new Error('Missing hashed entry');
 let html=await readFile(join(root,'index.html'),'utf8');
 html=html.replace(/src="app\.js[^"]*"/,'src="assets/'+basename(app)+'"').replace(/href="style\.css[^"]*"/,'href="assets/'+basename(style)+'"');
 let fileConfig={};try{fileConfig=JSON.parse(await readFile(process.env.PAW_CLOUD_CONFIG_PATH??'src/config/cloud-environment.json','utf8'));}catch{}
-const config={environmentId:process.env.PAW_CLOUD_ENV_ID??fileConfig.environmentId??fileConfig.env??'paw-diary-d8g3p4tlsb305221d',region:'ap-shanghai',publishableKey:process.env.PAW_CLOUD_PUBLISHABLE_KEY??fileConfig.publishableKey??'',enabled:process.env.PAW_CLOUD_ENABLED!==undefined?process.env.PAW_CLOUD_ENABLED==='true':fileConfig.enabled===true};
+const config={environmentId:process.env.PAW_CLOUD_ENV_ID??fileConfig.environmentId??fileConfig.env??'paw-diary-d8g3p4tlsb305221d',region:'ap-shanghai',aiEnabled:process.env.PAW_AI_ENABLED!==undefined?process.env.PAW_AI_ENABLED==='true':fileConfig.aiEnabled===true,publishableKey:process.env.PAW_CLOUD_PUBLISHABLE_KEY??fileConfig.publishableKey??'',enabled:process.env.PAW_CLOUD_ENABLED!==undefined?process.env.PAW_CLOUD_ENABLED==='true':fileConfig.enabled===true};
 const encoded=JSON.stringify(config).replaceAll('<','\\u003c');html=html.replace('</head>','<script>globalThis.__PAW_PUBLIC_CONFIG__='+encoded+';</script>\n</head>');
 await writeFile(join(outdir,'index.html'),html);await writeFile(join(outdir,'.nojekyll'),'');
 const legacy=execFileSync('git',['ls-tree','-r','--name-only','v0.2.0','--','app.js','style.css','src'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);

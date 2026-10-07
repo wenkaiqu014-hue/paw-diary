@@ -199,7 +199,9 @@ async function previewInTransaction(tx, source, w) {
           });
       }
     }
+  const d=await loadDomain();const metadata=d.mapStage3State(source.snapshot.profile.stage3,{pet:id=>source.closure.petIds.includes(id)?id:null,record:id=>source.closure.recordIds.includes(id)?id:null,reminder:id=>source.closure.reminderIds.includes(id)?id:null});
   return {
+    metadataSkipped:metadata.metadataSkipped,
     sourceWorkspaceId: source.sourceWorkspaceId,
     selection: source.selection,
     closure: source.closure,
@@ -497,6 +499,8 @@ async function handleImport(request, deps) {
         )
           next.activePetId = next.pets.find((x) => !x.deletedAt)?.id ?? null;
         if (current.copyCity) next.profile.city = current.snapshot.profile.city;
+        const metadata=d.mapStage3State(current.snapshot.profile.stage3,{pet:id=>ids.pet.get(id)??null,record:id=>ids.record.get(id)??null,reminder:id=>ids.reminder.get(id)??null,recap:id=>`import-recap-${hash({source:current.sourceWorkspaceId,id}).slice(0,40)}`});
+        if(current.snapshot.profile.stage3!==undefined)next.profile.stage3=d.mergeStage3State(next.profile.stage3,metadata.state);
         w.snapshot = d.validateSnapshot(next);
         if (Buffer.byteLength(JSON.stringify(w.snapshot)) > 950 * 1024)
           throw new ApiError("INVALID_INPUT", "errors.workspaceTooLarge");
@@ -504,6 +508,7 @@ async function handleImport(request, deps) {
         current.committed = true;
         current.result = {
           batchId: current.id,
+          metadataSkipped:metadata.metadataSkipped,
           counts: Object.fromEntries(
             Object.entries(newItems).map(([k, v]) => [k, v.length]),
           ),

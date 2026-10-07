@@ -211,3 +211,23 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
 @media(min-width:1100px){.care-home{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'pet reminders' 'stats stats' 'chart recap' 'timeline timeline' 'teaser teaser'}}
 @media(max-width:1150px){.workspace-controls{margin-left:26px;margin-right:26px}}
 @media(max-width:600px){.workspace-controls{margin-left:19px;margin-right:19px}.care-home{gap:16px}.photo-wall-panel{margin-top:16px}.care-home>.community-teaser{gap:12px}.care-home>.community-teaser>img{width:80px;height:100px}}
+
+/* Stage3 basic record, setup, recap and read-only assistant controls. */
+.record-mode-tabs{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.ai-draft{margin:20px 0;padding:16px;border:1px solid var(--line);border-radius:12px;min-width:0}
+.ai-draft legend{padding:0 8px}.ai-draft legend input{width:18px;height:18px;vertical-align:middle}
+#ai-drafts>h3{margin-top:24px}.ai-draft>.demo-note{margin-bottom:16px}
+.onboarding-card{margin-bottom:24px}.onboarding-heading{display:flex;justify-content:space-between;gap:16px}.onboarding-heading p{color:var(--muted);margin-top:6px}
+.onboarding-steps{display:flex;flex-wrap:wrap;gap:12px 24px;list-style:none;padding:0;margin:18px 0;color:var(--muted)}.onboarding-steps [aria-current]{font-weight:650;color:var(--green)}
+.onboarding-actions,.recap-actions,.assistant-quick,.assistant-sources{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.recap-range{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.recap-range label:first-child{grid-column:1/-1}.recap-range label,.recap-history{display:grid;gap:6px}.recap-range input,.recap-range select,.recap-history select{min-width:0;width:100%;min-height:44px;border:1px solid var(--line);border-radius:8px;background:white;padding:8px}
+.recap-facts{display:flex;flex-wrap:wrap;gap:8px 16px;margin:16px 0;font-variant-numeric:tabular-nums}
+.recap-story{margin:20px 0}.recap-story>p,.source-note{white-space:pre-wrap;overflow-wrap:anywhere}.recap-story small{display:block;color:var(--muted);margin:12px 0}.recap-story details{margin-top:12px}.recap-story summary{cursor:pointer;min-height:44px;display:flex;align-items:center}.recap-history{margin-top:20px}.recap-actions{margin-top:16px}
+.assistant-launcher{position:fixed;right:24px;bottom:24px;z-index:30;min-height:44px}.assistant-quick{margin:16px 0}.assistant-messages{max-height:45vh;overflow-y:auto;margin:16px 0;overscroll-behavior:contain}.assistant-message{padding:12px 0;border-bottom:1px solid var(--line)}.assistant-message p{white-space:pre-wrap;overflow-wrap:anywhere}.assistant-sources{margin-top:8px}.assistant-sources .text-button{font-size:13px}
+body:has(dialog[open]) .assistant-launcher{visibility:hidden}
+@media(max-width:600px){.assistant-launcher{right:16px;bottom:calc(84px + env(safe-area-inset-bottom));font-size:13px}.onboarding-heading{flex-wrap:wrap}.onboarding-card{margin-bottom:16px}.ai-draft{padding:12px}.assistant-quick .button{flex:1 1 120px}.assistant-messages{max-height:35dvh}}
+
+.recap-range input,.recap-range select,.recap-history select{font-size:16px}
+.care-home .hero-copy{justify-content:flex-start}
+
+.ai-reminder-choice{display:flex;gap:8px;align-items:center;min-height:44px}.ai-reminder-choice input{width:18px;height:18px}

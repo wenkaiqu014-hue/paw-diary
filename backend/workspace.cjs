@@ -44,11 +44,19 @@ function loadDomain() {
     import("../src/domain/records.js"),
     import("../src/domain/reminders.js"),
     import("../src/domain/lifecycle.js"),
-  ]).then(([s, r, m, l]) => ({
+    import("../src/domain/ai-drafts.js"),
+    import("../src/domain/onboarding.js"),
+    import("../src/domain/recap-facts.js"),
+    import("../src/domain/stage3-state.js"),
+   ]).then(([s, r, m, l, a, o, f, g]) => ({
     ...s,
     ...r,
     ...m,
     ...l,
+    ...a,
+    ...o,
+    ...f,
+    ...g,
     finishReminder: m.completeReminder,
   })));
 }
@@ -79,6 +87,13 @@ function verifyReferences(state, action, p) {
   if (action === "records.save") {
     if (p.id) owned(state, "records", p.id);
     if (p.petId) owned(state, "pets", p.petId);
+  }
+  if(action === "records.saveBatch") {
+    if(!Array.isArray(p.inputs)||p.inputs.length<1||p.inputs.length>5)throw new ApiError("INVALID_INPUT");
+    for(const input of p.inputs){if(!input||typeof input!=="object"||input.id)throw new ApiError("INVALID_INPUT");owned(state,"pets",input.petId);}
+  }
+  if(action === "stage3.onboarding.save"||action === "stage3.recap.save") {
+    owned(state,"pets",p.petId);for(const id of p.recordIds??[])owned(state,"records",id);if(p.reminderId)owned(state,"reminders",p.reminderId);for(const id of p.reminderIds??[])owned(state,"reminders",id);
   }
   if (action === "reminders.save") {
     if (p.id) owned(state, "reminders", p.id);
@@ -139,6 +154,15 @@ async function transformHealth(workspace, action, p, { clock, idFactory }) {
       next = d.applyRecord(next, p, { now, idFactory });
       data = next.records.find((r) => r.id === p.id) ?? next.records[0];
       break;
+    case "records.saveBatch": {
+      const result=d.applyRecordBatch(next,p.inputs,{now,idFactory});next=result.snapshot;data={records:result.records,reminders:result.reminders};break;
+    }
+    case "stage3.onboarding.save": {
+      const result=d.applyOnboarding(next,p,{now});next=result.snapshot;data=result.progress;break;
+    }
+    case "stage3.recap.save": {
+      data=await d.prepareSavedRecap(next,p,{cryptoImpl:crypto.webcrypto});next=d.applySavedRecap(next,data);break;
+    }
     case "records.delete":
       next = d.removeRecord(next, p.id, { now });
       data = null;

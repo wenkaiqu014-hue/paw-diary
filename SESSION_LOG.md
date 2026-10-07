@@ -659,3 +659,45 @@ Root应用catalog-official-product-docs、dev-browser/webapp-testing、Impeccabl
 新增spec与七任务plan，接口明确：独立paw-ai/事务限额；确认记录走saveRecordBatch；引导/私有回顾用可选profile.stage3与已有V3；默认7天回顾/安全预览复制；只读内存助手。计划写文件所有权、纯函数/仓储签名、正常主线RED→GREEN、真实模型与原URL门槛、一次独立审查和发版；6–8小时仅建议估算，截止不变。同步AGENTS/PENDING/PRODUCT/ROADMAP/DESIGN/交互说明/总计划，原03计划标历史初稿。用户要求先交付设计计划，本轮一并形成供审阅，不另插一个空设计确认；实施前保留writing-plans明确的计划审阅步骤，协作方式已授权，不再问。
 
 Root按verification-before-completion自检：`git diff --check`退出0；文档脚本检查11份文档围栏/相对链接（0missing），七任务及接口名/1100断点/环境变量在spec和plan一致，无TBD/TODO；对tracked与非忽略新文件扫描实际提供Key，0match。当前改动全为Markdown，未npm test/build/业务浏览器回归，因为尚未改产品代码；原URL截图是现状检查不是新功能验收。新shell环境检查成功不等于模型接通。随后本地提交设计/计划/研究及日志，不推送/部署/移动tag；具体归档hash以Git输出为准。尚未完成：用户审阅计划、账号免费型号/限速、真实smoke、Task1–7及用户亲自体验。
+
+## 阶段3正式实施：四小时约束与首页基础
+
+2026-10-07 15:27:31 Asia/Shanghai（工具date）：用户批准七步骤实施，每步一小时内、总四小时内，每步开始核本机/GitHub高星skill，只做基础用途，可自主agent/有头截图，及时更新文档。总时限19:27:31。独立模块并行，Root统一app整合。隔离.worktrees/stage3 / feature/stage3-ai-growth从ab83c11建立，npm ci和基线npm test246/246 PASS/0skip。
+
+Step1核本机Impeccable/layout/craft-floor、webapp-testing；GitHub打开anthropics/skills/webapp-testing，另候选frontend-design路径Cache miss，未当安装依据，复用已有技能。stage3-home.py真实RED：1440宠物/护理698.88/411.12px不等；改两等列、全宽统计/时间线、轻社区和说明栏齐边后，双语1440/768/390 GREEN、无pageErrors/横溢。原健康页六宽/四状态稳定高度/200%文字GREEN；个人媒体实际GREEN（照片刷新/备份恢复/回收关联），Root查看新桌面截图。回顾目前仅宿主，AI前端尚未接。首页代码提交41cd624；首次Python stdin追加中文日志因Non-UTF-8失败，未写文档，改apply_patch记录，不影响代码/检查。工具复合命令最后commit成功不能当日志写成功。
+
+Step2开始核本机TDD与GitHub wshobson error-handling原文（REST经Web不可读）；AI worker补查obra/superpowers页面296.1k stars，不安装框架。stage3_ai_backend拥有backend/ai、函数/运维/模型测试；stage3_domain_repository拥有领域/仓储/短事务/必要完整备份，Root拥有app/CSS/client/UI。均明确不独占、不回退、不自行Git，日志由Root统一。领域Step3/4/5开工核本机TDD/验证与GitHub wshobson高星testing/error技能。
+
+Root client2行为RED→GREEN：迟到回包不串宠物、账户UID不符拒绝、本地不带token、不重试。全suite曾251/257，6fail全为worker新增draft/gateway正常RED，未称全GREEN。Root ai-entry两个测试RED→实现，一项fixture缺完整V3字段，修正fixture后2/2 GREEN。15:39:57 Root新鲜npm test277/277 PASS/0skip；既有246及当时新增功能无回归。
+
+领域worker草稿/批量事务/引导/回顾统计先RED→GREEN；护理完成次数明确仅统计真实completed提醒且completion记录可见、completedAt日期在范围。demo回执与snapshot同次原子写，接口/备份剥离，不改v1/v2原文。最初跨空间跳过全部stage3被Root指出不符完整恢复，已替换为全量导入/云迁移ID映射：保留引导/回顾、映射pet/record/reminder/facts/storySources，保留原故事/time/hash，换ID后显式过时；部分缺来源仅跳过那份metadata并返回metadataSkipped。新增完整恢复RED→GREEN26/26，完成记录删除不改变旧hash的问题经RED→修hash覆盖facts→GREEN；不是为了减工默认丢资料。
+
+Step4前端开工核本机Impeccable/onboard/TDD及GitHub webapp-testing；Step5核已有验证/纯函数测试和GitHub error-handling，只做三步/范围/事实/回顾与安全复制。真实flow脚本首RED因未接回顾日期入口，尚未发模型请求。Task6独立UI worker核本机TDD/Impeccable/WebDesignGuidelines、GitHub vercel-labs/agent-skills页面32.0k stars与官方最新command.md，复用已有；只拥有助手模块及其测试，不改app/CSS。模型/助手具体失败、部署与前端复验继续追加，未发版/推送。
+
+本段网络来源URL：https://github.com/anthropics/skills/tree/main/skills/webapp-testing ；https://raw.githubusercontent.com/wshobson/agents/main/plugins/developer-essentials/skills/error-handling-patterns/SKILL.md ；https://raw.githubusercontent.com/wshobson/agents/main/plugins/javascript-typescript/skills/javascript-testing-patterns/SKILL.md ；https://github.com/obra/superpowers ；https://github.com/vercel-labs/agent-skills ；https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md 。供应商官方页另段记录。
+
+## 阶段3真实模型、确认主线与集中审查
+
+2026-10-07 16:51:53 Asia/Shanghai（Root工具date）：业务代码与后台冻结，当前准备合并/原站部署。总体自15:27:31起84分钟仍在19:27:31总截止内；阶段7提前独立审查约15:49启动，含后续集中修复到16:51已经超过一小时。Root明确向用户报告单步时限未完全守住，不把并行窗口或累计时间改写成全部≤1小时。后续仅最终回归、文档、发布和原URL复验，不追加功能。
+
+真实供应商/函数：SILICONFLOW_API_KEY只从本机环境读并注入paw-ai TEXT_AI_API_KEY，Qwen/Qwen2.5-7B-Instruct固定非Pro；普通Key模型list含此ID，现行官方FAQ说明原名免费、Pro收费，限速页说明实名免费调用账单0。用户账户账单/RPM未实际读取（userinfo GET/POST404，模型页动态失败），不把usage当余额/账单读回。无新收费采购、无DeepSeek/MiniMax/集团调用。paw-ai16:15:15最终Active/40秒、模型25秒；paw-api16:51:20最新Active/3秒/256MB/Node18.15、原pubkey匹配、AI/管理密钥未注入。ai_usage直接deny与函数规则读回，保持邮箱及匿名provider=false；未改原认证路径。
+
+模型worker实际直连三项合成smoke3/3通过，记录usage/latency安全数字；真实无会话callFunction解析两条5.6秒、助手合法来源2.6秒，回顾最初25秒TIMEOUT明确失败扣预占，改短中文/600输出后4.6秒成功。同一访客第4次QUOTA_EXHAUSTED真实拒绝，错误token真实UNAUTHENTICATED不降guest。最初英文提示漏独立事件/日期类型不稳，经明确中文schema与独立事件要求修复；云model阶段RangeError，推测ICU en-CA格式非ISO（未读原实际日期值），受控模拟复现后换UTC+8 ISO，云解析通过形成修复闭环；临时诊断已删除。读回权限首次Resource参数错误，改Resources数组成功。原文/完整模型回答/Key未写日志。
+
+实际多宠物A验收发现无名字输入被模型预选旧合成宠物，Root认定缺当前上下文属产品问题，而非仅测试没核。server将已授权activePetId传parser，无名称默认当前、明确名称保持归属、重名留空；首次双候选输出单位“公斤”被kg-only拒绝，仅已知公斤/千克映射kg数值不改，RED→GREEN并真实2.75秒两条allCurrentPet通过。原句只保留真实输入子串，否则回退完整输入；“下个月再做”下一日期不推算，missing nextDate须用户补填或显式skip，model不能自行skip。均纯测试RED→GREEN，不额外调模型，后端20项通过。record已存但step未存的RESUME按可见实体恢复，模拟中断RED→GREEN3/3，不重复创建。整个功能没有向量库、医疗咨询或新登录方式。
+
+前端真实本地主线stage3-flow.py成功：建合成宠物→两条真实AI草稿→编辑/确认→三步刷新恢复/跳提醒→真实回顾生成/明确保存/刷新→默认健康数值不进入分享/取消不发帖→真实助手回答与来源。原account-workspaces双语/离线/自定义类型、本地媒体备份恢复、test_app四页/示例互动、language原文保留均GREEN。stage3-home双语1440/768/390齐边/等列/无pageErrors；个人照片墙继承原媒体验证。stage3-assistant真实模块DOM/historicalscope/语言测试是fake provider，6项纯测试与DOM通过，明确不当真实模型证明。
+
+可信用户A由stage3_assistant_ui独占最新0600会话恢复与轮换写回，没有验证码、B会话或管理身份代替。真实auth.session平台owner/私有snapshot、唯一新合成宠物、saveOnboarding、用户SDK records.saveBatch、真实回顾生成/保存、助手回答/来源、刷新持久、1440/390无横溢/pageErrors0、切本地旧对话清空均通过。第一次解析误选旧合成宠物，当时未抓receipt，worker仅在旧合成宠物/唯一候选/本轮时间匹配下回收一条4.6kg，Root指出不能时间窗批量扫，后续分支已删除，仅按确切receipt IDs；没有继续清其他记录。明确名字的一次必要重试失败后走既有手动确认数据SDK路径，未反复盲刷。桥接响应、先点记录入口、刷新health定位与异步新宠物表单等待的脚本缺陷均查因修复。保留唯一明确合成fixture用于原URL；A最后16:00 checkpoint写回原stage2 real-sessions.json、600、contexts关闭、未signOut；不把fixture说成用户实际养宠。
+
+独立stage3_final_review新上下文只读，npm test283/283+语法/diff0，2Important/1Minor/0Critical：默认demo没有getRevision导致AI parse/saveRecap必失败；生成期间改日期混两个范围。Root核实并读取receiving-code-review，真实demo会话测试RED TypeError→optional revision GREEN，真实DOM延迟回顾控件RED enabled→禁用range/date/history GREEN，并验证demo回顾保存。Minor只读20片段范围提示直接展示，无检索扩展。stage3-locale真实UI复现中→英→中旧全局翻译缓存覆盖新回调，RED Current pet英文残留；新AI/助手/share表单使用自身刷新并保留原输入，GREEN。不再派第二轮全审。
+
+UI本机web-design-guidelines+最新官方command.md核标签/键盘/dialog/焦点/贴边/输入16px/底栏；Impeccable机械扫描0findings、stderr空，不宣称完整WCAG/真机。AI确认发送期间显式data-ai-saving保护关闭/禁重复与编辑；解析等待可取消且不业务写，原跨账号force退出仍清旧上下文。Root最新npm test292/292、0skip，语法/diff均0；本地新范围/显式模糊日期选择DOM与双语保留输入通过。等待原URL及Release真实证据，不提前标发布。
+
+源码/原始证据均在stage3 worktree；主要ignored路径stage3-model-smoke.log、stage3-cloud-three.log、stage3-cloud-recap.log、stage3-cloud-invalid-token.log、stage3-original-quote-*、stage3-next-date-*、stage3-current-pet-model-smoke-final.log、stage3-api-resume-deploy.log、stage3/cloud/real-A-flags.json与batch-own-receipt.json、stage3/flow/home/assistant。完整Node/浏览器原始输出在对应/tmp/paw-stage3-*.log，不含秘密。skill sources已前段与研究记录，不重复安装；最终分支整合沿用户已批准第7步合并main/推送/原URL发布，无需重新菜单确认。保留本轮ignored验收证据及旧工作树，不force清理。
+
+官方来源URL：https://docs.siliconflow.cn/docs/api/models-get ；https://docs.siliconflow.cn/docs/userguide/faqs/misc ；https://docs.siliconflow.cn/docs/userguide/faqs/rate-limit-and-upgradation ；https://docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-bob ；https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md 。
+
+2026-10-07 16:58:54（Root工具date）：最终候选v0.4.0完整292/292单测无skip，正常build与function build、语法/diff0、206源码/公开产物文件真实Key扫描0match、Markdown相对链接0missing。最后四脚本回归先发现保存忙态保护引入“parse finally未重启确认按钮”，stage3-review与真实stage3-flow均RED disabled；同步parse结束字段/确认可用状态后，真实demo/date-lock/模糊下一日期显式选择DOM GREEN，实际AI/助手双语保留输入GREEN，双语三宽首页GREEN，最终真实local完整model flow再次GREEN（只必要一轮，不盲刷）。原test_app、language、personal-media最终检查均GREEN。此后不再修改业务，正式合并推送原main，再按实际manifest做线上验收。
+
+文档worker stage3_release_docs拥有10份状态/设计/计划/运维/阶段报告，读取实际flags明确A.realParse=false，不把可信A的SDK批次植入当登录UI解析成功；真实解析由匿名/local/供应商证明。文档更新单步超时/总时限、4h替代旧6–8h建议、阶段4main入口、用户亲验与stage5真机待项；Root独占SESSION/README/CHANGELOG/package/VERSION。292测试及前六基础能力代码通过；当前原URL仍旧v0.3.0、tag未创建，Release须公开复验后再做，不提前虚勾。合并main已由用户批准第7步授权；保留stage3验收工作树证据，不force删除。

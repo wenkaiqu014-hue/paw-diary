@@ -2,6 +2,9 @@ import {clone,validateSnapshot,normalizePet,todayAt,isoTime,requiredText} from '
 import {applyRecord,removeRecord,defaultId} from '../domain/records.js?v=0.2.0';
 import {applyReminder,completeReminder as finishReminder} from '../domain/reminders.js?v=0.2.0';
 import {moveToTrash as trash,restoreFromTrash as restore,reorderPets as reorder} from '../domain/lifecycle.js?v=0.2.0';
+import {applyOnboarding} from '../domain/onboarding.js';
+import {prepareSavedRecap,applySavedRecap} from '../domain/recap-facts.js';
+import {applyRecordBatch} from '../domain/ai-drafts.js';
 import {createIndexedDBStore,storageError} from './indexeddb-store.js';
 import {createMediaRepository} from './media-repository.js';
 import {exportArchive,previewArchiveImport,commitArchiveImport,previewCorruptArchiveRestore,commitCorruptArchiveRestore} from '../domain/archive.js';
@@ -34,6 +37,13 @@ export function createLocalRepository({indexedDB=globalThis.indexedDB,dbName='pa
     refresh:()=>run(async()=>{const next=(await store.read()).envelope;next.snapshot=validateSnapshot(next.snapshot);if(next.snapshot.mode!=='local')throw storageError('INVALID_INPUT','个人档案模式无效');envelope=next;return clone(next.snapshot);}),
     savePet:(input,options)=>run(()=>write(ctx=>{const next=ctx.envelope.snapshot,old=input.id?next.pets.find(p=>p.id===input.id):null;if(input.id&&!old)throw new Error('宠物不存在');if(old?.deletedAt)throw new Error('宠物已在回收站，请先恢复');if(input.deletedAt!=null)throw new Error('请通过回收站操作移入资料');const pet=normalizePet({birthday:null,estimatedAgeMonths:null,arrivalDate:null,breed:'',sex:'',image:input.type==='cat'?'assets/cat.jpg':input.type==='dog'?'assets/dog.jpg':'',...old,...input,id:old?.id??idFactory()});if(input.avatarAssetId!==undefined&&input.avatarAssetId!==old?.avatarAssetId)throw new Error('请通过头像上传更新头像');const today=todayAt(isoTime(clock()));if(pet.birthday>today||pet.arrivalDate>today)throw new Error('生日或到家日期不能晚于今天');if(old)next.pets[next.pets.indexOf(old)]=pet;else next.pets.push(pet);if(input.makeActive===true||!next.activePetId)next.activePetId=pet.id;return pet;},revisionOptions(input,options))),
     saveRecord:(input,options)=>run(()=>write(ctx=>{ctx.envelope.snapshot=applyRecord(ctx.envelope.snapshot,input,{now:clock(),idFactory});return input.id?ctx.envelope.snapshot.records.find(r=>r.id===input.id):ctx.envelope.snapshot.records[0];},revisionOptions(input,options))),
+    saveRecordBatch:(inputs,options={})=>run(()=>{
+      const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw storageError('INVALID_INPUT','操作标识无效');
+      const signature=JSON.stringify({action:'records.saveBatch',inputs});
+      return write(ctx=>{const result=applyRecordBatch(ctx.envelope.snapshot,inputs,{now:clock(),idFactory});ctx.envelope.snapshot=result.snapshot;const data={records:result.records,reminders:result.reminders};ctx.envelope.receipts??={};ctx.envelope.receipts[operationId]={signature,result:clone(data)};return data;},{baseRevision:options.baseRevision,idempotency:{operationId,signature}});
+    }),
+    saveOnboarding:(input,options)=>run(()=>write(ctx=>{const result=applyOnboarding(ctx.envelope.snapshot,input,{now:clock()});ctx.envelope.snapshot=result.snapshot;return result.progress;},revisionOptions(input,options))),
+    saveRecap:(input,options)=>run(async()=>{const recap=await prepareSavedRecap(envelope.snapshot,input);return write(ctx=>{ctx.envelope.snapshot=applySavedRecap(ctx.envelope.snapshot,recap);return recap;},revisionOptions(input,options));}),
     deleteRecord:(id,options)=>run(async()=>{await write(ctx=>{ctx.envelope.snapshot=removeRecord(ctx.envelope.snapshot,id,{now:clock()});},revisionOptions(null,options));}),
     saveReminder:(input,options)=>run(()=>write(ctx=>{ctx.envelope.snapshot=applyReminder(ctx.envelope.snapshot,input,{now:clock(),idFactory});return input.id?ctx.envelope.snapshot.reminders.find(r=>r.id===input.id):ctx.envelope.snapshot.reminders[0];},revisionOptions(input,options))),
     completeReminder:(id,input,options)=>run(()=>write(ctx=>{const result=finishReminder(ctx.envelope.snapshot,id,input,{now:clock(),idFactory});ctx.envelope.snapshot=result.state;return {reminder:result.reminder,record:result.record};},revisionOptions(input,options))),

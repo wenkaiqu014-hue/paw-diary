@@ -132,6 +132,9 @@ export function createCloudRepository({
     request,
     savePet: (input, o) => request("pets.save", input, o),
     saveRecord: (input, o) => request("records.save", input, o),
+    saveRecordBatch: (inputs, o) => request("records.saveBatch", {inputs}, o),
+    saveOnboarding: (input, o) => request("stage3.onboarding.save", input, o),
+    saveRecap: (input, o) => request("stage3.recap.save", input, o),
     deleteRecord: (id, o) =>
       request("records.delete", { id }, o).then(() => undefined),
     saveReminder: (input, o) => request("reminders.save", input, o),

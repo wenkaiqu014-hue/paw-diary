@@ -1,3 +1,4 @@
+import {mapStage3State,mergeStage3State} from './stage3-state.js';
 import {clone,validateSnapshot,migrateV1,migrateV2,isoTime} from './schema.js?v=0.2.0';
 import {inspectImageBlob,MAX_DISPLAY_BYTES} from '../media/process-image.js';
 export const MAX_ARCHIVE_BYTES=100*1024*1024;
@@ -7,7 +8,7 @@ function base64ToBytes(base64){if(typeof base64!=='string'||!base64.length||base
 export async function hashBlob(blob){const hash=await crypto.subtle.digest('SHA-256',await blob.arrayBuffer());return [...new Uint8Array(hash)].map(n=>n.toString(16).padStart(2,'0')).join('');}
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 function checkSize(raw,maxBytes){if(new Blob([typeof raw==='string'?raw:JSON.stringify(raw)]).size>maxBytes)throw new Error('完整备份超过100MiB上限');}
-function portableSnapshot(snapshot){const result=clean(snapshot);result.mode='local';result.posts=[];result.profile={city:result.profile?.city??'深圳'};return validateSnapshot(result);}
+function portableSnapshot(snapshot){const result=clean(snapshot);result.mode='local';result.posts=[];result.profile={city:result.profile?.city??'深圳',...(result.profile?.stage3!==undefined?{stage3:result.profile.stage3}:{})};return validateSnapshot(result);}
 function assetMetadata(raw){if(!raw||typeof raw!=='object')throw new Error('照片元数据无效');const {id,petId,kind,caption='',createdAt,mime,bytes,sha256}=raw;if(typeof id!=='string'||!id.trim()||typeof petId!=='string'||!petId.trim()||!['photo','avatar'].includes(kind)||typeof caption!=='string'||caption.length>200||!['image/jpeg','image/png','image/webp'].includes(mime)||!Number.isInteger(bytes)||bytes<=0||bytes>MAX_DISPLAY_BYTES||typeof sha256!=='string'||!/^[a-f0-9]{64}$/.test(sha256))throw new Error('照片元数据无效');return {id,petId,kind,caption,createdAt:isoTime(createdAt),mime,bytes,sha256};}
 export async function validateArchive(raw,{maxBytes=MAX_ARCHIVE_BYTES}={}){
   checkSize(raw,maxBytes);let parsed;try{parsed=typeof raw==='string'?JSON.parse(raw):clone(raw);}catch{throw new Error('备份不是有效JSON');}
@@ -45,14 +46,16 @@ async function mapIncoming(repository,archive,selection){
   snapshot.pets=snapshot.pets.filter(p=>chosen.pet.has(p.id)).map(p=>({...p,id:mapped('pet',p.id),avatarAssetId:mapped('asset',p.avatarAssetId)}));
   snapshot.records=snapshot.records.filter(r=>chosen.record.has(r.id)).map(r=>({...r,id:mapped('record',r.id),petId:mapped('pet',r.petId)}));
   snapshot.reminders=snapshot.reminders.filter(r=>chosen.reminder.has(r.id)).map(r=>({...r,id:mapped('reminder',r.id),petId:mapped('pet',r.petId),originRecordId:r.originRecordId&&records.has(r.originRecordId)?mapped('record',r.originRecordId):r.originRecordId,completionRecordId:mapped('record',r.completionRecordId)}));
+  const metadata=mapStage3State(snapshot.profile.stage3,{pet:id=>chosen.pet.has(id)?mapped('pet',id):null,record:id=>chosen.record.has(id)?mapped('record',id):null,reminder:id=>chosen.reminder.has(id)?mapped('reminder',id):null,recap:id=>mapped('recap',id)});
+  if(snapshot.profile.stage3!==undefined)snapshot.profile.stage3=metadata.state;
   snapshot.activePetId=snapshot.pets.some(p=>p.id===mapped('pet',archive.snapshot.activePetId)&&p.deletedAt===null)?mapped('pet',archive.snapshot.activePetId):snapshot.pets.find(p=>p.deletedAt===null)?.id??null;
-  return {snapshot:validateSnapshot(snapshot),assets:archive.assets.filter(a=>chosen.asset.has(a.metadata.id)).map(a=>({...a,metadata:{...a.metadata,id:mapped('asset',a.metadata.id),petId:mapped('pet',a.metadata.petId)}})),dependencies};
+  return {snapshot:validateSnapshot(snapshot),assets:archive.assets.filter(a=>chosen.asset.has(a.metadata.id)).map(a=>({...a,metadata:{...a.metadata,id:mapped('asset',a.metadata.id),petId:mapped('pet',a.metadata.petId)}})),dependencies,metadataSkipped:metadata.metadataSkipped,stage3Skipped:metadata.metadataSkipped>0};
 }
 export async function previewArchiveImport({repository,archive,selection}={}){
   const checked=await validateArchive(archive),current=await repository.snapshot(),baseRevision=repository.getRevision(),incoming=await mapIncoming(repository,checked,selection),existingAssets=await repository.media.listAll(),conflicts=[],newPets=[],newRecords=[],newReminders=[],newAssets=[];
   for(const [kind,field]of Object.entries(fields)){const existing=new Map(current[field].map(item=>[item.id,item]));for(const item of incoming.snapshot[field]){const old=existing.get(item.id);if(old&&kind!=='pet'&&old.petId!==item.petId)throw new Error('资料宠物归属冲突');if(!old)({pet:newPets,record:newRecords,reminder:newReminders})[kind].push(item);else if(!same(old,item))conflicts.push({kind,id:item.id,current:old,incoming:item,effect:old.deletedAt!==item.deletedAt?item.deletedAt===null?'restore':'trash':'update'});}}
   const existing=new Map(existingAssets.map(a=>[a.id,a]));for(const asset of incoming.assets){const old=existing.get(asset.metadata.id);if(old&&(old.petId!==asset.metadata.petId||old.kind!==asset.metadata.kind))throw new Error('照片宠物归属或用途冲突');if(!old)newAssets.push(asset.metadata);else if(!same(clean(old),asset.metadata))conflicts.push({kind:'asset',id:asset.metadata.id,current:clean(old),incoming:asset.metadata,effect:'update'});}
-  return {archive:checked,selection:clone(selection),sourceWorkspaceId:checked.sourceWorkspaceId,baseRevision,incoming,conflicts,newPets,newRecords,newReminders,newAssets,dependencies:incoming.dependencies};
+  return {archive:checked,selection:clone(selection),sourceWorkspaceId:checked.sourceWorkspaceId,baseRevision,incoming,conflicts,newPets,newRecords,newReminders,newAssets,dependencies:incoming.dependencies,metadataSkipped:incoming.metadataSkipped};
 }
 export async function commitArchiveImport({repository,preview,acceptedConflictIds=[]}={}){
   if(!repository?._archiveCommit)throw new Error('云端导入须走受身份保护的确认接口');
@@ -64,6 +67,7 @@ export async function commitArchiveImport({repository,preview,acceptedConflictId
     for(const asset of latest.incoming.assets){const id=asset.metadata.id,exists=ctx.media.has(id);if(exists&&!accepted.has(`asset:${id}`))continue;ctx.media.set(id,{...asset.metadata,fileRef:id});ctx.blobs.set(id,asset.blob);}
     if([...ctx.blobs.values()].reduce((n,b)=>n+b.size,0)>repository._mediaOptions.mediaMaxBytes)throw new Error('照片总容量超过空间配额');
     if(latest.selection?.profile===true)next.profile.city=latest.incoming.snapshot.profile.city;
+    const incomingStage3=latest.incoming.snapshot.profile.stage3;if(incomingStage3)next.profile.stage3=mergeStage3State(next.profile.stage3,incomingStage3);
     if(!next.pets.some(p=>p.id===next.activePetId&&p.deletedAt===null))next.activePetId=next.pets.find(p=>p.deletedAt===null)?.id??null;
     for(const pet of next.pets)if(pet.avatarAssetId){const a=ctx.media.get(pet.avatarAssetId);if(!a||a.petId!==pet.id||a.kind!=='avatar')throw new Error('头像照片关联缺失');}
     return validateSnapshot(next);

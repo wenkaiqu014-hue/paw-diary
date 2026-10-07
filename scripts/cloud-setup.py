@@ -21,10 +21,10 @@ from datetime import datetime, timezone, timedelta
 
 ENV_ID = 'paw-diary-d8g3p4tlsb305221d'
 REGION = 'ap-shanghai'
-COLLECTIONS = ('health_workspaces', 'health_receipts', 'media_assets', 'import_batches', 'import_maps', 'auth_challenges', 'auth_verified')
+COLLECTIONS = ('health_workspaces', 'health_receipts', 'media_assets', 'import_batches', 'import_maps', 'auth_challenges', 'auth_verified', 'ai_usage')
 DOMAINS = ('wenkaiqu014-hue.github.io', 'localhost', '127.0.0.1')
 ACCEPTANCE_DOMAINS = ('localhost:4193', '127.0.0.1:4193')
-FUNCTIONS = ('paw-api', 'paw-stage2-readiness', 'paw-auth')
+FUNCTIONS = ('paw-api', 'paw-stage2-readiness', 'paw-auth', 'paw-ai')
 ROOT = Path(__file__).resolve().parents[1]
 LOG = ROOT / 'test-results/stage2/cloud-ops.log'
 PUBLIC_CONFIG = ROOT / 'test-results/stage2/public-config.json'
@@ -44,7 +44,7 @@ def emit(action, **summary):
 
 def safe_error(error):
     message = error.get_message() if hasattr(error, 'get_message') else type(error).__name__
-    for name in ('TENCENTCLOUD_FUJI_SECRET_ID', 'TENCENTCLOUD_FUJI_SECRET_KEY'):
+    for name in ('TENCENTCLOUD_FUJI_SECRET_ID', 'TENCENTCLOUD_FUJI_SECRET_KEY', 'SILICONFLOW_API_KEY'):
         value = os.environ.get(name)
         if value:
             message = message.replace(value, '[REDACTED]')
@@ -338,7 +338,7 @@ class Operator:
         for storage in env.get('Storages') or []:
             self.storage_acl(storage['Bucket'], write=True)
             self.storage_acl(storage['Bucket'])
-        self.attempt('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps({'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-stage2-readiness': {'invoke': True}})})
+        self.attempt('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps({'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}, 'paw-stage2-readiness': {'invoke': True}})})
         keys = self.attempt('DescribeApiKeyList', {'KeyType': 'publish_key', 'PageNumber': 1, 'PageSize': 10})
         data = (keys or {}).get('Data') or []
         if not data:
@@ -420,18 +420,21 @@ class Operator:
         if name not in FUNCTIONS:
             raise ValueError('Only project functions can be deployed')
         required_values = {'TZ': 'Asia/Shanghai', 'PAW_CLOUD_ENV_ID': self.env_id}
-        function_timeout = 20 if name == 'paw-auth' else 3
-        if name in ('paw-api', 'paw-auth'):
+        function_timeout = 40 if name == 'paw-ai' else 20 if name == 'paw-auth' else 3
+        if name in ('paw-api', 'paw-auth', 'paw-ai'):
             keys = self.call('DescribeApiKeyList', {'KeyType': 'publish_key', 'PageNumber': 1, 'PageSize': 10}).get('Data') or []
             key = next((k for k in keys if k.get('Name') == 'publish_key' and isinstance(k.get('ApiKey'), str) and k['ApiKey']), None)
             if not key:
                 raise RuntimeError('Verified publish_key is required before deploying the private API')
             required_values['PAW_CLOUD_PUBLISHABLE_KEY'] = key['ApiKey']
+        if name == 'paw-ai':
+            required_values['TEXT_AI_API_KEY'] = os.environ['SILICONFLOW_API_KEY']
+            required_values['TEXT_AI_MODEL'] = 'Qwen/Qwen2.5-7B-Instruct'
         environment = {'Variables': [{'Key': key, 'Value': value} for key, value in required_values.items()]}
         directory = Path(directory).resolve()
-        allowed = (ROOT / 'test-results/stage2/functions').resolve()
+        allowed = (ROOT / 'test-results/stage3/functions').resolve()
         if allowed not in directory.parents or not (directory / 'index.js').is_file():
-            raise ValueError('Function bundle must be in the ignored stage2 functions directory')
+            raise ValueError('Function bundle must be in the ignored stage3 functions directory')
         stream = io.BytesIO()
         with zipfile.ZipFile(stream, 'w', zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(directory.rglob('*')):
@@ -448,7 +451,7 @@ class Operator:
         if existing:
             result = self.attempt('UpdateFunctionCode', {'FunctionName': name, 'Namespace': self.env_id, 'Handler': 'index.main', 'InstallDependency': 'FALSE', 'Publish': 'FALSE', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'CodeSource': 'ZipFile'})
         else:
-            result = self.attempt('CreateFunction', {'FunctionName': name, 'Handler': 'index.main', 'MemorySize': 256, 'Timeout': function_timeout, 'Runtime': 'Nodejs18.15', 'InstallDependency': 'FALSE', 'CodeSource': 'ZipFile', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'Environment': environment, 'AutoCreateClsTopic': 'FALSE', 'AutoDeployClsTopicIndex': 'FALSE', 'Description': 'Paw diary stage2 server email OTP proof' if name == 'paw-auth' else 'Paw diary stage2 private health API' if name == 'paw-api' else 'Temporary stage2 identity flags only readiness probe'})
+            result = self.attempt('CreateFunction', {'FunctionName': name, 'Handler': 'index.main', 'MemorySize': 256, 'Timeout': function_timeout, 'Runtime': 'Nodejs18.15', 'InstallDependency': 'FALSE', 'CodeSource': 'ZipFile', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'Environment': environment, 'AutoCreateClsTopic': 'FALSE', 'AutoDeployClsTopicIndex': 'FALSE', 'Description': 'Paw diary stage2 server email OTP proof' if name == 'paw-auth' else 'Paw diary stage2 private health API' if name == 'paw-api' else 'Paw diary bounded text AI gateway' if name == 'paw-ai' else 'Temporary stage2 identity flags only readiness probe'})
         if not result:
             raise RuntimeError('Function deployment failed; see safe API summary')
         for _ in range(12):
@@ -464,12 +467,29 @@ class Operator:
                             raise RuntimeError('Function public environment configuration failed')
                         time.sleep(2)
                         continue
-                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', publicKeyConfigured=name in ('paw-api','paw-auth'), managementSecretsInjected=False)
+                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', publicKeyConfigured=name in ('paw-api','paw-auth','paw-ai'), textModelConfigured=name == 'paw-ai', modelTimeoutSeconds=25 if name == 'paw-ai' else None, managementSecretsInjected=False)
                     return
                 if status.get('Status') in ('CreateFailed', 'UpdateFailed', 'DeployFailed'):
                     raise RuntimeError('Function entered failed state')
             time.sleep(2)
         raise RuntimeError('Function did not become Active within 24 seconds')
+
+    def configure_ai(self):
+        env = self.environment()
+        tag = env['Databases'][0]['InstanceId']
+        existing = self.call('DescribeTables', {'Tag': tag, 'TableNames': ['ai_usage'], 'MgoLimit': 100, 'MgoOffset': 0}).get('Tables') or []
+        if not any(t.get('TableName') == 'ai_usage' for t in existing):
+            self.call('CreateTable', {'Tag': tag, 'TableName': 'ai_usage', 'PermissionInfo': {'EnvId': self.env_id, 'AclTag': 'ADMINONLY'}})
+        self.call('ModifyResourcePermission', {'ResourceType': 'collection', 'Resource': 'ai_usage', 'Permission': 'CUSTOM', 'SecurityRule': DENY_RULE})
+        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}}
+        self.call('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps(rules)})
+        collection = (self.call('DescribeResourcePermission', {'ResourceType': 'collection', 'Resources': ['ai_usage']}).get('Data') or {}).get('PermissionList') or []
+        actual = (self.call('DescribeResourcePermission', {'ResourceType': 'function'}).get('Data') or {}).get('PermissionList') or []
+        if not actual or json.loads(actual[0].get('SecurityRule') or '{}') != rules:
+            raise RuntimeError('AI invoke rule readback failed')
+        if not collection or json.loads(collection[0].get('SecurityRule') or '{}') != {'read': False, 'write': False}:
+            raise RuntimeError('AI collection deny rule readback failed')
+        emit('aiRulesVerified', privateDataDeny=True, guestAiOnly=True, existingPrivateApiProtected=True)
 
     def invoke_readiness(self):
         result = self.call('Invoke', {'FunctionName': 'paw-stage2-readiness', 'InvocationType': 'RequestResponse', 'ClientContext': '{}', 'LogType': 'None'}, service='scf').get('Result') or {}
@@ -495,7 +515,7 @@ class Operator:
             function = None
         if function and function.get('Description') != 'Temporary stage2 identity flags only readiness probe':
             raise ValueError('Temporary probe description changed; refusing to delete')
-        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}}
+        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}}
         self.call('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps(rules)})
         permissions = (self.call('DescribeResourcePermission', {'ResourceType': 'function'}).get('Data') or {}).get('PermissionList') or []
         actual = json.loads(permissions[0].get('SecurityRule') or '{}') if permissions else {}
@@ -518,7 +538,7 @@ class Operator:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env', default=ENV_ID)
-    parser.add_argument('command', choices=('inspect', 'configure', 'deploy', 'invoke-readiness', 'cleanup-readiness', 'guard-check', 'refresh-public-config', 'disable-overrun', 'anonymous-window', 'recheck-paid-pending', 'pay-known-pending'), nargs='?', default='inspect')
+    parser.add_argument('command', choices=('inspect', 'configure', 'configure-ai', 'deploy', 'invoke-readiness', 'cleanup-readiness', 'guard-check', 'refresh-public-config', 'disable-overrun', 'anonymous-window', 'recheck-paid-pending', 'pay-known-pending'), nargs='?', default='inspect')
     parser.add_argument('--function', choices=FUNCTIONS)
     parser.add_argument('--bundle')
     parser.add_argument('--funds-confirmed-by-root', action='store_true', help='Use only after root explicitly confirms funds are ready; never implied by elapsed time')

@@ -1,6 +1,14 @@
-# 阶段2 CloudBase 管理与部署
+# CloudBase 管理与部署
 
-## 当前运行状态（2026-10-07正式发布后）
+## 阶段3当前运行状态（待前端公开发布）
+
+固定FUJI凭证及上海环境不变，没有新付费采购或DeepSeek调用。新增独立paw-ai，2026-10-07 16:15:15读回Active、Node18.15、40秒；模型fetch25秒，锁定非ProQwen/Qwen2.5-7B-Instruct。paw-api于16:51:20重新部署读回Active，仍3秒/256MB/Node18.15；未重写已验收认证。
+
+本机SILICONFLOW_API_KEY仅由部署脚本读取并注入paw-ai的TEXT_AI_API_KEY；模型秘密没有进入paw-api、前端或Git，FUJI管理凭证不进任何函数。新增ai_usage直接读写deny，公开调用仅AI请求网关，邮箱only/匿名provider false不变。真实匿名三种AI成功，第4次额度拒绝，错误token不会降级匿名；真实可信A的私有保存/刷新、回顾及助手来源已验。相关日志与夹具在.worktrees/stage3/test-results/stage3/cloud，禁止复制完整会话或真实内容到文档。
+
+供应商userinfo请求404，未读回账单或精确RPM/TPM；不能声称已核账单0元。免费候选与实际模型成功以研究/真实smoke为依据，失败不自动切收费。前端仍待原URL公开复验和候选v0.4.0 tag/Release，公开发行元数据以后续SESSION_LOG为准。发布后下一轮入口为[阶段4计划](../superpowers/plans/2026-10-06-04-community-nearby.md)，用户亲验、真机及读屏仍单独保留。
+
+## 阶段2历史正式发布状态（保留追溯）
 
 阶段2技术交付及v0.3.0正式发布已完成。仍使用用户原环境`paw-diary-d8g3p4tlsb305221d` / ap-shanghai / NORMAL / baas_personal，文档数据库1、PostgreSQL 0，自动续费false、超额按量false。原余额不足待付订单已关闭，没有创建第二环境，不重复采购或等待资金。管理凭证仍只从FUJI环境变量读取，不回显、不进静态产物或函数配置。
 

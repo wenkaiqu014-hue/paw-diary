@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+const pet={id:'p',name:'Milo',type:'cat',deletedAt:null};
+const draft={draftId:'d',petId:'p',type:'weight',occurredDate:'2026-10-06',value:4.6,unit:'kg',title:'体重记录',note:'',nextDate:null,missingFields:[],sourceText:'4.6kg'};
+test('parse is read-only, confirm saves only selected complete drafts',async()=>{
+ const {createDraftSession}=await import('../src/features/ai-entry.js');
+ let writes=0;const repository={getRevision:()=>2,saveRecordBatch:async inputs=>{writes++;return{records:inputs,reminders:[]}}};
+ const snapshot={version:3,mode:'local',pets:[pet],records:[],reminders:[],posts:[],profile:{city:'深圳'},activePetId:'p'};
+ const session=createDraftSession({repository,getSnapshot:()=>snapshot,request:async()=>({drafts:[draft],today:'2026-10-07'})});
+ await session.parse('4.6kg','p','zh-CN');assert.equal(writes,0);
+ const result=await session.confirm([draft],['d']);assert.equal(writes,1);assert.equal(result.records[0].value,4.6);
+});
+test('scope change cannot confirm a former pet or account draft',async()=>{
+ const {createDraftSession}=await import('../src/features/ai-entry.js');
+ let generation=1,writes=0;const repository={getRevision:()=>0,saveRecordBatch:async()=>{writes++}};
+ const scope=()=>({generation,petId:'p',repository});
+ const snapshot={version:3,mode:'local',pets:[pet],records:[],reminders:[],posts:[],profile:{city:'深圳'},activePetId:'p'};
+ const session=createDraftSession({repository,getScope:scope,getSnapshot:()=>snapshot,request:async()=>({drafts:[draft],today:'2026-10-07'})});
+ await session.parse('4.6','p','zh-CN');generation++;await assert.rejects(session.confirm([draft],['d']),e=>e.code==='WORKSPACE_CHANGED');assert.equal(writes,0);
+});
+test('real demo repository parses and confirms AI drafts without a revision API',async()=>{
+ const {createDraftSession}=await import('../src/features/ai-entry.js');
+ const {createDemoRepository}=await import('../src/data/demo-repository.js');
+ const {memoryStorage}=await import('./fixtures/local-state.js');
+ const repository=createDemoRepository({storage:memoryStorage(),clock:()=> '2026-10-07T01:00:00.000Z'});
+ const snapshot=await repository.snapshot(),petId=snapshot.activePetId;let calls=0;
+ const source={...draft,petId};
+ const session=createDraftSession({repository,getSnapshot:()=>snapshot,request:async()=>{calls++;return{drafts:[source],today:'2026-10-07'}}});
+ const before=snapshot.records.length;await session.parse('4.6kg',petId,'zh-CN');
+ assert.equal(calls,1);await session.confirm([source],['d']);assert.equal((await repository.snapshot()).records.length,before+1);
+});

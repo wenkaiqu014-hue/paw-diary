@@ -378,7 +378,11 @@ const selectControllers=new Map();
 const selectorObserver=new MutationObserver(()=>maintainSelects());
 selectorObserver.observe(document.body,{childList:true,subtree:true});
 function maintainSelects(){
- for(const [select,control] of selectControllers)if(!select.isConnected){control.destroy();selectControllers.delete(select);}
+ for(const [select,control] of selectControllers){
+  if(!select.isConnected){control.destroy();selectControllers.delete(select);continue;}
+  const label=select.options[select.selectedIndex]?.textContent??'';
+  if((control.trigger.querySelector('.select-value')?.textContent??'')!==label)control.setValue(select.value);
+ }
  for(const select of document.querySelectorAll('select'))if(!select.dataset.enhanced){
   const label=select.closest('label')?.querySelector('span')?.textContent;if(label&&!select.hasAttribute('aria-label'))select.setAttribute('aria-label',label);
   selectControllers.set(select,enhanceSelect(select,{icons:icon}));

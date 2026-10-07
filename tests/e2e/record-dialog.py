@@ -9,7 +9,9 @@ with sync_playwright() as p:
  page=b.new_page(viewport={'width':1440,'height':1000});errors=[]
  page.on('pageerror',lambda e:errors.append(str(e)))
  page.goto(URL+'#health',wait_until='networkidle')
+ topLocale=page.locator('#locale-select').locator('..');topLocale.locator('.select-trigger').click();topLocale.get_by_role('option',name='English',exact=True).click()
  page.locator('main [data-action=record]').first.click()
+ expect(page.locator('#dialog-locale-select').locator('..').locator('.select-value')).to_have_text('English')
  expect(page.locator('#record-type')).to_have_value('daily')
  expect(page.locator('[name=joinTodo]')).not_to_be_checked()
  assert page.evaluate('document.activeElement.id')=='dialog-title'
@@ -23,6 +25,7 @@ with sync_playwright() as p:
  expect(page.locator('#record-form')).to_contain_text('Event date')
  expect(page.locator('[data-action=record-mode][data-value=manual]')).to_contain_text('Manual entry')
  expect(page.locator('#record-form [name=note]')).to_have_value('模式切换保留此原文')
+ expect(page.locator('#locale-select').locator('..').locator('.select-value')).to_have_text('English')
  expect(page.locator('#record-form [name=title]')).to_have_value('合成日常')
  expect(page.locator('#record-form [name=note]')).to_have_value('模式切换保留此原文')
  page.locator('[data-action=record-mode][data-value=ai]').click()

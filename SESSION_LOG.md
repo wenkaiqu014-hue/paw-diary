@@ -739,3 +739,17 @@ Root读取最新SESSION/PENDING与局部弹窗/媒体源码，沿已读using-sup
 2026-10-07 17:40:38（Root工具date，追加只读定位）：用户要求宠物排序保留六点把手但取消独立圆形，拖动时整行跟随、删除右侧上下箭头；宠物卡“添加”与“管理”集中右上。多于一宠时“全部成长记录”增加宠物复选筛选、表格第一列宠物，可展示一只/多只。Root确认这些为当前同轮设计范围，未开始代码，不丢前面头像/输入模式/待办/附件/类型库要求。
 
 实际源码：app.js:303–313渲宠物六点icon-button和独立pet-order上下按钮，:523–525原生dragstart来自handle未设整行dragImage，所以不是已实现用户期望的整行拖动反馈；管理外添加在managementToolbar底部，统一位置可在health-profile title动作区完成。filteredRecords在:222基于petRecords，当前确仅activePet。多宠列表编辑需按记录本身petId查关联待办，不能继续只从当前pet的pending取linked，避免编辑另一只宠物时清掉其计划。拟多宠筛选仅作用全部成长记录及对应CSV，不改变上方待办/趋势/助手当前宠物，历史记录仍按ID操作；默认选全部还是当前待用户决定。键盘排序可保留在六点把手，去可见箭头不等于删除非拖动操作支持。
+
+## 记录/档案修订grill收口与具体计划
+
+2026-10-07 17:57:42 Asia/Shanghai（Root工具date）：用户确认建议的日期/待办语义、图片和PDF原附件、空间内共享类型目录；多宠筛选明确默认当前宠物。追加明确四个内置为体重/疫苗/驱虫/日常（原话“三个”按实际四项清单）；只移除新增选择中的“其他”，历史other不删。内置管理删除复选灰色不可删、可排序；自定义最多3个活跃，book/paw/drop单线图标可重复，满额新增灰色与hover提示；剪指甲仅例子，不预建。Root补键盘/触屏可读满额提示，不增加图标上传或标签样例。无剩余关键产品提问，按用户要求进入详细设计与plan，不实施。
+
+使用已读using-superpowers/brainstorming并重新核writing-plans，产物为record-workflow-refinement-design spec、七任务record-workflow-refinement主计划与三个独立小任务record-attachments配套计划。类型目录/历史快照、统一record或reminder用途、两模式内存保留、标题初始focus、猫狗/upload三圆、整行六点排序、多宠列表和CSV默认当前均明确。附件保存原bytes/hash、私有parentKind/parentId、回收保留与完整恢复；工程默认每项3个/每文件5MiB、共享原50MiB，独立paw-files30秒/存储20秒/客户端35秒，不扩大paw-api3秒或照片1MiB/2500ms默认。完成计划附件沿原reminder关联展示不复制；失败只重试媒体不重复父项。容量/时间是本轮设计默认，不当供应商免费额度或实际部署读回。
+
+主agent自检spec覆盖与plan接口，纠正CSV签名为既有exportRecordsCsv(records,{pets=[]}={})兼容旧调用。同步PENDING已确认/未实施勾选以及PRODUCT/DESIGN/ROADMAP待实施状态，候选v0.5.0仅全部实际验收后；公开仍v0.4.0，未改源码/云权限、未调用模型、未安装依赖、未部署或移动tag。原19:27:31窗口不重置、10月8日20:00最终截止不变；任务30–45分钟只是目标，附件三项不假压成一小时任务。依writing-plans交付具体计划供用户审阅后再实施，沿已有协作授权不重复问执行方式。
+
+本次定向探索误列不存在src/data/local-media-repository.js和src/domain/custom-types.js，rg/sed报告路径不存在；随后rg确认真实media-repository.js与已有custom-types测试，不基于错误路径安排实施。没有源码修改。GitHub打开obra/superpowers页显示296.1k stars（网页展示精度），Vercel agent-skills官方仓库可读，已有本机Superpowers/Impeccable/WebDesignGuidelines/webapp-testing满足需求，不因高星引入框架。每个实施任务仍要求开始前分别核技能并记来源。
+
+检查：git diff --check exit0；7份新增/修改文档相对链接0missing、围栏配对/无TBD/TODO、两计划标准header有效。首次扫描进程没有SILICONFLOW_API_KEY，明确scan_available=false不能当真实值扫描成功；再只source已知本机私密配置文件后扫描8份文档（含本日志原内容），available=true/0matches，只输出布尔和数量。文档修改不运行npm测试/浏览器或真实模型，不把既有292通过冒称本修订验收。随后归档docs-only提交；本轮无新增agent，已有只读explorer成果直接复用。下一步用户审阅计划后隔离实施，附件真实权限/备份、原URL和新版本仍未完成。
+
+本次技能核对来源URL：https://github.com/obra/superpowers ；https://github.com/vercel-labs/agent-skills 。交互参考URL沿前段W3C两页记录，不把规范例子当真实读屏通过证据。

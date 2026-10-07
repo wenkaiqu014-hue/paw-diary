@@ -116,3 +116,5 @@ AI 请求通过服务端代理，密钥不进入 GitHub Pages、前端 JavaScrip
 
 
 阶段3v0.4.0已正式发布，原URL复验与新tag/Release已通过。发布后下一轮从主目录main读取[阶段4计划](docs/superpowers/plans/2026-10-06-04-community-nearby.md)。本轮时限为每步≤1小时、总≤4小时；阶段7审查/修复单步超时已记录，不以整体仍在窗口代称单步达标。
+
+用户亲验追加记录/档案修订，现已grill收口并形成[主计划](docs/superpowers/plans/2026-10-07-record-workflow-refinement.md)与[附件配套计划](docs/superpowers/plans/2026-10-07-record-attachments.md)，在阶段4前有界处理，尚未实施。四内置不可删、3个自定义且图标可重复、默认当前宠物均为明确选择；旧数据/私有权限/完整备份继续保留。新增范围不重置19:27:31四小时窗口，不自动延后最终截止，按实际进度报告。

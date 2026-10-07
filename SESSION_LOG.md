@@ -629,3 +629,15 @@ Root release-final-unit.log fresh246/246无skip、语法/diff0，148待归档文
 AGENTS增加阶段3五项交付、成长首页范围、供应商/免费额度/收费前置、AI函数运行时与免登录边界、只读/确认/隐私规则，以及统一日志/专题报告/旧工作树工件入口。阶段3计划补实际续作基线，保留全部未实施checkbox；总计划纠正遗留“当前回阶段1”“CloudBase未开通”和仅免登录示例文字，PENDING同步只交接的状态。用户“ok”支持准备下一阶段，不据此声称其亲自完成验收。阶段4社区/地域、阶段5新内容/遮罩指南/可安装网页/最终验收及10月8日20:00截止均保留，未增供应商决定或工期保证。
 
 本轮无新agent；子agent实施/审查与原测试、失败、修复、部署记录仍统一保留SESSION_LOG，不全量读入新session。原始证据仍Git忽略，B已退出/旧token不可复用，合成A夹具不当真宠物。仅检查文档链接/围栏/未虚勾与git diff --check，未重跑业务测试（无产品代码变更）。随后提交/推送本轮交接，新session从主目录main查最新状态进入阶段3计划。
+
+## 阶段3新session：需求压力测试与计划准备
+
+2026-10-07 15:04:50（Asia/Shanghai，工具date）：用户明确本session完成阶段3开发，当前先读取相关文档、grill需求，再按其回复与Superpowers形成详细计划。新增要求是成长首页上下卡片宽度不一致、对齐不齐的排版修复；可按实际技术需要研究GitHub高star技能。既定五项AI能力、原仓库/URL、邮箱私有云和截止时间继续沿用，不重新访谈已确认的个人/照片/三空间方向。
+
+Root读取using-superpowers、brainstorming、grilling、writing-plans，以及SESSION_LOG最新交接段、PENDING、完整阶段3原计划、总计划、PRODUCT/DESIGN和相关交互/验收条目；历史日志及较大组合输出发生截断，随后定向重读最新段与阶段3接口，未声称通读全部项目历史。`git status --short --branch`显示main干净，`git rev-list --left-right --count main...origin/main`为0/0（仅当前本地远端引用，无fetch）。本次需求按架构类处理；尚未形成或批准新设计/实施计划，未写产品代码、安装依赖、调用模型、发验证码或改云。
+
+按grilling的事实调查要求委派stage3_code_facts只读explorer，范围为首页DOM/CSS、已有AI入口、云函数运行时及新增模块接入边界，无写文件所有权，已告知不独占代码库、不回退他人修改。初步回报：home共享grid行轨道，提醒跨三行且align-items:start，可能造成留白/底边不齐，需浏览器核验；图库附加到整个main导致默认全宽是结构事实；paw-api3秒与模型30秒方案不匹配，须规划独立AI函数等取舍。证据定位：app.js:246、309，style.css:29–35，scripts/cloud-setup.py:423、451；完整调查报告待回报。
+
+当前待用户决策：免登录AI边界、费用上限、引导触发方式、回顾范围/风格及首页修复程度；供应商/实际免费额度仍须官方查证后选定，不把规划预算当报价。原五任务保持未勾，新首页要求同步PENDING。只运行文档diff检查，不重跑业务测试（尚无产品改动）；文档归档结果随后追加。当前没有可用内置计划工具，详细计划将按writing-plans维护可勾选文件，不虚报工具状态。
+
+stage3_code_facts完整报告已收到并定向整合：提醒跨行、照片墙全宽及外边距差异需实际几何验收；现有saveProfile不保存引导状态，须定义新接口；模型调用不能直接借仓储自动重试通路，避免重复计费；切宠物未改变session.generation，迟到AI响应还须核petId及revision；npm test不运行integration目录，真实模型smoke须单独执行。Root未将这些只读发现当浏览器或云端通过。读取kill-race-dupes作防御参考，当前工具注册只见一个调查agent，未见重复；未使用shell终止任何agent。`git diff --check`退出0，改动仅SESSION_LOG/PENDING两份文档；按项目要求本地Git归档，不推送或部署，不修改v0.3.0发行源码/tag。第一轮grill待用户回答，之后补供应商官方事实与需求分支，再落设计和详细计划。

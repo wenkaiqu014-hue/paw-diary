@@ -17,13 +17,13 @@
 - 一个账号一张公开卡；昵称头像作为发帖身份，附加资料仅加入发现后公开；邮箱只本人可见。
 - 宠友/社区两页都有全部／同城；浏览城市不修改个人所在地；无私信、地图、精确距离和在线状态。
 - 匿名只读白名单；任何带无效token请求不得降级访客；所有写入核可信owner和操作ID。
-- 现邮箱/私有函数、匿名provider=false、集合/对象deny及v0.6.1记录/计划/媒体/AI语义保留。
+- 现邮箱/私有函数、匿名provider=false、集合/对象deny及v0.6.2记录/计划/媒体/AI语义保留。
 - 回顾默认真实简短摘要，最终确认才公开；不自动复制完整AI故事或私有附件。
 - 头像/帖子单图压缩后≤1MiB，原图选择≤10MiB；公开媒体另存、纯文本安全、示例不入真实集合。
 - 腾讯位置服务新增费用预算0元；Key/SK仅环境变量；管理仅FUJI凭证；不自动购买或换供应商。
 - 举报由用户手动维护，真实入队＋个人隐藏，页面仅说明等待处理，不承诺即时审核。
 - 云验收必须真实A/B及匿名；A刷新串行并checkpoint，B需新真实登录；只清确切合成receipt资源。
-- 每个任务完成记录SESSION_LOG、实际检查/失败/修复/子agent；mock、旧343证据或截图宽度不能代替真实云/真机验收。
+- 每个任务完成记录SESSION_LOG、实际检查/失败/修复/子agent；mock、旧365证据或截图宽度不能代替真实云/真机验收。
 
 ## Review Focus
 
@@ -60,7 +60,7 @@ Client：`createCommunityRepository({invoke,getPrincipal,getGeneration,getAuthor
 - [ ] 用户只授权工具/当前规划；审阅本plan并选择执行方式后再启动实施。建议主agent整合＋独立模块worker＋独立reviewer，不因先前授权跳过本轮plan审阅。
 - [ ] 位置服务账号步骤与A/B邮箱协助在实施需要时集中进行，不现在收集Key/验证码；不在日志输出凭证或完整会话。
 
-### Task1：独立公开服务与账号资料后端（目标40–60分钟）
+### Task 1: 独立公开服务与账号资料后端（目标≤40分钟）
 
 **Files:** 新增gateway.cjs/store.cjs/profiles.cjs、cloudfunctions/paw-community/index.js、public-profile.js、community-repository.js；修改scripts/build-functions.mjs、scripts/build.mjs、src/config/public-config.js、scripts/cloud-setup.py。测试tests/public-profile.test.js、community-gateway.test.js、community-client.test.js。
 
@@ -81,7 +81,7 @@ assert.equal(authorIdentity.nickname, '合成昵称');
 - [ ] Step4：同组GREEN、`npm run build:functions`与`npm test`；实际读回新增函数/集合deny和原私有规则，干净匿名调用公开列表可达、写被拒绝。函数权限成功不等于完整社区已验收。
 - [ ] Step5：提交`feat: add isolated public profiles and community gateway`，日志记录配置读回与真实检查。
 
-### Task2：头像菜单与个人资料页（目标30–45分钟）
+### Task 2: 头像菜单与个人资料页（目标≤40分钟）
 
 **Files:** 新增profile-menu.js、features/profile.js；主agent改index.html/app.js/style.css及locale。测试tests/profile-ui.test.js和tests/e2e/profile.py。
 
@@ -93,7 +93,7 @@ assert.equal(authorIdentity.nickname, '合成昵称');
 - [ ] Step4：同组GREEN；真实浏览器验证390/768/1440和两语言，键盘菜单/Esc/焦点归还、CONFLICT保输入、A到B迟到结果不显示。
 - [ ] Step5：提交`feat: add account avatar menu and profile page`。
 
-### Task3：主动公开的头像与单图资源（目标30–50分钟）
+### Task 3: 主动公开的头像与单图资源（目标≤40分钟）
 
 **Files:** 新增backend/community/media.cjs、src/media/community-images.js、tests/community-media.test.js；复用process-image/storage接口，不修改私有photos归属逻辑。新增community-media-cleanup.mjs并接profile/community图片选择器。
 
@@ -105,7 +105,7 @@ assert.equal(authorIdentity.nickname, '合成昵称');
 - [ ] Step4：单测GREEN；真实A上传合成PNG、B/匿名读字节hash、B偷绑定拒绝、撤回后读拒绝、取消未绑定清理；核跨账号读取不依赖A token或私有临时URL。保存A checkpoint。
 - [ ] Step5：提交`feat: add explicitly published community media`。
 
-### Task4：真实帖子、评论与幂等点赞后端（目标40–60分钟）
+### Task 4: 真实帖子、评论与幂等点赞后端（目标≤40分钟）
 
 **Files:** 新增backend/community/posts.cjs/interactions.cjs、src/domain/community.js、tests/community-posts.test.js、community-interactions.test.js，扩gateway路由及索引。
 
@@ -126,7 +126,7 @@ assert.equal(commentAfterDelete.error.code, 'NOT_FOUND');
 - [ ] Step4：同组GREEN、全套npm test；真实A/B新post/读/赞/评论/编辑删除、重复操作、作者权限与匿名读，检查不进入health.snapshot。
 - [ ] Step5：提交`feat: share posts comments and desired-state likes`。
 
-### Task5：社区列表、编辑器与交流闭环（目标30–50分钟）
+### Task 5: 社区列表、编辑器与交流闭环（目标≤40分钟）
 
 **Files:** 新增features/community.js、community-draft-handoff.js及tests/community-ui.test.js、community-draft-handoff.test.js；主agent改app.js社区挂载/示例隔离、CSS/locale。浏览器tests/e2e/community.py。
 
@@ -138,7 +138,7 @@ assert.equal(commentAfterDelete.error.code, 'NOT_FOUND');
 - [ ] Step4：GREEN并截图查看390/768/1440两语言、长正文/昵称、键盘；从同城宠友详情进入其帖子评论真实可用（与Task7联验）。
 - [ ] Step5：提交`feat: add real community browsing and posting flows`。
 
-### Task6：腾讯地域目录与主动定位（目标45–60分钟，不含等待用户账号时间）
+### Task 6: 腾讯地域目录与主动定位（目标≤40分钟，不含等待用户账号时间）
 
 **Files:** 新增tencent-location.cjs/regions.cjs/region-store.cjs/limits.cjs、region-filter.js、region-picker.js、location-suggest.js、tests/regions.test.js、location-budget.test.js、docs/operations/regions.md。
 
@@ -151,7 +151,7 @@ assert.equal(commentAfterDelete.error.code, 'NOT_FOUND');
 - [ ] Step5：单测GREEN；真实Key调用directory/translate/reverse，保存仅脱敏地域结果；确认六城以外城市与特殊城市实际可选。Playwright注入已知坐标只是“模拟浏览器坐标＋真实供应商”验收；用户有头浏览器真实授权定位另验，拒绝/超时/不支持/额度尽路径仍手选。真机GPS留阶段5，不能由模拟位置代勾。
 - [ ] Step6：提交`feat: add Tencent-backed region search and opt-in location`，日志记请求次数、账号免费读回证据和失败，无密钥或精确坐标。
 
-### Task7：全部／同城宠友发现与加入退出（目标30–45分钟）
+### Task 7: 全部／同城宠友发现与加入退出（目标≤40分钟）
 
 **Files:** 新增features/nearby.js、tests/nearby.test.js；主agent接app/CSS/locale；tests/e2e/nearby.py。backend profiles.discover索引和查询随此任务完成。
 
@@ -163,7 +163,7 @@ assert.equal(commentAfterDelete.error.code, 'NOT_FOUND');
 - [ ] Step4：GREEN及真实A/B同城+异城+猫狗+目的、匿名读、退出即时新查询排除；两语言三宽、无距离/在线状态伪数据。无帖子空态有可达下一步。
 - [ ] Step5：提交`feat: discover opted-in friends across all cities or nearby`。
 
-### Task8：举报、个人隐藏与回顾确认发布（目标20–40分钟）
+### Task 8: 举报、个人隐藏与回顾确认发布（目标≤40分钟）
 
 **Files:** 新增reports.cjs、community-moderate.mjs、tests/community-report.test.js、recap-share.test.js；修改weekly-recap.js/community.js/profile.js；docs/operations/community.md。
 
@@ -175,18 +175,18 @@ assert.equal(commentAfterDelete.error.code, 'NOT_FOUND');
 - [ ] Step4：GREEN，真实B举报A合成帖子/隐藏/恢复，维护者处置该测试post后匿名读拒绝；回顾取消0帖子、最终发布1帖子且重试不双写。页面说明符合真实人工处理能力。
 - [ ] Step5：提交`feat: add report handling personal hides and confirmed recap posts`。
 
-### Task9：真实双账号验收、独立审查与回归（目标40–60分钟）
+### Task 9: 真实双账号验收、独立审查与回归（目标≤40分钟）
 
 **Files:** 新增tests/integration/community.test.js、tests/e2e/stage4.py、docs/verification/stage4-report.md；必要时修tests/e2e/profile/community/nearby及test_app.py历史断言。实施源文件修复按发现归属处理。
 
 - [ ] Step1：新建真实B邮箱会话，A先检查可恢复；复用cloud-harness，私密文件600并每refresh写回。禁止复用失效B token/OTP、管理身份或合成Principal代替真实A/B。
 - [ ] Step2：运行`node --test tests/integration/community.test.js`；脚本未配置真实会话应失败并明确缺依赖，不能skip后绿色。覆盖新资料及邮箱私有、全部/同城、全国目录/真实位置服务、图文互动/作者权限/幂等、图片hash、退出发现/身份保留、举报/隐藏/运维、匿名读/匿名写拒绝、A/B健康隔离。
-- [ ] Step3：运行`npm test`、`npm run build`、`npm run build:functions`、`node --check app.js`、`git diff --check`，要求0失败0skip；新增权限/媒体单测不能只复述实现。按v0.6.1修旧自动体重标题断言，不能修改产品恢复预填。
+- [ ] Step3：运行`npm test`、`npm run build`、`npm run build:functions`、`node --check app.js`、`git diff --check`，要求0失败0skip；新增权限/媒体单测不能只复述实现。按v0.6.2修旧自动体重标题断言，不能修改产品恢复预填。
 - [ ] Step4：运行`/Users/wenkaiqu/.codex/skill-runtime/run python -u test_app.py`、`/Users/wenkaiqu/.codex/skill-runtime/run python -u tests/e2e/language.py`与stage4.py；1440/768/390截图亲看，键盘/路由/profile离页/弱网失败/账号切换/长文，console与pageerror为0。保record-only、plan分类、私有媒体rename/备份、AI/回顾/助手（按需真实调用，不为回归无目的重复收费请求）。
 - [ ] Step5：派未实施对应代码的独立reviewer，检查新权限、公开投影、匿名实际通路、目录坐标/限额、并发/媒体引用、路由和旧语义；所有Critical/Important修复后重跑相关测试。主agent核真实输出，agent说完成不替代验证。
 - [ ] Step6：写报告和SESSION_LOG：实际命令/结果、失败修复、账号/请求脱敏证据；亲验/真机/未满足条件分别列出，不提前标阶段完成。提交`test: verify stage4 sharing discovery and privacy boundaries`。
 
-### Task10：原URL候选验证、v0.7.0与交接（目标20–30分钟）
+### Task 10: 原URL候选验证、v0.7.0与交接（目标≤40分钟）
 
 **Files:** VERSION、package.json/package-lock.json、CHANGELOG.md、README.md、PENDING.md、ROADMAP.md/PRODUCT.md、总计划/04旧计划、SESSION_LOG.md、docs/releases/v0.7.0.md、stage4-report.md及必要AGENTS续作摘要。
 

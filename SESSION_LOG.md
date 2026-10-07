@@ -927,3 +927,27 @@ community_audit文档一致性复查提出2项实质遗漏，Root已整合：cli
 文档收口首个python here-doc在主目录报Non-UTF-8 SyntaxError，未执行任何Python文件修改；Shell随后追加发行事实日志成功。20:59:10工具确认Python3.9.6，改/usr/bin/python3并显式UTF-8声明后编码probe通过，全部必要文档随后写入；不是把失败当已更新。最终Git与服务清理检查后纳入docs-only提交，不重发应用。
 
 最终检查：仅本轮4212预览服务（已核命令为python3 -m http.server 4212 --bind 127.0.0.1 --directory dist）关闭，不停止其他服务。stage4新spec/十任务plan自原823a828字节未修改；root主目录仅9份必要Markdown收口，应用source仍bf7274c、v0.6.2 tag一致，旧v0.6.1 tag仍52e88ee。文档diffcheck通过；本地记录与交接纳入Git并正常push，docs-only不触发Pages，不移动已验收source tag。
+
+## 阶段4授权实施：并行、每步40分钟、总5小时
+
+2026-10-07 21:10:13 Asia/Shanghai（clock工具13:10:13Z）：用户批准开始，明确十步每步≤40分钟、总≤5小时、积极委派、每步前找本地或GitHub高star技能、及时维护恢复日志。最晚本轮结束2026-10-08 02:10:13，最终作品截止仍10月8日20:00。使用SDD/worktrees/TDD/Impeccable/浏览器/verification；用户明确并行优先于SDD默认串行，Root统一共享文件/Git，worker独占模块不回退他人。项目默认模型继承优先于技能路由默认，不自行扩大模型范围。
+
+主目录main04ed5c2与origin同步/干净；git check-ignore确认.worktrees忽略，创建.worktrees/stage4/feature/stage4-community-profiles-nearby自04ed5c2。真实npm ci（无symlink）后Root新鲜npm test365/365无skip、build exit0；npm ci沿既有依赖报告4项audit，未盲目audit fix/force重写依赖。新恢复入口docs/operations/stage4-execution.md、本plan .superpowers/sdd/.../progress.md与brief/report；详细接口配对及十任务自洽扫描/ruling存ledger。Task-brief脚本初因旧Task1中文冒号不识别退出3，修计划heading为Task 1:后生成成功；旧test_app保存后默认体重名断言有效，不预删。
+
+GitHub gh API只读实核高star技能源：obra/superpowers296215、anthropics/skills180002、vercel-labs/agent-skills32029（21:10检查点）；本地先读对应SKILL和任务playbook，复用而不重复安装。Impeccable context/craft-floor/operate继承现视觉，不重开概念设计；其PRODUCT旧schema提示仅记，不为此扩展任务重写事实。阶段4尚未完成，计划步骤保持未勾。
+
+Root Task2于21:14:18开始，截止21:54:18。public-core Task1始21:10:13、11分18秒代码/本地自检交付：30专项、441全套GREEN，新Node18 bundle无warning；media独立review30/30、0Critical/Important。真实函数配置/SDK门槛仍Root待验，不将Task1已完成代勾。media Task3始21:12:48、9分02秒首代码交付22专项与439全套GREEN，core review真实复现无帧JPEG/WebP和cleanup/PUT竞态2Important，worker21:28:15开始同一步内TDD修复，21:33:27媒体29/29 GREEN；新report RED并行导致全套9fail如实保留，不称全套已通过。Root为必要完整JPEG验证核官方jpeg-js源/registry0.4.4后只加76KB纯JS依赖，解码设像素/内存限制，WebP前端转PNG不改私有photos。scoped复验待core。
+
+regions复用community_audit执行Task6（新spawn遇thread limit，复用既有非独占agent，不派重复）：21:13:41→21:23:37代码自检20/20、441全套、7语法/390/1440真实Chrome合成组件GREEN，真实LBS/目录门槛仍待Root。Root profile model4行为RED→GREEN、headful三宽fixture保存/邮箱不进预览/menu Esc焦点/pageErrors0；看390图发现global sticky form-actions覆盖正文，局部静态覆盖后复验。初CSS patch引号不匹配退出，无修改，改独立community.css import。Task2独立review复现4Important（upload saving/owner、locale状态、迟到旧头像、CONFLICT恢复），Root新增保存flow/版本核对2测试RED→GREEN，6/6；修复4项待scoped DOM复验。地区initialValue/预览参数已对齐，不把fixture当真云。
+
+core Task4独立新计时21:26:06→22:06:06，brief已生成；真实帖子/comments/desired likes首轮13项RED→GREEN，18专项和entry验证后全套待其他并行任务收口。regions agent转Task8后端21:30:18→22:10:18，只负责reports/可信CLI及tests，不碰Root分享UI。Root独占app/index/style/locale/build/管理部署，各模块报告存本plan目录；所有合成测试fixture均明确标记，不复制用户实际养宠事实。
+
+### 位置账号与配额协作（不记录实际Key/SK/邮箱）
+
+用户在独立有头paw-stage4-lbs窗口自行登录/建应用/Key，随后明确只允许我看、不要帮操作浏览器；Root只读DOM、所有点击由用户完成。初推荐Key名超过页面12字符，明确更正短名；用户最终采用paw-diary，WebServiceAPI＋签名校验，其他产品不勾。用户授权把SK写系统env，Root通过600私密transfer（仅路径/布尔输出）写~/.config/paw-diary/secrets.zsh，600，zshrc已有source；新工具shell需显式source才能读取，未打印值。初把SK当input未定位、后parse空JSON失败退出，未改配置；改读唯一32字符叶文本后捕获/保存成功，transfer删除。Key同样只读唯一候选私密写入env，未进入Git/日志/截图证据。用户提供可用测试邮箱列表，只在需要的私密认证流程使用，不记入日志。
+
+用户看到Key额度0询问是否充值。Root内置Web打开腾讯FAQ当前原页核个人额度/账户分配/个人暂不可购额，不用搜索摘要；quotaImprove动态页未读到数字、商业FAQ该次Internal Error，不假称读全。Root只读账户表及用户截图实际核：坐标转换、行政区划列表/子级、逆地址解析各6000次/日、5QPS，最初已分配0；用户随后主动将现免费额度全分给该Key，未购买/充值/升级。应用另限100上游请求/日、1000/月；env monthly1000是应用保守上限而非虚构供应商月额度。个人作品主体与账户字段按已确认用途，适用完整许可仍需准确记录，不能以免费数字代商业授权。
+
+Root已从process.env读取Key/SK真实请求腾讯directory成功（1次上游，无输出Key/坐标；首次误把normalized array作object打印keys导致大量索引，未涉及私密内容，后续只打印行数/摘要）；转换/逆地理及CloudBase业务实际验收尚未执行。所有400/436/441等新测试计数按各时点真实输出区分，不机械恢复v0.6.1旧343或称当前最终验收。最新源文档与报告/checkpoints以execution/ledger为续作入口。
+
+来源：https://github.com/obra/superpowers ；https://github.com/anthropics/skills ；https://github.com/vercel-labs/agent-skills ；https://github.com/jpeg-js/jpeg-js ；https://lbs.qq.com/faq/accountQuota/faqQuota ；https://lbs.qq.com/faq/accountQuota/faqKey ；https://lbs.qq.com/dev/console/quotaImprove 。

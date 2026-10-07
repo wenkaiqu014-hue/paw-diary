@@ -16,7 +16,7 @@ def choose(page, selector, value):
     root.get_by_role('option',name=label,exact=True).click()
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
+    browser = p.chromium.launch(headless=os.environ.get('PAW_HEADFUL') != '1', executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
     context = browser.new_context(viewport={'width': 1440, 'height': 1000}, accept_downloads=True)
     page = context.new_page()
     errors = []

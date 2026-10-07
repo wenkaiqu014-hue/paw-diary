@@ -15,17 +15,18 @@ export function enhanceRecordTypeSelect(select,{getSnapshot,getRepository,onUpda
  async function refresh(){
   state=await getSnapshot();if(destroyed)return;
   const old=select.value;entries=recordTypeEntries(state,{includeHistoricalRecord:select.__historicalRecord??null});
-  control.setOptions(entries.map(entry=>({value:entry.id,label:entry.builtin?t(entry.type):entry.name,iconKey:entry.iconKey})));
+  const allowEmpty=select.dataset.allowEmpty==='true';
+  control.setOptions([...(allowEmpty?[{value:'',label:getLocale()==='en'?'Choose a type':'请选择类型'}]:[]),...entries.map(entry=>({value:entry.id,label:entry.builtin?t(entry.type):entry.name,iconKey:entry.iconKey}))]);
   const desired=entries.some(x=>x.id===old)?old:old==='other'&&select.__historicalRecord?select.__historicalRecord.customTypeId??'historical:other':old;
-  if(entries.some(x=>x.id===desired))control.setValue(desired);render();
+  if(entries.some(x=>x.id===desired))control.setValue(desired);else if(allowEmpty)control.setValue('');render();
   if(old&&select.value!==old)select.dispatchEvent(new doc.defaultView.Event('change',{bubbles:true}));
  }
  async function command(payload,{chooseNew=false}={}){
   if(busy)return;busy=true;footer.querySelector('.type-catalog-error')?.remove();for(const b of footer.querySelectorAll('button,input'))b.disabled=true;
   try{
-   const repository=getRepository();const prior=new Set(entries.map(e=>e.id));
+   const repository=getRepository(),priorRevision=repository.getRevision?.();const prior=new Set(entries.map(e=>e.id));
    await repository.manageRecordTypes(payload,{baseRevision:repository.getRevision?.(),operationId:globalThis.crypto?.randomUUID?.()??`catalog-${Date.now()}-${Math.random()}`});
-   const latest=await repository.snapshot();await onUpdated(latest);await refresh();
+   const revision=repository.getRevision?.();const latest=await repository.snapshot();await onUpdated(latest,{revision,priorRevision});await refresh();
    if(chooseNew){const added=entries.find(x=>!prior.has(x.id)&&!x.historical);if(added){control.setValue(added.id);select.dispatchEvent(new doc.defaultView.Event('change',{bubbles:true}));}screen='actions';control.close(true);}
   }catch(e){error(e?.message||t('error'));}
   finally{busy=false;if(!destroyed)render();}

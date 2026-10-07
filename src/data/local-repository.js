@@ -6,7 +6,7 @@ import {applyReminder,completeReminder as finishReminder} from '../domain/remind
 import {moveToTrash as trash,restoreFromTrash as restore,reorderPets as reorder} from '../domain/lifecycle.js?v=0.2.0';
 import {applyOnboarding} from '../domain/onboarding.js';
 import {prepareSavedRecap,applySavedRecap} from '../domain/recap-facts.js';
-import {applyRecordBatch} from '../domain/ai-drafts.js';
+import {applyRecordBatch,applyEntryBatch} from '../domain/ai-drafts.js';
 import {createIndexedDBStore,storageError} from './indexeddb-store.js';
 import {createMediaRepository} from './media-repository.js';
 import {exportArchive,previewArchiveImport,commitArchiveImport,previewCorruptArchiveRestore,commitCorruptArchiveRestore} from '../domain/archive.js';
@@ -48,6 +48,11 @@ export function createLocalRepository({indexedDB=globalThis.indexedDB,dbName='pa
       const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw storageError('INVALID_INPUT','操作标识无效');
       const signature=JSON.stringify({action:'records.saveBatch',inputs});
       return write(ctx=>{const result=applyRecordBatch(ctx.envelope.snapshot,inputs,{now:clock(),idFactory});ctx.envelope.snapshot=result.snapshot;const data={records:result.records,reminders:result.reminders};ctx.envelope.receipts??={};ctx.envelope.receipts[operationId]={signature,result:clone(data)};return data;},{baseRevision:options.baseRevision,idempotency:{operationId,signature}});
+    }),
+    saveEntryBatch:(entries,options={})=>run(()=>{
+      const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw storageError('INVALID_INPUT','操作标识无效');
+      const signature=JSON.stringify({action:'entries.saveBatch',entries});
+      return write(ctx=>{const result=applyEntryBatch(ctx.envelope.snapshot,entries,{now:clock(),idFactory});ctx.envelope.snapshot=result.snapshot;const data={records:result.records,reminders:result.reminders,entries:result.entries};ctx.envelope.receipts??={};ctx.envelope.receipts[operationId]={signature,result:clone(data)};return data;},{baseRevision:options.baseRevision,idempotency:{operationId,signature}});
     }),
     saveOnboarding:(input,options)=>run(()=>write(ctx=>{const result=applyOnboarding(ctx.envelope.snapshot,input,{now:clock()});ctx.envelope.snapshot=result.snapshot;return result.progress;},revisionOptions(input,options))),
     saveRecap:(input,options)=>run(async()=>{const recap=await prepareSavedRecap(envelope.snapshot,input);return write(ctx=>{ctx.envelope.snapshot=applySavedRecap(ctx.envelope.snapshot,recap);return recap;},revisionOptions(input,options));}),

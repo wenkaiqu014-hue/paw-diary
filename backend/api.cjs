@@ -14,6 +14,7 @@ const healthActions = new Set([
   "records.save",
   "recordTypes.manage",
   "records.saveBatch",
+  "entries.saveBatch",
   "stage3.onboarding.save",
   "stage3.recap.save",
   "records.delete",

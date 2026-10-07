@@ -136,6 +136,7 @@ export function createCloudRepository({
     savePet: (input, o) => request("pets.save", input, o),
     manageRecordTypes: (command, o) => request("recordTypes.manage", command, o),
     saveRecord: (input, o) => request("records.save", input, o),
+    saveEntryBatch: (entries, o) => request("entries.saveBatch", {entries}, o),
     saveRecordBatch: (inputs, o) => request("records.saveBatch", {inputs}, o),
     saveOnboarding: (input, o) => request("stage3.onboarding.save", input, o),
     saveRecap: (input, o) => request("stage3.recap.save", input, o),

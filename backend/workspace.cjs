@@ -90,6 +90,10 @@ function verifyReferences(state, action, p) {
     if (p.id) owned(state, "records", p.id);
     if (p.petId) owned(state, "pets", p.petId);
   }
+  if(action === "entries.saveBatch") {
+    if(!Array.isArray(p.entries)||p.entries.length<1||p.entries.length>5)throw new ApiError("INVALID_INPUT");
+    for(const entry of p.entries){if(!entry||!entry.input||typeof entry.input!=="object"||entry.input.id)throw new ApiError("INVALID_INPUT");owned(state,"pets",entry.input.petId);}
+  }
   if(action === "records.saveBatch") {
     if(!Array.isArray(p.inputs)||p.inputs.length<1||p.inputs.length>5)throw new ApiError("INVALID_INPUT");
     for(const input of p.inputs){if(!input||typeof input!=="object"||input.id)throw new ApiError("INVALID_INPUT");owned(state,"pets",input.petId);}
@@ -157,6 +161,9 @@ async function transformHealth(workspace, action, p, { clock, idFactory }) {
       next = d.applyRecord(next, p, { now, idFactory });
       data = next.records.find((r) => r.id === p.id) ?? next.records[0];
       break;
+    case "entries.saveBatch": {
+      const result=d.applyEntryBatch(next,p.entries,{now,idFactory});next=result.snapshot;data={records:result.records,reminders:result.reminders,entries:result.entries};break;
+    }
     case "records.saveBatch": {
       const result=d.applyRecordBatch(next,p.inputs,{now,idFactory});next=result.snapshot;data={records:result.records,reminders:result.reminders};break;
     }

@@ -1,0 +1,15 @@
+/* AI entry inherits the journal palette without a warning-colored input ring. */
+#ai-entry-form #ai-text:focus {
+  border-color: #7b9e8d;
+  outline: none;
+  box-shadow: none;
+}
+#ai-entry-form #ai-text:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+#ai-entry-form #ai-quota {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  line-height: 1.7;
+}

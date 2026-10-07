@@ -903,3 +903,15 @@ nearby_audit按catalog-official-product-docs官方目录研究：腾讯56个inde
 community_audit文档一致性复查提出2项实质遗漏，Root已整合：client加getAuthorization=auth.getRequestSession并在顶层附当前可信authToken，独立community identity generation在现auth handler提前return前失效，不绑定健康空间；新增community-draft-handoff（单次tab内存30分钟、只准备公开的内容、显式login/profile意图、guest这次登录绑定实际owner、已绑定A不可给B、取消/退出/过期清除），使登录/补昵称返回同稿与普通账号切换清稿同时成立。Task1/5新增相应认证及handoff测试，spec/plan接口同步。Root定向读app.js:150–166和cloudbase-auth.getRequestSession确认真实token入口，未读值/会话。审查agent仅nl只读exit0，无代码/云/测试修改；Root修文档后再检查，不把文档review当产品安全验收。
 
 最终文档复验：11文件中10份状态/spec/plan相对链接0missing，Task1–10顺序正确、57待做/0完成、占位0；git diff --cached --check退出0。阶段4设计/计划和状态日志已本地提交7783995（11文件，387新增/6删除），此前调查日志df2ad7f亦本地保留；git status工作区干净、main ahead origin/main 2。未推送、未改产品构件、未建tag/Release、未触发Pages。随后仅日志补记此次提交结果并本地保存；用户下一步先审阅详细plan再选执行方式/启动。
+
+### v0.6.2 AI录入与手动填写对齐：授权实施
+
+2026-10-07 20:37:33 Asia/Shanghai起计（工具时间），用户批准五步骤、各≤20min、总≤80min，最终发v0.6.2。阶段4agent已暂停；保留main上823a828/7783995/df2ad7f阶段4文档，不审计或回退其改动。建立.worktrees/ai-parity / fix/ai-entry-parity-v062自823a828；本轮只做AI录入共享逻辑、焦点/配额，不做阶段4功能。计划见2026-10-07-ai-entry-parity-v062.md。
+
+使用本机Superpowers、Impeccable、webapp-testing，定向核GitHub obra/superpowers、vercel-labs/agent-skills及anthropics/skills/webapp-testing，复用已安装技能未加框架。派ai062_shared_fields共享字段，ai062_backend混合模型/原子仓储，ai062_focus_layout焦点文案；明确非独占、禁止回退stage4，Root负责共享app接线和最终复验。独立shared_fields复核backend发现两项parser P1：过去“今天”污染模糊未来日期，以及遗漏未来日常时错误补成护理；已交backend RED修复。Root新增per-item purpose与own catalog CAS行为测试，先RED PURPOSE_CHANGED/缺少acceptCatalogRevision，再GREEN。
+
+基线安装首个npm ci/test误在main执行（未改变tracked文件），随后在隔离树重新npm ci/test成功；不是symlink。Step1有头Chrome1440/390不自动聚焦，原橙框为全局focus-visible、原quota gap0；改scoped绿色2px/offset3、quota16px，两语言列三项。Step2共享字段约20:43完成，5新行为测试及有头manual状态/双语PASS；Step4首次20:44完成357单测，独立P1修复仍进行中，不宣称最终验收。Root已连接AI到共享字段与真正类型管理，空类型保持待选，目录自身写入才更新确认revision。
+
+2026-10-07 20:48:57 Asia/Shanghai检查点：Root最新完整单测363/363无skip，node --check/app及diff检查成功；有头test_app.py四原路由与新增/完成/持久/备份/多宠等全部PASS、无pageError。一次真实访客模型成功5184ms，入口plan但按原句返回actual weight+future daily，日期正确且daily不加入health。paw-ai20:47:12/paw-api20:47:19 Active；weight空标题核对保空的新领域修订已重新build/functions，最终二函数同步部署进行中。worker独占A真实mixedPersisted/false日常/true疫苗/receipt/staleCAS/非法批次回滚全部通过，exact合成pet回收，20:48:29最新session600归还，未使用B/OTP/signOut。独立UI审查的连续取消及locale复选disabled缺陷已修，真实DOM复验包括save busy与失败恢复PASS，22定向单测PASS。未claim最终公开验收；候选包已按用户更新0.6.2，旧tag不动。
+
+2026-10-07 20:53:13 Asia/Shanghai真实页面采样检查：生产App+真实SDK+硅基模型本地有头混合两项确认/管理/双宽/刷新exit0，采样dialog.closed、保存后记录+1和普通daily计划+1。此前首轮等待dialog关闭timeout exit1，未取得足够证据确认原因，增加采样后复验成功；公开端仍将定向复验，不将失败改写通过。一次真实模型将“明天”填今天，因此后端追加基本五相对词代码计算，仅明确相对词、过去/未来分句分开，模糊下周/下个月仍null；RED→GREEN新增两test，全套365/365无skip。第二次真实UI示例数据仅新隔离demo浏览器，未读私有A/真实宠物。生产UI模块harness20:52:21通过mock边界＋真实IndexedDB1record/2plan和类型/双语/取消/scope；不能替代整App真模型，Root已补实际路径。本轮没有新采购/其他供应商/集团调用。

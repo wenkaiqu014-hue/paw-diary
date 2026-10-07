@@ -3,7 +3,7 @@ import {clone,migrateV1,migrateV2,validateSnapshot,normalizePet,todayAt,isoTime}
 import {applyRecord,removeRecord,defaultId} from '../domain/records.js?v=0.2.0';
 import {applyReminder,completeReminder as finishReminder} from '../domain/reminders.js?v=0.2.0';
 import {moveToTrash as trash,restoreFromTrash as restore,reorderPets as reorder} from '../domain/lifecycle.js?v=0.2.0';
-import {applyRecordBatch} from '../domain/ai-drafts.js';
+import {applyRecordBatch,applyEntryBatch} from '../domain/ai-drafts.js';
 import {applyOnboarding} from '../domain/onboarding.js';
 import {prepareSavedRecap,applySavedRecap} from '../domain/recap-facts.js';
 import {createSeedState} from './seed.js?v=0.2.0';
@@ -65,6 +65,12 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
       const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw new Error('操作标识无效');const signature=JSON.stringify({action:'records.saveBatch',inputs});
       if(Object.hasOwn(receipts,operationId)){if(receipts[operationId].signature!==signature)throw new Error('同一操作标识对应不同内容');return clone(receipts[operationId].result);}
       const result=applyRecordBatch(state,inputs,{now:clock(),idFactory}),data={records:result.records,reminders:result.reminders};const nextReceipts={...receipts,[operationId]:{signature,result:clone(data)}};await persist(result.snapshot,expectedRaw,[],nextReceipts);return clone(data);
+    }),
+    saveEntryBatch:(entries,options={})=>operation(async()=>{
+      const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw new Error('操作标识无效');const signature=JSON.stringify({action:'entries.saveBatch',entries});
+      if(Object.hasOwn(receipts,operationId)){if(receipts[operationId].signature!==signature)throw new Error('同一操作标识对应不同内容');return clone(receipts[operationId].result);}
+      if(options.baseRevision!==undefined&&options.baseRevision!==revision)throw changed();
+      const result=applyEntryBatch(state,entries,{now:clock(),idFactory}),data={records:result.records,reminders:result.reminders,entries:result.entries};const nextReceipts={...receipts,[operationId]:{signature,result:clone(data)}};await persist(result.snapshot,expectedRaw,[],nextReceipts);return clone(data);
     }),
     saveOnboarding:input=>operation(async()=>{const result=applyOnboarding(state,input,{now:clock()});await persist(result.snapshot);return clone(result.progress);}),
     saveRecap:input=>operation(async()=>{const recap=await prepareSavedRecap(state,input);await persist(applySavedRecap(state,recap));return clone(recap);}),

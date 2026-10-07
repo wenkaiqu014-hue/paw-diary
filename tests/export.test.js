@@ -158,8 +158,8 @@ test('CSV标准解析保留中文、双引号、逗号和换行，并把危险�
   const parsed = spawnSync('python3', ['-c', 'import csv,io,json,sys; print(json.dumps(list(csv.reader(io.StringIO(sys.stdin.read().lstrip("\\ufeff")))),ensure_ascii=False))'], { input: csv, encoding: 'utf8' });
   assert.equal(parsed.status, 0, parsed.stderr);
   const rows = JSON.parse(parsed.stdout);
-  assert.deepEqual(rows[0], ['id', 'petId', 'type', 'typeLabel', 'occurredDate', 'value', 'unit', 'title', 'note', 'createdAt', 'updatedAt']);
-  assert.deepEqual(rows[1], ['id-unchanged', 'p1', 'daily', '', '2026-10-06', '', '', '中文,"双引号"', '第一行\n第二行', now, now]);
+  assert.deepEqual(rows[0], ['id', 'petId', 'type', 'typeLabel', 'occurredDate', 'value', 'unit', 'title', 'note', 'createdAt', 'updatedAt','petName']);
+  assert.deepEqual(rows[1], ['id-unchanged', 'p1', 'daily', '', '2026-10-06', '', '', '中文,"双引号"', '第一行\n第二行', now, now,'']);
   assert.equal(rows[2][0], "'=danger");
   assert.equal(rows[2][7], '\'=HYPERLINK("https://example.com")');
   assert.equal(rows[2][8], "'\t+SUM(1,2)");

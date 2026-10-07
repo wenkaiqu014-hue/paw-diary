@@ -1,3 +1,4 @@
+import {applyRecordTypeCommand} from '../domain/record-type-catalog.js';
 import {clone,migrateV1,migrateV2,validateSnapshot,normalizePet,todayAt,isoTime} from '../domain/schema.js?v=0.2.0';
 import {applyRecord,removeRecord,defaultId} from '../domain/records.js?v=0.2.0';
 import {applyReminder,completeReminder as finishReminder} from '../domain/reminders.js?v=0.2.0';
@@ -8,7 +9,7 @@ import {prepareSavedRecap,applySavedRecap} from '../domain/recap-facts.js';
 import {createSeedState} from './seed.js?v=0.2.0';
 export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>new Date().toISOString(),idFactory=defaultId,seedFactory=createSeedState}={}) {
   if(!storage||typeof storage.getItem!=='function'||typeof storage.setItem!=='function')throw new Error('本地存储不可用');
-  let state=null,queue=Promise.resolve(),expectedRaw=null,receipts={};
+  let state=null,queue=Promise.resolve(),expectedRaw=null,receipts={},revision=0;
   const serial=operation=>{const pending=queue.then(operation);queue=pending.catch(()=>{});return pending;};
   const changed=()=>new Error('资料已在另一窗口更新，请先复制当前输入，再刷新读取后重试。');
   const persist=async (candidate,expected=expectedRaw,sources=[],nextReceipts=receipts)=>{
@@ -17,7 +18,7 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
     // Keep a synchronous localStorage compare and write in the same task.
     const read=storage.getItem(key),actual=read&&typeof read.then==='function'?await read:read;
     if(actual!==expected)throw changed();
-    const raw=JSON.stringify({...checked,...(Object.keys(nextReceipts).length?{_operationReceipts:nextReceipts}:{})});await storage.setItem(key,raw);state=checked;receipts=clone(nextReceipts);expectedRaw=raw;return checked;
+    const raw=JSON.stringify({...checked,_revision:revision+1,...(Object.keys(nextReceipts).length?{_operationReceipts:nextReceipts}:{})});await storage.setItem(key,raw);state=checked;revision++;receipts=clone(nextReceipts);expectedRaw=raw;return checked;
   };
   const preserve=async(prefix,raw)=>{
     const existing=await storage.getItem(prefix);
@@ -30,7 +31,7 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
   const initialize=async()=>{
     if(state)return state;
     const saved=await storage.getItem(key);
-    if(saved!==null){const checked=validateSnapshot(saved);if(checked.mode!=='demo')throw new Error('本地演示数据模式无效');state=checked;const internal=JSON.parse(saved)._operationReceipts;receipts=internal&&typeof internal==='object'&&!Array.isArray(internal)?internal:{};expectedRaw=saved;return state;}
+    if(saved!==null){const checked=validateSnapshot(saved);if(checked.mode!=='demo')throw new Error('本地演示数据模式无效');state=checked;revision=JSON.parse(saved)._revision??0;const internal=JSON.parse(saved)._operationReceipts;receipts=internal&&typeof internal==='object'&&!Array.isArray(internal)?internal:{};expectedRaw=saved;return state;}
     const v2Key='paw-diary:v2:demo',v2=await storage.getItem(v2Key);
     if(v2!==null){const migrated=migrateV2(v2);return persist(migrated,null,[{key:v2Key,raw:v2}]);}
     const v1Key='paw-diary:v1',legacy=await storage.getItem(v1Key);
@@ -42,6 +43,7 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
   };
   const operation=fn=>serial(async()=>{await initialize();return fn();});
   return {
+    getRevision:()=>revision,
     snapshot:()=>operation(()=>clone(state)),
     savePet:input=>operation(async()=>{
       const next=clone(state),old=input.id?next.pets.find(p=>p.id===input.id):null;if(input.id&&!old)throw new Error('宠物不存在');
@@ -51,6 +53,12 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
       const today=todayAt(isoTime(clock()));if(pet.birthday>today||pet.arrivalDate>today)throw new Error('生日或到家日期不能晚于今天');
       if(old)next.pets[next.pets.findIndex(p=>p.id===pet.id)]=pet;else next.pets.push(pet);
       if(input.makeActive===true||!next.activePetId)next.activePetId=pet.id;await persist(next);return clone(pet);
+    }),
+    manageRecordTypes:(command,options={})=>operation(async()=>{
+      const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw new Error('操作标识无效');const signature=JSON.stringify({action:'recordTypes.manage',command});
+      if(Object.hasOwn(receipts,operationId)){if(receipts[operationId].signature!==signature)throw new Error('同一操作标识对应不同内容');return clone(receipts[operationId].result);}
+      if(options.baseRevision!==undefined&&options.baseRevision!==revision)throw changed();
+      const next=applyRecordTypeCommand(state,command,{now:clock(),idFactory}),data=next.profile.recordTypeCatalog,nextReceipts={...receipts,[operationId]:{signature,result:clone(data)}};await persist(next,expectedRaw,[],nextReceipts);return clone(data);
     }),
     saveRecord:input=>operation(async()=>{const next=applyRecord(state,input,{now:clock(),idFactory});await persist(next);return clone(input.id?state.records.find(r=>r.id===input.id):state.records[0]);}),
     saveRecordBatch:(inputs,options={})=>operation(async()=>{
@@ -64,7 +72,12 @@ export function createDemoRepository({storage,key='paw-diary:v3:demo',clock=()=>
     moveToTrash:input=>operation(async()=>{await persist(trash(state,input,{now:clock()}));return clone(state);}),
     restoreFromTrash:input=>operation(async()=>{await persist(restore(state,input));return clone(state);}),
     reorderPets:ids=>operation(async()=>{await persist(reorder(state,ids));return clone(state);}),
-    saveReminder:input=>operation(async()=>{await persist(applyReminder(state,input,{now:clock(),idFactory}));return clone(input.id?state.reminders.find(r=>r.id===input.id):state.reminders[0]);}),
+    saveReminder:(input,options={})=>operation(async()=>{
+      const operationId=options.operationId,signature=JSON.stringify({action:'reminders.save',input});if(operationId!==undefined&&(typeof operationId!=='string'||!operationId.trim()||operationId.length>200))throw new Error('操作标识无效');
+      if(operationId!==undefined&&Object.hasOwn(receipts,operationId)){if(receipts[operationId].signature!==signature)throw new Error('同一操作标识对应不同内容');return clone(receipts[operationId].result);}
+      if(options.baseRevision!==undefined&&options.baseRevision!==revision)throw changed();
+      const next=applyReminder(state,input,{now:clock(),idFactory}),data=input.id?next.reminders.find(r=>r.id===input.id):next.reminders[0],nextReceipts=operationId===undefined?receipts:{...receipts,[operationId]:{signature,result:clone(data)}};await persist(next,expectedRaw,[],nextReceipts);return clone(data);
+    }),
     completeReminder:(id,input)=>operation(async()=>{const result=finishReminder(state,id,input,{now:clock(),idFactory});await persist(result.state);return clone({reminder:result.reminder,record:result.record});}),
     selectPet:id=>operation(async()=>{if(!state.pets.some(p=>p.id===id&&p.deletedAt===null))throw new Error('宠物不存在或已在回收站');await persist({...clone(state),activePetId:id});}),
     mutate:mutator=>operation(async()=>{const next=clone(state);await mutator(next);await persist(next);return clone(state);}),

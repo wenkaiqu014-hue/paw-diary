@@ -1,3 +1,4 @@
+import {normalizeRecordTypeCatalog} from './record-type-catalog.js';
 import {mapStage3State,mergeStage3State} from './stage3-state.js';
 import { migrateV1, migrateV2, validateSnapshot } from './schema.js?v=0.2.0';
 
@@ -47,7 +48,16 @@ function same(left, right) {
   return JSON.stringify(comparable(left)) === JSON.stringify(comparable(right));
 }
 
+function mergeTypeCatalog(current,incoming) {
+  if(incoming===undefined)return current;
+  if(current===undefined)return normalizeRecordTypeCatalog(incoming);
+  const existing=normalizeRecordTypeCatalog(current),source=normalizeRecordTypeCatalog(incoming),ids=new Set(existing.custom.map(item=>item.id)),added=source.custom.filter(item=>!ids.has(item.id));
+  try{return normalizeRecordTypeCatalog({version:1,custom:[...existing.custom,...added],order:[...existing.order,...added.filter(item=>item.deletedAt===null).map(item=>item.id)]});}
+  catch{throw new Error('导入后自定义类型超过3个或名称重复，请先调整类型目录后重试；原资料未更改');}
+}
+
 function importPreview(local, incoming) {
+  mergeTypeCatalog(local.profile.recordTypeCatalog,incoming.profile.recordTypeCatalog);
   const result = { newPets: [], newRecords: [], newReminders: [], newPosts: [], conflicts: [] };
   for (const { field, kind, output } of collections) {
     const existing = new Map(local[field].map(item => [item.id, item]));
@@ -79,6 +89,8 @@ export function mergeBackup(current, backup, { acceptedConflictIds = [] } = {}) 
   const incoming = validateBackup(backup);
   const hadLocalPets = local.pets.length > 0;
   const preview = importPreview(local, incoming);
+  const catalog=mergeTypeCatalog(local.profile.recordTypeCatalog,incoming.profile.recordTypeCatalog);
+  if(catalog!==undefined)local.profile.recordTypeCatalog=catalog;
   const accepted = new Set(acceptedConflictIds);
   for (const { field, kind, output } of collections) {
     const changes = new Map(preview.conflicts.filter(conflict => conflict.kind === kind && accepted.has(`${kind}:${conflict.id}`)).map(conflict => [conflict.id, conflict.incoming]));
@@ -105,7 +117,8 @@ function csvCell(value) {
   return `"${text.replaceAll('"', '""')}"`;
 }
 
-export function exportRecordsCsv(records) {
+export function exportRecordsCsv(records,{pets=[]}={}) {
   if (!Array.isArray(records)) throw new Error('请选择要导出的记录');
-  return '\ufeff' + [csvFields.map(csvCell).join(','), ...records.filter(record=>record.deletedAt==null).map(record => csvFields.map(field => csvCell(record.legacyCreatedAtUnknown&&(field==='createdAt'||field==='updatedAt'&&record.updatedAt===record.createdAt)?'':record[field])).join(','))].join('\r\n') + '\r\n';
+  const fields=[...csvFields,'petName'],names=new Map(pets.map(p=>[p.id,p.name]));
+  return '\ufeff' + [fields.map(csvCell).join(','), ...records.filter(record=>record.deletedAt==null).map(record => fields.map(field => csvCell(field==='petName'?(names.get(record.petId)??''):record.legacyCreatedAtUnknown&&(field==='createdAt'||field==='updatedAt'&&record.updatedAt===record.createdAt)?'':record[field])).join(','))].join('\r\n') + '\r\n';
 }

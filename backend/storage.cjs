@@ -3,6 +3,7 @@ const { ApiError } = require("./workspace.cjs");
 function createCloudbaseStorage({
   app,
   fetch: fetchFile = globalThis.fetch,
+  readTimeoutMs = 2500,
 } = {}) {
   if (!app) throw new ApiError("UNAVAILABLE");
   return {
@@ -26,6 +27,7 @@ function createCloudbaseStorage({
         },
       };
     },
+    async downloadUrl(fileRef){const reply=await app.getTempFileURL({fileList:[{fileID:fileRef,maxAge:60}]});const file=reply?.fileList?.[0];if(!file||file.code&&file.code!=="SUCCESS"||typeof file.tempFileURL!=="string"||!file.tempFileURL.startsWith("https://"))throw new ApiError("UNAVAILABLE");return {downloadUrl:file.tempFileURL,expiresIn:60};},
     async read(fileRef, maxBytes = 1024 * 1024) {
       const info = await app.getFileInfo({ fileList: [fileRef] });
       const file = info?.fileList?.[0];
@@ -46,7 +48,7 @@ function createCloudbaseStorage({
       )
         throw new ApiError("UNAVAILABLE");
       const controller = new AbortController(),
-        timeout = setTimeout(() => controller.abort(), 2500);
+        timeout = setTimeout(() => controller.abort(), readTimeoutMs);
       try {
         const response = await fetchFile(file.tempFileURL, {
           signal: controller.signal,

@@ -8,7 +8,11 @@ const {
   writeTransaction,
   priorReceipt,
 } = require("./workspace.cjs");
-const { verifyObject, publicAsset } = require("./photos.cjs");
+const { verifyObject:imageVerify, publicAsset } = require("./photos.cjs");
+const attachmentVerify=require("./attachments.cjs").verifyObject;
+const verifyObject=(storage,ticket)=>ticket.kind==="attachment"?attachmentVerify(storage,ticket):imageVerify(storage,ticket);
+const mapType=(source,id)=>id?`custom:import-${hash({source,id}).slice(0,40)}`:id;
+function mapCatalog(source,catalog){if(!catalog)return null;return {...catalog,custom:catalog.custom.map(x=>({...x,id:mapType(source,x.id)})),order:catalog.order.map(x=>x.startsWith("custom:")?mapType(source,x):x)};}
 const mappingKey = (source, kind, id) => hash({ source, kind, id });
 async function canonicalSource(payload) {
   const d = await loadDomain();
@@ -18,18 +22,20 @@ async function canonicalSource(payload) {
   const assets = (payload.assets ?? []).map((a) => {
     if (
       !a ||
-      !["avatar", "photo"].includes(a.kind) ||
+      !["avatar", "photo", "attachment"].includes(a.kind) ||
       !snapshot.pets.some((p) => p.id === a.petId) ||
-      !["image/png", "image/jpeg", "image/webp"].includes(a.mime) ||
+      !["image/png", "image/jpeg", "image/webp", ...(a.kind==="attachment"?["application/pdf"]:[])].includes(a.mime) ||
       !Number.isInteger(a.bytes) ||
       a.bytes <= 0 ||
-      a.bytes > 1024 * 1024 ||
+      a.bytes > (a.kind==="attachment"?5:1) * 1024 * 1024 ||
       typeof (a.caption ?? "") !== "string" ||
       (a.caption ?? "").length > 200 ||
       !/^[a-f0-9]{64}$/.test(a.sha256 ?? "")
     )
       throw new ApiError("INVALID_INPUT");
+    if(a.kind==="attachment"){const parent=snapshot[a.parentKind==="record"?"records":"reminders"].find(x=>x.id===a.parentId);if(!["record","reminder"].includes(a.parentKind)||!parent||parent.petId!==a.petId||typeof a.filename!=="string"||a.filename.length>200)throw new ApiError("INVALID_INPUT");}
     return {
+      ...(a.kind==="attachment"?{parentKind:a.parentKind,parentId:a.parentId,filename:a.filename}:{}),
       id: requiredId(a.id),
       petId: a.petId,
       kind: a.kind,
@@ -72,8 +78,10 @@ async function canonicalSource(payload) {
   }
   for (const id of sets.recordIds)
     sets.petIds.add(snapshot.records.find((x) => x.id === id).petId);
-  for (const id of sets.assetIds)
-    sets.petIds.add(assets.find((x) => x.id === id).petId);
+  for (const id of sets.assetIds){const asset=assets.find(x=>x.id===id);sets.petIds.add(asset.petId);if(asset.kind==="attachment")sets[asset.parentKind==="record"?"recordIds":"reminderIds"].add(asset.parentId);}
+  for(const asset of assets)if(asset.kind==="attachment"&&sets[asset.parentKind==="record"?"recordIds":"reminderIds"].has(asset.parentId))sets.assetIds.add(asset.id);
+  for(const id of sets.recordIds)sets.petIds.add(snapshot.records.find(x=>x.id===id).petId);
+  for(const id of sets.reminderIds)sets.petIds.add(snapshot.reminders.find(x=>x.id===id).petId);
   for (const id of sets.petIds) {
     const avatar = snapshot.pets.find((x) => x.id === id).avatarAssetId;
     if (
@@ -121,6 +129,8 @@ async function translatedItem(tx, source, kind, item, targetId) {
           ?.targetId ?? `pending:${type}:${id}`)
       : null;
   const candidate = { ...item, id: targetId };
+  if(candidate.customTypeId)candidate.customTypeId=mapType(source.sourceWorkspaceId,candidate.customTypeId);
+  if(kind==="asset"&&item.kind==="attachment")candidate.parentId=await target(item.parentKind,item.parentId);
   if (kind === "pet")
     candidate.avatarAssetId = item.avatarAssetId
       ? await target("asset", item.avatarAssetId)
@@ -346,12 +356,14 @@ async function handleImport(request, deps) {
         for (const item of newItems.record)
           next.records.push({
             ...item,
+            ...(item.customTypeId?{customTypeId:mapType(current.sourceWorkspaceId,item.customTypeId)}:{}),
             id: ids.record.get(item.id),
             petId: ids.pet.get(item.petId),
           });
         for (const item of newItems.reminder)
           next.reminders.push({
             ...item,
+            ...(item.customTypeId?{customTypeId:mapType(current.sourceWorkspaceId,item.customTypeId)}:{}),
             id: ids.reminder.get(item.id),
             petId: ids.pet.get(item.petId),
             originRecordId: ids.record.get(item.originRecordId) ?? null,
@@ -374,6 +386,7 @@ async function handleImport(request, deps) {
           ticket.createdAt = item.createdAt;
           ticket.caption = item.caption;
           ticket.petId = ids.pet.get(item.petId);
+          if(item.kind==="attachment"){ticket.parentKind=item.parentKind;ticket.parentId=ids[item.parentKind].get(item.parentId);ticket.filename=item.filename;}
           delete ticket.importBatchId;
           delete ticket.sourceAssetId;
           await tx.putMedia(ticket.id, ticket);
@@ -451,6 +464,8 @@ async function handleImport(request, deps) {
               index = next[field].findIndex((value) => value.id === targetId);
             if (index < 0) throw new ApiError("FORBIDDEN");
             const candidate = { ...item, id: targetId };
+  if(candidate.customTypeId)candidate.customTypeId=mapType(source.sourceWorkspaceId,candidate.customTypeId);
+  if(kind==="asset"&&item.kind==="attachment")candidate.parentId=await target(item.parentKind,item.parentId);
             if (kind === "pet")
               candidate.avatarAssetId =
                 ids.asset.get(item.avatarAssetId) ?? null;
@@ -498,6 +513,7 @@ async function handleImport(request, deps) {
           )
         )
           next.activePetId = next.pets.find((x) => !x.deletedAt)?.id ?? null;
+        const incomingCatalog=mapCatalog(current.sourceWorkspaceId,current.snapshot.profile.recordTypeCatalog);if(incomingCatalog){const base=next.profile.recordTypeCatalog??{version:1,order:['weight','vaccine','deworm','daily'],custom:[]};const added=incomingCatalog.custom.filter(x=>!base.custom.some(y=>y.id===x.id));const candidate={version:1,custom:[...base.custom,...added],order:[...base.order,...added.filter(x=>x.deletedAt===null).map(x=>x.id)]};try{next.profile.recordTypeCatalog=(await import('../src/domain/record-type-catalog.js')).normalizeRecordTypeCatalog(candidate);}catch{throw new ApiError('INVALID_INPUT','errors.recordTypeLimit');}}
         if (current.copyCity) next.profile.city = current.snapshot.profile.city;
         const metadata=d.mapStage3State(current.snapshot.profile.stage3,{pet:id=>ids.pet.get(id)??null,record:id=>ids.record.get(id)??null,reminder:id=>ids.reminder.get(id)??null,recap:id=>`import-recap-${hash({source:current.sourceWorkspaceId,id}).slice(0,40)}`});
         if(current.snapshot.profile.stage3!==undefined)next.profile.stage3=d.mergeStage3State(next.profile.stage3,metadata.state);

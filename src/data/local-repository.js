@@ -1,3 +1,5 @@
+import {createAttachmentRepository} from '../media/attachments.js';
+import {applyRecordTypeCommand} from '../domain/record-type-catalog.js';
 import {clone,validateSnapshot,normalizePet,todayAt,isoTime,requiredText} from '../domain/schema.js?v=0.2.0';
 import {applyRecord,removeRecord,defaultId} from '../domain/records.js?v=0.2.0';
 import {applyReminder,completeReminder as finishReminder} from '../domain/reminders.js?v=0.2.0';
@@ -36,6 +38,11 @@ export function createLocalRepository({indexedDB=globalThis.indexedDB,dbName='pa
     snapshot:()=>run(()=>clone(envelope.snapshot)),
     refresh:()=>run(async()=>{const next=(await store.read()).envelope;next.snapshot=validateSnapshot(next.snapshot);if(next.snapshot.mode!=='local')throw storageError('INVALID_INPUT','个人档案模式无效');envelope=next;return clone(next.snapshot);}),
     savePet:(input,options)=>run(()=>write(ctx=>{const next=ctx.envelope.snapshot,old=input.id?next.pets.find(p=>p.id===input.id):null;if(input.id&&!old)throw new Error('宠物不存在');if(old?.deletedAt)throw new Error('宠物已在回收站，请先恢复');if(input.deletedAt!=null)throw new Error('请通过回收站操作移入资料');const pet=normalizePet({birthday:null,estimatedAgeMonths:null,arrivalDate:null,breed:'',sex:'',image:input.type==='cat'?'assets/cat.jpg':input.type==='dog'?'assets/dog.jpg':'',...old,...input,id:old?.id??idFactory()});if(input.avatarAssetId!==undefined&&input.avatarAssetId!==old?.avatarAssetId)throw new Error('请通过头像上传更新头像');const today=todayAt(isoTime(clock()));if(pet.birthday>today||pet.arrivalDate>today)throw new Error('生日或到家日期不能晚于今天');if(old)next.pets[next.pets.indexOf(old)]=pet;else next.pets.push(pet);if(input.makeActive===true||!next.activePetId)next.activePetId=pet.id;return pet;},revisionOptions(input,options))),
+    manageRecordTypes:(command,options={})=>run(()=>{
+      const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw storageError('INVALID_INPUT','操作标识无效');
+      const signature=JSON.stringify({action:'recordTypes.manage',command});
+      return write(ctx=>{ctx.envelope.snapshot=applyRecordTypeCommand(ctx.envelope.snapshot,command,{now:clock(),idFactory});const data=ctx.envelope.snapshot.profile.recordTypeCatalog;ctx.envelope.receipts??={};ctx.envelope.receipts[operationId]={signature,result:clone(data)};return data;},{baseRevision:options.baseRevision,idempotency:{operationId,signature}});
+    }),
     saveRecord:(input,options)=>run(()=>write(ctx=>{ctx.envelope.snapshot=applyRecord(ctx.envelope.snapshot,input,{now:clock(),idFactory});return input.id?ctx.envelope.snapshot.records.find(r=>r.id===input.id):ctx.envelope.snapshot.records[0];},revisionOptions(input,options))),
     saveRecordBatch:(inputs,options={})=>run(()=>{
       const operationId=options.operationId??idFactory();if(typeof operationId!=='string'||!operationId.trim()||operationId.length>200)throw storageError('INVALID_INPUT','操作标识无效');
@@ -45,7 +52,10 @@ export function createLocalRepository({indexedDB=globalThis.indexedDB,dbName='pa
     saveOnboarding:(input,options)=>run(()=>write(ctx=>{const result=applyOnboarding(ctx.envelope.snapshot,input,{now:clock()});ctx.envelope.snapshot=result.snapshot;return result.progress;},revisionOptions(input,options))),
     saveRecap:(input,options)=>run(async()=>{const recap=await prepareSavedRecap(envelope.snapshot,input);return write(ctx=>{ctx.envelope.snapshot=applySavedRecap(ctx.envelope.snapshot,recap);return recap;},revisionOptions(input,options));}),
     deleteRecord:(id,options)=>run(async()=>{await write(ctx=>{ctx.envelope.snapshot=removeRecord(ctx.envelope.snapshot,id,{now:clock()});},revisionOptions(null,options));}),
-    saveReminder:(input,options)=>run(()=>write(ctx=>{ctx.envelope.snapshot=applyReminder(ctx.envelope.snapshot,input,{now:clock(),idFactory});return input.id?ctx.envelope.snapshot.reminders.find(r=>r.id===input.id):ctx.envelope.snapshot.reminders[0];},revisionOptions(input,options))),
+    saveReminder:(input,options={})=>run(()=>{
+      const operationId=options.operationId,signature=JSON.stringify({action:'reminders.save',input});if(operationId!==undefined&&(typeof operationId!=='string'||!operationId.trim()||operationId.length>200))throw storageError('INVALID_INPUT','操作标识无效');
+      return write(ctx=>{ctx.envelope.snapshot=applyReminder(ctx.envelope.snapshot,input,{now:clock(),idFactory});const data=input.id?ctx.envelope.snapshot.reminders.find(r=>r.id===input.id):ctx.envelope.snapshot.reminders[0];if(operationId!==undefined){ctx.envelope.receipts??={};ctx.envelope.receipts[operationId]={signature,result:clone(data)};}return data;},{...revisionOptions(input,options),...(operationId!==undefined?{idempotency:{operationId,signature}}:{})});
+    }),
     completeReminder:(id,input,options)=>run(()=>write(ctx=>{const result=finishReminder(ctx.envelope.snapshot,id,input,{now:clock(),idFactory});ctx.envelope.snapshot=result.state;return {reminder:result.reminder,record:result.record};},revisionOptions(input,options))),
     moveToTrash:(input,options)=>run(()=>write(ctx=>ctx.envelope.snapshot=trash(ctx.envelope.snapshot,input,{now:clock()}),revisionOptions(input,options))),
     restoreFromTrash:(input,options)=>run(()=>write(ctx=>ctx.envelope.snapshot=restore(ctx.envelope.snapshot,input),revisionOptions(input,options))),
@@ -82,6 +92,7 @@ export function createLocalRepository({indexedDB=globalThis.indexedDB,dbName='pa
     close:()=>store.close()
   };
   repo.media=createMediaRepository({repository:repo});
+  repo.attachments=createAttachmentRepository({repository:repo});
   repo.exportArchive=options=>exportArchive({repository:repo,...options});
   repo.previewArchiveImport=(archive,selection)=>previewArchiveImport({repository:repo,archive,selection});
   repo.commitArchiveImport=(preview,options={})=>commitArchiveImport({repository:repo,preview,...options});

@@ -48,7 +48,8 @@ function loadDomain() {
     import("../src/domain/onboarding.js"),
     import("../src/domain/recap-facts.js"),
     import("../src/domain/stage3-state.js"),
-   ]).then(([s, r, m, l, a, o, f, g]) => ({
+    import("../src/domain/record-type-catalog.js"),
+   ]).then(([s, r, m, l, a, o, f, g, c]) => ({
     ...s,
     ...r,
     ...m,
@@ -57,6 +58,7 @@ function loadDomain() {
     ...o,
     ...f,
     ...g,
+    ...c,
     finishReminder: m.completeReminder,
   })));
 }
@@ -150,6 +152,7 @@ async function transformHealth(workspace, action, p, { clock, idFactory }) {
       data = pet;
       break;
     }
+    case "recordTypes.manage": {next=d.applyRecordTypeCommand(next,p,{now,idFactory});data=next.profile.recordTypeCatalog;break;}
     case "records.save":
       next = d.applyRecord(next, p, { now, idFactory });
       data = next.records.find((r) => r.id === p.id) ?? next.records[0];

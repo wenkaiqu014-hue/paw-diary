@@ -1,3 +1,4 @@
+import {createCloudAttachmentRepository} from './cloud-attachment-repository.js';
 import { clone, validateSnapshot } from "../domain/schema.js?v=0.2.0";
 import { createCloudMediaRepository } from "./cloud-media-repository.js";
 export class CloudApiError extends Error {
@@ -96,6 +97,8 @@ export function createCloudRepository({
         "health.snapshot",
         "media.list",
         "media.read",
+        "attachments.list",
+        "attachments.read",
         "imports.preview",
       ].includes(action);
     if (!write)
@@ -131,6 +134,7 @@ export function createCloudRepository({
     },
     request,
     savePet: (input, o) => request("pets.save", input, o),
+    manageRecordTypes: (command, o) => request("recordTypes.manage", command, o),
     saveRecord: (input, o) => request("records.save", input, o),
     saveRecordBatch: (inputs, o) => request("records.saveBatch", {inputs}, o),
     saveOnboarding: (input, o) => request("stage3.onboarding.save", input, o),
@@ -156,5 +160,6 @@ export function createCloudRepository({
     getRawBackup: async () => JSON.stringify(await repo.snapshot()),
   };
   repo.media = createCloudMediaRepository({ repository: repo });
+  repo.attachments = createCloudAttachmentRepository({ repository: repo });
   return repo;
 }

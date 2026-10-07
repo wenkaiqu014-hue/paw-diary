@@ -42,7 +42,7 @@ AI提供有限额体验，访客不需要配置密钥。点击整理、生成或
 
 ## 版本与项目文档
 
-当前版本为 **v0.4.0**，AI草稿、三步引导、成长回顾、只读助手与成长首页对齐修复已上线。版本变化见[发布说明](https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.4.0)，验证范围见[阶段3验收报告](docs/verification/stage3-report.md)。
+当前版本为 **v0.5.0**。统一记录/计划弹窗、建档头像、可复用类型、图片/PDF原附件和多宠记录筛选；保留AI草稿、三步引导、成长回顾与只读助手。版本变化见[发布说明](https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.5.0)，验证范围见[本次验收](docs/verification/record-workflow-report.md)和[阶段3报告](docs/verification/stage3-report.md)。
 
 [后续计划](ROADMAP.md) · [开发待办](PENDING.md) · [开发日志](SESSION_LOG.md)
 

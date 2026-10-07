@@ -19,7 +19,8 @@ export function completeReminder(state,id,input={},deps={}) {
   if(reminder.status==='completed')return {state:next,reminder,record:next.records.find(r=>r.id===reminder.completionRecordId&&r.deletedAt===null)??null};
   if(reminder.status!=='pending')throw new Error('已取消事项不能完成');
   const origin=next.records.find(r=>r.id===reminder.originRecordId&&r.deletedAt===null),now=isoTime(deps.now??new Date().toISOString()),idFactory=deps.idFactory??defaultId;
-  next=applyRecord(next,{petId:reminder.petId,type:origin?.type??'daily',...(origin?.type==='other'?{typeLabel:origin.typeLabel}:{}),value:origin?.type==='weight'?input.value:null,title:origin?.title??reminder.title,occurredDate:input.occurredDate,note:input.note??''},{now,idFactory});
+  const source=origin??reminder,type=origin?.type??reminder.recordType??'daily';
+  next=applyRecord(next,{petId:reminder.petId,type,...(type==='other'?{typeLabel:source.typeLabel,...(source.customTypeId?{customTypeId:source.customTypeId}:{}),...(source.iconKey?{iconKey:source.iconKey}:{})}:{}),value:type==='weight'?input.value:null,title:input.title??origin?.title??reminder.title,occurredDate:input.occurredDate,note:input.note??reminder.note??'',...(input.nextDate!==undefined?{nextDate:input.nextDate}:{})},{now,idFactory});
   const record=next.records[0];reminder=next.reminders.find(r=>r.id===id);reminder.status='completed';reminder.completedAt=now;reminder.completionRecordId=record.id;
   next=validateSnapshot(next);return {state:next,reminder:next.reminders.find(r=>r.id===id),record:next.records.find(r=>r.id===record.id)};
 }

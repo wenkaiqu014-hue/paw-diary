@@ -2,6 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 const pet={id:'p',name:'Milo',type:'cat',deletedAt:null};
 const draft={draftId:'d',petId:'p',type:'weight',occurredDate:'2026-10-06',value:4.6,unit:'kg',title:'体重记录',note:'',nextDate:null,missingFields:[],sourceText:'4.6kg'};
+test('every selected plan is validated before the first reminder is written',async()=>{
+ const {createDraftSession}=await import('../src/features/ai-entry.js');let writes=0;
+ const snapshot={version:3,mode:'local',pets:[pet],records:[],reminders:[],posts:[],profile:{city:'深圳'},activePetId:'p'};
+ const session=createDraftSession({purpose:'plan',repository:{saveReminder:async input=>{writes++;return input}},getSnapshot:()=>snapshot,request:async()=>({today:'2026-10-07',drafts:[]})});
+ await session.parse('安排计划','p','zh-CN');await assert.rejects(session.confirm([{draftId:'a',petId:'p',type:'daily',dueDate:'2026-10-14',title:'出门'},{draftId:'b',petId:'p',type:'daily',dueDate:null,title:'护理'}],['a','b']));assert.equal(writes,0);
+});
+test('plan AI passes explicit purpose and confirms a reminder rather than a record',async()=>{
+ const {createDraftSession}=await import('../src/features/ai-entry.js');
+ let payload,writes=0,recordWrites=0;
+ const snapshot={version:3,mode:'local',pets:[pet],records:[],reminders:[],posts:[],profile:{city:'深圳'},activePetId:'p'};
+ const repository={getRevision:()=>0,saveReminder:async input=>{writes++;return {...input,id:'r'}},saveRecordBatch:async()=>{recordWrites++;}};
+ const session=createDraftSession({purpose:'plan',repository,getSnapshot:()=>snapshot,request:async(action,input)=>{payload=input;return {today:'2026-10-07',drafts:[]}}});
+ await session.parse('下周去玩','p','zh-CN');assert.equal(payload.purpose,'plan');
+ const result=await session.confirm([{draftId:'d',petId:'p',type:'daily',dueDate:'2026-10-14',title:'去玩',note:'',missingFields:[]}],['d']);
+ assert.equal(writes,1);assert.equal(recordWrites,0);assert.equal(result.reminders[0].dueDate,'2026-10-14');
+});
 test('parse is read-only, confirm saves only selected complete drafts',async()=>{
  const {createDraftSession}=await import('../src/features/ai-entry.js');
  let writes=0;const repository={getRevision:()=>2,saveRecordBatch:async inputs=>{writes++;return{records:inputs,reminders:[]}}};

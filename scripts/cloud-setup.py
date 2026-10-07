@@ -24,7 +24,7 @@ REGION = 'ap-shanghai'
 COLLECTIONS = ('health_workspaces', 'health_receipts', 'media_assets', 'import_batches', 'import_maps', 'auth_challenges', 'auth_verified', 'ai_usage')
 DOMAINS = ('wenkaiqu014-hue.github.io', 'localhost', '127.0.0.1')
 ACCEPTANCE_DOMAINS = ('localhost:4193', '127.0.0.1:4193')
-FUNCTIONS = ('paw-api', 'paw-stage2-readiness', 'paw-auth', 'paw-ai')
+FUNCTIONS = ('paw-api', 'paw-stage2-readiness', 'paw-auth', 'paw-ai', 'paw-files')
 ROOT = Path(__file__).resolve().parents[1]
 LOG = ROOT / 'test-results/stage2/cloud-ops.log'
 PUBLIC_CONFIG = ROOT / 'test-results/stage2/public-config.json'
@@ -338,7 +338,7 @@ class Operator:
         for storage in env.get('Storages') or []:
             self.storage_acl(storage['Bucket'], write=True)
             self.storage_acl(storage['Bucket'])
-        self.attempt('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps({'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}, 'paw-stage2-readiness': {'invoke': True}})})
+        self.attempt('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps({'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}, 'paw-files': {'invoke': 'auth!=null'}, 'paw-stage2-readiness': {'invoke': True}})})
         keys = self.attempt('DescribeApiKeyList', {'KeyType': 'publish_key', 'PageNumber': 1, 'PageSize': 10})
         data = (keys or {}).get('Data') or []
         if not data:
@@ -420,8 +420,8 @@ class Operator:
         if name not in FUNCTIONS:
             raise ValueError('Only project functions can be deployed')
         required_values = {'TZ': 'Asia/Shanghai', 'PAW_CLOUD_ENV_ID': self.env_id}
-        function_timeout = 40 if name == 'paw-ai' else 20 if name == 'paw-auth' else 3
-        if name in ('paw-api', 'paw-auth', 'paw-ai'):
+        function_timeout = 40 if name == 'paw-ai' else 30 if name == 'paw-files' else 20 if name == 'paw-auth' else 3
+        if name in ('paw-api', 'paw-auth', 'paw-ai', 'paw-files'):
             keys = self.call('DescribeApiKeyList', {'KeyType': 'publish_key', 'PageNumber': 1, 'PageSize': 10}).get('Data') or []
             key = next((k for k in keys if k.get('Name') == 'publish_key' and isinstance(k.get('ApiKey'), str) and k['ApiKey']), None)
             if not key:
@@ -467,7 +467,7 @@ class Operator:
                             raise RuntimeError('Function public environment configuration failed')
                         time.sleep(2)
                         continue
-                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', publicKeyConfigured=name in ('paw-api','paw-auth','paw-ai'), textModelConfigured=name == 'paw-ai', modelTimeoutSeconds=25 if name == 'paw-ai' else None, managementSecretsInjected=False)
+                    emit('functionEnvironmentVerified', functionName=name, envId=self.env_id, timezone='Asia/Shanghai', publicKeyConfigured=name in ('paw-api','paw-auth','paw-ai','paw-files'), textModelConfigured=name == 'paw-ai', modelTimeoutSeconds=25 if name == 'paw-ai' else None, managementSecretsInjected=False)
                     return
                 if status.get('Status') in ('CreateFailed', 'UpdateFailed', 'DeployFailed'):
                     raise RuntimeError('Function entered failed state')
@@ -481,7 +481,7 @@ class Operator:
         if not any(t.get('TableName') == 'ai_usage' for t in existing):
             self.call('CreateTable', {'Tag': tag, 'TableName': 'ai_usage', 'PermissionInfo': {'EnvId': self.env_id, 'AclTag': 'ADMINONLY'}})
         self.call('ModifyResourcePermission', {'ResourceType': 'collection', 'Resource': 'ai_usage', 'Permission': 'CUSTOM', 'SecurityRule': DENY_RULE})
-        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}}
+        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}, 'paw-files': {'invoke': 'auth!=null'}}
         self.call('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps(rules)})
         collection = (self.call('DescribeResourcePermission', {'ResourceType': 'collection', 'Resources': ['ai_usage']}).get('Data') or {}).get('PermissionList') or []
         actual = (self.call('DescribeResourcePermission', {'ResourceType': 'function'}).get('Data') or {}).get('PermissionList') or []
@@ -515,7 +515,7 @@ class Operator:
             function = None
         if function and function.get('Description') != 'Temporary stage2 identity flags only readiness probe':
             raise ValueError('Temporary probe description changed; refusing to delete')
-        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}}
+        rules = {'*': {'invoke': False}, 'paw-api': {'invoke': 'auth!=null'}, 'paw-auth': {'invoke': True}, 'paw-ai': {'invoke': True}, 'paw-files': {'invoke': 'auth!=null'}}
         self.call('ModifyResourcePermission', {'ResourceType': 'function', 'Permission': 'CUSTOM', 'SecurityRule': json.dumps(rules)})
         permissions = (self.call('DescribeResourcePermission', {'ResourceType': 'function'}).get('Data') or {}).get('PermissionList') or []
         actual = json.loads(permissions[0].get('SecurityRule') or '{}') if permissions else {}

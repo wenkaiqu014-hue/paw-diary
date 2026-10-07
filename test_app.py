@@ -8,6 +8,13 @@ BASE = os.environ.get('PAW_DIARY_TEST_URL', 'http://127.0.0.1:4178/')
 OUT = Path(__file__).parent / 'test-results'
 OUT.mkdir(exist_ok=True)
 
+def choose(page, selector, value):
+    select=page.locator(selector)
+    label=select.evaluate('(s,v)=>Array.from(s.options).find(o=>o.value===v).textContent',value)
+    root=select.locator('..')
+    root.locator('.select-trigger').click()
+    root.get_by_role('option',name=label,exact=True).click()
+
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True, executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
     context = browser.new_context(viewport={'width': 1440, 'height': 1000}, accept_downloads=True)
@@ -22,9 +29,10 @@ with sync_playwright() as p:
     print('PASS: 首页、资源、桌面布局')
 
     page.get_by_role('button', name='记一笔', exact=True).click()
+    choose(page,'#record-type','weight')
     page.locator('[name=value]').fill('23.15')
     page.locator('[name=note]').fill('浏览器验证：今天的体重')
-    page.get_by_role('button', name='保存记录', exact=True).click()
+    page.locator('#record-form [type=submit]').click()
     expect(page.locator('dialog')).not_to_be_visible()
     expect(page.get_by_role('heading', name='体重记录 · 23.15 kg', exact=False)).to_be_visible()
     page.reload(wait_until='networkidle')
@@ -32,14 +40,13 @@ with sync_playwright() as p:
     print('PASS: 新增体重、时间线同步、刷新持久保存')
 
     page.get_by_role('button', name='记一笔', exact=True).click()
-    page.locator('[name=type]').select_option('vaccine')
+    choose(page,'#record-type','vaccine')
     page.locator('[name=title]').fill('测试健康提醒')
     page.locator('[name=nextDate]').fill((date.today() + timedelta(days=8)).isoformat())
-    page.get_by_role('button', name='保存记录', exact=True).click()
+    page.locator('#record-form [type=submit]').click()
     expect(page.locator('.reminder').filter(has_text='测试健康提醒')).to_be_visible()
     page.locator('.reminder').filter(has_text='测试健康提醒').get_by_role('button', name='记录完成').click()
-    page.get_by_role('button', name='保存记录', exact=True).click()
-    page.get_by_role('button', name='暂不安排', exact=True).click()
+    page.locator('#record-form [type=submit]').click()
     expect(page.locator('.reminder').filter(has_text='测试健康提醒')).to_have_count(0)
     print('PASS: 疫苗记录、待办生成、完成待办')
 
@@ -56,7 +63,7 @@ with sync_playwright() as p:
 
     page.get_by_role('button', name='添加宠物', exact=True).click()
     page.locator('[name=name]').fill('小团子')
-    page.locator('[name=type]').select_option('cat')
+    choose(page,'#pet-type','cat')
     page.locator('[name=estimatedAgeMonths]').fill('12')
     page.get_by_role('button', name='保存档案').click()
     expect(page.get_by_text('这里还没有记录', exact=True)).to_be_visible()
@@ -69,7 +76,7 @@ with sync_playwright() as p:
     page.get_by_role('button', name='猫咪朋友').click()
     expect(page.locator('.friend-card')).to_have_count(1)
     page.get_by_role('button', name='切换城市', exact=True).click()
-    page.locator('[name=city]').select_option('上海')
+    choose(page,'[name=city]','上海')
     page.get_by_role('button', name='确认城市').click()
     expect(page.locator('.friend-card')).to_have_count(1)
     expect(page.locator('.friend-card').get_by_text('栗子', exact=False)).to_be_visible()
@@ -114,8 +121,9 @@ with sync_playwright() as p:
     print('PASS: 四个页面桌面/手机布局；无 JavaScript 运行错误')
     page.goto(BASE + '#home', wait_until='networkidle')
     page.get_by_role('button', name='记一笔', exact=True).click()
+    choose(page,'#record-type','weight')
     page.locator('[name=value]').fill('24')
-    page.get_by_role('button', name='保存记录', exact=True).click()
+    page.locator('#record-form [type=submit]').click()
     expect(page.locator('.stat').first.locator('strong')).to_have_text('24kg')
     print('PASS: 同一天多次称重，首页显示最后一次')
     browser.close()

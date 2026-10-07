@@ -17,8 +17,8 @@ export function applyRecord(state,input,{now=new Date().toISOString(),idFactory=
     const linked=next.reminders.filter(r=>r.originRecordId===record.id&&r.status==='pending'&&r.deletedAt===null);
     if(input.nextDate===null){for(const r of linked)r.status='cancelled';}
     else {validDate(input.nextDate,'下一次日期');if(input.nextDate<=record.occurredDate)throw new Error('下一次日期应晚于记录日期');
-      if(linked.length){linked[0].dueDate=input.nextDate;linked[0].title=requiredText(record.title,'事项名称');for(const r of linked.slice(1))r.status='cancelled';}
-      else next.reminders.unshift({id:idFactory(),deletedAt:null,petId:record.petId,title:record.title,dueDate:input.nextDate,status:'pending',originRecordId:record.id,completionRecordId:null,completedAt:null});
+      if(linked.length){linked[0].dueDate=input.nextDate;linked[0].title=requiredText(record.title,'事项名称');Object.assign(linked[0],{recordType:record.type,...(record.type==='other'?{typeLabel:record.typeLabel,customTypeId:record.customTypeId,iconKey:record.iconKey}:{})});for(const r of linked.slice(1))r.status='cancelled';}
+      else next.reminders.unshift({id:idFactory(),deletedAt:null,petId:record.petId,title:record.title,recordType:record.type,...(record.type==='other'?{typeLabel:record.typeLabel,...(record.customTypeId?{customTypeId:record.customTypeId}:{}),...(record.iconKey?{iconKey:record.iconKey}:{})}:{}),dueDate:input.nextDate,status:'pending',originRecordId:record.id,completionRecordId:null,completedAt:null});
     }
   }
   return validateSnapshot(next);

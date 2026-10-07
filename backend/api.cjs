@@ -12,6 +12,7 @@ const healthActions = new Set([
   "pets.save",
   "pets.reorder",
   "records.save",
+  "recordTypes.manage",
   "records.saveBatch",
   "stage3.onboarding.save",
   "stage3.recap.save",

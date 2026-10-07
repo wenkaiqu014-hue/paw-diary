@@ -104,6 +104,7 @@ export function createCloudMediaRepository({
         (await digest(blob)) !== metadata.sha256
       )
         throw failure("INVALID_INPUT");
+      if(metadata.kind==="attachment")return repository.attachments.stageImport({batchId,metadata,blob,baseRevision,operationId});
       const staged = await repository.request(
         "media.prepare",
         {
@@ -130,6 +131,7 @@ export function createCloudMediaRepository({
         options,
       ),
     async read(assetId, { includeDeleted = false } = {}) {
+      const all=await this.listAll();if(all.some(a=>a.id===assetId&&a.kind==="attachment"))return repository.attachments.read(assetId,{includeDeleted});
       const result = await repository.request("media.read", {
         assetId,
         ...(includeDeleted ? { purpose: "archive" } : {}),

@@ -13,7 +13,19 @@ export function validateRecordDraft(raw,{pets=[],today}={}){
  const title=raw.title??(type==='weight'?'体重记录':null);if(!title)missingFields.push('title');else if(typeof title!=='string'||title.length>60)throw new Error('记录名称无效');
  const note=raw.note??'',sourceText=raw.sourceText??'';if(typeof note!=='string'||note.length>500||typeof sourceText!=='string'||sourceText.length>1000)throw new Error('草稿文字无效');
  const nextDate=raw.nextDate??null;if(nextDate===null&&Array.isArray(raw.missingFields)&&raw.missingFields.includes('nextDate')&&raw.skipNextDate!==true)missingFields.push('nextDate');if(nextDate!==null){validDate(nextDate,'下一次日期');if(occurredDate&&nextDate<=occurredDate)throw new Error('下一次日期应晚于记录日期');}
- return {draftId,petId,type,...(typeLabel!==undefined?{typeLabel}:{}),occurredDate,value,unit,title,note,nextDate,missingFields,sourceText,...(raw.skipNextDate===true?{skipNextDate:true}:{})};
+ return {draftId,petId,type,...(typeLabel!==undefined?{typeLabel}:{}),...(type==='other'&&raw.customTypeId?{customTypeId:raw.customTypeId,iconKey:raw.iconKey??'book'}:{}),occurredDate,value,unit,title,note,nextDate,missingFields,sourceText,...(raw.skipNextDate===true?{skipNextDate:true}:{})};
+}
+export function validatePlanDraft(raw,{pets=[]}={}){
+ if(!raw||typeof raw!=='object')throw new Error('计划草稿无效');
+ const draftId=requiredText(raw.draftId,'草稿ID'),missingFields=[];
+ const petId=raw.petId??null;if(petId!==null&&!pets.some(p=>p.id===petId&&p.deletedAt===null))throw new Error('宠物不存在');if(!petId)missingFields.push('petId');
+ const type=raw.type??null;if(type!==null&&!RECORD_TYPES.includes(type))throw new Error('记录类型无效');if(!type)missingFields.push('type');
+ const dueDate=raw.dueDate??raw.occurredDate??null;if(dueDate)validDate(dueDate,'计划日期');else missingFields.push('dueDate');
+ const title=raw.title??null;if(!title)missingFields.push('title');else if(typeof title!=='string'||title.length>60)throw new Error('名称无效');
+ const typeLabel=type==='other'?raw.typeLabel??null:undefined;if(type==='other'&&!typeLabel)missingFields.push('typeLabel');
+ if(typeLabel&&(typeof typeLabel!=='string'||typeLabel.length>20))throw new Error('类型名称无效');
+ const note=raw.note??'',sourceText=raw.sourceText??'';if(typeof note!=='string'||note.length>500||typeof sourceText!=='string'||sourceText.length>1000)throw new Error('草稿文字无效');
+ return {draftId,petId,type,dueDate,title,note,sourceText,missingFields,...(typeLabel!==undefined?{typeLabel}:{}),...(type==='other'&&raw.customTypeId?{customTypeId:raw.customTypeId,iconKey:raw.iconKey??'book'}:{})};
 }
 export function toRecordInputs(drafts,selectedIds,{pets,today}={}){
  if(!Array.isArray(drafts)||drafts.length>5||!Array.isArray(selectedIds)||new Set(selectedIds).size!==selectedIds.length)throw new Error('草稿选择无效，最多5条');

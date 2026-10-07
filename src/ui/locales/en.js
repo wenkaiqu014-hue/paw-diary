@@ -1,5 +1,18 @@
 // Interface copy only. User-entered content is never translated.
 export default Object.freeze({
+"安排待办":"Schedule to-do",
+"记录已发生":"Record an event",
+"安排计划":"Schedule a plan",
+"发生日期":"Event date",
+"计划日期":"Planned date",
+"下次计划日期":"Next planned date",
+"同时加入健康待办":"Also add to health to-dos",
+"用途":"Purpose",
+"一句话记入":"Write a sentence",
+"AI智能生成":"AI generated",
+"发生记录和未来计划分别保存，日期由你决定。":"Events and plans are saved separately. You choose the dates.",
+"添加附件请切换到我的本地档案或云端档案。":"Use My local records or your account to attach files.",
+
 "成长回顾":"Growth recap",
 "依据已保存的记录，回看一起成长的日子。":"Look back on your days together, using saved records.",
 

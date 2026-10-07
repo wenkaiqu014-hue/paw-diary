@@ -1,3 +1,4 @@
+import {normalizeRecordTypeCatalog} from './record-type-catalog.js';
 import {normalizeStage3State} from './stage3-state.js';
 export const RECORD_TYPES = ['weight','vaccine','deworm','daily','other'];
 export const clone = value => structuredClone(value);
@@ -37,18 +38,25 @@ export function normalizePet(raw) {
   if(birthday && estimatedAgeMonths!==null) fail('生日和估计月龄只能填写一个');
   return {id,name,deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),type:raw.type,...(typeLabel!==undefined?{typeLabel}:{}),avatarAssetId,birthday,estimatedAgeMonths,arrivalDate,breed:limited(text(raw.breed,'品种'),'品种',30),sex:text(raw.sex,'性别'),image:validImage(raw.type==='other'&&!avatarAssetId&&/^(?:\.\/)?assets\/(?:cat|dog)\.jpg$/.test(raw.image??'')?'':raw.image??'')};
 }
+function normalizeTypeMetadata(raw,type){
+  if(type!=='other')return {};const result={};if(raw.customTypeId!=null){const id=requiredText(raw.customTypeId,'自定义记录类型ID');if(!/^custom:[^\s]{1,190}$/.test(id))fail('自定义记录类型ID无效');result.customTypeId=id;}
+  if(raw.iconKey!=null){if(!['book','paw','drop'].includes(raw.iconKey))fail('自定义记录类型图标无效');result.iconKey=raw.iconKey;}return result;
+}
 export function normalizeRecord(raw) {
   object(raw,'记录'); if(!RECORD_TYPES.includes(raw.type)) fail('未知记录类型');
   const typeLabel=raw.type==='other'?limited(requiredText(raw.typeLabel,'自定义记录类型'),'自定义记录类型',20):undefined;
+  const typeMeta=normalizeTypeMetadata(raw,raw.type);
   const weight=raw.type==='weight'; let value=null;
   if(raw.unit!=null && (weight?raw.unit!=='kg':true))fail('记录单位不受支持，请核对后再导入');
   if(!weight && raw.value!=null)fail('本类型不支持数值字段，请将说明填写在备注中');
   if(weight){if((typeof raw.value!=='number'&&typeof raw.value!=='string')||String(raw.value).trim()==='')fail('体重需为数字');value=Number(raw.value);if(!Number.isFinite(value)||value<0.01||value>200)fail('体重需在0.01至200 kg之间');}
-  return {id:requiredText(raw.id,'记录ID'),deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),petId:requiredText(raw.petId,'宠物ID'),type:raw.type,...(typeLabel!==undefined?{typeLabel}:{}),occurredDate:validDate(raw.occurredDate,'记录日期'),value,unit:weight?'kg':null,title:limited(weight?text(raw.title??'体重记录','记录名称'):requiredText(raw.title,'记录名称'),'记录名称',60),note:limited(text(raw.note,'备注'),'备注',500),createdAt:isoTime(raw.createdAt,'创建时间'),updatedAt:isoTime(raw.updatedAt,'更新时间'),...(raw.legacyCreatedAtUnknown===true?{legacyCreatedAtUnknown:true}:{})};
+  return {id:requiredText(raw.id,'记录ID'),deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),petId:requiredText(raw.petId,'宠物ID'),type:raw.type,...(typeLabel!==undefined?{typeLabel}:{}),...typeMeta,occurredDate:validDate(raw.occurredDate,'记录日期'),value,unit:weight?'kg':null,title:limited(weight?text(raw.title??'体重记录','记录名称'):requiredText(raw.title,'记录名称'),'记录名称',60),note:limited(text(raw.note,'备注'),'备注',500),createdAt:isoTime(raw.createdAt,'创建时间'),updatedAt:isoTime(raw.updatedAt,'更新时间'),...(raw.legacyCreatedAtUnknown===true?{legacyCreatedAtUnknown:true}:{})};
 }
-function normalizeReminder(raw) {
+export function normalizeReminder(raw) {
   object(raw,'事项'); if(!['pending','completed','cancelled'].includes(raw.status))fail('事项状态无效');
   const result={id:requiredText(raw.id,'事项ID'),deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),petId:requiredText(raw.petId,'宠物ID'),title:limited(requiredText(raw.title,'事项名称'),'事项名称',60),dueDate:validDate(raw.dueDate,'事项日期'),status:raw.status,originRecordId:raw.originRecordId==null?null:requiredText(raw.originRecordId,'来源记录ID'),completionRecordId:raw.completionRecordId==null?null:requiredText(raw.completionRecordId,'完成记录ID'),completedAt:raw.completedAt==null?null:isoTime(raw.completedAt,'完成时间')};
+  if(raw.note!==undefined)result.note=limited(text(raw.note,'备注'),'备注',500);
+  if(raw.recordType!==undefined){if(!RECORD_TYPES.includes(raw.recordType))fail('事项记录类型无效');result.recordType=raw.recordType;Object.assign(result,normalizeTypeMetadata(raw,raw.recordType));if(raw.recordType==='other')result.typeLabel=limited(requiredText(raw.typeLabel,'自定义记录类型'),'自定义记录类型',20);}
   if(raw.legacyCompletionUnknown===true)result.legacyCompletionUnknown=true;
   if(raw.completionRecordDeleted===true)result.completionRecordDeleted=true;
   if(result.status==='completed' && (!result.completionRecordId||!result.completedAt) && !(result.legacyCompletionUnknown && result.completionRecordId===null && result.completedAt===null) && !(result.completionRecordDeleted && result.completionRecordId===null && result.completedAt!==null))fail('完成事项缺少完成记录');
@@ -67,6 +75,7 @@ export function validateSnapshot(raw) {
   for(const r of reminders){if(!petIds.has(r.petId))fail('事项没有对应宠物');for(const field of ['originRecordId','completionRecordId']){if(!r[field])continue;const record=recordMap.get(r[field]);if(!record && (field==='completionRecordId'||r.status==='pending'))fail('事项没有对应记录');if(record&&record.petId!==r.petId)fail('事项与记录宠物归属不一致');}}
   const activePetId=raw.activePetId??null;if(activePetId!==null&&!petIds.has(activePetId))fail('当前宠物不存在');if(activePetId!==null&&pets.find(p=>p.id===activePetId).deletedAt!==null)fail('当前宠物已在回收站');if(pets.some(p=>p.deletedAt===null)&&activePetId===null)fail('请选择当前宠物');
   object(raw.profile,'个人资料');const profile=clone(raw.profile);profile.city=profile.city==null?'深圳':requiredText(profile.city,'城市');
+  if(profile.recordTypeCatalog!==undefined)profile.recordTypeCatalog=normalizeRecordTypeCatalog(profile.recordTypeCatalog);
   if(profile.stage3!==undefined)profile.stage3=normalizeStage3State(profile.stage3);
   for(const p of raw.posts){
     object(p,'帖子');requiredText(p.id,'帖子ID');limited(requiredText(p.title,'帖子标题'),'帖子标题',60);limited(requiredText(p.text,'帖子正文'),'帖子正文',1500);requiredText(p.author,'帖子作者');validDate(p.date,'帖子日期');

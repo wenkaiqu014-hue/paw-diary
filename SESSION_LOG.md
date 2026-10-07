@@ -753,3 +753,27 @@ Root读取最新SESSION/PENDING与局部弹窗/媒体源码，沿已读using-sup
 检查：git diff --check exit0；7份新增/修改文档相对链接0missing、围栏配对/无TBD/TODO、两计划标准header有效。首次扫描进程没有SILICONFLOW_API_KEY，明确scan_available=false不能当真实值扫描成功；再只source已知本机私密配置文件后扫描8份文档（含本日志原内容），available=true/0matches，只输出布尔和数量。文档修改不运行npm测试/浏览器或真实模型，不把既有292通过冒称本修订验收。随后归档docs-only提交；本轮无新增agent，已有只读explorer成果直接复用。下一步用户审阅计划后隔离实施，附件真实权限/备份、原URL和新版本仍未完成。
 
 本次技能核对来源URL：https://github.com/obra/superpowers ；https://github.com/vercel-labs/agent-skills 。交互参考URL沿前段W3C两页记录，不把规范例子当真实读屏通过证据。
+
+## 记录/档案修订实施与候选冻结
+
+2026-10-07 18:00:04 Asia/Shanghai（Root工具date）：用户批准七步实施，新约束每步15分钟、整体一小时，19:00:04总截止，替代旧计时且最终10月8日20:00不变。using-git-worktrees隔离.worktrees/record-refinement / feature/record-workflow-refinement，main当时04b1097/ahead4，npm ci与292/292基线通过。按已有授权并行worker，Root统一app/schema集成与日志，没有再问执行菜单。
+
+技能逐步核对：Root本机executing-plans/worktrees/TDD、Impeccable既有context与craft-floor、webapp-testing/runtime、verification/review/finishing，GitHub obra/superpowers、Vercel agent-skills及anthropics webapp-testing原页；类型/附件worker各读TDD+仓库根，UIworker读浏览器/交互技能并用可见控件实测。复用已有、无新框架/采购/付费模型。三独立writer明示非独占、禁止回退/自行Git、共享app有界patch；一次spawn达线程上限，改复用已完成stage3_final_review处理UI。防重复按kill-race-dupes防御核可用agent列表，无同名重复运行；不假用shell杀子agent。
+
+类型worker Task1领域三仓储/服务端约18:05交付、Task2选择器/管理18:07:11交付：RED→GREEN四builtin不可删、max3、图标重复、删除历史、typed plan completion；47相关测试，真实Chrome keyboard/图标/FormData/footer/新增同图标3个/满额/删除/历史/排序均通过。Root集成全站dropdown与同层catalog，保留hidden native契约/cleanup。三种预设lineSVG，不预建剪指甲。头像/排序worker18:01:30→18:11:07交付Task4/6：真实local avatar取消0写、上传后改类型保留、模拟容量失败父项保留/retry仍1宠；鼠标/键盘/Escape/模拟touch整行排序、动作右上、多宠当前默认/0选/多选/跨当前宠保持集合、CSV/隐藏父项/customID筛选均GREEN，英文390无横溢。模拟touch不当真机。
+
+Root Task3约18:02开始，意图/AI plan单测RED5→GREEN8、parser新增RED1→GREEN，实际mode/purpose/title DOMGREEN；18:15:31本地完整record/type/file/plan/complete主线通过，核心实现处于15分钟内。四入口同一template，记录发生日期、计划只reminder、加入待办checkbox及type defaults，手动/AI原输入和draft DOM保留不重复请求；oldother精确historical选项，按记录petId查关联pending。切体重空title原真实回归RED，补默认体重记录GREEN。取消销毁暂存、不写文件；失败已有parent ID只补媒体，文件删除刷新同表单revision。
+
+附件worker Task5至18:10:41交付，43相关测试；paw-files初Active18:05:37，private rule18:05:53读回且auth/AI保留；A独占真实PUT/hash/父归属拒绝/坏身份拒绝/完整恢复映射/删除/回收与checkpoint全部true，最后18:07:59.742归还。首次长合成宠物名超过20字校验导致INVALID_INPUT、0写，改短名从最新checkpoint一次复验成功；首次skill-runtime Python无TencentSDK改system python3成功。UI修confirm删除/图片预览/查看与独立下载/en/临时URL释放/失败不重复。共享50MiB、每项3个/5MiB原文件，不进图库/模型，record完成通过关联读原计划附件不复制。
+
+一次fresh refinement_final_review只读约18:11–18:13，发现目录session缓存、plan逐项校验和幂等、附件删除revision三个Important，Root/原owner必要修复；无新增权限泄露。补目录命令后awaitsession.load+ctxrevision、全部plans先校验/local-demo receipt、删当前type派change、计划note及completion继承、旧demo backup目录merge、footer Tab/Esc可达；worker18:15:19收口、325/325。跨目录超3或重名采用明确拒绝0写而非额外挑选面板，依据用户基础用途/短时限有界调整，历史记录不截断；同步报告限制。
+
+集中QA/后端发布：paw-api18:16:46 Active3s，paw-ai首次部署KeyError因当前进程未source私密SF配置（API已成功、并非整体失败），只source已知私密文件重试18:17:17 Active40s/模型25s，无Key输出。paw-files18:17:56最新schema包Active30s；A独占新增合成目录/custom record/typed deworm plan note/complete/delete目录保历史全部true，18:18:12.267原600会话checkpoint归还，只exactreceipt清理。auth未部署，无验证码或B过期会话调用。
+
+文件上限发现SCF同步response6MB，5MiB base64不能可靠传输；仅大附件改可信owner/parent/hash检查后60秒签名URL、client bounded fetch/bytes/hash，照片原base64默认不动，URL不进metadata/backup。最新paw-files18:21:00 Active，bd294ee357c5dbc5ce99b8789828601ea837a9cf4eec56200ccad2d7bf6fd432；A真实exact5MiB原PDF完整PUT/confirm/production client read/hash/remove/cleanup全部true，18:21:31.760 checkpoint归还。官方原页583/56125第187–188支持6MB；11637抓取timeout不当来源。
+
+最终本地主线record-workflow-public.py实际新增目录立即选用、文件SHA下载、删除附件后保存、计划0新record、完成保留type/note及原计划附件、双语原文/1440/768/390/0pageErrors均GREEN；record-dialog modes/locale实际RED中文残留→逐表单刷新GREEN；stage3-home/locale及test_app四页9组最终GREEN，旧脚本hidden native select和重名close失效改真实可见控件而非产品回归。当前325/325无skip、语法/build/functions/diff0。AI真实模型计划第一次dueDate未提取，安全草稿要求补填而未写；第二次补日期后实际保存计划且0新record，模型title未精确保留合成指定名导致过严测试断言失败（模型并未假写/错日期），最终测试将日期/标题显式编辑后确认，不把补填当模型自动提取成功。必要复验结果后段收口，不隐瞒这两次失败。旧只读帮助/回顾行为单测仍过；不额外扩医疗/社区。
+
+冻结候选v0.5.0。原始安全证据test-results/refinement与record-refinement均Git忽略，/tmp/paw-refinement日志；私密env仅本机/service。stdin一次中文文档批量脚本Non-UTF8失败、0文档写，随后apply_patch成功；compound最后npm成功不能代表前面Python成功。此处尚未main整合/推送/新tag或Release，实际后续收口，不提前虚勾公开验收。已有本地/docs提交与worktree证据保留。
+
+来源URL：https://github.com/obra/superpowers ；https://github.com/vercel-labs/agent-skills ；https://github.com/anthropics/skills/tree/main/skills/webapp-testing ；https://cloud.tencent.com/document/product/583/56125 。

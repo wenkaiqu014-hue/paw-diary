@@ -23,6 +23,8 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+阶段3本session现已收口，阶段4尚未实施。新session从本项目主目录main读`docs/operations/stage4-handoff.md`、SESSION_LOG最新段、PENDING当前摘要与`docs/superpowers/plans/2026-10-06-04-community-nearby.md`。当前唯一公开基线v0.6.1、343单测；Release20:02:15/Pages37617971446 success，后面各v0.5/v0.6段均是历史，不能恢复旧record自动建health待办/旧标题预填。A最近19:31:43 checkpoint在原600路径、B失效需新真实账号会话；定位服务/费用和阶段4发行版本号待新session对齐，旧v0.5.0候选不得复用。最终10月8日20:00不变，旧本轮时间限制不机械搬到新阶段。详尽账号/接口/媒体/未验项以新handoff为准。
+
 用户指定v0.6.1最新补丁：source/tag52e88ee8f71c6e138ba1795fd0a7319fa60d8a68，Pages37617971446成功20:01:34收口，公开app-JEW3W5XH.js/style-7TVISRAM.css与本地SHA一致。343单测/原URL1440/390真实操作通过：无体重预填、用户名称跨type保留、主题站内discard确认/继续/Esc/确认关闭/无native confirm。浏览器刷新/关页仍保beforeunload安全保护，不能自绘。旧记录已有标题照常显示，weight空名可保存默认名；其它继承v0.6.0，旧tags不动，不再按旧自动预填规则续作。
 
 当前最终v0.6.0：source/tag e917ae68736fb530a3e5cf16d2952570a9b9d9ce，Pages37615281921于19:37:21完成，Release19:39:41公开；app-CM3CZ744.js/style-UOJBG5XR.css原URL SHA与全新npm ci本地构件一致。343单测/原URL三宽0错误、真实云分类和photo name/archive通过。reminder.includeInHealth optionalbool，plan新vax/deworm默认true其余false；普通计划以未完成标记在成长足迹/完整列表，不能生成未来record。旧关联/未知类型保health、不根据名字猜；photo displayName独立caption，只改metadata。所有date输入用native加等宽空mask，保原生值/选择/键盘。API/files/AI已同步新schema/facts，A最后19:31:43.057已600 checkpoint归还，无验证码/model新请求；下一步main与阶段4，亲验/真机仍独立待项。下方v0.5.*为历史，最新执行见final-growth报告及SESSION_LOG。

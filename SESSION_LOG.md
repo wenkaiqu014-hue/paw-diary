@@ -851,3 +851,13 @@ v0.6.0新tag解引用e917ae6、Release19:39:41公开isDraft/isPrerelease=false�
 技能来源URL：https://github.com/vercel-labs/agent-skills ；https://github.com/obra/superpowers 。本轮证据ignored test-results/modal-061与/tmp/paw-061-*.log。
 
 2026-10-07本轮收口：52e88ee源码main推送，Pages37617971446 success于20:01:34完成；公开app-JEW3W5XH.js/style-7TVISRAM.css与本地SHA一致，原URL全新匿名modal-061 exit0：noWeightPrefill/userTitlePreserved/customDiscard/keepAndEscape/discardCloses/blankWeightTitleSaves全部true，1440/390可用区域居中、nativeDialogs[]/pageErrors[]。用户指定v0.6.1新tag解引用52e88ee，旧tag不移动；Release工具读回后收口，不提前当已通过。343单测、语法/build/diff0，未调用模型/账号或后端管理。不对浏览器beforeunload承诺自绘；Main docs-only归档不重发网页，临时4198仅本树服务停止。
+
+## 阶段3session结束与阶段4交接
+
+2026-10-07 20:08:48 Asia/Shanghai（Root工具date）：用户要求简述阶段4并确保本地开发/交接最新，准备新session。本轮只整理文档，不开始社区/定位、不再修改产品或云。主main已与origin/main同步，最后业务source/tag52e88ee，docs提交a1fe4d4；再次gh只读确认v0.6.1 publishedAt12:02:15Z即20:02:15/非draft/非prerelease，Pages37617971446 success/head52e88ee。前轮10分钟19:52:51→Release20:02:15为9分24秒，docs最终20:02:37为9分46秒，均在10分钟内；4198已停止。
+
+新增docs/operations/stage4-handoff.md明确新session从main读哪些文件、v0.6.1/343已交付及不可退回语义、服务超时/原文件与照片名/真实会话轮换/私密env变量位置/未验项/最终deadline。A最近19:31:43.057 checkpoint，下一session需验证可恢复而不假定有效；B旧会话失效移除，需要重新建立第二真实账号，不能用管理身份或旧验证码代验。定位目录/接口/费用、阶段4版本号需新session对齐，不默认新增收费或重用已发tag。用户此次推进方向明确，工具/浏览器/子agent授权沿项目规则，未再访谈已确认方向。
+
+修正04计划和总计划中失效v0.5.0候选，AI已接事实替代旧“待核供应商”；AGENTS与PENDING加唯一当前摘要/历史状态说明，避免新session按旧未勾反馈重做。阶段4仍真实社区/互动、公开投影、冷启动/举报隐藏、明确回顾分享、主动同城发现与组合过滤/可选辅助定位；健康/邮箱/私有图不因公开入口开放，公开图/头像通路需实核而非借用私有临时URL。阶段5指南/版本新内容/PWA/真机/读屏/日历实导及用户亲验不代勾。固定2026-10-08 20:00不变，不把当轮10/20/30分钟或过去估计搬到新阶段。
+
+检查：git diff --check0，5份文档相对链接0missing；只docs未npm test/build/浏览器/模型调用，因为业务代码未变，不把343旧结果当新产品验收。将日志/handoff/状态/计划一并docs-only提交推送，保持main可恢复且不触发网页部署；不移动任何发行tag。当前交接事实来源为本地源文件/既有安全日志及当次gh只读发布数据，未另查新定位技术或价格。

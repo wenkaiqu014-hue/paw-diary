@@ -10,10 +10,12 @@ export function createMediaRepository({repository}={}){
   return {
     list:({petId,cursor,limit=20,kind='photo'}={})=>repository._mediaRead(({envelope,media})=>{if(!Number.isInteger(limit)||limit<1||limit>100)throw new Error('照片分页数量无效');const pet=envelope.snapshot.pets.find(p=>p.id===petId);if(!pet||pet.deletedAt!==null)return {items:[],nextCursor:null};const assets=sorted([...media.values()].filter(a=>a.petId===petId&&a.kind===kind));const start=cursor?assets.findIndex(a=>a.id===cursor)+1:0;if(cursor&&start===0)throw new Error('照片分页位置无效');const items=assets.slice(start,start+limit);return {items:structuredClone(items),nextCursor:start+limit<assets.length?items.at(-1).id:null};}),
     listAll:()=>repository._mediaRead(({media})=>structuredClone(sorted([...media.values()]))),read,
-    save:async({petId,kind='photo',blob,caption='',baseRevision,operationId}={},options={})=>{
+    save:async({petId,kind='photo',blob,caption='',displayName,baseRevision,operationId}={},options={})=>{
       baseRevision=options.baseRevision??baseRevision;operationId=options.operationId??operationId;
+      displayName=displayName??(kind==='photo'&&typeof blob?.name==='string'?blob.name.trim().slice(0,60)||undefined:undefined);
+      if(displayName!==undefined&&(kind!=='photo'||typeof displayName!=='string'||!displayName.trim()||displayName.trim().length>60))throw storageError('INVALID_INPUT','照片名称需为1到60字');if(displayName!==undefined)displayName=displayName.trim();
       if(!['avatar','photo'].includes(kind)||typeof caption!=='string'||caption.length>200)throw storageError('INVALID_INPUT','照片用途或说明无效');
-      await inspectImageBlob(blob,{maxBytes:MAX_DISPLAY_BYTES});const sha256=await hashBlob(blob),signature=JSON.stringify({petId,kind,caption,sha256});
+      await inspectImageBlob(blob,{maxBytes:MAX_DISPLAY_BYTES});const sha256=await hashBlob(blob),signature=JSON.stringify({petId,kind,caption,displayName,sha256});
       if(operationId){const receipt=await repository._mediaRead(({envelope})=>envelope.receipts?.[operationId]);if(receipt){if(receipt.signature!==signature)throw storageError('INVALID_INPUT','同一操作标识对应不同内容');return structuredClone(receipt.result);}}
       return repository._mediaWrite(ctx=>{
         const pet=visiblePet(ctx.envelope.snapshot,petId);
@@ -22,10 +24,17 @@ export function createMediaRepository({repository}={}){
         const total=[...ctx.blobs.values()].reduce((n,b)=>n+b.size,0)-(previous?ctx.blobs.get(previous.fileRef)?.size??0:0);
         if(total+blob.size>mediaMaxBytes)throw storageError('QUOTA_EXCEEDED','照片总容量超过空间配额');
         const id=idFactory();if(ctx.media.has(id)||ctx.blobs.has(id))throw new Error('照片标识重复');
-        const metadata={id,petId,kind,caption,createdAt:clock(),mime:blob.type,bytes:blob.size,sha256,fileRef:id};ctx.media.set(id,metadata);ctx.blobs.set(id,blob);
+        const metadata={id,petId,kind,caption,...(displayName!==undefined?{displayName}:{}),createdAt:clock(),mime:blob.type,bytes:blob.size,sha256,fileRef:id};ctx.media.set(id,metadata);ctx.blobs.set(id,blob);
         if(kind==='avatar'){pet.avatarAssetId=id;if(previous){ctx.media.delete(previous.id);ctx.blobs.delete(previous.fileRef);}}
         if(operationId)ctx.envelope.receipts[operationId]={signature,result:metadata};return metadata;
       },{baseRevision,idempotency:operationId?{operationId,signature}:undefined});
+    },
+    rename:async({assetId,displayName,baseRevision,operationId}={},options={})=>{
+      baseRevision=options.baseRevision??baseRevision;operationId=options.operationId??operationId;
+      if(typeof displayName!=='string'||!displayName.trim()||displayName.trim().length>60)throw storageError('INVALID_INPUT','照片名称需为1到60字');displayName=displayName.trim();
+      const signature=JSON.stringify({action:'rename',assetId,displayName});
+      if(operationId){const prior=await repository._mediaRead(({envelope})=>envelope.receipts?.[operationId]);if(prior){if(prior.signature!==signature)throw storageError('INVALID_INPUT','同一操作标识对应不同内容');return structuredClone(prior.result);}}
+      return repository._mediaWrite(ctx=>{const asset=ctx.media.get(assetId);if(!asset||asset.kind!=='photo')throw storageError('INVALID_INPUT','只能重命名照片');visiblePet(ctx.envelope.snapshot,asset.petId);asset.displayName=displayName;ctx.media.set(assetId,asset);if(operationId){ctx.envelope.receipts??={};ctx.envelope.receipts[operationId]={signature,result:asset};}return asset;},{baseRevision,idempotency:operationId?{operationId,signature}:undefined});
     },
     remove:async({assetId,baseRevision,operationId}={},options={})=>{
       baseRevision=options.baseRevision??baseRevision;operationId=options.operationId??operationId;

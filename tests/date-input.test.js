@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+test('date input labels use three equal semantic segments for both languages',async()=>{const {dateMaskParts}=await import('../src/ui/date-input.js');assert.deepEqual(dateMaskParts('zh-CN'),['年','月','日']);assert.deepEqual(dateMaskParts('en'),['YYYY','MM','DD']);});
+test('date enhancement rejects unrelated inputs without changing their native contract',async()=>{const {enhanceDateInput}=await import('../src/ui/date-input.js');const input={type:'text',value:'kept'};assert.throws(()=>enhanceDateInput(input),/date/);assert.equal(input.value,'kept');});

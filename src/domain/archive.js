@@ -14,9 +14,10 @@ function portableSnapshot(snapshot){const result=clean(snapshot);result.mode='lo
 function assetMetadata(raw){
  if(!raw||typeof raw!=='object')throw new Error('文件元数据无效');const {id,petId,kind,caption='',createdAt,mime,bytes,sha256}=raw;
  const attachment=kind==='attachment';
+ if(raw.displayName!==undefined&&(kind!=='photo'||typeof raw.displayName!=='string'||!raw.displayName.trim()||raw.displayName.trim().length>60))throw new Error('照片名称需为1到60字');
  if(typeof id!=='string'||!id.trim()||typeof petId!=='string'||!petId.trim()||!['photo','avatar','attachment'].includes(kind)||typeof caption!=='string'||caption.length>200||!['image/jpeg','image/png','image/webp',...(attachment?['application/pdf']:[])].includes(mime)||!Number.isInteger(bytes)||bytes<=0||bytes>(attachment?MAX_ATTACHMENT_BYTES:MAX_DISPLAY_BYTES)||typeof sha256!=='string'||!/^[a-f0-9]{64}$/.test(sha256))throw new Error('文件元数据无效');
  if(attachment&&(!['record','reminder'].includes(raw.parentKind)||typeof raw.parentId!=='string'||!raw.parentId||typeof raw.filename!=='string'||raw.filename.length>200))throw new Error('附件关联无效');
- return {id,petId,kind,caption,createdAt:isoTime(createdAt),mime,bytes,sha256,...(attachment?{parentKind:raw.parentKind,parentId:raw.parentId,filename:raw.filename}:{})};
+ return {id,petId,kind,caption,...(raw.displayName!==undefined?{displayName:raw.displayName.trim()}:{}),createdAt:isoTime(createdAt),mime,bytes,sha256,...(attachment?{parentKind:raw.parentKind,parentId:raw.parentId,filename:raw.filename}:{})};
 }
 function mergeCatalog(current,incoming){
  if(!incoming)return current;const base=current??{version:1,order:['weight','vaccine','deworm','daily'],custom:[]},ids=new Set(base.custom.map(x=>x.id));

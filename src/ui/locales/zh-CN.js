@@ -1,5 +1,13 @@
 // Interface copy only. User-entered content is never translated.
 export default Object.freeze({
+"加入健康待办":"加入健康待办",
+"计划 · 未完成":"计划 · 未完成",
+"计划 · 已取消":"计划 · 已取消",
+"全部记录与计划":"全部记录与计划",
+"编辑计划":"编辑计划",
+"取消计划":"取消计划",
+"已导出筛选的记录与计划。":"已导出筛选的记录与计划。",
+
 "添加待办":"添加待办",
 "添加称重":"添加称重",
 "已发生只保存成长记录；未来事项请使用安排计划。":"已发生只保存成长记录；未来事项请使用安排计划。",
@@ -332,6 +340,9 @@ export default Object.freeze({
   "photo.imageError": "照片暂时无法显示。",
   "photo.view": "查看照片 {caption}",
   "photo.untitled": "未命名照片",
+  "photo.name": "照片名称",
+  "photo.rename": "重命名",
+  "photo.renamed": "照片名称已保存。",
   "photo.deleteTitle": "永久删除这张照片？",
   "photo.deleteConfirm": "“{caption}”将被永久删除，无法从回收站恢复。",
   "photo.deleted": "照片已删除。",

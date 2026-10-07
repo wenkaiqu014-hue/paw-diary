@@ -815,3 +815,21 @@ Root record-intent/AI tests各RED→GREEN，最终329/329无skip；实际Chrome 
 新v0.5.2 tag解引用f93784d，18:59:00 Release公开、非draft/非prerelease，旧v0.5.1/0.5.0及早期tag不移动。18:43:25→18:59:00公开用时15分35秒，小于当前20分钟限制；文档随后收口并维持main可恢复，不重发应用。同步PRODUCT/DESIGN/PENDING/AGENTS/README/报告，旧checkbox设计明确历史，新用户确认用途互斥为优先。只停止自己的4195服务并保留ignored截图与工作树；用户亲验/真机仍独立待验，下一步阶段4。
 
 本次发布URL：https://wenkaiqu014-hue.github.io/paw-diary/ ；https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37610740744 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.5.2 。
+
+## 最后一轮30分钟：普通计划去处、全站日期、照片名字
+
+2026-10-07 19:12:31 Asia/Shanghai（Root工具date）：用户批准四步简plan，追加所有日期占位统一/照片墙两框同高/上传照片重命名和删除；总截止19:42:31。本轮保留布局与主线，不做社区/定位/真机或新服务采购。隔离.worktrees/final-growth / feature/final-growth-plans从8886d38，协作方式沿授权。Root主UI/意图/草稿/增长列表/全站安装，types worker领域flag/schema/recap，photo worker媒体rename/backup，日期worker独立组件，明确非独占/不回退/agent不Git；本机Superpowers/TDD/Impeccable/浏览器与Github obra/Vercel/anthropics技能复核，复用不扩库。
+
+分类领域19:17:53交付：optional strictboolean includeInHealth；newtyped疫苗/驱虫defaulttrue，weight/daily/custom false；显式标记优先、旧origin关联与未知type保持health、旧明确daily/other归普通。完成/回收/JSON/可信契约保留，非法string0写。Recap健康care/upcoming不算普通，但actual来源和hash保留；提醒仍reminder，不生成未来record。RED6+云1→GREEN，337测试通过。Root普通计划成长足迹/完整记录与计划、pending/cancelled badge、多宠筛选/CSV kind+plannedDate，无假occurredDate；日期/类型编辑绑定实际rem.petId，旧plan类型从origin解析、不猜deworm；checkbox只plan，legacy状态由原分类赋初值保留，AI每草稿也有显式health勾选。
+
+日期worker19:19:48交付：native input保name/value/min/max/disabled/required/picker/事件，mask三等宽span/独立slash，键盘编辑退让/blur空回/locale保value、observer无重复mutation。grid子像素差0.015625px真实RED，改flex严格宽度==在1440/768/390 GREEN；339测试。Root全document date自动安装，包括建档/记录计划/筛选/草稿/回顾，旧ESM缓存图保留；Scope cleanup处理断连controller，差异同步防循环。没有给空日期自动填值。
+
+照片worker19:16:40→19:22:34功能/实际云/浏览器交付：displayName optional1..60、新图默认原File.name；media.rename纯metadata/owner/pet/photo-only/CAS/opid，不改caption/SHA/createdAt/fileRef/Blob。卡片inline保存取消，错误保输入，切scope清rename；备份本地/cloud保名字，无强制新format。46专项/341单测与照片旧partial/幻灯片/失败/语言/切宠物/父回收/三宽浏览器通过。API更新19:18:28接受后长Updating，脚本上限RuntimeError而非更新失败，未重复部署；19:20:41独立读回Active3s。files19:18:58 Active30s含最新schema。初次build缺本树node_modules导致ENOENT/ValueError，0云变更，symlink后set-e成功；Root末检查发现node_modules/不忽略symlink，加/node_modules，避免纳Git。
+
+A由photo worker独占真实tinyPNG上传/rename/metadataOnly/hash/私有恢复名称+字节/确切cleanup，19:21:18.604原600checkpoint归还；再真实daily flag false→true→false持久/完成actualdaily、新vax不传flag defaulttrue全部true，19:31:43.057再次600checkpoint归还。只本轮exactreceipt资源回收/删除，无其他用户内容、OTP、模型调用或URL/token输出。ownedAsset验owner，workspace隔离来自transactionOwned既有接口，不虚称另一次workspaceId验证。
+
+Root真实final-growth.py：普通游玩plan defaultunchecked，不进health、进成长及完整列表并标计划；显式勾选可入/退出、完成只生成1actualrecord，vaxdefaultchecked；全站date数量==wrapper数，照片名字改后刷新保留/说明不变；两框86px等高，1440/768/390无横溢/pageErrors0。Root看新390截图，旧四页9组通过。独立final_growth_review只读确认无Critical/Important，覆盖名字权限/Flag AI传递/plan日期CSV/日期observer。助理帮助改当前用途说明/明确source.health分类；prompt添加普通计划的英文other触发旧测试substring('other')错误，精确parse source JSON验证ID排除后343/343 GREEN（非泄露）。
+
+函数一致性：Photo worker API/files使用新健康分类schema；Root为recap hash一致部署paw-ai，最终19:33:41 Active40s/模型25s，包含新helper说明/来源分类；FUJI管理凭证、SF仅server环境、无auth部署/规则/采购/集团账单变动。模型未调用，实际服务代码/权限与旧字段仍保持。新候选v0.6.0，343单测/语法/build/diff/实际本地主线通过，下一步原URL匿名三宽与新tag/Release；未提前虚勾公开与亲验，硬30分钟仍为19:42:31。
+
+技能来源URL：https://github.com/obra/superpowers ；https://github.com/vercel-labs/agent-skills ；https://github.com/anthropics/skills/tree/main/skills/webapp-testing 。原始安全证据在本树ignored test-results/final-growth与/tmp/paw-growth-*.log。

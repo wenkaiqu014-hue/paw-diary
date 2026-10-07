@@ -34,7 +34,9 @@ async function canonicalSource(payload) {
     )
       throw new ApiError("INVALID_INPUT");
     if(a.kind==="attachment"){const parent=snapshot[a.parentKind==="record"?"records":"reminders"].find(x=>x.id===a.parentId);if(!["record","reminder"].includes(a.parentKind)||!parent||parent.petId!==a.petId||typeof a.filename!=="string"||a.filename.length>200)throw new ApiError("INVALID_INPUT");}
+    if(a.displayName!==undefined&&(a.kind!=="photo"||typeof a.displayName!=="string"||!a.displayName.trim()||a.displayName.trim().length>60))throw new ApiError("INVALID_INPUT");
     return {
+      ...(a.displayName!==undefined?{displayName:a.displayName.trim()}:{}),
       ...(a.kind==="attachment"?{parentKind:a.parentKind,parentId:a.parentId,filename:a.filename}:{}),
       id: requiredId(a.id),
       petId: a.petId,
@@ -385,6 +387,7 @@ async function handleImport(request, deps) {
           ticket.staging = false;
           ticket.createdAt = item.createdAt;
           ticket.caption = item.caption;
+          if(item.displayName!==undefined)ticket.displayName=item.displayName;else delete ticket.displayName;
           ticket.petId = ids.pet.get(item.petId);
           if(item.kind==="attachment"){ticket.parentKind=item.parentKind;ticket.parentId=ids[item.parentKind].get(item.parentId);ticket.filename=item.filename;}
           delete ticket.importBatchId;
@@ -425,6 +428,7 @@ async function handleImport(request, deps) {
               petId: existing.petId,
               createdAt: item.createdAt,
               caption: item.caption,
+              ...(item.displayName!==undefined?{displayName:item.displayName}:{}),
               staging: false,
               deletedAt: null,
               cleanupPending: false,
@@ -444,6 +448,7 @@ async function handleImport(request, deps) {
             )
               throw new ApiError("INVALID_INPUT", "errors.assetBytesChanged");
             existing.caption = item.caption;
+            if(item.displayName!==undefined)existing.displayName=item.displayName;else delete existing.displayName;
             existing.createdAt = item.createdAt;
             await tx.putMedia(targetId, existing);
           }

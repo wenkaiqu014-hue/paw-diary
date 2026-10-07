@@ -48,7 +48,7 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
   if(!media||!getPetId||!t)throw new TypeError('Photo wall requires media, getPetId and t');
   const session=createPhotoSession({media,getPetId,getGeneration});
   let host,wall,title,description,form,fileInput,captionInput,uploadButton,filesLabel,captionLabel,hint,status,grid,slideshowButton,dialog,slideImage,slideCaption,counter,play,previous,next,close,deleteSlide;
-  let draftScope=null,selected=[],failed=[],saving=false,destroyed=false,renderRequest=0,slideIndex=0,slideOrigin=null,timer=null,playing=false;
+  let draftScope=null,renameEditor=null,selected=[],failed=[],saving=false,destroyed=false,renderRequest=0,slideIndex=0,slideOrigin=null,timer=null,playing=false;
   const win=document?.defaultView??globalThis;
   const scope=()=>`${getGeneration()}:${getPetId()??''}`;
   function el(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
@@ -64,7 +64,7 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
     if(!session.items.length){closeSlideshow();return;}
     slideIndex=(slideIndex+session.items.length)%session.items.length;
     const item=session.items[slideIndex],token=scope();
-    slideCaption.textContent=item.caption||t('photo.untitled');slideImage.alt=item.caption||t('photo.untitled');counter.textContent=t('photo.counter',{current:slideIndex+1,total:session.items.length});
+    slideCaption.textContent=(item.displayName||t('photo.untitled'))+(item.caption?' · '+item.caption:'');slideImage.alt=item.displayName||t('photo.untitled');counter.textContent=t('photo.counter',{current:slideIndex+1,total:session.items.length});
     const url=session.getUrl(item.id);slideImage.removeAttribute('src');
     if(url)slideImage.src=url;else session.resolve(item.id).then(resolved=>{if(dialog.open&&token===scope()&&session.items[slideIndex]?.id===item.id&&resolved)slideImage.src=resolved;}).catch(report);
     previous.disabled=next.disabled=session.items.length<2;
@@ -97,10 +97,22 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
   }
   async function removePhoto(item){
     if(!item||saving)return;
-    if(!win.confirm(t('photo.deleteConfirm',{caption:item.caption||t('photo.untitled')})))return;
+    if(!win.confirm(t('photo.deleteConfirm',{caption:item.displayName||t('photo.untitled')})))return;
     const token=scope();saving=true;uploadButton.disabled=true;
     try{await media.remove({assetId:item.id,...(getRevision?{baseRevision:getRevision()}:{}),operationId:globalThis.crypto?.randomUUID?.()});if(token!==scope())return;await onChanged();saving=false;await render();status.textContent=t('photo.deleted');}
     catch(error){if(token===scope())report(error);}finally{saving=false;if(uploadButton)uploadButton.disabled=!getPetId();}
+  }
+  function renamePhoto(item,tile){
+    if(!item||saving||destroyed)return;renameEditor?.remove();
+    let renameIntent=null,operationId=null;
+    const token=scope(),editor=el('form','paw-photo-rename'),input=el('input','paw-photo-rename-input'),label=el('label','paw-photo-rename-label',t('photo.name'));
+    input.type='text';input.maxLength=60;input.required=true;input.value=item.displayName||'';input.setAttribute('aria-label',t('photo.name'));label.append(input);
+    const save=button('common.save',()=>{}),cancel=button('common.cancel',()=>{editor.remove();if(renameEditor===editor)renameEditor=null;});save.type='submit';editor.append(label,save,cancel);tile.append(editor);renameEditor=editor;input.focus();input.select();
+    editor.addEventListener('submit',async event=>{event.preventDefault();if(saving||destroyed||token!==scope())return;const displayName=input.value.trim();if(!displayName||displayName.length>60){report(photoError('invalid_input'));input.focus();return;}if(renameIntent!==displayName){renameIntent=displayName;operationId=crypto.randomUUID();}saving=true;save.disabled=cancel.disabled=input.disabled=true;
+      try{await media.rename({assetId:item.id,displayName,...(getRevision?{baseRevision:getRevision()}:{}),operationId});if(destroyed||token!==scope())return;renameEditor=null;await onChanged();saving=false;await render();status.textContent=t('photo.renamed');}
+      catch(error){if(!destroyed&&token===scope())report(error);}
+      finally{saving=false;if(editor.isConnected){save.disabled=cancel.disabled=input.disabled=false;}if(uploadButton)uploadButton.disabled=!getPetId();}
+    });
   }
   async function upload(event){
     event.preventDefault();if(saving||!getPetId())return;
@@ -115,8 +127,9 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
         if(!entry.blob){const prepared=await prepareImage(entry.file,{kind:'photo'});entry.blob=prepared instanceof Blob?prepared:prepared.blob;entry.preparedImage=prepared instanceof Blob?undefined:prepared;}
         if(!entry.sha256){const digest=await crypto.subtle.digest('SHA-256',await entry.blob.arrayBuffer());entry.sha256=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');}
         if(token!==scope()||destroyed)break;
-        const intent=JSON.stringify({petId,kind:'photo',caption,sha256:entry.sha256});if(entry.intent!==intent){entry.intent=intent;entry.operationId=globalThis.crypto?.randomUUID?.();}
-        await media.save({petId,kind:'photo',blob:entry.blob,preparedImage:entry.preparedImage,caption,...(getRevision?{baseRevision:getRevision()}:{}),operationId:entry.operationId});
+        const displayName=entry.file.name?.trim().slice(0,60)||undefined;
+        const intent=JSON.stringify({petId,kind:'photo',caption,displayName,sha256:entry.sha256});if(entry.intent!==intent){entry.intent=intent;entry.operationId=globalThis.crypto?.randomUUID?.();}
+        await media.save({petId,kind:'photo',blob:entry.blob,preparedImage:entry.preparedImage,caption,displayName,...(getRevision?{baseRevision:getRevision()}:{}),operationId:entry.operationId});
       }catch(error){if(token===scope()&&!destroyed){failed.push(entry);onError(error);}}
     }
     saving=false;if(destroyed)return;if(token!==scope()){uploadButton.disabled=fileInput.disabled=captionInput.disabled=!getPetId();labels();return;}
@@ -139,7 +152,7 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
   }
   async function render(){
     if(!wall||destroyed)return;const serial=++renderRequest,token=scope();
-    if(draftScope!==token){draftScope=token;selected=[];failed=[];fileInput.value='';captionInput.value='';status.textContent='';if(dialog?.open)closeSlideshow();}
+    if(draftScope!==token){renameEditor?.remove();renameEditor=null;draftScope=token;selected=[];failed=[];fileInput.value='';captionInput.value='';status.textContent='';if(dialog?.open)closeSlideshow();}
     labels();uploadButton.disabled=saving||!getPetId();fileInput.disabled=captionInput.disabled=saving||!getPetId();slideshowButton.disabled=true;
     if(!getPetId()){await session.load();grid.replaceChildren(el('p','paw-photo-empty',t('photo.noPet')));return;}
     grid.setAttribute('aria-busy','true');
@@ -148,14 +161,16 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
       grid.replaceChildren();
       if(!session.items.length){const empty=el('div','paw-photo-empty');empty.append(el('h3','',t('photo.empty')),el('p','',t('photo.emptyHint')));grid.append(empty);}
       for(const item of session.items){
-        const tile=el('figure','paw-photo-tile'),view=button('photo.view',()=>openSlideshow(item.id),'paw-photo-view');view.setAttribute('aria-label',t('photo.view',{caption:item.caption||t('photo.untitled')}));view.textContent='';
-        const image=el('img');image.loading='lazy';image.alt=item.caption||t('photo.untitled');image.width=480;image.height=360;
+        const tile=el('figure','paw-photo-tile'),view=button('photo.view',()=>openSlideshow(item.id),'paw-photo-view');view.setAttribute('aria-label',t('photo.view',{caption:item.displayName||t('photo.untitled')}));view.textContent='';
+        const image=el('img');image.loading='lazy';image.alt=item.displayName||t('photo.untitled');image.width=480;image.height=360;
         const fallback=el('p','paw-photo-fallback',t('common.loading'));view.append(image,fallback);
-        const caption=el('figcaption','paw-photo-caption',item.caption||t('photo.untitled'));
-        const remove=button('common.delete',()=>removePhoto(item),'text-button danger-text');remove.setAttribute('aria-label',t('common.delete')+' '+(item.caption||t('photo.untitled')));
+        const caption=el('figcaption','paw-photo-caption',item.displayName||t('photo.untitled'));
+        const note=item.caption?el('p','paw-photo-note',item.caption):null;
+        const actions=el('div','paw-photo-actions'),rename=button('photo.rename',()=>renamePhoto(item,tile),'text-button');
+        const remove=button('common.delete',()=>removePhoto(item),'text-button danger-text');remove.setAttribute('aria-label',t('common.delete')+' '+(item.displayName||t('photo.untitled')));
         const retry=button('common.retry',async()=>{try{const url=await session.resolve(item.id);if(url&&token===scope()){image.src=url;fallback.hidden=true;retry.hidden=true;}}catch(error){report(error);}},'text-button');retry.hidden=true;
         image.addEventListener('error',()=>{fallback.hidden=false;fallback.textContent=t('photo.imageError');retry.hidden=false;});image.addEventListener('load',()=>{fallback.hidden=true;retry.hidden=true;});
-        tile.append(view,caption,remove,retry);grid.append(tile);
+        actions.append(rename,remove,retry);tile.append(view,caption);if(note)tile.append(note);tile.append(actions);grid.append(tile);
         session.resolve(item.id).then(url=>{if(url&&serial===renderRequest&&token===scope()&&!destroyed)image.src=url;}).catch(error=>{if(serial===renderRequest&&token===scope()){fallback.textContent=t('photo.imageError');retry.hidden=false;onError(error);}});
       }
       slideshowButton.disabled=!session.items.length;
@@ -163,5 +178,5 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
     }catch(error){if(serial===renderRequest&&token===scope()){grid.replaceChildren(el('p','paw-photo-empty',t('photo.loadError')),button('common.retry',render));report(error);}}
     finally{if(serial===renderRequest)grid.setAttribute('aria-busy','false');}
   }
-  return {async mount(container){if(destroyed)throw new Error('Photo wall was destroyed');if(!wall)build(container);await render();},render,openSlideshow,closeSlideshow,destroy(){if(destroyed)return;destroyed=true;renderRequest++;stopPlaying();if(dialog?.open)dialog.close();dialog?.remove();session.destroy();wall?.remove();}};
+  return {async mount(container){if(destroyed)throw new Error('Photo wall was destroyed');if(!wall)build(container);await render();},render,openSlideshow,closeSlideshow,destroy(){if(destroyed)return;destroyed=true;renameEditor?.remove();renameEditor=null;renderRequest++;stopPlaying();if(dialog?.open)dialog.close();dialog?.remove();session.destroy();wall?.remove();}};
 }

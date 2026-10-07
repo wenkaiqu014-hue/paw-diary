@@ -1,3 +1,4 @@
+import {defaultPlanHealth} from './health-plans.js';
 import {validateSnapshot,isoTime} from './schema.js?v=0.2.0';
 import {applyRecord,defaultId} from './records.js?v=0.2.0';
 export function applyReminder(state,input,{idFactory=defaultId}={}) {
@@ -10,6 +11,7 @@ export function applyReminder(state,input,{idFactory=defaultId}={}) {
   if(input.status==='completed')throw new Error('请通过记录完成操作完成事项');
   if(old?.status==='completed')throw new Error('已完成事项不能改为待办，请新增事项');
   const reminder={id:idFactory(),deletedAt:null,status:'pending',originRecordId:null,completionRecordId:null,completedAt:null,...old,...input};
+  if(!old&&input.includeInHealth===undefined&&input.recordType!==undefined)reminder.includeInHealth=defaultPlanHealth(input.recordType);
   if(old)next.reminders[next.reminders.findIndex(r=>r.id===old.id)]=reminder;else next.reminders.unshift(reminder);
   return validateSnapshot(next);
 }
@@ -20,7 +22,7 @@ export function completeReminder(state,id,input={},deps={}) {
   if(reminder.status!=='pending')throw new Error('已取消事项不能完成');
   const origin=next.records.find(r=>r.id===reminder.originRecordId&&r.deletedAt===null),now=isoTime(deps.now??new Date().toISOString()),idFactory=deps.idFactory??defaultId;
   const source=origin??reminder,type=origin?.type??reminder.recordType??'daily';
-  next=applyRecord(next,{petId:reminder.petId,type,...(type==='other'?{typeLabel:source.typeLabel,...(source.customTypeId?{customTypeId:source.customTypeId}:{}),...(source.iconKey?{iconKey:source.iconKey}:{})}:{}),value:type==='weight'?input.value:null,title:input.title??origin?.title??reminder.title,occurredDate:input.occurredDate,note:input.note??reminder.note??'',...(input.nextDate!==undefined?{nextDate:input.nextDate}:{})},{now,idFactory});
+  next=applyRecord(next,{petId:reminder.petId,type,...(type==='other'?{typeLabel:source.typeLabel,...(source.customTypeId?{customTypeId:source.customTypeId}:{}),...(source.iconKey?{iconKey:source.iconKey}:{})}:{}),value:type==='weight'?input.value:null,title:input.title??origin?.title??reminder.title,occurredDate:input.occurredDate,note:input.note??reminder.note??'',...(input.nextDate!==undefined?{nextDate:input.nextDate,...(input.includeInHealth!==undefined?{includeInHealth:input.includeInHealth}:{})}:{})},{now,idFactory});
   const record=next.records[0];reminder=next.reminders.find(r=>r.id===id);reminder.status='completed';reminder.completedAt=now;reminder.completionRecordId=record.id;
   next=validateSnapshot(next);return {state:next,reminder:next.reminders.find(r=>r.id===id),record:next.records.find(r=>r.id===record.id)};
 }

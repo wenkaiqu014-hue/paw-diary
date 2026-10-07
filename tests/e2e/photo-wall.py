@@ -20,7 +20,7 @@ with sync_playwright() as p:
       const b=await repo.savePet({name:'豆豆原文',type:'dog',estimatedAgeMonths:24});
       window.petA=a.id;window.petB=b.id;window.currentPet=a.id;window.generation=0;
       window.i18n=createI18n({storage:null});window.failSave=false;window.readFail=false;
-      const media={...repo.media,save:async input=>{if(window.deferSave)await new Promise(resolve=>window.finishSave=resolve);if(window.failSave)throw Object.assign(new Error('offline private debug'),{code:'unavailable'});return repo.media.save(input);},resolveUrl:async id=>{if(window.readFail)throw Error('offline');return repo.media.resolveUrl(id);}};
+      const media={...repo.media,save:async input=>{if(window.deferSave)await new Promise(resolve=>window.finishSave=resolve);if(window.failSave)throw Object.assign(new Error('offline private debug'),{code:'unavailable'});return repo.media.save(input);},rename:async input=>{if(window.failRename)throw Object.assign(new Error('offline'),{code:'unavailable'});return repo.media.rename(input);},resolveUrl:async id=>{if(window.readFail)throw Error('offline');return repo.media.resolveUrl(id);}};
       window.photoWall=createPhotoWall({media,getPetId:()=>window.currentPet,getGeneration:()=>window.generation,getRevision:()=>repo.getRevision(),t:i18n.t});
       await photoWall.mount(document.querySelector('#wall'));
       window.makePhoto=async()=>{const c=document.createElement('canvas');c.width=900;c.height=600;const ctx=c.getContext('2d');ctx.fillStyle='#b96233';ctx.fillRect(0,0,900,600);return await new Promise(resolve=>c.toBlob(async blob=>resolve(Array.from(new Uint8Array(await blob.arrayBuffer()))),'image/png'));};
@@ -36,6 +36,24 @@ with sync_playwright() as p:
     print('PASS original image compression saves a real Blob in IndexedDB')
     assert page.locator('.paw-photo-caption b').count()==0
     assert page.locator('[name=photo-caption]').get_attribute('maxlength')=='200'
+    expect(page.locator('.paw-photo-caption')).to_have_text('pet.png')
+    page.evaluate("async()=>{window.beforeRename=(await repo.media.list({petId:petA})).items[0]}")
+    page.get_by_role('button',name='重命名',exact=True).click()
+    page.locator('.paw-photo-rename-input').fill('取消的名称')
+    page.locator('.paw-photo-rename').get_by_role('button',name='取消',exact=True).click()
+    expect(page.locator('.paw-photo-caption')).to_have_text('pet.png')
+    page.get_by_role('button',name='重命名',exact=True).click()
+    page.locator('.paw-photo-rename-input').fill('重命名照片.png')
+    page.evaluate('window.failRename=true')
+    page.locator('.paw-photo-rename').get_by_role('button',name='保存',exact=True).click()
+    expect(page.locator('.paw-photo-rename-input')).to_have_value('重命名照片.png')
+    expect(page.locator('.paw-photo-status')).to_have_attribute('role','alert')
+    page.evaluate('window.failRename=false')
+    page.locator('.paw-photo-rename').get_by_role('button',name='保存',exact=True).click()
+    expect(page.locator('.paw-photo-caption')).to_have_text('重命名照片.png')
+    assert page.evaluate("async()=>{const a=(await repo.media.list({petId:petA})).items[0],b=beforeRename;return a.sha256===b.sha256&&a.fileRef===b.fileRef&&a.createdAt===b.createdAt&&a.caption===b.caption}")
+    expect(page.locator('.paw-photo-note')).to_contain_text('照片原文')
+    print('PASS photo original filename, inline cancel, failure retry and metadata-only rename')
     # Failed real upload retains its selected file and caption; locale refresh retains both.
     page.evaluate('window.failSave=true')
     page.locator('[name=photos]').set_input_files(payload)

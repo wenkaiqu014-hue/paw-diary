@@ -256,6 +256,10 @@ async function handleMedia(request, deps) {
       return receipt;
     }
   }
+  if(action==='media.rename'){
+    if(typeof p.displayName!=='string'||!p.displayName.trim()||p.displayName.trim().length>60)throw new ApiError('INVALID_INPUT');
+    return writeTransaction(request,deps,async(tx,w)=>{const asset=ownedAsset(await tx.getMedia(requiredId(p.assetId)),principal);if(asset.kind!=='photo')throw new ApiError('INVALID_INPUT');const pet=owned(w.snapshot,'pets',asset.petId);if(pet.deletedAt)throw new ApiError('FORBIDDEN');asset.displayName=p.displayName.trim();await tx.putMedia(asset.id,asset);return publicAsset(asset);});
+  }
   if (action === "media.cleanup") {
     const result = await writeTransaction(
       request,
@@ -355,6 +359,7 @@ async function handleMedia(request, deps) {
   if (action === "media.prepare") {
     if (
       !storage ||
+      (p.displayName!==undefined&&(p.kind!=="photo"||typeof p.displayName!=="string"||!p.displayName.trim()||p.displayName.trim().length>60)) ||
       !["avatar", "photo"].includes(p.kind) ||
       !["image/png", "image/jpeg", "image/webp"].includes(p.mime) ||
       !Number.isInteger(p.bytes) ||
@@ -388,7 +393,7 @@ async function handleMedia(request, deps) {
             source.bytes !== p.bytes ||
             source.sha256 !== p.sha256 ||
             source.mime !== p.mime ||
-            source.kind !== p.kind
+            source.kind !== p.kind || source.displayName!==p.displayName
           )
             throw new ApiError("FORBIDDEN");
         } else {
@@ -410,6 +415,7 @@ async function handleMedia(request, deps) {
           ownerId: principal.userId,
           petId,
           kind: p.kind,
+          ...(p.displayName!==undefined?{displayName:p.displayName.trim()}:{}),
           caption: (p.caption ?? "").trim(),
           createdAt: clock(),
           mime: p.mime,

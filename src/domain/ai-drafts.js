@@ -25,7 +25,8 @@ export function validatePlanDraft(raw,{pets=[]}={}){
  const typeLabel=type==='other'?raw.typeLabel??null:undefined;if(type==='other'&&!typeLabel)missingFields.push('typeLabel');
  if(typeLabel&&(typeof typeLabel!=='string'||typeLabel.length>20))throw new Error('类型名称无效');
  const note=raw.note??'',sourceText=raw.sourceText??'';if(typeof note!=='string'||note.length>500||typeof sourceText!=='string'||sourceText.length>1000)throw new Error('草稿文字无效');
- return {draftId,petId,type,dueDate,title,note,sourceText,missingFields,...(typeLabel!==undefined?{typeLabel}:{}),...(type==='other'&&raw.customTypeId?{customTypeId:raw.customTypeId,iconKey:raw.iconKey??'book'}:{})};
+ if(raw.includeInHealth!==undefined&&typeof raw.includeInHealth!=='boolean')throw new Error('健康待办选择无效');
+ return {draftId,petId,type,dueDate,title,note,sourceText,missingFields,...(raw.includeInHealth!==undefined?{includeInHealth:raw.includeInHealth}:{}),...(typeLabel!==undefined?{typeLabel}:{}),...(type==='other'&&raw.customTypeId?{customTypeId:raw.customTypeId,iconKey:raw.iconKey??'book'}:{})};
 }
 export function toRecordInputs(drafts,selectedIds,{pets,today}={}){
  if(!Array.isArray(drafts)||drafts.length>5||!Array.isArray(selectedIds)||new Set(selectedIds).size!==selectedIds.length)throw new Error('草稿选择无效，最多5条');

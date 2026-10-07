@@ -1,3 +1,4 @@
+import {isHealthTodo} from './health-plans.js';
 import {validDate,clone} from './schema.js?v=0.2.0';
 import {normalizeRecap,normalizeStage3State} from './stage3-state.js';
 const addDays=(day,count)=>new Date(Date.parse(`${day}T12:00:00Z`)+count*86400000).toISOString().slice(0,10);
@@ -6,9 +7,10 @@ function sources({snapshot,petId,from,to}){
  validDate(from);validDate(to);if(from>to)throw new Error('回顾日期范围无效');if(!snapshot.pets.some(p=>p.id===petId&&p.deletedAt===null))throw new Error('宠物不存在或已在回收站');
  const records=snapshot.records.filter(r=>r.petId===petId&&r.deletedAt===null&&r.occurredDate>=from&&r.occurredDate<=to).sort((a,b)=>a.occurredDate.localeCompare(b.occurredDate)||a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id));
  const recordIds=new Set(records.map(r=>r.id)),allVisible=new Set(snapshot.records.filter(r=>r.petId===petId&&r.deletedAt===null).map(r=>r.id));
- const completed=snapshot.reminders.filter(r=>r.petId===petId&&r.deletedAt===null&&r.status==='completed'&&r.completedAt&&allVisible.has(r.completionRecordId)&&shanghaiDate(r.completedAt)>=from&&shanghaiDate(r.completedAt)<=to);
- const upcoming=snapshot.reminders.filter(r=>r.petId===petId&&r.deletedAt===null&&r.status==='pending'&&r.dueDate>=addDays(to,1)&&r.dueDate<=addDays(to,7)).sort((a,b)=>a.dueDate.localeCompare(b.dueDate)||a.id.localeCompare(b.id));
- const reminders=snapshot.reminders.filter(r=>r.petId===petId&&r.deletedAt===null&&(completed.some(x=>x.id===r.id)||upcoming.some(x=>x.id===r.id)||recordIds.has(r.originRecordId)||recordIds.has(r.completionRecordId))).sort((a,b)=>a.id.localeCompare(b.id));
+ const allCompleted=snapshot.reminders.filter(r=>r.petId===petId&&r.deletedAt===null&&r.status==='completed'&&r.completedAt&&allVisible.has(r.completionRecordId)&&shanghaiDate(r.completedAt)>=from&&shanghaiDate(r.completedAt)<=to);
+ const allUpcoming=snapshot.reminders.filter(r=>r.petId===petId&&r.deletedAt===null&&r.status==='pending'&&r.dueDate>=addDays(to,1)&&r.dueDate<=addDays(to,7)).sort((a,b)=>a.dueDate.localeCompare(b.dueDate)||a.id.localeCompare(b.id));
+ const completed=allCompleted.filter(r=>isHealthTodo(r,{records:snapshot.records})),upcoming=allUpcoming.filter(r=>isHealthTodo(r,{records:snapshot.records}));
+ const reminders=snapshot.reminders.filter(r=>r.petId===petId&&r.deletedAt===null&&(allCompleted.some(x=>x.id===r.id)||allUpcoming.some(x=>x.id===r.id)||recordIds.has(r.originRecordId)||recordIds.has(r.completionRecordId))).sort((a,b)=>a.id.localeCompare(b.id));
  return {records,reminders,completed,upcoming};
 }
 export function computeRecapFacts(scope){const {records,reminders,completed,upcoming}=sources(scope),weights=records.filter(r=>r.type==='weight');return {recordCount:records.length,weightChangeKg:weights.length<2?null:Math.round((weights.at(-1).value-weights[0].value)*100)/100,completedCareCount:completed.length,upcomingReminders:upcoming.map(({id,title,dueDate})=>({id,title,dueDate})),recordIds:records.map(r=>r.id),reminderIds:reminders.map(r=>r.id)};}

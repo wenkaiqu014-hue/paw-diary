@@ -56,6 +56,7 @@ export function createCloudMediaRepository({
       blob,
       preparedImage,
       caption = "",
+      displayName,
       baseRevision = repository.getRevision(),
       operationId = globalThis.crypto.randomUUID(),
     } = {}) {
@@ -80,7 +81,7 @@ export function createCloudMediaRepository({
         sha256 = await digest(image.blob);
       const staged = await repository.request(
         "media.prepare",
-        { petId, kind, caption, mime: image.mime, bytes: image.bytes, sha256 },
+        { petId, kind, caption, ...(displayName!==undefined?{displayName}:{}), mime: image.mime, bytes: image.bytes, sha256 },
         { baseRevision, operationId: operationId + ":prepare" },
       );
       await upload(staged.upload, image.blob);
@@ -111,6 +112,7 @@ export function createCloudMediaRepository({
           petId: metadata.petId,
           kind: metadata.kind,
           caption: metadata.caption ?? "",
+          ...(metadata.displayName!==undefined?{displayName:metadata.displayName}:{}),
           mime: metadata.mime,
           bytes: metadata.bytes,
           sha256: metadata.sha256,
@@ -122,6 +124,7 @@ export function createCloudMediaRepository({
       await upload(staged.upload, blob);
       return { sourceAssetId: metadata.id, ticketId: staged.ticketId };
     },
+    rename:({assetId,displayName,...options})=>repository.request("media.rename",{assetId,displayName},options),
     remove: ({ assetId, ...options }) =>
       repository.request("media.remove", { assetId }, options),
     cleanupExpired: ({ assetIds, limit = 3, ...options } = {}) =>

@@ -1,5 +1,13 @@
 // Interface copy only. User-entered content is never translated.
 export default Object.freeze({
+"加入健康待办":"Include in health to-dos",
+"计划 · 未完成":"Plan · pending",
+"计划 · 已取消":"Plan · cancelled",
+"全部记录与计划":"All records and plans",
+"编辑计划":"Edit plan",
+"取消计划":"Cancel plan",
+"已导出筛选的记录与计划。":"Filtered records and plans exported.",
+
 "添加待办":"Add to-do",
 "添加称重":"Add weight",
 "已发生只保存成长记录；未来事项请使用安排计划。":"Events are saved as records. Use Schedule a plan for future to-dos.",
@@ -332,6 +340,9 @@ export default Object.freeze({
   "photo.imageError": "Photo unavailable.",
   "photo.view": "View photo {caption}",
   "photo.untitled": "Untitled photo",
+  "photo.name": "Photo name",
+  "photo.rename": "Rename",
+  "photo.renamed": "Photo name saved.",
   "photo.deleteTitle": "Permanently delete this photo?",
   "photo.deleteConfirm": "“{caption}” will be permanently deleted and cannot be restored from the trash.",
   "photo.deleted": "Photo deleted.",

@@ -55,6 +55,7 @@ export function normalizeRecord(raw) {
 export function normalizeReminder(raw) {
   object(raw,'事项'); if(!['pending','completed','cancelled'].includes(raw.status))fail('事项状态无效');
   const result={id:requiredText(raw.id,'事项ID'),deletedAt:raw.deletedAt===undefined?null:deletedAt(raw.deletedAt),petId:requiredText(raw.petId,'宠物ID'),title:limited(requiredText(raw.title,'事项名称'),'事项名称',60),dueDate:validDate(raw.dueDate,'事项日期'),status:raw.status,originRecordId:raw.originRecordId==null?null:requiredText(raw.originRecordId,'来源记录ID'),completionRecordId:raw.completionRecordId==null?null:requiredText(raw.completionRecordId,'完成记录ID'),completedAt:raw.completedAt==null?null:isoTime(raw.completedAt,'完成时间')};
+  if(raw.includeInHealth!==undefined){if(typeof raw.includeInHealth!=='boolean')fail('健康待办选项需为布尔值');result.includeInHealth=raw.includeInHealth;}
   if(raw.note!==undefined)result.note=limited(text(raw.note,'备注'),'备注',500);
   if(raw.recordType!==undefined){if(!RECORD_TYPES.includes(raw.recordType))fail('事项记录类型无效');result.recordType=raw.recordType;Object.assign(result,normalizeTypeMetadata(raw,raw.recordType));if(raw.recordType==='other')result.typeLabel=limited(requiredText(raw.typeLabel,'自定义记录类型'),'自定义记录类型',20);}
   if(raw.legacyCompletionUnknown===true)result.legacyCompletionUnknown=true;

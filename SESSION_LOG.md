@@ -901,3 +901,5 @@ nearby_audit按catalog-official-product-docs官方目录研究：腾讯56个inde
 实际文档检查：git diff --check退出0；10份状态/设计/计划相对Markdown链接0missing，任务编号1–10、57未勾/0完成、占位扫描pass。首次任务regex写ASCII冒号而文档中文冒号导致AssertionError[]退出1，改regex支持非数字分隔后上述检查退出0；无产品代码变化所以未npm test/build/浏览器/云/模型，不将343旧证据当本轮验收。后续依据审阅后的plan执行，供应商/账号依赖透明保留；本轮文档/log纳入本地Git，不推送/部署/移动tag。
 
 community_audit文档一致性复查提出2项实质遗漏，Root已整合：client加getAuthorization=auth.getRequestSession并在顶层附当前可信authToken，独立community identity generation在现auth handler提前return前失效，不绑定健康空间；新增community-draft-handoff（单次tab内存30分钟、只准备公开的内容、显式login/profile意图、guest这次登录绑定实际owner、已绑定A不可给B、取消/退出/过期清除），使登录/补昵称返回同稿与普通账号切换清稿同时成立。Task1/5新增相应认证及handoff测试，spec/plan接口同步。Root定向读app.js:150–166和cloudbase-auth.getRequestSession确认真实token入口，未读值/会话。审查agent仅nl只读exit0，无代码/云/测试修改；Root修文档后再检查，不把文档review当产品安全验收。
+
+最终文档复验：11文件中10份状态/spec/plan相对链接0missing，Task1–10顺序正确、57待做/0完成、占位0；git diff --cached --check退出0。阶段4设计/计划和状态日志已本地提交7783995（11文件，387新增/6删除），此前调查日志df2ad7f亦本地保留；git status工作区干净、main ahead origin/main 2。未推送、未改产品构件、未建tag/Release、未触发Pages。随后仅日志补记此次提交结果并本地保存；用户下一步先审阅详细plan再选执行方式/启动。

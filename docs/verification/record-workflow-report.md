@@ -1,5 +1,7 @@
 # 记录与档案修订验收
 
+最终最新v0.5.2：329/329、原URLrecord-ui-polish实际三宽/fiveRows/iconOnly/circle46px/inPlaceManage/plusFallback/fileButton/record0todo+plan0record/0pageErrors全通过。source/tag f93784d，Pages37610740744于18:57:15完成，app-27BPJ62W.js/style-XRVVHCCW.css与本地SHA一致，Release18:59:00公开。新用户20分钟窗口18:43:25起，发布用时15分35秒。用户确认两用途互斥，旧关联单测保留；AIrecord不接受隐式nextDate，用途变化后不按旧解析用途写入。下方v0.5.1/v0.5.0是历史验收。
+
 最终版本v0.5.1：补程序赋值的可见选项显示同步，真实两处语言RED→GREEN；325单测无skip，原URL新鲜浏览器再次检查通过。新Pages37608531673于18:36:58完成，source/tag b25dae8，app-WMRLVTH5.js/style-WACPJKHL.css与本地SHA一致，Release18:38:17公开。全任务交付38分13秒（18:00:04开始），整体≤1小时；最后一步从提前审查起计超过15分钟，不能称全单步达标。下文v0.5.0是此前发布历史。
 
 2026-10-07，v0.5.0已公开发布；Pages37607465744于18:27:23完成，Release18:29:34公开。公开app-N5WIUUE5.js/style-WACPJKHL.css与本地hash一致，实际匿名原URLrecord-dialog及record-workflow-public均通过。发行tag017d813与部署源码17f7861仅测试修订之差，业务构件完全相同。实现设计和主/附件计划见PENDING。

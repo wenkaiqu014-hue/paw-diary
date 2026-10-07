@@ -23,6 +23,8 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+最终最新v0.5.2，source/tag f93784da10a95b09e8d5472bbb1eb4e309790688，Pages37610740744于18:57:15完成，Release18:59:00公开；app-27BPJ62W.js/style-XRVVHCCW.css原URL实际hash匹配，329单测/原URL三宽真实UI验收。用户18:43轮最新确认**record仅成长记录、plan仅待办**，移除同时加入/下次日期；旧关联仍保留，AI不隐式建待办。新增类型五行与三圆icon-only、原地管理/plus、文件选择按钮和三卡字体统一已交付，不能按旧spec恢复checkbox。当前轮20分钟从18:43:25计，到Release15分35秒，文档随后收口；下方v0.5.1/v0.5.0是历史，详SESSION_LOG。没有新模型调用、后台部署或收费采购，旧tags不动；继续阶段4/5与用户亲验。
+
 当前最终公开版本v0.5.1，修复v0.5.0自定义select的程序赋值显示同步：source/tag b25dae8552535da6a96e86a8bf2fa657c40b3e2b，Pages37608531673于18:36:58完成，Release18:38:17公开；app-WMRLVTH5.js/style-WACPJKHL.css真实hash与本地一致。325单测、原URL两处语言显示/模式保留/标题focus复验通过。完整修订能力和v0.5.0历史见下段，旧tag不动，docs-only收口不重发应用。A最后18:32:26.044已checkpoint原600会话并关闭操作；公开Chrome匿名跨域实际读2MiB签名文件hash通过，先前真实5MiB Node生产client边界也通过。下一步仍阶段4及用户亲验，不重做已交付功能。
 
 最新修订v0.5.0已在原URL发布：325单测与实际本地/可信云验证，统一record/plan、3个自定义目录/可重复图标、三圆头像、原附件及整行排序/多宠当前默认。Pages37607465744源码17f7861、公开app-N5WIUUE5.js/style-WACPJKHL.css与本地一致；v0.5.0 tag017d813为相同业务源码加一份测试修订，Release18:29:34公开。old tags均保留。详情docs/verification/record-workflow-report.md和SESSION_LOG最新段，下面v0.4.0段是阶段3基础交付历史。附件paw-files30秒/读取20秒，>1MiB用60秒签名下载避免6MB响应限制；每项3个/单个5MiB/shared50MiB，URL不进入backup/AI。目录跨空间合并超3个明确拒绝先调整，未做专用活跃选择面板。真实模型日期缺失时需手动补填草稿，不能当自动提取成功。下一轮从main与阶段4入口续作，用户亲验/真机待项继续单列。

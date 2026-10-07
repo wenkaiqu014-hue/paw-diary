@@ -809,3 +809,9 @@ Root主目录新鲜npm test325/325无skip、build/语法/diff通过，原test_ap
 Root record-intent/AI tests各RED→GREEN，最终329/329无skip；实际Chrome record-ui-polish五行/圆形/无radio/管理原地/plus/defaultbook、file button8px/44px、已发生疫苗0待办/计划1待办0新record/三卡字体/1440/768/390/pageErrors[]；旧四页test_app9组调整为分别保存疫苗record和未来plan后全GREEN。模式保留/语言原标题focus脚本GREEN。具体安全日志/tmp/paw-polish-*.log与ignored test-results/ui-polish；子agent未Git，Root整合。当前准备v0.5.2原站公开验证，不提前代勾Release/用户亲验。旧tags保持，最终10月8日20:00不变。
 
 本轮技能来源URL：https://github.com/vercel-labs/agent-skills ；https://github.com/obra/superpowers 。
+
+2026-10-07 18:59:58（Root工具date/GitHub元数据）：v0.5.2原站公开与Release完成。f93784da10a95b09e8d5472bbb1eb4e309790688 FF main/push，Pages37610740744 success、18:57:15任务完成；公开app-27BPJ62W.js/style-XRVVHCCW.css真实HTTP hash与worktree dist相同。全新匿名Chrome原URLrecord-ui-polish exit0：fiveRows/iconButtons/inPlaceManage/plusFallback/fileButton8px44px/separatePurposes/cardFormats/pageErrors[]，1440/768/390均无横溢。329单测、旧四页9组和模式/语言焦点回归通过；既有record关联pending保ID/date/status。用途变更后AI旧草稿禁止错误实体写入，需手动或重新整理；plan确认标明待办。没有额外实际模型请求/云后台部署/认证迁移/采购/其他私有数据清理。
+
+新v0.5.2 tag解引用f93784d，18:59:00 Release公开、非draft/非prerelease，旧v0.5.1/0.5.0及早期tag不移动。18:43:25→18:59:00公开用时15分35秒，小于当前20分钟限制；文档随后收口并维持main可恢复，不重发应用。同步PRODUCT/DESIGN/PENDING/AGENTS/README/报告，旧checkbox设计明确历史，新用户确认用途互斥为优先。只停止自己的4195服务并保留ignored截图与工作树；用户亲验/真机仍独立待验，下一步阶段4。
+
+本次发布URL：https://wenkaiqu014-hue.github.io/paw-diary/ ；https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37610740744 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.5.2 。

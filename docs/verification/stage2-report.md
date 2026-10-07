@@ -47,3 +47,5 @@ Root同固定产物实际通过210/210单测、40份生产/工具JS语法、Pyth
 最新Root单测223/223通过、两个正式云函数bundle生成、语法及diff检查通过。捕获工具旧缓存造成会话提取失败，已补强制fresh用户读取与两个回归测试；当前仍在恢复A/B真实会话。新的浏览器契约14项通过，第15项因认证round-trip增加而提前切用户，修为等backend实际hold后定向通过，整套须按最终源重新复验。当前不宣称真实健康/照片/隔离验收通过，不发布0.3、cloudEnabled保持false。详见SESSION_LOG追加窗口；本段覆盖前述“仍等待资金”和“仅profile flag可验证”的当前状态，历史失败保留。
 
 最新固定候选为app-6N3IO3HV.js/style-E5NM6WZE.css，Root225/225单测、8份原浏览器回归、account-workspaces/language、15项账号契约/6项媒体意图整套均通过；以上仍不是A/B真实云权限门槛通过。静态候选enabled=false，尚未公开发布。
+
+最新收口：真实A/B旧SDK各自健康snapshot成功；同原设备refresh及带公开key刷新仍unauthorized_client，新SDK/浏览器会话安装失败。实际认证case0PASS/1FAIL/0SKIP，余4case未执行，阶段2未完成、0.3未发布。最新226单测/15账号契约/6媒体意图mock通过，候选app-CDVGJXPR.js/style-E5NM6WZE.css且enabled=false。此前版本遗漏归因撤回（原v1补metadata仍拒绝），根因待查。详情SESSION_LOG。

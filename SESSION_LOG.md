@@ -522,3 +522,5 @@ Root最终源复验：setSession后强制freshUser Web/Node同源缓存问题追
 Root仅本地4193临时构建enabled=true做真实Web检查，未推公开。真实UI邮箱request调用确使受控邮箱收到新邮件，但UI未能在30秒内启用code，测试失败并关闭浏览器；用户后续给新码，Root先核对应最新server challenge存在，未擅用已消费旧挑战。该新挑战稍后已过期，不称该码验收成功、不在日志保留它。另一次诊断用不可投递example.invalid探测，未获UI有效响应；不得称成功发信。尚需查实际UItransport异步响应/验证码流程，不能只测mock。
 
 2026-10-07 11:27:53 Asia/Shanghai（工具date）：用户要求汇报并十分钟内收口，目标11:37:53。Root答复将在窗口结束给明确通过/未过/发布结论，未保证强行过门槛；真实权限不通过仍不得发版。既有候选归档dc8c293，运行时manifest补a562c5f，尚未merge/main源码push/tag/Release。
+
+最终十分钟窗口结论（11:27:53–11:37:53）：Root实读inspector-same-device-flags.log，真实旧A/B SDKactor health.snapshot均成功、各空档案，fresh/raw/可信proofUID一致；同原设备refresh均unauthorized_client。加pubBearer原生刷新HTTP400相同错误，无positive刷新证据。根因未定位，版本遗漏不是已证实原因（实际v1）。首个真实认证case0PASS/1FAIL/0SKIP，其余4真实case未继续执行；有头Webrestore失败、验证码UI未过，新QQ挑战已过期未消费，不记码。Root最终226单测/最新15账号契约/6媒体意图mock全过，hash app-CDVGJXPR.js/style-E5NM6WZE.css，build及语法/diff通过、local enabled=false恢复。八旧回归/account-workspaces/language是此前6N3hash证据，不冒充CDVG全套。源码归档194d66e，公开0.2/main业务/push/tag/Release未动。下一步先查实际V1客户端刷新授权，再完整真云与真实浏览器验收；无需反复收码。官方页面Web读取失败，未以摘要充精确结论。最后一条追加日志因stdin编码报错未写成，立即用ASCII Unicode转义补录，未丢源码提交。

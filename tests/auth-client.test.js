@@ -50,3 +50,12 @@ for(const oldUser of [null,{id:'OLD',email:'old@example.invalid',is_anonymous:fa
   assert.deepEqual(await auth.getRequestSession(),{principal:{userId:'A'},authToken:'issued-A'});
  });
 }
+
+test('issued session metadata reaches SDK refresh while untrusted response fields stay out',async()=>{
+ const f=fixture(),metadata={token_type:'Bearer',version:'v2',scope:'user',expires_at:'2026-10-07T04:00:00.000Z',expires_in:3600};let installed;
+ const original=f.sdk.setSession;f.sdk.setSession=async session=>{installed=session;if(session.version!=='v2')return {data:{user:null,session:null},error:{error:'unauthorized_client'}};return original(session);};
+ const invokeAuth=async request=>request.action==='auth.verifyEmailCode'?{ok:true,data:{session:{access_token:'issued-A',refresh_token:'refresh-A',...metadata,email_verified:true,userId:'forged',client_id:'forged'},principal:{userId:'A'}}}:f.invokeAuth(request);
+ const auth=createCloudbaseAuth({app:{auth:()=>f.sdk},invokeAuth}),challenge=await auth.requestEmailCode({email:'synthetic@example.invalid'});
+ assert.deepEqual(await auth.verifyEmailCode({challenge,code:'123456'}),{userId:'A'});
+ assert.deepEqual(installed,{access_token:'issued-A',refresh_token:'refresh-A',...metadata});
+});

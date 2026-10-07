@@ -516,3 +516,9 @@ Agent原实现及单轮审查/定向修复都已回报结束，Root整合复验�
 用户询问时间，Root明确当前未完、v0.3未发布；可复用session时剩余20–30分钟为估计并声明不确定性，承认多轮收码及20分钟目标未守住。下一步优先恢复现有会话、真实SDK串行五case、真实浏览器跨上下文，全部通过再决定发布。
 
 Root最终源复验：setSession后强制freshUser Web/Node同源缓存问题追加两实际RED/GREEN，原late-A epochguard保留。当前npm test225/225、0skip；正式两个函数bundle/staticbuild退出0，固定app-6N3IO3HV.js/style-E5NM6WZE.css。Root八旧浏览器回归全部0、account-workspaces/language各0、15项cloud-contract及6项media-intent整套全部PASS。新auth外部协议仍明确模拟平台边界，不当真云。tracked+pending139文件实际凭证值扫描0match、语法/diff0。照片真实测试的finally原引用try内request会ReferenceError，变量提升到try外，等待真云复验；不以静态修复宣称该真云测试通过。为避免再次收码，cloud agent隔离Inspector Worker PoC已成功，正准备受控恢复已有真实SDK会话；PoC不是真账号已恢复。
+
+真实会话恢复补充：cloud agent通过精确旧Worker Inspector断点，从已有平台SDK强制fresh profile并核fixed rawUID=可信CF principalUID，将A/B真实credentials写600文件，anonymous保留，无新邮件/UID/token输出；fileflags Root实读通过。随后Root串行真云入口立即fail REAL_CLOUD_SESSION_REJECTED（0PASS/1FAIL/0SKIP）；有头Web同会话SDKsetSession也failed，不能称恢复可复用。已检查公钥/环境传递正确且access_token不等于publickey。安全机器诊断unauthorized_client，不等于invalid_refresh_token；SDKsetSession会refresh。捕获缺session.version确系缺陷并有RED/GREEN修复，但再从RAM拿平台metadata，A/B实际version=v1，补齐仍不能解释拒绝，因此Root先前“版本遗漏导致刷新拒绝”判断不成立，撤回归因并继续调查客户端/设备绑定。上述file存在/metadata修复不是真业务验收通过。
+
+Root仅本地4193临时构建enabled=true做真实Web检查，未推公开。真实UI邮箱request调用确使受控邮箱收到新邮件，但UI未能在30秒内启用code，测试失败并关闭浏览器；用户后续给新码，Root先核对应最新server challenge存在，未擅用已消费旧挑战。该新挑战稍后已过期，不称该码验收成功、不在日志保留它。另一次诊断用不可投递example.invalid探测，未获UI有效响应；不得称成功发信。尚需查实际UItransport异步响应/验证码流程，不能只测mock。
+
+2026-10-07 11:27:53 Asia/Shanghai（工具date）：用户要求汇报并十分钟内收口，目标11:37:53。Root答复将在窗口结束给明确通过/未过/发布结论，未保证强行过门槛；真实权限不通过仍不得发版。既有候选归档dc8c293，运行时manifest补a562c5f，尚未merge/main源码push/tag/Release。

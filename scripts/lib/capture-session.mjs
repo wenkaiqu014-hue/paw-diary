@@ -12,5 +12,7 @@ export async function collectVerifiedSession({auth,config,label,serverCall,fetch
  if(typeof user?.id!=='string'||!user.id||user.id!==(raw?.sub??raw?.uid??raw?.id))throw fail('ACCEPTANCE_IDENTITY_MISMATCH');
  const proof=anonymous?null:await serverCall('auth.session',{},session.access_token);
  if(anonymous?user.is_anonymous!==true:user.is_anonymous!==false||proof?.principal?.userId!==user.id||typeof raw.email!=='string'||!raw.email)throw fail('ACCEPTANCE_IDENTITY_NOT_VERIFIED');
- return {session:{access_token:session.access_token,refresh_token:session.refresh_token},emailVerified:!anonymous,isAnonymous:anonymous};
+ const credentials={access_token:session.access_token,refresh_token:session.refresh_token};
+ for(const key of ['version','token_type','scope','expires_in','expires_at'])if(typeof session[key]==='string'||typeof session[key]==='number')credentials[key]=session[key];
+ return {session:credentials,emailVerified:!anonymous,isAnonymous:anonymous};
 }

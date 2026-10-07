@@ -134,7 +134,11 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
         const reply=await serverCall('auth.verifyEmailCode',{id:challenge.id,code:code.trim()}),issued=reply?.session;
         if(typeof issued?.access_token!=="string"||!issued.access_token||typeof issued?.refresh_token!=="string"||!issued.refresh_token||typeof reply?.principal?.userId!=="string"||!reply.principal.userId||typeof sdk.setSession!=="function")throw safeError("UNAUTHENTICATED");
         if(observed!==authEpoch||challenges.get(challenge.id)!==verify)throw safeError("UNAUTHENTICATED");
-        const installed=await sdk.setSession({access_token:issued.access_token,refresh_token:issued.refresh_token});if(installed?.error)throw authFailure(installed.error);
+        const credentials={access_token:issued.access_token,refresh_token:issued.refresh_token};
+        // Preserve only platform-supplied OAuth routing/expiry metadata. Never
+        // invent a token version or turn provider/profile fields into proof.
+        for(const key of ['token_type','version','scope','expires_at','expires_in'])if(Object.hasOwn(issued,key))credentials[key]=issued[key];
+        const installed=await sdk.setSession(credentials);if(installed?.error)throw authFailure(installed.error);
         const installedEpoch=authEpoch;
         // SDK 3.10.1 setSession/getSession reads getUser(false), so explicitly
         // refresh the normalized user before retaining a verification candidate.

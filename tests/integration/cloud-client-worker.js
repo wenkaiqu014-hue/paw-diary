@@ -73,11 +73,13 @@ async function initialize() {
     typeof session?.refresh_token !== "string"
   )
     throw fail("REAL_CLOUD_SESSION_INCOMPLETE");
-  const result = await auth.setSession({
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
-  });
-  if (result?.error) throw fail("REAL_CLOUD_SESSION_REJECTED");
+  const result = await auth.setSession({...session});
+  if (result?.error) {
+    const error = result.error;
+    const machine = value => typeof value === 'string' && /^[A-Za-z0-9_.-]{1,100}$/.test(value) ? value : typeof value === 'number' ? value : null;
+    await fs.appendFile(new URL('../../test-results/stage2/sdk-session-install-flags.jsonl',import.meta.url),JSON.stringify({label,phase:'setSession',errorCode:machine(error.code),errorType:machine(error.error),errorNumber:machine(error.error_code),status:typeof error.status==='number'?error.status:null,errorFieldNames:Object.keys(error).filter(k=>/^[A-Za-z_][A-Za-z0-9_]{0,60}$/.test(k)),dataFieldNames:Object.keys(result.data??{})})+'\n',{mode:0o600});
+    throw fail("REAL_CLOUD_SESSION_REJECTED");
+  }
   await freshUser(); // setSession/getSession initially use cached converted user; refresh before actor RPCs.
 }
 async function operation(name, payload) {

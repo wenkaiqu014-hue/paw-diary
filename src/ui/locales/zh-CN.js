@@ -1,5 +1,8 @@
 // Interface copy only. User-entered content is never translated.
 export default Object.freeze({
+"成长回顾":"成长回顾",
+"依据已保存的记录，回看一起成长的日子。":"依据已保存的记录，回看一起成长的日子。",
+
   "成长首页": "成长首页",
   "健康档案": "健康档案",
   "附近宠友": "附近宠友",

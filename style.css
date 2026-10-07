@@ -199,3 +199,15 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
 [hidden]{display:none!important}
 
 .top-actions{flex-wrap:wrap;min-width:0;max-width:100%}.workspace-controls p{min-width:0;overflow-wrap:anywhere}.workspace-actions{min-width:0;max-width:100%}.workspace-actions .button{white-space:normal;min-width:0;overflow-wrap:anywhere}
+
+/* Stage3: one aligned content boundary and equal home columns. */
+.workspace-controls{margin-left:42px;margin-right:42px}
+.care-home{grid-template-columns:minmax(0,1fr);grid-template-areas:'pet' 'reminders' 'stats' 'chart' 'recap' 'timeline' 'teaser';gap:24px;align-items:stretch}
+.care-home>.home-recap{grid-area:recap;min-width:0}
+.care-home>.community-teaser{display:flex;align-items:center;gap:20px}
+.care-home>.community-teaser>img{width:100px;height:100px;flex:none}
+.care-home>.community-teaser .teaser-copy{padding:20px 20px 20px 0}
+.photo-wall-panel{margin-top:24px}
+@media(min-width:1100px){.care-home{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'pet reminders' 'stats stats' 'chart recap' 'timeline timeline' 'teaser teaser'}}
+@media(max-width:1150px){.workspace-controls{margin-left:26px;margin-right:26px}}
+@media(max-width:600px){.workspace-controls{margin-left:19px;margin-right:19px}.care-home{gap:16px}.photo-wall-panel{margin-top:16px}.care-home>.community-teaser{gap:12px}.care-home>.community-teaser>img{width:80px;height:100px}}

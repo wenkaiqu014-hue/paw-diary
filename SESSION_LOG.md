@@ -524,3 +524,16 @@ Root仅本地4193临时构建enabled=true做真实Web检查，未推公开。真
 2026-10-07 11:27:53 Asia/Shanghai（工具date）：用户要求汇报并十分钟内收口，目标11:37:53。Root答复将在窗口结束给明确通过/未过/发布结论，未保证强行过门槛；真实权限不通过仍不得发版。既有候选归档dc8c293，运行时manifest补a562c5f，尚未merge/main源码push/tag/Release。
 
 最终十分钟窗口结论（11:27:53–11:37:53）：Root实读inspector-same-device-flags.log，真实旧A/B SDKactor health.snapshot均成功、各空档案，fresh/raw/可信proofUID一致；同原设备refresh均unauthorized_client。加pubBearer原生刷新HTTP400相同错误，无positive刷新证据。根因未定位，版本遗漏不是已证实原因（实际v1）。首个真实认证case0PASS/1FAIL/0SKIP，其余4真实case未继续执行；有头Webrestore失败、验证码UI未过，新QQ挑战已过期未消费，不记码。Root最终226单测/最新15账号契约/6媒体意图mock全过，hash app-CDVGJXPR.js/style-E5NM6WZE.css，build及语法/diff通过、local enabled=false恢复。八旧回归/account-workspaces/language是此前6N3hash证据，不冒充CDVG全套。源码归档194d66e，公开0.2/main业务/push/tag/Release未动。下一步先查实际V1客户端刷新授权，再完整真云与真实浏览器验收；无需反复收码。官方页面Web读取失败，未以摘要充精确结论。最后一条追加日志因stdin编码报错未写成，立即用ASCII Unicode转义补录，未丢源码提交。
+
+
+## 认证恢复专项：只分析与规划
+
+2026-10-07 11:53:19 Asia/Shanghai（工具date）：用户要求使用Superpowers分析下一步，必要时GitHub寻找认证技能；本轮只规划，不开始正式维修。应用using-superpowers/systematic-debugging/writing-plans，brainstorming只审视认证责任边界；独立explorer auth_plan_audit只读现有代码和锁定3.10.1 sourcemap，未执行测试/网络/读会话秘密/改文件。Root只读日志、代码与公开GitHub，未发码、未运行认证探针、未调用云API/更改配置、未安装技能/MCP/依赖、未构建或发布。
+
+研究主结论：原生SDK OTP与当前paw-auth桥接必须分样本比较，历史RAM来源尚需台账；同设备refresh失败不能排除凭据撤销/轮换，access有效不证明refresh有效。UI邮件到达仅证明send副作用，request返回、challenge落库、epoch/generation采纳及解除busy需独立采证。原stage2设计SDK会话责任与现server-proof实现需对齐；新用户无旧proof必须验收，不能只靠已有A/B。SDK公开signIn(username,verification_token)/signUp(email,verification_token)接口存在，跨服务器验证token兼容性未实测，故仅列条件分支，不自动采用。没有根因结论或真实修复成功声明。
+
+GitHub原页核对：TencentCloudBase/cloudbase-skills显示35stars，auth-web/auth-tool 2.34.8为本栈专项参考（内置SDK会话优先；示例latest需映射锁定3.10.1）；wshobson/agents显示约40.3k，auth-implementation-patterns作通用AuthN/AuthZ参考；better-auth/skills显示222，其create-auth针对另一框架，本轮不迁移。skill-installer只读了解安装方式，未安装；官方queryAppAuth/manageAppAuth未出现在当前工具列表，不假称调用成功。公开源完整链接均在新增设计末尾。原生agent列表此只读任务只有一个实例，未作legacy meta/TaskStop完整扫描或声称其通过。
+
+产物docs/superpowers/specs/2026-10-07-stage2-auth-recovery-design.md与plans/2026-10-07-stage2-auth-recovery.md。六任务：基线/来源/完整错误及一次一变矩阵；独立UIpending；证据驱动最小修复或责任调整；私密原子轮换持久化；五真实case+真实首登/跨浏览器；全部门槛后沿原URL发布。首诊断检查点建议45分钟，届时必须交根因证据或本地脱敏最小复现，不保证修复发版时长。每个正式执行checkbox保持未勾。
+
+文档自检实际git diff --check退出0，2新增文档本地链接检查0missing（当次检查plan103行、design43行；后续补充匿名验收边界）；规格覆盖/接口一致/五ReviewFocus映射自审完成。没有重新跑226单测，本轮非产品代码变更，历史验收状态仍以cb8bf6a报告为准。本地Git归档计划/日志，保持阶段2未完成与0.3未发布。下一轮先读专项计划再决定启动，不继续旧的盲刷新/重复收码。

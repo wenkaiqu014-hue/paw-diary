@@ -861,3 +861,17 @@ v0.6.0新tag解引用e917ae6、Release19:39:41公开isDraft/isPrerelease=false�
 修正04计划和总计划中失效v0.5.0候选，AI已接事实替代旧“待核供应商”；AGENTS与PENDING加唯一当前摘要/历史状态说明，避免新session按旧未勾反馈重做。阶段4仍真实社区/互动、公开投影、冷启动/举报隐藏、明确回顾分享、主动同城发现与组合过滤/可选辅助定位；健康/邮箱/私有图不因公开入口开放，公开图/头像通路需实核而非借用私有临时URL。阶段5指南/版本新内容/PWA/真机/读屏/日历实导及用户亲验不代勾。固定2026-10-08 20:00不变，不把当轮10/20/30分钟或过去估计搬到新阶段。
 
 检查：git diff --check0，5份文档相对链接0missing；只docs未npm test/build/浏览器/模型调用，因为业务代码未变，不把343旧结果当新产品验收。将日志/handoff/状态/计划一并docs-only提交推送，保持main可恢复且不触发网页部署；不移动任何发行tag。当前交接事实来源为本地源文件/既有安全日志及当次gh只读发布数据，未另查新定位技术或价格。
+
+## 阶段4新session：现状调查与Grilling启动
+
+2026-10-07 20:13:08 Asia/Shanghai（Root工具date，调查检查点）：用户要求先核已有交付，使用Superpowers相关技能和grilling对齐第四阶段实施细节，再制定完整plan；本session明确授权子agent、有头浏览器和截图。当前仅调查/讨论/计划，不开始产品实施。固定截止2026-10-08 20:00、原网址/仓库/旧tag、v0.6.1健康/媒体/AI语义继承。
+
+使用using-superpowers、brainstorming（新公开子系统，architectural路径）、grilling（按决策依赖分轮询问frontier）、dispatching-parallel-agents；已读writing-plans以了解计划产物要求，正式计划待设计收口。读取stage4-handoff、PENDING当前摘要、04旧计划、总计划相关段、SESSION_LOG最新两段及PRODUCT/ROADMAP/DESIGN相关关键词。git status --short --branch显示main...origin/main无未提交项，git log最新57c6dd4为docs-only交接、业务tag52e88ee/v0.6.1，package.json版本0.6.1；343单测属于交接已有证据，本轮未重跑，不称本轮验收。
+
+委派只读explorer community_audit核社区/接口/公开图片/成长分享，nearby_audit核同城/地域/公开资料/验收工具；明确禁止产品修改、凭证/私密会话读取、云操作和额外派工，非独占代码库不回退他人修改。中途回报：community为示例localStorage，登录/个人空间拦截共享写入；现私有媒体不是公开图片，recap仅预览复制；nearby为硬编码示例，无行政区/目的和加入退出。现paw-api及store私有Principal/owner边界不可因新增匿名读而放宽，需独立公开业务读取路径。具体路径/行号以随后最终回报为准。kill-race-dupes防御检查只查本cwd编码目录，两种历史路径无subagents目录；未执行停止/kill，不称已清重复。
+
+Grilling首轮准备对齐公开身份颗粒度、找到同城宠友后的交流路径、视觉改动幅度、本轮执行时间预算；后续问题按答案推进，定位服务/费用/新版本号/真实第二账号仍未决定。用户已确认的邮箱登录、健康私有、主动定位、国内地域及不做私信继承原决定。本轮未联网、未安装、未启动浏览器、未运行云/模型或重新发布；没有收费。当前设计/完整新plan尚未形成，旧04初稿不能代替本轮最终计划。
+
+日志写入首次Python here-doc报Non-UTF-8 SyntaxError，退出1，未产生文件修改；python3 --version确认本机3.9.6、路径/usr/bin/python3。改用apply_patch写入中文文档，不将失败当完成。仅日志文档改动，结束前执行diff检查后纳入本地Git，不推送或发版。
+
+两个explorer最终回报已收到，均无文件修改：community_audit定位app.js:233 seed注入、:560非demo写拦截、backend/api.cjs:39强制Principal、cloudbase-store.cjs:23 owner限定、photos.cjs:332私有读和:378私有路径、weekly-recap.js:25分享仅预览复制。nearby_audit定位app.js:461–479六城/8条示例与私有城市选择，无真实发现；提出账号级公开资料、发现筛选与居住地分开、城市必选区可选等建议，尚非用户决定。可复用cloud-harness和session-checkpoint，B仍必须新真实会话。nearby调查发现test_app.py:37含旧体重预填断言，后续执行前需核对并修正与v0.6.1的冲突，不据此回退产品。两agent均只用rg/nl/sed/cat/git；community首次搜索不存在lib/functions退出2、nearby首次zsh未匹配通配符退出1，随后具体路径补读成功；宽输出截断亦已定向补足。Root采纳独立公开服务/store/client和公开媒体需设计的调查结论，未接受为已实现架构，也未把agent报告作测试验收。第一轮问题仍待用户回答，新spec/plan待对齐后形成。

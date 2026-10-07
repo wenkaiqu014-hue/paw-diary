@@ -1,6 +1,13 @@
 # 阶段4新session交接
 
-更新时间2026-10-07。仅整理交接，阶段4尚未实施；不把用户准备开新session当功能已验收。
+更新时间2026-10-07。
+
+**阶段3补丁最新交接：** v0.6.2已于2026-10-07 20:57:27 Asia/Shanghai正式发布，source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429；Pages37624440076成功（Deploy20:56:14、工作流20:56:18），原URL app-H5YZFURX.js/style-HCP5IGKK.css与main全新npm ci构件SHA一致。365/365单测无skip；原URL真模型、有头Chrome1440/390混合草稿/目录/分类/保存刷新通过。 阶段4 agent暂停期间隔离修改后fast-forward；原823a828/7783995/df2ad7f规划提交保留，以下v0.6.1发行数字为历史。A最新20:48:29 checkpoint原600路径归还，不signOut；B仍须新真实会话。
+
+AI与手动共用src/ui/record-fields.js；每条purpose独立，record仅成长记录，plan为独立reminder按includeInHealth分类；疫苗/驱虫新计划默认true、其余false且显式选择保留。AI复用同一record-type-picker，未知类型空、四内置不可删除、自定义最多3个。saveEntryBatch(entries,{baseRevision,operationId})/可信entries.saveBatch原子写入1–5项，item为draftId/purpose/input，计划input.recordType，记录input.type；旧records.saveBatch兼容。类型回调传revision/priorRevision，只在自身写入紧接草稿基线时升级CAS，不覆盖外部修改。模糊日期null，明确五相对词代码计算；模型不新建类型。 保留manual原IDs、附件、完成编辑锁，不重新复制另一套AI字段或以入口覆盖逐项用途。
+
+定向部署paw-ai最新20:53:55 Active、paw-api20:49:15 Active，paw-files/paw-auth未动。后续主目录main续作，详[AI对齐验收](../verification/ai-entry-parity-v062-report.md)、[五步计划](../superpowers/plans/2026-10-07-ai-entry-parity-v062.md)及SESSION_LOG最新段，不按旧bundle判定能力。
+仅整理交接，阶段4尚未实施；不把用户准备开新session当功能已验收。
 
 **本session后续（2026-10-07）：** Grilling Q1–Q12已对齐，新增[设计](../superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md)与[十任务计划](../superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md)，待用户审阅、尚未实施。用户新增个人资料页与两页全部／同城；已选腾讯位置服务先按新增费用0元核实、愿配合位置账号/两邮箱、举报手动维护、验收后v0.7.0。下文“定位服务/版本号待对齐”是交接当时状态；实际许可/额度/目录覆盖及B真会话仍需核，v0.6.1所有已交付语义保留。
 

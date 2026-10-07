@@ -4,9 +4,11 @@
 
 ## 当前唯一续作摘要
 
-当前公开版本仍v0.6.1，交接记载343单测及原URL技术检查通过。阶段4本session已完成Grilling Q1–Q12及只读代码/供应商调查，新增[设计说明](docs/superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md)和[详细计划](docs/superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md)，待用户审阅，尚未实施。已确认账号级公开资料＋头像菜单/独立个人资料页、两页全部／同城、匿名公开读、真实互动、手动举报、腾讯位置服务先按新增费用0元核接入、验收后v0.7.0。实际位置账号许可/额度、目录覆盖和真实B会话仍需实施时核，用户会配合。最终10月8日20:00不变；用户亲验及阶段5真机/指南/PWA/日历实导仍未代勾。下方历史状态不作为当前待办，v0.6.1语义与[交接](docs/operations/stage4-handoff.md)继续继承。
+v0.6.2已于2026-10-07 20:57:27 Asia/Shanghai正式发布，source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429；Pages37624440076成功（Deploy20:56:14、工作流20:56:18），原URL app-H5YZFURX.js/style-HCP5IGKK.css与main全新npm ci构件SHA一致。365/365单测无skip；原URL真模型、有头Chrome1440/390混合草稿/目录/分类/保存刷新通过。 阶段4本session已完成Grilling Q1–Q12及只读代码/供应商调查，新增[设计说明](docs/superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md)和[详细计划](docs/superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md)，待用户审阅，尚未实施。已确认账号级公开资料＋头像菜单/独立个人资料页、两页全部／同城、匿名公开读、真实互动、手动举报、腾讯位置服务先按新增费用0元核接入、验收后v0.7.0。实际位置账号许可/额度、目录覆盖和真实B会话仍需实施时核，用户会配合。最终10月8日20:00不变；用户亲验及阶段5真机/指南/PWA/日历实导仍未代勾。下方历史状态不作为当前待办，既有v0.6.1语义及新增v0.6.2规则与[交接](docs/operations/stage4-handoff.md)继续继承。
 
 阶段4计划全部任务尚未勾选：公开服务与资料后端→个人资料UI→公开媒体→互动后端→社区UI→地域定位→宠友发现→举报/回顾分享→真实双账号及独立审查→原URL/v0.7.0。建议并行窗口4–6小时（串行5.5–8.5小时），只是拆分估算，用户尚未启动本轮实施。
+
+本轮阶段3补丁已收口，详[验收](docs/verification/ai-entry-parity-v062-report.md)。AI与手动共用src/ui/record-fields.js；每条purpose独立，record仅成长记录，plan为独立reminder按includeInHealth分类；疫苗/驱虫新计划默认true、其余false且显式选择保留。AI复用同一record-type-picker，未知类型空、四内置不可删除、自定义最多3个。saveEntryBatch(entries,{baseRevision,operationId})/可信entries.saveBatch原子写入1–5项，item为draftId/purpose/input，计划input.recordType，记录input.type；旧records.saveBatch兼容。类型回调传revision/priorRevision，只在自身写入紧接草稿基线时升级CAS，不覆盖外部修改。模糊日期null，明确五相对词代码计算；模型不新建类型。 A最近20:48:29 checkpoint原600路径归还，B仍需新会话；阶段4原823a828/7783995/df2ad7f完整保留并纳入main。
 
 ## 本session历史修订摘要（非当前待办）
 

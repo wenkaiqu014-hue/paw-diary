@@ -13,3 +13,5 @@
 文件：Root负责app.js、ai-entry.js、record-type-picker.js、CSS导入、日志与发行；ai062_shared_fields负责record-fields/record-dialog及测试；ai062_backend负责parser/gateway/domain/repos/api和测试；ai062_focus_layout负责quota文案、scopedCSS、有头测试。并行工作不回退他人修改，最终Root实际整合验证。
 
 验收：同一草稿可以修改用途；日常计划默认不进入健康；类型新建不丢草稿且不绕过并发；缺失字段不写、混合保存全成或全失败；切宠/账号旧草稿拒绝；双语与390/1440样式可用。真实账号只单actor A并每次刷新checkpoint，B过期不复用；私有附件不进入AI。收费预算/供应商不变。
+
+最终五步均完成：焦点/文案、共享字段、目录/CAS、逐项模型/原子仓储、独立审查和365单测/真模型/真云/原URL双宽/Release。20:57:27正式v0.6.2，source bf7274c；实际验证窗口与未验范围见[报告](../../verification/ai-entry-parity-v062-report.md)。阶段4未扩展，保留其原提交。

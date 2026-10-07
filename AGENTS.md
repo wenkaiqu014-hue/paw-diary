@@ -23,7 +23,9 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
-2026-10-07阶段4本session已完成Q1–Q12 Grilling与只读调查，待用户审阅`docs/superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md`和`docs/superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md`，尚未开始实施。新增头像菜单/个人资料页、两页全部／同城、匿名公开读、举报用户手动维护；腾讯位置服务先按新增费用0元核适用条件和真实额度，Key仅server，用户配合账号/两邮箱；验收后新v0.7.0。当前应用仍v0.6.1，下面旧“定位/版本待对齐”是交接历史；实际供应商许可/额度/目录覆盖和真实B会话仍需核。本輪不把初估4–5小时当新硬时限，详拆建议并行4–6小时、用户先看plan。
+v0.6.2已于2026-10-07 20:57:27 Asia/Shanghai正式发布，source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429；Pages37624440076成功（Deploy20:56:14、工作流20:56:18），原URL app-H5YZFURX.js/style-HCP5IGKK.css与main全新npm ci构件SHA一致。365/365单测无skip；原URL真模型、有头Chrome1440/390混合草稿/目录/分类/保存刷新通过。 AI与手动共用src/ui/record-fields.js；每条purpose独立，record仅成长记录，plan为独立reminder按includeInHealth分类；疫苗/驱虫新计划默认true、其余false且显式选择保留。AI复用同一record-type-picker，未知类型空、四内置不可删除、自定义最多3个。saveEntryBatch(entries,{baseRevision,operationId})/可信entries.saveBatch原子写入1–5项，item为draftId/purpose/input，计划input.recordType，记录input.type；旧records.saveBatch兼容。类型回调传revision/priorRevision，只在自身写入紧接草稿基线时升级CAS，不覆盖外部修改。模糊日期null，明确五相对词代码计算；模型不新建类型。 A最近20:48:29 checkpoint原600路径归还，B过期不复用；详本轮验收及stage4-handoff。阶段4原三个规划提交保留，下方v0.6.1及此前发行状态均历史，不能回退新版AI规则。
+
+2026-10-07阶段4本session已完成Q1–Q12 Grilling与只读调查，待用户审阅`docs/superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md`和`docs/superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md`，尚未开始实施。新增头像菜单/个人资料页、两页全部／同城、匿名公开读、举报用户手动维护；腾讯位置服务先按新增费用0元核适用条件和真实额度，Key仅server，用户配合账号/两邮箱；验收后新v0.7.0。当前应用基线已更新v0.6.2，下面旧“定位/版本待对齐”是交接历史；实际供应商许可/额度/目录覆盖和真实B会话仍需核。本輪不把初估4–5小时当新硬时限，详拆建议并行4–6小时、用户先看plan。
 
 阶段3本session现已收口，阶段4尚未实施。新session从本项目主目录main读`docs/operations/stage4-handoff.md`、SESSION_LOG最新段、PENDING当前摘要与`docs/superpowers/plans/2026-10-06-04-community-nearby.md`。当前唯一公开基线v0.6.1、343单测；Release20:02:15/Pages37617971446 success，后面各v0.5/v0.6段均是历史，不能恢复旧record自动建health待办/旧标题预填。A最近19:31:43 checkpoint在原600路径、B失效需新真实账号会话；定位服务/费用和阶段4发行版本号待新session对齐，旧v0.5.0候选不得复用。最终10月8日20:00不变，旧本轮时间限制不机械搬到新阶段。详尽账号/接口/媒体/未验项以新handoff为准。
 

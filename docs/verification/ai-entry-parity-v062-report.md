@@ -21,3 +21,11 @@ Root有头test_app.py已实际通过新增记录/持久保存、疫苗待办完�
 生产UI模块＋真实IndexedDB有头harness已通过：1record/2普通plan、未知类型/新增paw/manage不可删内置、health显式false保留、模式不重parse、两语言、取消无写、scopegeneration拒绝；模拟的仅AI回复，未把它当完整SDK/model验收。另Root整App真实SDK＋硅基模型有头操作已通过混合两项/目录管理/无抢焦点/1440与390/确认保存与刷新；本次首次等待关闭timeout退出1，增加状态采样再次实际执行exit0，未将失败当通过。采样显示正常保存后dialog.closed、record+1/plan+1，数据刷新保留；首次timeout没有足够证据确认原因，公开端继续定向复验。
 
 真实页面模型曾把“明天”填今天，因此追加基本相对词由代码严格归一（今天/昨天/前天/明天/后天）并隔离过去/未来分句；模糊下周/下个月不推日。两新行为测试RED→GREEN，最新365/365无skip，最后paw-ai bundle重新部署与公开端验收在发行记录收口。
+
+## 最终发行与原URL
+
+v0.6.2已于2026-10-07 20:57:27 Asia/Shanghai正式发布，source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429；Pages37624440076成功（Deploy20:56:14、工作流20:56:18），原URL app-H5YZFURX.js/style-HCP5IGKK.css与main全新npm ci构件SHA一致。365/365单测无skip；原URL真模型、有头Chrome1440/390混合草稿/目录/分类/保存刷新通过。 Release非draft/非prerelease，旧tags未移动。main从823a828 fast-forward继承，main npm ci/test/build实际通过。原URL最终有头真实SDK+模型exit0：今天date/明天dueDate匹配、catalog管理四内置禁删、daily不勾health、记录/计划各+1且刷新一致、pageErrors=[]。仅新隔离demo浏览器，不改用户私有资料。
+
+20:37:33→Release20:57:27共19分54秒，随后文档收口。五步并行：焦点/配额检查点20:46:38，共享字段20:43:14，类型/CAS候选20:54:29，模型/领域最终部署20:53:55，原URL/Release20:57:27。每步实际执行窗口≤20min，总≤80min；不以第一次worker交付当最终验收。
+
+原始证据在隔离树test-results/ai062/{cloud-mixed-smoke.json,public/result.json}、ai062-focus、ai062-parity和/tmp/paw-062-*.log（Git忽略）。首次真实页面等待关闭timeout原因未确认；采样本地与最终公开端两次成功，不把mock或首次失败当最终通过。用户亲验、真机/读屏/日历实导仍后续阶段。

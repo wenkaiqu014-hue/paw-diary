@@ -915,3 +915,15 @@ community_audit文档一致性复查提出2项实质遗漏，Root已整合：cli
 2026-10-07 20:48:57 Asia/Shanghai检查点：Root最新完整单测363/363无skip，node --check/app及diff检查成功；有头test_app.py四原路由与新增/完成/持久/备份/多宠等全部PASS、无pageError。一次真实访客模型成功5184ms，入口plan但按原句返回actual weight+future daily，日期正确且daily不加入health。paw-ai20:47:12/paw-api20:47:19 Active；weight空标题核对保空的新领域修订已重新build/functions，最终二函数同步部署进行中。worker独占A真实mixedPersisted/false日常/true疫苗/receipt/staleCAS/非法批次回滚全部通过，exact合成pet回收，20:48:29最新session600归还，未使用B/OTP/signOut。独立UI审查的连续取消及locale复选disabled缺陷已修，真实DOM复验包括save busy与失败恢复PASS，22定向单测PASS。未claim最终公开验收；候选包已按用户更新0.6.2，旧tag不动。
 
 2026-10-07 20:53:13 Asia/Shanghai真实页面采样检查：生产App+真实SDK+硅基模型本地有头混合两项确认/管理/双宽/刷新exit0，采样dialog.closed、保存后记录+1和普通daily计划+1。此前首轮等待dialog关闭timeout exit1，未取得足够证据确认原因，增加采样后复验成功；公开端仍将定向复验，不将失败改写通过。一次真实模型将“明天”填今天，因此后端追加基本五相对词代码计算，仅明确相对词、过去/未来分句分开，模糊下周/下个月仍null；RED→GREEN新增两test，全套365/365无skip。第二次真实UI示例数据仅新隔离demo浏览器，未读私有A/真实宠物。生产UI模块harness20:52:21通过mock边界＋真实IndexedDB1record/2plan和类型/双语/取消/scope；不能替代整App真模型，Root已补实际路径。本轮没有新采购/其他供应商/集团调用。
+
+### v0.6.2原URL验收、正式发行与阶段4归还
+
+2026-10-07 20:57:27 Asia/Shanghai Release公开（gh publishedAt12:57:27Z）：source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429，非draft/非prerelease。main原823a828等stage4三提交完整保留，fast-forward并正常push无force；新tag v0.6.2不移动旧tag。Pages37624440076 source bf7274c，Deploy20:56:14 success、工作流20:56:18 completed；app-H5YZFURX.js/style-HCP5IGKK.css原URL实际下载SHA匹配main npm ci完整新构件，也与隔离树一致。main npm ci/npm test/npm run build实际exit0、365/365无skip，node --check和diffcheck通过。
+
+原URL有头Chrome真实SDK+真硅基模型流程exit0：无抢焦点、具体三功能quota；两草稿per-itempurpose，今天实际日期/明天计划日期正确；catalog管理四builtin禁删；daily health默认false，原子确认demo record+1/plan+1、刷新实体一致、1440/390无横溢出/pageErrors=[]。模型明确相对词代码处理的最终paw-ai20:53:55 Active、paw-api最终20:49:15 Active；paw-auth/paw-files未修改。隔离fresh浏览器/demo合成数据，不写真实用户资料；真实A之前专属batchsmoke已600 checkpoint归还20:48:29、exactpet已回收、B仍过期不复用。
+
+从20:37:33至Release19分54秒，后续仅文档收口；五步并行均≤20min，总≤80min。第一次headed realUI关闭等待timeout已如实保留，原因未确认，采样本地和最终公开端实际成功，未把mock或失败当最终完成。user亲验/真实手机/读屏/日历实导独立pending。更新PENDING/AGENTS/PRODUCT/ROADMAP/总计划/五步计划/验收报告/stage4-handoff，说明共享字段/new entries.saveBatch/per-item model output/CAS目录回调和原会话checkpoint；未改阶段4spec/十任务plan或扩展社区功能。Root服务清理及文档Git收口在下个检查点。
+
+文档收口首个python here-doc在主目录报Non-UTF-8 SyntaxError，未执行任何Python文件修改；Shell随后追加发行事实日志成功。20:59:10工具确认Python3.9.6，改/usr/bin/python3并显式UTF-8声明后编码probe通过，全部必要文档随后写入；不是把失败当已更新。最终Git与服务清理检查后纳入docs-only提交，不重发应用。
+
+最终检查：仅本轮4212预览服务（已核命令为python3 -m http.server 4212 --bind 127.0.0.1 --directory dist）关闭，不停止其他服务。stage4新spec/十任务plan自原823a828字节未修改；root主目录仅9份必要Markdown收口，应用source仍bf7274c、v0.6.2 tag一致，旧v0.6.1 tag仍52e88ee。文档diffcheck通过；本地记录与交接纳入Git并正常push，docs-only不触发Pages，不移动已验收source tag。

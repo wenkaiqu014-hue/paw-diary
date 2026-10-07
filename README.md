@@ -42,7 +42,7 @@ AI提供有限额体验，访客不需要配置密钥。点击整理、生成或
 
 ## 版本与项目文档
 
-当前版本为 **v0.6.0**。普通计划与健康待办可明确区分，普通计划在成长足迹与完整列表显示，完成才生成记录；全站日期等宽占位，照片支持重命名。保留头像、可复用类型、原附件、多宠筛选、AI草稿、成长回顾与只读助手。版本变化见[发布说明](https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.6.0)，验证范围见[最终修订报告](docs/verification/final-growth-report.md)和[阶段3报告](docs/verification/stage3-report.md)。
+当前版本为 **v0.6.1**。普通计划与健康待办可明确区分，普通计划在成长足迹与完整列表显示，完成才生成记录；全站日期等宽占位，照片支持重命名。取消体重名称预填，站内未保存提示使用主题确认框；保留AI草稿、成长回顾与只读助手。版本变化见[发布说明](https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.6.1)，验证范围见[最终修订报告](docs/verification/final-growth-report.md)和[阶段3报告](docs/verification/stage3-report.md)。
 
 [后续计划](ROADMAP.md) · [开发待办](PENDING.md) · [开发日志](SESSION_LOG.md)
 

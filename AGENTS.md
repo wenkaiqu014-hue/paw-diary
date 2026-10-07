@@ -23,6 +23,8 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+用户指定v0.6.1最新补丁：source/tag52e88ee8f71c6e138ba1795fd0a7319fa60d8a68，Pages37617971446成功20:01:34收口，公开app-JEW3W5XH.js/style-7TVISRAM.css与本地SHA一致。343单测/原URL1440/390真实操作通过：无体重预填、用户名称跨type保留、主题站内discard确认/继续/Esc/确认关闭/无native confirm。浏览器刷新/关页仍保beforeunload安全保护，不能自绘。旧记录已有标题照常显示，weight空名可保存默认名；其它继承v0.6.0，旧tags不动，不再按旧自动预填规则续作。
+
 当前最终v0.6.0：source/tag e917ae68736fb530a3e5cf16d2952570a9b9d9ce，Pages37615281921于19:37:21完成，Release19:39:41公开；app-CM3CZ744.js/style-UOJBG5XR.css原URL SHA与全新npm ci本地构件一致。343单测/原URL三宽0错误、真实云分类和photo name/archive通过。reminder.includeInHealth optionalbool，plan新vax/deworm默认true其余false；普通计划以未完成标记在成长足迹/完整列表，不能生成未来record。旧关联/未知类型保health、不根据名字猜；photo displayName独立caption，只改metadata。所有date输入用native加等宽空mask，保原生值/选择/键盘。API/files/AI已同步新schema/facts，A最后19:31:43.057已600 checkpoint归还，无验证码/model新请求；下一步main与阶段4，亲验/真机仍独立待项。下方v0.5.*为历史，最新执行见final-growth报告及SESSION_LOG。
 
 最终最新v0.5.2，source/tag f93784da10a95b09e8d5472bbb1eb4e309790688，Pages37610740744于18:57:15完成，Release18:59:00公开；app-27BPJ62W.js/style-XRVVHCCW.css原URL实际hash匹配，329单测/原URL三宽真实UI验收。用户18:43轮最新确认**record仅成长记录、plan仅待办**，移除同时加入/下次日期；旧关联仍保留，AI不隐式建待办。新增类型五行与三圆icon-only、原地管理/plus、文件选择按钮和三卡字体统一已交付，不能按旧spec恢复checkbox。当前轮20分钟从18:43:25计，到Release15分35秒，文档随后收口；下方v0.5.1/v0.5.0是历史，详SESSION_LOG。没有新模型调用、后台部署或收费采购，旧tags不动；继续阶段4/5与用户亲验。

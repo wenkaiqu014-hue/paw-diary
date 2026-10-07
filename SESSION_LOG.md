@@ -849,3 +849,5 @@ v0.6.0新tag解引用e917ae6、Release19:39:41公开isDraft/isPrerelease=false�
 新增modal-061.py实际Chrome：原weight自动名称RED→空与用户名称保持GREEN；关闭/继续/Esc/确认/空weight保存/343单测无skip、1440/390中部/0pageErrors/0nativeDialogs均通过。第一次中心断言用innerWidth包含7px滚动条导致误差，实际dialog center可用clientWidth正常；改用clientWidth严格断言后GREEN，未改产品去硬偏移。源码语法/build/diff通过。准备v0.6.1原站公开复验后创建tag/Release，不移动v0.6.0；最终截止与未验真机/亲验仍单列。
 
 技能来源URL：https://github.com/vercel-labs/agent-skills ；https://github.com/obra/superpowers 。本轮证据ignored test-results/modal-061与/tmp/paw-061-*.log。
+
+2026-10-07本轮收口：52e88ee源码main推送，Pages37617971446 success于20:01:34完成；公开app-JEW3W5XH.js/style-7TVISRAM.css与本地SHA一致，原URL全新匿名modal-061 exit0：noWeightPrefill/userTitlePreserved/customDiscard/keepAndEscape/discardCloses/blankWeightTitleSaves全部true，1440/390可用区域居中、nativeDialogs[]/pageErrors[]。用户指定v0.6.1新tag解引用52e88ee，旧tag不移动；Release工具读回后收口，不提前当已通过。343单测、语法/build/diff0，未调用模型/账号或后端管理。不对浏览器beforeunload承诺自绘；Main docs-only归档不重发网页，临时4198仅本树服务停止。

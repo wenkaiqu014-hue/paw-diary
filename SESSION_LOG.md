@@ -487,3 +487,17 @@ Agent原实现及单轮审查/定向修复都已回报结束，Root整合复验�
 本轮DB来源核对完整URL：https://cloud.tencent.com/document/product/876/128117 、https://cloud.tencent.com/document/product/876/128592 。官方API缺省未明确，我们依据原文明确资源输入，不假设默认值。
 
 最终候选源码已本地提交3d14cc6（完整review修复、权限测试防假绿、210单测/17浏览器检查与实际限制），未push/合并main/打tag或Release。独立fixture4197已关闭并清其临时目录，候选4193保留；dist public配置仍false。主main将仅追加本地交接入口，完整本轮日志保留本分支SESSION_LOG；续作切到.worktrees/stage2并先读本报告/日志，不从main旧业务代码重复构建。
+
+
+## 二十分钟发布前准备窗口
+
+2026-10-07 10:14:02 Asia/Shanghai（工具date）：用户确认已补余额、自主开通云环境，提供两受控邮箱用于验证码验收，要求20分钟内完成0.3.0发布前准备；邮箱地址仅用于实际调用、不记日志或Git。新窗口至10:34:02，未据此自动公开发布。沿using-superpowers/executing-plans/verification，已知ValueError前用systematic-debugging查实际状态。
+
+独立分工：cloud负责cloud-setup和运维说明及真实配置，local_fixes仅版本元数据/README/回滚/Release候选说明，不Git/推送/发tag/新云或回退peer；Root负责真实OTP/SDK/浏览器集成，业务源暂冻结。known旧待付单已Status7关单，未再付款/下单；原固定env实际被用户开为personal/NORMAL/上海/DocDB1PG0，到期2026-11-07，原autoRenewfalse但overruntrue。Root批准仅原env接受读回personal并关闭overrun、无更换凭证/新env/自动费用操作。10:16:36 ModifyEnvExtra EnableOverrunFALSE成功、读回autoRenewfalse/overrunfalse，后续按个人版配合法生产与4193本地来源/邮箱/私有规则、部署读回。其余实际验收未通过不宣称。
+
+
+10:33窗口收口：两个受控邮箱验证码均由平台成功接受，真实session有token且SDKUID与fixed GET raw.sub匹配，但profile未返回严格email_verified=true，A/B捕获分别ACCEPTANCE_IDENTITY_NOT_VERIFIED，不能称登录/私有业务验收通过。第一次Node helper用了同名getUserInfo返回调用context导致UID mismatch（不是邮箱码错）；改优先SDKuser仍同误，最终根因Node导出覆盖旧getter，已改固定官方Bearer GET，harness.identityFlags同步修正。用户最新两轮码均不写日志/Git；没有把Node context false当raw证明。不能放宽授权、用绑定/有email/日期或凭空verified真值通过。当前10:34目标仅发布材料/环境准备完成，真云门槛阻塞未解决，不公开0.3、cloudEnabled仍false。
+
+匿名两次45秒短窗均finally恢复false；第二次Root真实SDK capture成功写private600，实际重新载入签名session后isAnonymoustrue，health.snapshot明确UNAUTHENTICATED，单独探针exit0；不是A/B邮箱通过。首次用--input-type=module父进程创建文件Worker继承execArgv失败，改ignored .mjs入口后正常，未将失败算权限拒绝。个人版读回平台SetupReadytrue、DocDB1PG0、autoRenewfalse/overrunfalse、production及精确local域、DB/storagedeny、Emailonly/MaxDevice5、两函数Active/pubkeyEnv均完成。用户自主开通原env，旧订单Status7关，不再支付/下新单。
+
+发布元信息VERSION/package/lock=0.3.0，CHANGELOG/README/回滚/docs/releases/v0.3.0均明确准备稿未上线；隔离构建不覆盖dist、无管理秘密/日志，4文档链接和版本一致检查0；首次outdir安全guard拒，改受允许专用临时目录后0。Rootfresh npm test210/210退出0、scripts语法及git diff0。workerops43相关unit0。与前轮210+17 browser证据区别：本轮没有真实CloudPrivate/Photo/Import正向；只有验证码接受与verified缺省阻塞、真正匿名拒绝。

@@ -97,7 +97,8 @@ async function operation(name, payload) {
   if (cacheOnly) throw fail("CACHE_ONLY_CLIENT_CANNOT_CALL_CLOUD");
   if (name === "identityFlags") {
     const user = await freshUser();
-    const raw = await auth.getUserInfo();
+    const session = (await auth.getSession())?.data?.session;
+    const raw = await verifiedProfile.createPlatformProfileLookup({environmentId:envId,publishableKey:publicKey})(session?.access_token);
     const uid = typeof user?.id === "string" ? user.id : null;
     return {
       signedIn: !!uid,

@@ -150,3 +150,19 @@ python3 scripts/cloud-setup.py --env NEW_ENV_ID refresh-public-config
 后续paid配置同时添加wenkaiqu014-hue.github.io、localhost:4193、127.0.0.1:4193并严格读回，供真实浏览器验收，保持原公开0.2直至所有门槛通过；这些只是已写入脚本，尚未在paid环境实际执行。[安全来源文档](https://docs.cloudbase.net/envconfig/security/intro)支持端口且描述默认localhost，但本trial03:32的实际10SYSTEM列表没有localhost，不假设环境已有。原“只配生产域避免个人额度”不是确认安全域仅1个，不与网站自定义域名配额混同。
 
 函数deploy已改从同环境查询Name=publish_key再设置PAW_CLOUD_PUBLISHABLE_KEY，读回只输出是否匹配，不回显公开值或管理秘密。尚未部署此修复。验收完成可执行cleanup-readiness：只删除说明仍为Temporary stage2 identity flags only readiness probe的paw-stage2-readiness，先撤调用规则/读回，再删除/确认缺失；默认不可删除其他函数。依据[SCF当前API](https://cloud.tencent.com/document/product/583/18585)和当前SDK字段，离线guard通过；没有实际删除证明。
+
+### 2026-10-07 10:14–10:18 原环境用户升级后的正式配置
+
+用户实际开通的是原专用环境 `paw-diary-d8g3p4tlsb305221d` 个人版，未创建第二环境。10:15:22 FUJI只读 `DescribeEnvs` 确认 `baas_personal`、上海、NORMAL、文档数据库1/PG0；`DescribeBillingInfo` 确认到期2026-11-07 23:59:59、自动续费false，但用户开通后的超限按量为true。此前我们创建的另一待付单本次精确只读返回Status7（已关单），无资源ID；本次没有再次购买、付款或恢复旧订单，没有把旧收据伪造为新个人版授权。
+
+Root明确授权仅原fixed env的guard接受trial/personal，由实际读回PackageId驱动配置，文档数据库1/PG0、上海、NORMAL和费用边界检查继续保留。仅该环境使用 [ModifyEnvExtra](https://cloud.tencent.com/document/product/876/137192) `EnableOverrun='FALSE'` 关闭超限按量；官方与当前PythonSDK均明确这是额外配置开关。10:16:36读回自动续费false/超限按量false，未调用会自动扣费的ModifyEnvPlan/CreateEnv。
+
+`python3 scripts/cloud-setup.py configure` 在10:16:58成功并实际读回：邮箱登录和平台邮箱发送开启、用户名/手机号/匿名关闭、MaxDevice5、生产GitHub域及localhost/127.0.0.1精确4193域、五集合CUSTOM read/write false、StorageSafeRule CUSTOM read/write false、业务函数只auth可invoke。系统默认安全域保留，不删除他物。体验版先前FreePackageDenied属于历史失败，此次个人版真实配置通过。public-config.json仅公开env/publish_key，platformSetupReady=true，cloudEnabled仍false，唯一reason为real-email-and-private-access-not-validated，不能称真实邮箱/私有业务验收通过。
+
+`npm run build:functions` exit0；`deploy --function paw-api --bundle test-results/stage2/functions/paw-api` exit0，10:17:15 Active；readiness同样exit0，10:17:37 Active。两个函数Node18.15/256MB/3s，envID/TZ及业务publish_key环境变量严格读回，未注入管理凭证。10:18:04管理readiness InvokeResult0，数据库事务可读/storage namespace present，管理上下文无真实用户，不能作为邮箱身份验收。10:18:05 refresh-public-config exit0、10:18:45最终inspect exit0；Python compile和限定文件diff检查0。证据位于ignored `personal-*.log` 和合并cloud-ops.log。Root负责真实邮箱OTP与客户端Gate，本worker未发邮件、未读邮箱或真实用户token、未Git/推送/改变公开0.2站点。
+
+明确授权的临时匿名捕获使用 `python3 scripts/cloud-setup.py anonymous-window`：仅原personal环境、邮箱true/用户名false/手机号false基线，开启后最多45秒finally还原并实际读回；Root发完成信号时仅写ignored `test-results/stage2/anonymous-window-stop` 可提前结束。一次窗口只为捕获恰好一个真实SDK匿名session，worker不写健康、不打印UID/token；未获具体短窗授权不得使用此命令。正常platformSetupReady条件仍要求AnonymousLogin=false。
+
+本次Root具体授权的匿名窗口实际10:19:26启用且读回，10:20:11由45秒硬deadline触发finally恢复，读回Anonymous=false、Email=true、Phone=false、UserName=false，命令exit0。窗口后再次refresh公共配置核验；匿名session是否成功捕获以及实际拒绝由Root真实SDK验收，不能因开关恢复或管理探针通过代称。
+
+10:25:39 Root因首个捕获助手的Node同名getter覆盖错误、匿名session未保存，具体授权第二次45秒匿名窗口；10:26:25 finally读回恢复Email true、Anonymous/Phone/UserName false，命令exit0。Root报告此次真实SDK匿名session已成功保存至私密600文件；本worker未读或输出该token。Root真实A/B邮箱OTP已获平台接受，但fixedGET当前v1资料的email_verified仍缺省/false，严格业务门槛不能放行。这是新的正向认证兼容阻塞事实，不能把管理Ready或邮箱收码成功写成云健康/隔离验收通过。未放宽为email/bind/loginType/日期即通过，未硬编码账号、未管理端伪标verified。

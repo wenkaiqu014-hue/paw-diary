@@ -146,7 +146,7 @@ class Operator:
         if env_id not in (ENV_ID, paid_id):
             raise ValueError('Only the dedicated project environments are allowed')
         self.env_id = env_id
-        self.package_id = 'baas_trial' if env_id == ENV_ID else 'baas_personal'
+        self.package_id = None if env_id == ENV_ID else 'baas_personal'
         from tencentcloud.common import credential
         from tencentcloud.tcb.v20180608 import tcb_client, models
         from tencentcloud.scf.v20180416 import scf_client, models as scf_models
@@ -208,8 +208,10 @@ class Operator:
         if len(environments) != 1 or environments[0].get('EnvId') != self.env_id:
             raise ValueError('Dedicated environment not found')
         env = environments[0]
-        if env.get('Region') != REGION or env.get('PackageId') != self.package_id or env.get('Status') != 'NORMAL':
+        allowed_packages = ('baas_trial', 'baas_personal') if self.env_id == ENV_ID else ('baas_personal',)
+        if env.get('Region') != REGION or env.get('PackageId') not in allowed_packages or env.get('Status') != 'NORMAL':
             raise ValueError('Environment package or region changed unexpectedly')
+        self.package_id = env['PackageId']
         databases = env.get('Databases') or []
         postgres = env.get('PostgreSQL') or []
         if not isinstance(databases, list) or len(databases) != 1 or not isinstance(postgres, list) or postgres:
@@ -225,6 +227,54 @@ class Operator:
                         raise ValueError('Automatic renewal or overrun must be disabled')
         emit('environment', envId=self.env_id, region=REGION, packageId=env['PackageId'], status=env['Status'], databaseCount=len(env.get('Databases') or []), storageCount=len(env.get('Storages') or []))
         return env
+
+    def disable_overrun(self):
+        # Root explicitly authorized closing overrun only on the user-upgraded original environment.
+        if self.env_id != ENV_ID:
+            raise ValueError('Only the original project environment may close overrun')
+        environments = self.call('DescribeEnvs').get('EnvList') or []
+        if len(environments) != 1:
+            raise ValueError('Dedicated environment not found')
+        env = environments[0]
+        if env.get('EnvId') != ENV_ID or env.get('PackageId') != 'baas_personal' or env.get('Region') != REGION or env.get('Status') != 'NORMAL' or len(env.get('Databases') or []) != 1 or env.get('PostgreSQL'):
+            raise ValueError('Personal document database environment required before closing overrun')
+        billing = self.call('DescribeBillingInfo').get('EnvBillingInfoList') or []
+        info = next((item for item in billing if item.get('EnvId') == ENV_ID), None)
+        if not info or info.get('IsAutoRenew') is not False:
+            raise ValueError('Automatic renewal must already be disabled')
+        if info.get('EnableOverrun') is not False:
+            self.call('ModifyEnvExtra', {'EnableOverrun': 'FALSE'})
+        self.environment()
+        emit('overrunDisabledVerified', envId=self.env_id, automaticRenewal=False, overrun=False, purchaseRequested=False)
+
+    def anonymous_window(self):
+        # One explicitly authorized technical SDK session; a hard deadline restores even if capture fails.
+        self.environment()
+        if self.env_id != ENV_ID or self.package_id != 'baas_personal':
+            raise ValueError('Temporary anonymous window is limited to the approved original personal environment')
+        keys = ('EmailLogin', 'UserNameLogin', 'PhoneNumberLogin', 'AnonymousLogin')
+        original = self.call('DescribeLoginConfig')
+        original = {key: original.get(key) for key in keys}
+        if original != {'EmailLogin': True, 'UserNameLogin': False, 'PhoneNumberLogin': False, 'AnonymousLogin': False}:
+            raise ValueError('Email-only baseline required before temporary anonymous window')
+        stop = ROOT / 'test-results/stage2/anonymous-window-stop'
+        stop.unlink(missing_ok=True)
+        try:
+            self.call('ModifyLoginConfig', {**original, 'AnonymousLogin': True})
+            enabled = self.call('DescribeLoginConfig')
+            if any(enabled.get(key) != (True if key == 'AnonymousLogin' else value) for key, value in original.items()):
+                raise RuntimeError('Temporary anonymous flags did not match the authorized window')
+            emit('anonymousWindow', envId=self.env_id, enabled=True, maximumSeconds=45, emailUnchanged=True, phoneDisabled=True, usernameDisabled=True)
+            deadline = time.monotonic() + 45
+            while time.monotonic() < deadline and not stop.exists():
+                time.sleep(0.5)
+        finally:
+            self.call('ModifyLoginConfig', original)
+            restored = self.call('DescribeLoginConfig')
+            if any(restored.get(key) != value for key, value in original.items()):
+                raise RuntimeError('Temporary anonymous window restore did not persist')
+            emit('anonymousWindowRestored', envId=self.env_id, anonymous=False, email=True, phone=False, username=False, restored=True)
+            stop.unlink(missing_ok=True)
 
     def inspect(self):
         env = self.environment()
@@ -270,7 +320,7 @@ class Operator:
         # A five-device session limit permits the planned cross-browser tests.
         self.attempt('ModifyClient', {'Id': self.env_id, 'MaxDevice': 5})
         domains = self.call('DescribeAuthDomains').get('Domains') or []
-        required_domains = DOMAINS if self.env_id == ENV_ID else (DOMAINS[0], *ACCEPTANCE_DOMAINS)
+        required_domains = DOMAINS if self.package_id == 'baas_trial' else (*DOMAINS, *ACCEPTANCE_DOMAINS)
         missing = [d for d in required_domains if not any(x.get('Domain') == d and x.get('Status') == 'ENABLE' for x in domains)]
         if missing:
             self.attempt('CreateAuthDomain', {'Domains': missing})
@@ -310,7 +360,7 @@ class Operator:
         env = self.environment()
         domains = self.call('DescribeAuthDomains').get('Domains') or []
         has_domain = any(d.get('Domain') == DOMAINS[0] and d.get('Status') == 'ENABLE' for d in domains)
-        local_ready = self.env_id == ENV_ID or all(any(d.get('Domain') == local and d.get('Status') == 'ENABLE' for d in domains) for local in ACCEPTANCE_DOMAINS)
+        local_ready = self.package_id == 'baas_trial' or all(any(d.get('Domain') == local and d.get('Status') == 'ENABLE' for d in domains) for local in ACCEPTANCE_DOMAINS)
         has_storage_deny = bool(env.get('Storages'))
         for storage in env.get('Storages') or []:
             acl = self.storage_acl(storage['Bucket'])
@@ -467,7 +517,7 @@ class Operator:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env', default=ENV_ID)
-    parser.add_argument('command', choices=('inspect', 'configure', 'deploy', 'invoke-readiness', 'cleanup-readiness', 'guard-check', 'refresh-public-config', 'recheck-paid-pending', 'pay-known-pending'), nargs='?', default='inspect')
+    parser.add_argument('command', choices=('inspect', 'configure', 'deploy', 'invoke-readiness', 'cleanup-readiness', 'guard-check', 'refresh-public-config', 'disable-overrun', 'anonymous-window', 'recheck-paid-pending', 'pay-known-pending'), nargs='?', default='inspect')
     parser.add_argument('--function', choices=FUNCTIONS)
     parser.add_argument('--bundle')
     parser.add_argument('--funds-confirmed-by-root', action='store_true', help='Use only after root explicitly confirms funds are ready; never implied by elapsed time')
@@ -494,7 +544,7 @@ def main():
     elif args.command == 'cleanup-readiness':
         operator.cleanup_readiness()
     else:
-        getattr(operator, args.command)()
+        getattr(operator, args.command.replace('-', '_'))()
 
 
 if __name__ == '__main__':

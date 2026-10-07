@@ -35,3 +35,6 @@ Root同固定产物实际通过210/210单测、40份生产/工具JS语法、Pyth
 统一[SESSION_LOG](../../SESSION_LOG.md)、[云操作说明](../operations/cloud-setup.md)、[阶段2计划](../superpowers/plans/2026-10-06-02-cloud-identity.md)记录实际命令/失败/裁决。原始合成证据在Git忽略test-results/stage2/final-browser、review-local-browser、各worker报告；不记录邮箱/验证码/token/管理密钥。临时readiness诊断尚保留，真实验收结束按精确guard清理，无删除完成声明。
 
 下一步先确认同单资金/实际发货，再配置合法生产及本地测试来源、严格存储规则；用两个受控邮箱真实OTP获取并复读原始verified标记，依次跑真实SDK集成与真实登录UI，全部通过后沿原仓库/URL正式发布0.3并匿名复验，才进入用户体验确认。
+
+
+2026-10-07 10:33发布前实测更新：用户已自主开通原环境个人版，Mongo1/PG0，自动续费/超额均关闭；合法生产/本地来源、DB/对象deny、邮箱及会话限制与函数已读回。两邮箱实际OTP成功，官方v1资料仍没有严格验证标记，客户端/后端failclosed。因此私有云正向/跨账号/完整媒体真实验收未过，发布阻塞；未公开0.3，不以环境就绪或邮件到达替代。当前有真正匿名SDKuid拒私有snapshot的exit0证据。版本材料0.3.0为候选，后续必须解决可证明验证来源并完整真实验收，不能设置假flag/无依据放宽或重复要求验证码来代替设计修复。

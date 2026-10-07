@@ -717,3 +717,13 @@ UI本机web-design-guidelines+最新官方command.md核标签/键盘/dialog/焦�
 发布来源URL：https://wenkaiqu014-hue.github.io/paw-diary/ ；https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37597581632 ；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.4.0 。
 
 2026-10-07 17:06:13（Root工具date，最终收口）：13份状态/README/报告/设计/日志Markdown经链接检查0missing、实际Key0match、diff0，201af3b docs-only提交已推原main，Git干净与origin/main同步。发行tag仍d6c3005，latest Pages仍37597581632/d6c3005 success，证明文档提交没有重发应用。只停止本session4199预览：先验证PID28604命令http.server4199及cwd为stage3工作树再SIGTERM，不动其他服务；所有浏览器contexts已关，A600轮换会话与ignored证据保留。以收口时点15:27:31→17:06:13为1小时38分42秒，整体在4小时内；单步审查/集中修复超时记录保留。随后仅追加本收口日志并归档推送，不再改业务、调用模型或移动tag。用户亲自体验尚未代勾，阶段4/5均未在本轮扩展实施。
+
+## 用户亲自体验反馈：弹窗焦点、建档头像与录入方式
+
+2026-10-07 17:15:02（Root工具date，开始只读调查）：用户提供三张实际截图，指出所有弹窗初始语言控件橙黄色框显得不自然；询问已有头像上传能力，希望新建宠物直接提供圆形猫/狗预设及圆形加号上传；手动填写/一句话记录需同一行明确二选一，选中加深背景或加粗下划线。用户明确先消化、grill对齐再修，当前没有实施授权细节确认，不写功能代码、不部署。
+
+Root读取最新SESSION/PENDING与局部弹窗/媒体源码，沿已读using-superpowers、systematic-debugging、brainstorming/grilling进行有界修订设计；不开始阶段4。按grilling委派dialog_avatar_facts只读explorer：原URLfresh独立有头浏览器确认两个弹窗activeElement均dialog-locale-select，value仍zh-CN，focus-visible=true/3px rgb(188,115,60)，为焦点框不是文本选中。index.html:31语言控件为首个focusable，app.js:264–266只showModal未覆盖初始focus；源码与实际截图支持此原因。仅截图test-results/ui-refinement（Git忽略），没有登录/提交/模型请求或源码修改。
+
+现有头像事实：app.js:185–200支持已保存的非demo宠物更换头像，petModal:373–382新建无上传入口；JPEG/PNG/WebP、原图≤10MiB、最长边512、展示≤1MiB沿src/media/process-image.js既有规则。local/cloud媒体保存已有可信父宠物/旧头像失败保留、hash/版本保护，新增头像应复用，不能直接通过savePet传avatarAssetId。先创建宠物再媒体保存意味着上传失败不能说整档案未创建，需明确保留已建档与头像重试。现成素材assets/cat.jpg与dog.jpg可圆裁，不因反馈重做图库。
+
+录入方式当前是静态文字+另一个按钮，app.js:362与ai-entry.js:22，两边modal重建body，切换经放弃提示会丢旧输入/已解析草稿。待grill决定预设照片风格、选择器样式与输入保留；拟采用同一弹窗两并排等宽选择、当前项明确状态，初始化焦点移离语言而保留键盘可见性。用户回复前只记录，不虚勾修复。下一轮按对齐结果做局部实施/验收与新patch版本，不移动v0.4.0标签。

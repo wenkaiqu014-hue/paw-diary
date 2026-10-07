@@ -11,7 +11,7 @@ with sync_playwright() as p:
  expect(page.locator('.ai-draft')).to_have_count(1,timeout=40000);dateEdited=not bool(page.locator('.ai-draft [name=dueDate]').input_value())
  if dateEdited:page.locator('.ai-draft [name=dueDate]').fill('2026-10-20')
  expect(page.locator('.ai-draft [name=dueDate]')).to_have_value('2026-10-20')
- page.locator('#ai-confirm').click();expect(page.locator('#dialog')).not_to_be_visible(timeout=15000)
+ page.locator('.ai-draft [name=title]').fill('合成驱虫计划');page.locator('#ai-confirm').click();expect(page.locator('#dialog')).not_to_be_visible(timeout=15000)
  assert page.locator('.health-records tbody tr').count()==before
  expect(page.locator('.health-reminders')).to_contain_text('合成驱虫计划');assert not errors,errors
  b.close();print(json.dumps({'realModel':True,'futureDueDate':True,'dateEdited':dateEdited,'zeroNewRecord':True,'planSaved':True,'pageErrors':errors}))

@@ -1065,3 +1065,21 @@ main初始工作区干净、与origin/main对齐，HEAD4203f15；读取stage5-ha
 stage5_code_facts最终报告收到，现有帮助仅助手来源说明/关于，profile-menu当前无常驻帮助；三步onboarding持久化在profile.stage3.onboardingByPet，无遮罩/公告/PWA。精确接入为app boot/render/route和profile-menu、i18n，新增帮助需独立于AI可用状态；manifest/worker若新增需显式构建拷贝和Pages路径过滤。已确认代码风险为主modal替换弃稿、社区/profile/照片独立输入状态、render目标和焦点失效、导览跨页滚动与筛选重置、身份确认键、缺目标回退、私有响应缓存边界和旧模块图更新。Root定向读取profile-menu/build/pages原文件并核工作区，调查不构成产品验收，完整行号用于后续spec/plan。子agent无代码产物需要合并。
 
 第二轮对齐公告/指引记忆范围、首次指引启动方式、安装后的更新提示和草稿保护、Windows验收包交互、日历可用账号。这些产品行为尚未确认；设计与plan待Grill收口后形成。当前版本文件仍0.7.1，v0.8.0仅已确认后续发行号，未部署/创建tag。首轮日志本地提交0443ba5，尚未推送。
+
+### 阶段5设计与详细计划交付（不实施）
+
+2026-10-08 12:25:50 Asia/Shanghai（clock工具04:25:50 UTC检查点）。用户第二轮第1/3/4/5项按推荐，第2项明确首次公告确定后“立即进入”指引、每步“下一步/跳过指引”，要求找同类常见设计；最后要求本轮详细plan、下一轮再开始。已继承浏览器+身份偏好、老用户更新不重跑已跳过/完成指引、保护草稿的更新、混合Windows ZIP。Google/Outlook账号并未明确“有”，设备系统版本也未知，列执行前事实核验；没有再问已收口产品选择。用户直接要求本轮成对详细规划，因此写出spec与plan供同轮审阅，未因技能分阶段审阅默认规则另行停下来追问重复授权；下一轮才实施。
+
+使用writing-plans形成8任务/40检查步骤、文件所有权、精确ESM接口、RED/GREEN、上下游、估计5–7小时串行与独立模块并行、自动技术/真实主体/用户亲验分类、公开发版/回退和用户验收。新增docs/superpowers/specs/2026-10-08-stage5-guides-install-quality-design.md、docs/superpowers/plans/2026-10-08-stage5-guides-install-quality.md及docs/operations/stage5-reference-notes.md。计划含UI偏好/发行元数据、独立帮助公告、六步spotlight、安装更新、Root生命周期整合、Windows自包含HTML＋可选PowerShell ZIP、真实主体/三端/日历、v0.8.0原URL验证后tag。Windows包只是计划产物，尚未生成。
+
+本机Impeccable context.mjs --target app.js一次、shape/onboard规划参考、webapp-testing运行入口已读；继承奶油/森林绿视觉，未读取UI编辑craft-floor、未改UI/运行detector或有头浏览器。复用stage5_code_facts做第二次只读官方调查（未改文件/网站账号），按catalog-official-product-docs从根/导航盘点再读相关页：Driver22可见页、Edge24可见页/web.dev49链接/Apple Safari33页子树的未读与深层目录不完整均写参考笔记；Driver /docs打开Internal Error，Configuration侧栏恢复。Root内置Web搜索发现候选后打开关键原页并find精确段，不拿摘要作安装依据。
+
+关键官方核对：Edge214行明确worker可选；web.dev当前安装推广条件列manifest/HTTPS/用户参与，不能拿2023 Chrome旧文当当前推广硬要求。Apple Mac网页App与Safari网站数据独立，因此安装说明/测试必须核本地档案与登录边界。选manifest/图标/实际事件安装＋同源release.json安全提示，默认无worker/CacheStorage；Driver仅借鉴spotlight/近目标卡片/进度，跳过/草稿/焦点仍自实现，不新增库。官方完整URL及根入口失败/未读范围均保存在stage5-reference-notes；本轮研究不代表三端已安装或无网可写。
+
+同步AGENTS/PENDING当前入口、stage5-handoff、PRODUCT/ROADMAP/DESIGN及总计划，旧05计划标历史；修总计划顶v0.6.1旧入口与阶段5旧“版本另定”，旧历史保留不reset。README/VERSION/package/CHANGELOG/产品代码未动，不宣称目标已交付。所有实施checkbox未勾，用户亲验、Google/Outlook、真机/GPS/读屏与实际安装仍待。
+
+自检发现Windows file://直接ESM会有可用性风险，改计划为report-model/report-ui纯模块开发、构建IIFE内联自包含HTML；单测导入纯模型，用户无Node/Python/本地server要求。一次多文件apply_patch因PENDING额度原文day1000/month斜杠不匹配失败，未写入任何文件；读实际段后修复context并重试成功。用skill-runtime/run python避免前段/usr/bin/python3 stdin编码失败。
+
+实际文档检查：git diff --check退出0；Python本地链接检查65条/缺失0，任务8/未勾步骤40/已勾0；核app/style/index/VERSION/package/lock无diff。随后同步总计划阶段5段后结束前再跑同类检查。未运行npm单测/构建/业务云/模型/定位，因为本轮仅文档，不将旧552当本轮fresh通过；无采购/密钥/会话读取、部署/tag。计划自检spec逐节到任务、Review Focus五条到测试、接口名字/状态/数量一致，已修发现问题，不派重复实现agent。
+
+前两次日志本地提交0443ba5、5ef69d5；本轮规划文档检查后纳入本地Git，并按既有项目授权docs-only推送以便恢复/审阅，不触发业务Pages。实际提交与推送结果随后工具检查点记录。最终20:00保持，18:00候选和缓冲是安排目标，不承诺新功能工时或用户设备亲验已完成。

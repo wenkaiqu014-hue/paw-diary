@@ -1,5 +1,7 @@
 # 完整体验验证与评审发版 Implementation Plan
 
+> **历史初稿，非当前执行入口。** 2026-10-08阶段5两轮Grilling已收口，详[新版设计](../specs/2026-10-08-stage5-guides-install-quality-design.md)及[八任务实施计划](2026-10-08-stage5-guides-install-quality.md)。目标v0.8.0、首次公告确定后立即六步下一步/跳过、无缓存worker安装、安全更新、Windows验收包已纳入新版；本轮仅规划，下一轮实施。下文保留原阶段安排来源。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 在原评审地址交付说明真实、流程完整、可以回退的稳定版本。

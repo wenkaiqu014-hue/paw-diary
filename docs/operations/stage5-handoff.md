@@ -1,6 +1,8 @@
 # 阶段5新 session 交接
 
-用户在本轮明确要求准备交接，下一 session 才进入最后阶段；本轮只整理，不开始新手指南、PWA或最终新功能实施。
+最新2026-10-08：阶段5已完成两轮Grilling与详细规划；用户明确本轮只做plan、下一轮再实施。先读PENDING、SESSION_LOG最新段、[新版设计](../superpowers/specs/2026-10-08-stage5-guides-install-quality-design.md)及[八任务计划](../superpowers/plans/2026-10-08-stage5-guides-install-quality.md)。目标v0.8.0已确认，当前公开仍v0.7.1；指南/PWA/Windows验收包未生成，Google/Outlook登录和系统版本仍待核。
+
+下文为v0.7.1补丁轮交接背景。原文要求下一session进入最后阶段已由最新规划推进，05四任务旧计划作为历史输入，不能按旧“版本待定”再问一遍。
 
 ## 从这里恢复
 

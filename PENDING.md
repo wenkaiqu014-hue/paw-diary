@@ -4,7 +4,7 @@
 
 ## 当前唯一续作摘要
 
-**阶段5新session已开始：先核对现状并进行Grilling，目标是形成详细设计与实施计划。** 用户2026-10-08本轮要求先讨论和计划，并授权子agent、有头浏览器与截图。已读取[阶段5交接](docs/operations/stage5-handoff.md)、本摘要、SESSION_LOG最新段及05旧计划；当前尚未开始指南或PWA实施，最终20:00截止保持。旧计划作为输入，待本轮决定后生成新版详细计划。
+**阶段5两轮Grilling已收口，本轮仅完成详细设计与计划，用户明确下一轮再实施。** 新入口为[阶段5设计](docs/superpowers/specs/2026-10-08-stage5-guides-install-quality-design.md)和[八任务实施计划](docs/superpowers/plans/2026-10-08-stage5-guides-install-quality.md)，结合SESSION_LOG最新段与[交接](docs/operations/stage5-handoff.md)恢复。目标发行v0.8.0已确认：首次新内容确定后立即进入六步遮罩，每步下一步/跳过；浏览器+身份记忆、可重看帮助、保护草稿的安装更新、Windows验收ZIP与iPhone/Windows/Mac亲验。Google/Outlook账号与系统版本待执行前核，不视为已具备。产品代码/版本文件未改，未部署/建tag，最终20:00不变。
 
 最新公开v0.7.1，2026-10-08 11:48:44 Release；source/tag解引用0a1b2eabefb5d8af60c9aa19c1b603c8a16ce004，Pages37723735372 success，app-CO2I3K3F.js/style-P6JZ3ZBI.css原URL SHA一致；552单元、实际三宽下拉/原健康/原URL公开检查和真实桌面原生定位建议通过。修复必填visitorId与同事务并行读取TransactionBusy；搜索在城市菜单内首行、行政区独立滚动、公共“看看内容示例”删除。详[补丁报告](docs/verification/region-picker-v071-report.md)。用户明确本轮0.7.1，不建0.8。阶段5与最终20:00不变；下方是0.7.0基础版本历史证据。
 
@@ -14,7 +14,7 @@ v0.7.0已于2026-10-08 10:57:49 Asia/Shanghai正式公开，源码/tag解引用d
 - [x] 原固定URL部署、SHA/Pages核对、v0.7.0新tag/Release；旧tags未移动。
 - [ ] 用户亲自体验；阶段5使用指南、新版内容说明/PWA、真实手机/GPS/软键盘、200%原生缩放、读屏与Google/Outlook日历实导。
 
-下一轮从main读取本摘要、SESSION_LOG最新段、stage4-report和[阶段5计划](docs/superpowers/plans/2026-10-06-05-quality-release.md)。不要重建社区／重复OTP。A/B最新会话10月8日原URL复验后600 checkpoint写回原stage2路径；后续先验证可恢复，逐次refresh及时写回，绝不直接消费旧验证码。LBS现Key免费额度已分配、server Key/SK、app100/day1000/month＋共享保守4/s，无新增采购，不承诺云账单0元。用户只读LBS浏览器限制仍保留。
+下一轮从main读取本摘要、SESSION_LOG最新段及新版阶段5spec/plan；05旧四任务计划保留历史输入，不作为当前执行入口。不要重建社区／重复OTP。A/B最新会话10月8日原URL复验后600 checkpoint写回原stage2路径；后续先验证可恢复，逐次refresh及时写回，绝不直接消费旧验证码。LBS现Key免费额度已分配、server Key/SK、app100/day1000/month＋共享保守4/s，无新增采购，不承诺云账单0元。用户只读LBS浏览器限制仍保留。
 
 用户十步≤40分钟／总≤5小时要求未全部满足；单步与跨恢复总超时详报告及日志，最终10月8日20:00不变。下方阶段3与旧版本为历史。
 

@@ -1277,3 +1277,5 @@ Root集成source059e5bdd902452392f9ebbb003c41378d86c3470，main ff、完整npm t
 新annotated v1.0.1固定059e5bd、push新tag；gh release create --verify-tag --notes-file实际publishedAt2026-10-08T10:50:22Z=18:50:22、非draft/非prerelease，原28 tag refs在仅剔除v1.0.1两refs后逐字相同。原网址不变，无用户RAW资产上传、无服务器部署/云数据迁移/真实资料修改。用户随后对原帖头像/图片及top/sidebar头像复核回复“好像没问题了”，记录未见问题反馈，不扩展成所有设备/所有字段实际全验。
 
 18:51:23检查点，已将工作树合成验收JSON/截图/独立review复制到主目录ignored test-results/v101，原证据保留；核对本次4197服务器PID10097及cwd恰当前工作树，准备仅停止自建服务。Windows桌面原件已消失、ignored归档存在；文档同步正式发行/用户跳过不再追测。起点18:32→Release18:50:22为18分22秒，在30分钟窗口内；文档结束/最终检查时间以下次工具为准，不冒称此时全部已完成。后置仅文档，不重建构件、不移动tag。
+
+最终收口 2026-10-08 18:53:30 Asia/Shanghai：自建4197监听已停止（socket实测拒绝连接）；正式Release再次读回非draft/非prerelease、assets=[]，source-tag仍059e5bd，主目录文档3a60196已推送/状态干净。Windows归档再次SHA完整核对、原桌面不存在、manual无fail。最后仅补此日志并保存，不重建或追加测试；本轮已在18:32起30分钟窗口内完成。

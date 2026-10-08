@@ -1153,3 +1153,11 @@ Safari反馈修复块14:53:37开始：Root先运行shared-city browser RED，hom
 最后用户回报：Windows“没问题了”且询问已添加灰色disabled；Root按真实controller standalone/appinstalled状态说明防重复安装。检查其指定桌面新PNG（其他旧照片未动），实际Windows app titlebar无地址栏、已添加disabled符合当前安装窗口。复制并hash核对归档test-results/stage5/windows-user/windows-installed-standalone.png，416358bytes、SHA27e8b7b6011750adbc80ae29bfb24c9ff1fd8423c8cb7024b361069dadf8c1e1，600权限，桌面原件移除；未编辑图片或公开上传。用户另回报“两家日历都通过了，没有任何问题”，记Google/Outlook按已给首导/重复/改期/通知步骤用户通过，不伪称agent操作、不写未提供的具体数量/更新去重机制。原Windows报告仍保留原始状态，补充user-followup.json记录新回报。
 
 技术发行及本轮用户检查已收口；已实现功能不再重做，剩余读屏/真机GPS逐项结果/Windows卸载和真实跨未来发行更新未验证。Root恢复日志/计划/当前摘要，最终source/tag仍8d97886、docs-only后置不触发Pages或移动tag。工具15:10:06检查点：距12:44:26共2小时25分40秒，无等待扣除，仍低于4h；worker与已记录反馈/发行块均≤30min，未用未记录的精确分块时间作完整时长保证。
+
+### v1.0.0／内测准入：Grilling与计划准备（未实施）
+
+用户先要求分析1.0.0注意事项及临时登录／注册必填用户指定的共用六位内测码，分析轮未改代码／部署。随后明确“先grill+plan，2-3轮，然后我们再开始”，本轮仅需求澄清、只读调查及规划日志；公开v0.8.0/tag8d97886不变，main此前95479cc干净。工具2026-10-08 15:17:39 Asia/Shanghai取得当前时间；最终20:00既有约束保留，不在未确认新范围前开始实施计时或创建新发行tag。
+
+使用brainstorming/grilling/writing-plans（计划阶段待决策收敛再写），分类跨模块准入／身份与发行门槛，走完整设计与详细计划；不把新增一个输入框当完整服务端准入。现代码auth UI requestEmailCode→verifyEmailCode共用首注册/已注册，challenge与可信邮箱证明在paw-auth；identity对email_verified=true不要求本地verifiedProof，因此严格内测资格需要独立检查，不能只挡前端/邮箱bridge。已读PENDING/SESSION_LOG最新段和实际source；派beta_gate_facts只读explorer核各入口、已有资格迁移及部署env覆盖边界，不读会话/credentials、不开云调用。
+
+首轮问题准备：发行号/内测开放范围、无码可用体验、已有账号连续性、第一批人数、稳定收口与反馈范围；固定六位码和登录注册必填已明确，不重复问码值。用户决定未返回时不填默认已确认；下一轮依据回答重新计算问题依赖。

@@ -4,6 +4,8 @@
 
 ## 当前唯一续作摘要
 
+**新的规划任务（未实施）：** 用户要求v1.0.0收口与用户指定的固定六位内测码，先2–3轮Grilling再详细plan，之后另行开始实施。当前仅只读调查/决策澄清，公开仍下述v0.8.0，不提前修改登录或云端准入。
+
 **阶段5v0.8.0正式发布，用户剩余检查独立跟进。** v0.8.0已正式发布，source/tag解引用8d97886a963395f9e17eea3397ea09d8372624cc，Pages37741014326 success/Deploy15:03:03，Release15:06:20 Asia/Shanghai。616单测、原URL/真实A/B与Mac实际安装技术检查通过；用户iPhone三处修复已明确“通过”，主屏幕此前明确成功。Windows结果已归档，安装与独立启动、Google/Outlook日历用户已通过；读屏等剩余专项继续单列；不重做已完成阶段、不把版本号当全平台全部通过。 公开app-BJOWAUQS.js/style-QOCO2BV4.css；原URL六项SHA匹配发行source stable构建。Windows原报告16pass/24not-run/19unverified（auto10pass），真实结果ZIP已从桌面归档至Git忽略目录，详情final-report；新兼容验收包见Release，Windows prompt已更新。 最新用户回报：Windows安装/独立启动和Google/Outlook日历实导用户已明确通过；桌面安装截图已归档并移走原件。剩余读屏、真机GPS逐项结果、Windows卸载/跨后续版本更新等专项仍未验证。
 
 本轮12:44:26 Asia/Shanghai起，用户要求每工作块≤30分钟、实际工作≤4h（等待其测试反馈单独扣除）；初始工作目标16:44:26，最终20:00保持。当前仍有独立收尾工作，未把用户测试请求挂起期间全部排除。Root真实B头像本地上传失败已用CDP确定localhost预检403/PreflightMissingAllowOriginHeader，原URL真SDK PUT200/confirm通过，未改后端或扩大CORS。SDK会话仍须串行checkpoint原600文件。

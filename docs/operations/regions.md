@@ -1,5 +1,7 @@
 # 地域目录与主动定位
 
+**v0.7.1实际更新：** 默认visitorId和事务并行读取已修复，真实桌面原生定位/平台SDK/地区目录通路已过；城市菜单内自动搜索与独立滚动已上线，真手机GPS仍阶段5。下面“待真实验收”为模块初交付历史，不按它重选平台/Key。最新源见region-picker-v071-report和stage5-handoff。
+
 本页记录阶段4地域模块的运行边界。代码单元验收通过不代表全国目录、真实Key或实际定位已经接通。当前尚未读取腾讯位置服务账号许可、免费配额/QPS及签名配置，没有调用真实位置服务；未验证全国实际覆盖及台湾坐标路径。
 
 服务端 `createTencentLocationClient({key,secretKey,fetch})` 对腾讯行政区目录、WGS84转换(type=1)、逆地理(get_poi=0)发起带签名请求，坐标参数均纬度在前。Key/SK只能由Root从环境变量PAW_LBS_KEY/PAW_LBS_SECRET_KEY注入，模块不读取其他管理凭证，不记录URL、供应商异常原文、坐标或Key。单请求5秒包含响应正文读取，正文最大4MiB；无真实配置、HTTP错误、非零status、非法响应、超时均返回REGION_UNAVAILABLE。

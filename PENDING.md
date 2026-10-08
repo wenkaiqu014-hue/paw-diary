@@ -1,12 +1,14 @@
 # 爪爪日记后续开发待办
 
-更新日期：2026-10-07。
+更新日期：2026-10-08。
 
 ## 当前唯一续作摘要
 
+**用户已结束本session，准备新session进入阶段5。** 从main先读[阶段5交接](docs/operations/stage5-handoff.md)、本摘要和SESSION_LOG最新段；此轮只整理交接，不实施指南或PWA。
+
 最新公开v0.7.1，2026-10-08 11:48:44 Release；source/tag解引用0a1b2eabefb5d8af60c9aa19c1b603c8a16ce004，Pages37723735372 success，app-CO2I3K3F.js/style-P6JZ3ZBI.css原URL SHA一致；552单元、实际三宽下拉/原健康/原URL公开检查和真实桌面原生定位建议通过。修复必填visitorId与同事务并行读取TransactionBusy；搜索在城市菜单内首行、行政区独立滚动、公共“看看内容示例”删除。详[补丁报告](docs/verification/region-picker-v071-report.md)。用户明确本轮0.7.1，不建0.8。阶段5与最终20:00不变；下方是0.7.0基础版本历史证据。
 
-v0.7.0已于2026-10-08 10:57:49 Asia/Shanghai正式公开，源码/tag解引用d21a8cb5cd2261ae2c6bb3caf9a01fc061eec982，Pages37720181113 success（Deploy10:55:14，workflow10:55:18）。原URL app-VP3GVTVF.js/style-3BJOHPAC.css与main全新npm ci构件SHA一致。543/543单元、真实A/B/匿名14flag、原URL三宽双语键盘保稿与健康主线、A/B恢复刷新及邮箱私有边界通过。详[阶段4报告](docs/verification/stage4-report.md)、[社区运维](docs/operations/community.md)。真实公开合成资源按exact receipt清理，目前公开帖与卡片为空，明确示例仍独立。原私有健康/照片与v0.6.2 AI逐条record/plan／共享类型管理保留。
+v0.7.0已于2026-10-08 10:57:49 Asia/Shanghai正式公开，源码/tag解引用d21a8cb5cd2261ae2c6bb3caf9a01fc061eec982，Pages37720181113 success（Deploy10:55:14，workflow10:55:18）。原URL app-VP3GVTVF.js/style-3BJOHPAC.css与main全新npm ci构件SHA一致。543/543单元、真实A/B/匿名14flag、原URL三宽双语键盘保稿与健康主线、A/B恢复刷新及邮箱私有边界通过。详[阶段4报告](docs/verification/stage4-report.md)、[社区运维](docs/operations/community.md)。真实公开合成资源按exact receipt清理，该次验收公开帖与卡片为空；后续v0.7.1已移除公共示例区，健康示例保留。原私有健康/照片与v0.6.2 AI逐条record/plan／共享类型管理保留。
 
 - [x] 阶段4十项实现、真实技术验收、独立复审及确切合成资源清理。
 - [x] 原固定URL部署、SHA/Pages核对、v0.7.0新tag/Release；旧tags未移动。

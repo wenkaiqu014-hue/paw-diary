@@ -23,6 +23,8 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+**阶段5新session入口：** 用户已要求本轮交接、下一session正式进入最后阶段，先读docs/operations/stage5-handoff.md、PENDING当前摘要与SESSION_LOG最新段，再按05-quality-release对齐新指南/PWA实施细节。当前只做交接，不提前实施；最终2026-10-08 20:00不变。
+
 **最新2026-10-08 v0.7.1：** 用户定位/下拉反馈补丁已在原URL正式公开，Release11:48:44，source/tag解引用0a1b2ea，Pages37723735372 success，552单测与真实原生浏览器定位/三宽独立滚动通过；公共示例区已删。下一轮读PENDING、SESSION_LOG最新段与region-picker-v071-report，再进入阶段5，不重做旧0.7.0。用户明确本轮0.7.1，未建0.8；最终20:00不变。
 
 **2026-10-08阶段4最终：** v0.7.0/source/tag解引用d21a8cb5cd2261ae2c6bb3caf9a01fc061eec982，Release10:57:49、Pages37720181113 success/Deploy10:55:14，原URL app-VP3GVTVF.js/style-3BJOHPAC.css SHA与main全新npm ci一致；543单元、真实A/B/匿名14flag、实际公开/私有边界及原URL有头技术验收过。进入阶段5先读PENDING、SESSION_LOG最新段、docs/verification/stage4-report.md、docs/operations/community.md和05计划，不按下文旧“阶段4未实施”重做。新#profile与真实community/nearby启用；合成公开资料／图片／帖子仅exact清理，真实列表现为空、示例独立，私有健康不动。A/B最新10月8日原URLstop checkpoint原stage2 600文件，先验证恢复、refresh串行写回，勿重复旧OTP。LBS仅server env，现个人额度分配、app100/day1000month＋保守4/s；无新增购买，不称账单0元。任务单步及总5小时超时如实记录，最终20:00不变。用户亲验、手机/GPS/读屏/日历/PWA仍阶段5未代勾。

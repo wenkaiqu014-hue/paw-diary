@@ -21,7 +21,7 @@
 - 实际SDK与原生Chrome（明确grant网站定位权限、无坐标mock）修复后显示建议确认；最初获坐标但旧接口无建议亦有safe flags留证，未把模拟当真机。
 - Root独立审查workerUI并亲看截图；worker独审Root helper／例子移除，找到低影响存储fallback边界并由Root RED→GREEN修复；独立explorer审事务根因与SDK，没有把MongoDB约束冒充CloudBase书面规则。
 
-诊断中CloudBase日志接口无记录，不以它编造原因。临时HTTP/provider数字状态与数据库错误分类均无输入；所有临时响应字段和console诊断已删除，最终函数paw-community于11:35:41 Active。未部署私有API／模型／认证，不改变provider或购买费用。原始flags／截图／失败日志在Git忽略的test-results/region-v071及region-picker-v071。
+诊断中CloudBase日志接口无记录，不以它编造原因。临时HTTP/provider数字状态与数据库错误分类均无输入；所有临时响应字段和console诊断已删除，当时函数paw-community于11:35:41 Active，最终发行前清理后11:47:23 Active（见下文）。未部署私有API／模型／认证，不改变provider或购买费用。原始flags／截图／失败日志在Git忽略的test-results/region-v071及region-picker-v071。
 
 ## 发行核验
 

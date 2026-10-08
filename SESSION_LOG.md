@@ -1037,3 +1037,11 @@ B real UI新discovery15.06秒：已隐藏内容列表恢复后帖重现、checkb
 最终线上原生Chrome定位（网站权限grant、无坐标mock）先准确提示额度已耗完，原因本轮调试消耗本机IP10次限制。Root仅对已知这次合成nonce通过可信平台上下文记录私密counter引用，FUJI管理事务核精确引用/当天/nonce/count10，回退本轮两次已确认调试占用10→8；perIP上限10、全站daily/monthly与上游实耗不变，临时deny集合引用即删除，不清其他计数。临时函数分支与所有诊断恢复，最终paw-community11:47:23 Active，配额与身份仍原边界。原URL最后默认visitorId流程实际显示“确认后才更新所选地域”及可见确认按钮，geo1call/success/0原生error，未打印/存储坐标。该自身调试清理不作为产品配额绕过入口。
 
 v0.7.1新annotated tag解引用0a1b2ea，Release https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.7.1 于11:48:44公开，非draft/prerelease；旧tag逐项对照发行前快照不变。源/版本/README/CHANGELOG/PENDING/AGENTS/PRODUCT与补丁报告同步，后续docs-only不改公开模块图或重部署。阶段5手机GPS/读屏/PWA/日历实导及用户完整亲验继续单列，不把本次桌面原生定位代真机。浏览器全部本轮上下文关闭，停止本轮4231本地服务，不动用户LBS窗口/其他服务。最终20:00截止不变。
+
+### 最后阶段新session交接
+
+2026-10-08 11:51:47工具检查点，用户明确“准备交接，我打算开新的session进行最后一个阶段”。本轮只整理文档，不实施指南/PWA或请求任何新账号/模型/定位/采购。新增docs/operations/stage5-handoff.md，入口main、当前v0.7.1/0a1b2ea/552单元/原URL构件与Release，旧tag不动；列出最后阶段四任务、已确认指南与安装范围、尚需对齐的技术与发行号，明确用户仅对本轮指定0.7.1，不能直接定下一发行0.8。最终20:00保持，旧单步/总时间违约不假称达标也不机械迁到新session。
+
+交接保v0.6.2 AI逐条record/plan、公开/私有身份与独立媒体/健康语义，禁止恢复公共例子/顶部搜索/祖先滚动/Promise.all事务读取；真实桌面原生定位与模拟拒绝分清，真手机GPS/软键盘/缩放/读屏/Google-Outlook实导/指南/PWA/亲验明确未勾。记原600 A/B会话两键、先核恢复/串行refresh写回、旧副本不要覆盖/旧OTP不重消费；FUJI固定管理、原环境、server-only LBS Key、AI供应商/限额与预算边界，无新增采购。提醒本机定位IP今日接近限制，不反复测试或泛用quota reset，不把额度失败当充值理由。
+
+PENDING更新日期及唯一新入口、AGENTS阶段5入口、regions历史待验证段与补丁报告函数Active先后说明同步。检查新handoff引用文件全部存在、git diff --check通过；文档-only不重跑业务单测或部署网页、不读凭证值。当前main在交接前6573ab1，交接提交随后生成，不reset业务tag。下一session按handoff→PENDING→最新log→v071报告→05计划定向恢复，不通读所有旧历史、不从旧stage4树重做。

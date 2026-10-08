@@ -1299,3 +1299,11 @@ Like worker旧实际DOM RED重建4图片/评论→局部projection及updateLikes
 固定source0744285cc67e296fda0b8c1421036f48f5ae6fdc；main ff/完整718单测/stable build/diff成功后push，Pages37769811171 completed/success/workflow19:24:42。原URL六HTTP200/逐字SHA全部匹配冻结构件，JS892244…68f76、CSS825b69…ca34d；同一shell末尾lsof其它无监听端口导致总exit1，不影响已成功的Python assert/GH，按分项证据报告。原URL真实匿名读列表5图/详情3图全部decode可见、0pageError，无人真业务写入；证据test-results/v101/public/v102-after.json。Root看了density1440五列图片及详情左右截图；一次误用1440.png不存在，rg找到真实image-1440.png后观察正确，不假称失败view成功。
 
 新annotated v1.0.2固定source，push tag与gh release --verify-tag --notes-file成功；publishedAt2026-10-08T11:26:49Z=19:26:49，非draft/非prerelease，原30 tag refs排除新增两条后逐字保持。从18:58:27到Release28分22秒，含用户持续追加范围；最后文档/清理时间以下工具记录为准。原URL不变、未改用户profile/正文/原图，只有既有函数代码兼容扩展、无迁移或新服务/邮件。证据已复制main ignored test-results/v102（保含600实际servercode备份，目录700），原工作树保留。review自建4203已关闭；Root核4197 PID49675及cwd恰本工作树，随后仅停止该服务，后置文档不重建app、不移动tags。已问用户保存后更新查看新体验，反馈据实际原文补，不把挂起当通过。
+
+### 社区卡片精简 Grilling — 2026-10-08 19:34:36 Asia/Shanghai（仅对齐，未实施）
+
+用户明确要求先grill一轮：非详情卡片不再显示时间/点赞/查看详情/举报/不想看等文字，点击帖子直接进入详情，其余按钮集中详情，文字增加孤立行检测。应用仍正式v1.0.2/source0744285，尚未新建版本/修改源码/部署。使用grilling与brainstorming按已有表面的有界调整对齐，避免把用户访谈请求当立即实施授权。
+
+委派feed_grill_facts explorer只读核最终main：postCard仍有头像昵称/标题/正文/话题城市时间和完整动作；自己的编辑删除同在列表。详情目前无话题城市时间，若列表撤下需明确是否补到详情。昵称独立按钮查作者帖子、头像无click；整卡未有入口，仅查看详情button。正文pre-wrap保作者换行且overflow-wrap:anywhere、标题两行clamp，180px卡片及手机两列可造成自然短末行，但没有新的对应截图，未断言唯一成因；整卡入口需避免嵌套交互及文字选取误触，并检查关闭回到当前帖焦点。agent未写文件/云调用。
+
+本轮将问当前决策前沿：卡片保留内容、整卡与作者点击语义、孤立末行标准/列表排版处理边界、瀑布流与行对齐、无图帖样式。移除用户已明确的列表操作不重复问；原文与既有功能保留为约束，不修改已发布内容。等用户回答再整理设计，确认后才进入实施。

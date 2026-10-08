@@ -1343,3 +1343,5 @@ source/tag117958e954bab1652c9462e0fafe0c8f512e8698；main ff、721全量/stable 
 ### 顶部档案空间栏删除 2026-10-08 20:28:16 Asia/Shanghai
 
 用户明确完全删除截图整栏、3分钟完成，工具起点20:26:40/截止20:29:40。主目录main直接有界删除index workspace-controls DOM与app构建/引用，原locale渲染改直接applyLocaleChrome，避免空节点异常；首步guide锚定既有个人菜单，账号登录仍通过原菜单，无新按钮或数据删除。VERSION/package/notes1.0.5一致，nodecheck/diff与完整721测试通过。无后端/资料/示例数据写入，准备原URL发布及新tag，旧tags不动。
+
+1.0.5正式收口：source/tag ae0b48e72b51dca656f9a361d272d93d9b79985a，Pages37777090451 success，原URLrelease1.0.5及四路由banner DOM不存在/账号菜单存在/0pageError实际通过，721单测通过，Release已公开；只删除界面，不改数据。

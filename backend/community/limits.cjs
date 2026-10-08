@@ -5,7 +5,7 @@ function createLocationLimits({store,clock=()=>new Date(),sleep=ms=>new Promise(
  const bounded=(value,max)=>Number.isSafeInteger(value)&&value>=0?Math.min(value,max):0;
  const dayLimit=Math.min(bounded(daily,100),bounded(freeDaily,100)),monthLimit=Math.min(bounded(monthly,1000),bounded(freeMonthly,1000));
  const dates=()=>{const now=new Date(clock());if(!Number.isFinite(now.getTime()))throw error('REGION_UNAVAILABLE');const day=new Date(now.getTime()+8*3600000).toISOString().slice(0,10);return{day,month:day.slice(0,7)};};
- async function reserveCounters(tx,keys){const counters=await Promise.all(keys.map(async({key,limit})=>({key,limit,count:(await tx.get(key))?.count??0})));if(counters.some(c=>!Number.isSafeInteger(c.count)||c.count<0||c.count>=c.limit))throw error('LOCATION_QUOTA_EXCEEDED');for(const c of counters)await tx.put(c.key,{count:c.count+1});return true;}
+ async function reserveCounters(tx,keys){const counters=[];for(const {key,limit}of keys)counters.push({key,limit,count:(await tx.get(key))?.count??0});if(counters.some(c=>!Number.isSafeInteger(c.count)||c.count<0||c.count>=c.limit))throw error('LOCATION_QUOTA_EXCEEDED');for(const c of counters)await tx.put(c.key,{count:c.count+1});return true;}
  async function reserve(keys){if(!store?.transaction)throw error('REGION_UNAVAILABLE');return store.transaction(tx=>reserveCounters(tx,keys));}
  const upstreamKeys=()=>{const {day,month}=dates();return [{key:'upstream:day:'+day,limit:dayLimit},{key:'upstream:month:'+month,limit:monthLimit}];};
  const interval=Number.isFinite(qpsIntervalMs)?Math.max(250,qpsIntervalMs):250,maxWait=Number.isFinite(queueWaitMs)?Math.max(0,Math.min(1500,queueWaitMs)):1250;

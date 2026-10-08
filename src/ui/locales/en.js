@@ -423,7 +423,7 @@ export default Object.freeze({
   "全部足迹": "Full timeline",
   "两只狗狗一起玩耍": "Two dogs playing together",
   "快乐，也可以一起长大。": "Happiness grows together too.",
-  "探索同城示例宠友。": "Explore demo pet friends in your city.",
+  "探索同城宠友。": "Explore pet friends in your city.",
   "遇见附近的毛孩子": "Meet pet friends nearby",
   "照顾它的每一件小事。": "Care for every little detail.",
   "把健康放在心上，把记录留在这里。": "Keep health in mind and your records here.",

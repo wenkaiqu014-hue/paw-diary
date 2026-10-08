@@ -13,7 +13,8 @@ def choose(page,selector,value):
     root=control.locator('..')
     if not root.locator('.select-trigger').count():
         control.select_option(value);return
-    root.locator('.select-trigger').click()
+    trigger=root.locator('.select-trigger')
+    if trigger.get_attribute('aria-expanded')!='true':trigger.click()
     root.get_by_role('option',name=label,exact=True).click()
 def ready(page,route):
     page.evaluate('(r)=>{location.hash=r}',route)
@@ -46,6 +47,7 @@ with sync_playwright() as runtime:
     ready(page,'community');page.set_viewport_size({'width':1440,'height':1000})
     assert page.evaluate('__locationCalls')==0
     page.locator('#city-button').click()
+    page.locator('[data-region-city]').locator('..').locator('.select-trigger').click()
     page.locator('[data-region-query]').fill('\u5317\u4eac')
     city=page.locator('[data-region-city]')
     expect(city.locator('option')).not_to_have_count(1,timeout=20000)

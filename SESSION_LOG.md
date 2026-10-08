@@ -1017,3 +1017,15 @@ B real UI新discovery15.06秒：已隐藏内容列表恢复后帖重现、checkb
 原本轮4220/4221/4196端口无监听，未强杀其他服务；所有本轮新Chrome已停止，用户LBS窗口未代操作或关闭。阶段4工作树因唯一原始截图/私密receipt保留，未force删除。恢复10:50:43到Release10:57:49为7分06秒，但从前日开始总时限已违约，不宣称十步40分钟/五小时达标。最终产品20:00截止不变。阶段4技术发行完成；用户亲验、阶段5指南/版本新内容/PWA/手机/GPS/软键盘/200%缩放/读屏/实际日历导入仍明确未勾。
 
 后续docs/tests-only收口不改变源码/tag/公开构件，不重新部署应用。下一轮从main PENDING最新摘要与05-quality-release开始；会话先核恢复、及时写回，不再用历史20:48 checkpoint或失效旧B。
+
+### 地区定位与下拉体验补丁进行中
+
+2026-10-08 11:11:54工具检查点，用户实际浏览器反馈“用当前位置一直无建议”、区多时大小两层都要滚、要求删顶部搜索改城市菜单首行自动搜；随后要求直接删除“看看内容示例”。Root按已明确设计作有界修复，不重复询问授权，主目录新分支fix/region-picker-v071从66f8690开始。Root负责location helper/真实服务定位、APP清例子和发布；worker region_picker_patch负责select/regionpicker/CSS及TDD/有头DOM。其旧实际DOM证明绝对定位浮层仍扩父scrollHeight，scrollIntoView滚所有祖先：1440 height416.98但scrollHeight417→624、scrollTop0→206。新地区opt-in fixed浮层、列表独立滚；城市first-row搜索200ms debounce/IME、迟到结果失效、选中城市不清分页，三宽父height/scrollHeight/scrollTop完全不变。Root亲看390末区与城市搜索截图，实际app stage4 e2e通过，示例APP渲染/locale调用/CSS均删，不删除旧本地备份内数据。
+
+定位首先实际原URL/native Chrome（grant sitepermission、无坐标模拟）得到坐标但无建议；真实SDK已知公共点也出现UNAVAILABLE。Root逐层诊断、不记录坐标/Key/原IP：管理SDK相同provider+目录成功，平台SDK调用间歇失败。确定第1个前端bug：默认createLocationSuggest不提供服务端必填visitorId，实际页面始终被拒；新增默认路径测试确实RED→稳定浏览器visitorId→GREEN，保localStorage/内存fallback并避免重复创建；独立审查又复现预存ID读回后storage拒绝换ID，新增fresh module RED→同步内存备份→5项GREEN。原生API支持/权限/获取失败/超时与服务不可用/手选目录/额度分别提供具体消息。坐标仍不落日志/持久库。
+
+补参数后真正原生Chrome曾显示确认建议，但连续复验仍有失败，Root未据单次成功发版。临时诊断仅机器错误分类/HTTP或provider数字状态，不含输入、坐标、凭证；CloudBase日志接口无记录，无法用其认定内部原因。诊断迭代捕获精确kind=gate、TcbError DATABASE_TRANSACTION_FAIL，message=[ResourceUnavailable.TransactionBusy] Transaction is busy，证明数据库限流事务忙而非腾讯HTTP。独立explorer location_provider_audit确认reserveCounters的Promise.all在同一transaction并行tx.get，SDK无串行队列；CloudBase SDK只自动重试CONFLICT；其finally lease释放失败能覆盖provider成功，不能仅凭translate catch归因HTTP。官方CloudBase事务页读取失败，MongoDB官方明确事务不可并行但不冒充CloudBase书面限制。Root针对同一事务并行读取构造失败测试RED，再改为顺序读取所有计数→统一校验→顺序写，保原子额度与共享QPS，不重试整请求或放宽额度。正在实际SCF复验，临时诊断将在最终部署前全部删除。
+
+此时新完整单测551/551和实际新UI主链通过，后续transaction新增项计数另记；没有新费用采购/模型/认证请求。Root源码函数诊断部署均只paw-community，FUJI管理身份，私有API与provider设置未改。未完成发版、定位最终稳定复验，不预先称已收口。
+
+11:35工具检查点后定位根因收口：平台SDK诊断捕获准确ResourceUnavailable.TransactionBusy，reserveCounters同事务并行tx.get已换顺序读／统一校验／顺序写，原额度/共享QPS不放宽且无整请求retry。新增原生并行事务复现RED→GREEN，真实平台SDK公共点与实际原生Chrome随后连续两条均有建议。所有临时gateway/regions/tencent-location诊断已恢复删除，只保limits一处真正修复；11:35:41最终paw-community Active。Rootactual-App stage4三宽双语／手选／模拟拒绝／键盘保稿通过，workerDOM Root复跑通过，552单测通过。主目录新0.7.1 version/package/lock，README/CHANGELOG同步删除公共示例说明且修正旧0.7.0待发布文字；首页“示例宠友”文案改为真实宠友，两语言键同步。旧标签和用户健康不动。此时尚未发布新前端，正在完成main合并和原URL核验。

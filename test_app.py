@@ -1,6 +1,9 @@
 """真实浏览器验证核心用户流程；截图与备份留在 test-results（不发布）。"""
 from pathlib import Path
 from datetime import date, timedelta
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent/"tests/e2e"))
+from help_startup import dismiss_startup_help
 import os
 from playwright.sync_api import sync_playwright, expect
 
@@ -22,6 +25,7 @@ with sync_playwright() as p:
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.goto(BASE, wait_until='networkidle')
+    dismiss_startup_help(page)
     expect(page.get_by_role('heading', name='每一天，都是成长。')).to_be_visible()
     page.screenshot(path=str(OUT / 'desktop-home.png'), full_page=True)
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), '桌面横向溢出'
@@ -33,7 +37,7 @@ with sync_playwright() as p:
     page.locator('[name=value]').fill('23.15')
     page.locator('[name=note]').fill('浏览器验证：今天的体重')
     page.locator('#record-form [type=submit]').click()
-    expect(page.locator('dialog')).not_to_be_visible()
+    expect(page.locator('#dialog')).not_to_be_visible()
     expect(page.get_by_role('heading', name='体重记录 · 23.15 kg', exact=False)).to_be_visible()
     page.reload(wait_until='networkidle')
     expect(page.get_by_role('heading', name='体重记录 · 23.15 kg', exact=False)).to_be_visible()
@@ -43,8 +47,9 @@ with sync_playwright() as p:
     choose(page,'#record-type','vaccine')
     page.locator('[name=title]').fill('测试健康提醒')
     page.locator('#record-form [type=submit]').click()
-    expect(page.locator('dialog')).not_to_be_visible()
+    expect(page.locator('#dialog')).not_to_be_visible()
     page.goto(BASE+'#health',wait_until='networkidle')
+    dismiss_startup_help(page)
     page.locator('[data-action=new-reminder]').click()
     choose(page,'#record-type','vaccine')
     page.locator('[name=title]').fill('测试健康提醒')
@@ -80,11 +85,13 @@ with sync_playwright() as p:
     real_shared = page.evaluate('globalThis.__PAW_PUBLIC_CONFIG__.communityEnabled === true')
     if real_shared:
         page.goto(BASE+'#nearby',wait_until='networkidle')
+        dismiss_startup_help(page)
         expect(page.locator('[data-nearby-status]')).to_be_visible()
         expect(page.locator('[data-nearby-error]')).not_to_be_visible()
         page.locator('[data-nearby-pet=cat]').click()
         expect(page.locator('[data-nearby-pet=cat]')).to_have_attribute('aria-pressed','true')
         page.goto(BASE+'#community',wait_until='networkidle')
+        dismiss_startup_help(page)
         expect(page.locator('[data-community-feed]')).to_be_attached()
         expect(page.locator('[data-community-status]')).to_be_visible()
         expect(page.locator('[data-community-feed]')).to_have_attribute('aria-busy','false')
@@ -113,7 +120,7 @@ with sync_playwright() as p:
         page.locator('[name=title]').fill('第一次晒宠测试')
         page.locator('[name=text]').fill('<script>alert("XSS")</script> 今天一起晒太阳。')
         page.locator('[name=photo]').set_input_files(str(Path(__file__).parent / 'assets/cat.jpg'))
-        page.locator('dialog').get_by_role('button', name='发布日常', exact=True).click()
+        page.locator('#dialog').get_by_role('button', name='发布日常', exact=True).click()
         expect(page.get_by_role('heading', name='第一次晒宠测试')).to_be_visible()
         post = page.locator('.post').filter(has_text='第一次晒宠测试')
         expect(post.locator('.post-text')).to_contain_text('<script>')
@@ -133,16 +140,19 @@ with sync_playwright() as p:
 
     for route in ('home', 'health', 'nearby', 'community'):
         page.goto(BASE + '#' + route, wait_until='networkidle')
+        dismiss_startup_help(page)
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), route + '桌面溢出'
     mobile = context.new_page()
     mobile.set_viewport_size({'width': 390, 'height': 844})
     for route in ('home', 'health', 'nearby', 'community'):
         mobile.goto(BASE + '#' + route, wait_until='networkidle')
+        dismiss_startup_help(mobile)
         assert mobile.evaluate('document.documentElement.scrollWidth <= innerWidth'), route + '手机溢出'
         mobile.screenshot(path=str(OUT / f'mobile-{route}.png'), full_page=True)
     assert not errors, errors
     print('PASS: 四个页面桌面/手机布局；无 JavaScript 运行错误')
     page.goto(BASE + '#home', wait_until='networkidle')
+    dismiss_startup_help(page)
     page.get_by_role('button', name='记一笔', exact=True).click()
     choose(page,'#record-type','weight')
     page.locator('[name=value]').fill('24')

@@ -1085,3 +1085,39 @@ stage5_code_facts最终报告收到，现有帮助仅助手来源说明/关于�
 前两次日志本地提交0443ba5、5ef69d5；本轮规划文档检查后纳入本地Git，并按既有项目授权docs-only推送以便恢复/审阅，不触发业务Pages。实际提交与推送结果随后工具检查点记录。最终20:00保持，18:00候选和缓冲是安排目标，不承诺新功能工时或用户设备亲验已完成。
 
 12:27:15工具检查点：最终链接检查66条全部存在，8任务/40未勾步骤，产品/版本文件无diff；git diff --check通过。规划提交41791fa，git push origin main退出0（4203f15→41791fa），包含此前两个本轮日志提交。gh run list --workflow pages.yml --limit 3实际最新仍37723735372/source0a1b2ea success，随后37720181113及37624440076，无本轮规划提交的Pages运行；工作区main与origin/main对齐且干净。此段docs-only日志收口提交随后生成/推送，不改变公开v0.7.1或已有tag。下一轮读新版spec/plan并按当时工具时间开始实施，Google/Outlook登录、会话恢复、实际安装/真机仍待核，Windows包尚未生成。
+
+## 阶段5授权实施：每步30分钟、实际工作4小时
+
+用户本轮明确开始，要求每步骤不超30分钟、整个完成不超4小时（等待本人测试/反馈不计），授权需要时测试/验证码、有头浏览器截图和子agent。2026-10-08 12:44:26 Asia/Shanghai工具起点，初始实际工作预算到16:44:26；最终20:00不变。截止排除仅真实等待用户的区间，工具/子agent/自测不排除；当前无等待排除。按<=30分钟独立工作块记录，不把旧规划5–7小时带入新时限。
+
+从main3640766创建忽略的.worktrees/stage5、feat/stage5-guides-install；开始工作区干净/端口4178/4240/4241无监听，不清旧证据树。初次npm ci误在main执行、无tracked变化，随后在隔离树重新ci。552基线pass/0fail/skip，build、node语法/diff均0；npm现有4依赖漏洞未force升级，保持已验SDK版本。使用SDD/worktrees/TDD/parallel/review、Impeccable craft-floor、webapp-testing/dev-browser技能；计划专属恢复ledger在ignored .superpowers/sdd/2026-10-08-stage5-guides-install-quality/progress.md，逐任务接口/所有权预检表已写。
+
+独立worker默认继承模型：stage5_help拥有prefs/lifecycle与独立帮助公告/词典，Task1块12:45:45–12:46:44=59秒、Task2至12:51:58约5分14秒，9+33专项RED→GREEN、有头1440/390组件验证；stage5_tour拥有状态/几何/DOM/CSS与测试，12:45:54–12:54:25=8分31秒，六步/每步skip/缺目标/locale/焦点/visualViewport/rAF/迟到start/销毁有实际RED→GREEN；stage5_install拥有安装/更新逻辑、随后Windows包，Task4 12:46:03–12:49:08=3分05，Task6 12:49:28–12:55:06=5分38，TDD21/8针对行为测试、有头file://存储拒绝/报告导出导入/HTML安全GREEN。Root拥有app/style/index/build/manifest/图标/版本/仓储接入/发布，worker未Git/部署/读取凭证/实际收费API，所有非独占与不得回退已明确。
+
+Root发行元数据/图标块：新增build release.json/稳定与preview channel，VERSION/package一致校验、PUBLIC_CONFIG.release/helpPreview、Pages稳定构建路径；release.test真实RED缺metadata→GREEN。复用原SVG爪爪品牌，在独立浏览器渲染192/512/maskable/180 PNG，manifest id/scope相对./、start_url./#home，RED缺manifest→GREEN。本地候选版本0.8.0，公开仍0.7.1，未建tag或部署。没有worker/CacheStorage注册，也没有安装当作离线写入。
+
+Root整站块：新增help-coordinator（boot稳定身份/偏好、公告确定立即tour、关闭本次抑制、手动重开可ack，4项RED→GREEN），独立帮助/公告/安装dialog、头像菜单/home与主表单可达帮助，六个data-tour目标、完整视图capture/restore、locale与身份/route取消、照片dirty/saving及beforeunload、更新安全guard。原生主modal不替换草稿；真实过往API/record-plan/私有边界未改。角色/词典输入始终文本安全。13:00:31检查点Root实际npm test608/608、0fail/skip，主语法与diff检查通过；此前worker并行全套592/604出现尚未落盘模块失败均按名留report，最终不沿用中间红结果冒称完成。
+
+独立module-review fresh agent12:53:29–12:56:55检查模块38测/有头tour补探针，发现更新0.10提示后回退0.9仍保pending；install worker新RED2→GREEN21/全608，12:56:11–12:56:38=27秒，合法stable返回清pending+onUpdate(null)，网络/非法不冒充回退；Root banner已接null隐藏，reviewer独立复验，开放0。install worker独立审Root接线12:57:03–12:59:17=2分14；35专项、390真实UI草稿→help→导览阻挡→安装说明→返回保稿/焦点通过，报告docs/verification/task5-review.md。
+
+Root真实截图发现全局dialog::backdrop blur令spotlight透明洞内目标仍模糊；新增实际整App断言先RED，Root专属help.css覆盖filter none+full-dialog圆角0，四宽再次GREEN并看截图。tour内部还复现queued rAF被NEXT同步draw清ID导致destroy漏取消，worker先RED再修，独立reviewer确认无开放缺陷。失败workerstage5_help新增实际草稿/photo/empty/弱网测试，发现无宠物第3步把new-pet误当record目标；RED确认data-tour-record实际1而应0，Root移除错误fallback并重建，待worker最终GREEN。这些为实际观察修复，不扩展其他产品功能。
+
+Windows ZIP已生成ignored test-results/stage5/paw-diary-v0.8.0-windows-acceptance.zip，6白名单文件/56manual项初始not-run、自包含HTML不用Node/Python/server，可选PS5.1固定URL只读探测；Mac无pwsh不能代Windows执行。报告/截图和全套原始结果在ignored task-report与test-results/stage5各目录。用户三端和OS安装尚未验，Google/Outlook登录已异步问（无回复不当有账号）。暂不发候选tag/Release，准备实际A/B恢复和原健康/公开整站复验后公开候选给用户测试；未发生OTP/model/LBS/新采购请求。
+
+### 阶段5真实边界、审查修复与候选准备
+
+Root实际614/614最终单测0fail/skip、语法/diff/构建通过；原健康test_app首次失败是旧locator('dialog')严格唯一假设，改为业务#dialog（help有独立隐藏dialog）并实际八组GREEN。原stage4公共整App三宽双语/手选/模拟拒绝/键盘保稿GREEN。四宽guide实际green，已有en偏好首次主dialog help label误中文已真实RED，initializeHelp设置初始locale后GREEN；这些不改用户原文。
+
+独立final-review13:20:03–13:26:50=6分47秒发现照片rename同scope render/locale移除editor却保dirty、pet变化未stop。Root对实际syncState用acorn/VM+真实领域fixture造RED→接pet stop→5/5 GREEN；fresh photo worker13:23:49–13:27:46=3分57秒独占photo-wall及测试，保同scope原editor/input与label/disabled/listeners、scope/asset消失清理、失败恢复file/caption，真实8/8Chrome和614全套GREEN。reviewer原四scene/上载控件复验与关闭记录在final-code-review；无开放阻断项，真机不因此代勾。
+
+安装agent13:07–13:17:17=10分17秒核真实Chrome155：WebSocket PWA操作默认不可用、官方协议/实现要求pipe unsafe客户端，本轮新profile headed pipe实际安装。发现./ id相对start_url origin解析成根目录，Root查W3C Working Draft §1.11，实际RED期待/paw-diary/却得/，改为根相对明确/paw-diary/（start_url/scope仍相对）。旧rootId试装在自己临时profile卸载，未覆盖用户既有app；新id安装/窗口/系统入口/本地资料与guest偏好共享/重开/卸载OS入口消失10pass，跨未来发行更新unverified。CDP安装额外实际设置standalone偏好，不当正常prompt默认通过，不扩大Chrome共享结果到Safari/iPhone。完整URL和目录覆盖边界已记reference-notes。
+
+稳定update worker13:15:53–13:17:40=1分47，8实际DOM场景通过，未来metadata/clock/focus明确模拟；caption/file挡刷新、回退撤提示、network/badJSON保pending、清干净后reload保hash/本地资料/ack。Windows哈希一致性补块13:11:05–13:13:40=2分35，Root build先RED缺release/sha再GREEN输出，PS核release与assets声明SHA；最终ZIP SHA904ac979...d69d807，11专项+file://报告导入GREEN，WindowsPS实跑仍用户待验。
+
+真实A/B原600会话均恢复/刷新/写回，不需新OTP，真实record保存/刷新与主/个人资料草稿帮助保留、不同可信UID/私有边界通过，0pageErrors。初次B空档案导致helper假设已有pet失败；补纯合成pet，再因“父档案保存、头像失败保重试”的实际分支不能等待dialog自动关闭；重开真实B后父档案仍1，新record与草稿场景通过，未伪称avatar已上传。各轮新记录按exact marker移回收站，原私有健康不清理，B纯合成宠物暂保用于原URL重验。SDK刷新串行并stop写回600，未用管理成功或伪UID替验证。
+
+头像只读source调查指出media仍paw-api、默认storage read2500ms、部署脚本3秒，未仅凭代码认定原因。Root隔离安装临时SCF SDK：skill-runtime无腾讯SDK且无pip两次失败，改uv临时/tmp target成功，无项目依赖更改或秘密输出。FUJI GetFunction实际Active/Timeout3/rawModTime2026-10-07 20:49:10；未修改运行时/后端。受限B合成fixture的真实SDK诊断先因名字maxlength20导致8位尾nonce变7位而拒绝，按实际字段长度纠正严格7位；随后health.snapshot546ms/prepare2215ms success、object.put256ms fetch失败，CORS/传输待精确网络枚举，没把猜测当根因，不记签名URL/header/body/HAR。
+
+用户异步确认两个日历网页版可登录，已答无需桌面下载；用实际exportRemindersIcs生成两份合成文件，各2项10/12日与11/12日同UID/noVALARM，供独立测试日历首导/重复/改期。Microsoft当前原页重开支持文件上传/快照说明，Google原页触发sorry反爬失败，指南标沿旧官方说明等待用户实际入口，不冒充当次已查到。文件与日历操作清单在ignored artifacts和docs/verification/stage5-calendar-user-test.md，未操作用户实际日历。
+
+README/CHANGELOG/体验路线与final-report候选已准备，尚未部署或tag；阶段5正式代码功能收敛，只修观察到的可靠性问题。当前无等待用户扣时，Root以12:44:26起4h实际预算推进，最终20:00不变。头像传输实际枚举后准备main候选，公开/用户三端验收事实另补。

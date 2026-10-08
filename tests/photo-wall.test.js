@@ -40,3 +40,57 @@ test('explicit URL release also invalidates pending reads when slideshow closes'
   await session.load();const pending=session.resolve('p');session.releaseAll();complete({url:'blob:after-close',release:()=>releases++});
   assert.equal(await pending,null);assert.equal(releases,1);assert.equal(session.getUrl('p'),null);
 });
+
+test('photo wall exposes draft and saving guards without opening or writing any data',()=>{
+ available();let reads=0,writes=0;
+ const wall=api.createPhotoWall({media:{list:async()=>{reads++;return[];},save:async()=>writes++},getPetId:()=> 'a',t:key=>key});
+ assert.equal(wall.hasUnsavedChanges(),false);
+ assert.equal(wall.isSaving(),false);
+ wall.destroy();assert.equal(wall.hasUnsavedChanges(),false);
+ assert.equal(reads,0);assert.equal(writes,0);
+});
+
+// Small DOM adapter for lifecycle assertions; the separate Chrome test covers native DOM/focus.
+function photoWallDom(){
+ const document={};
+ class Element {
+  constructor(tag){this.tagName=tag.toUpperCase();this.children=[];this.listeners=new Map();this.attributes=new Map();this.value='';}
+  append(...children){for(const child of children){child.remove();child.parentElement=this;this.children.push(child);}}
+  remove(){if(this.parentElement){this.parentElement.children=this.parentElement.children.filter(child=>child!==this);this.parentElement=null;}}
+  replaceChildren(...children){for(const child of [...this.children])child.remove();this.append(...children);}
+  setAttribute(key,value){this.attributes.set(key,String(value));}
+  removeAttribute(key){this.attributes.delete(key);}
+  addEventListener(type,handler){this.listeners.set(type,[...(this.listeners.get(type)??[]),handler]);}
+  async dispatch(type){for(const handler of this.listeners.get(type)??[])await handler({preventDefault(){},target:this});}
+  contains(node){return this===node||this.children.some(child=>child.contains(node));}
+  get isConnected(){return document.body.contains(this);}
+  focus(){document.activeElement=this;}
+  select(){}
+  get dataset(){return this._dataset??={};}
+ }
+ document.createElement=tag=>new Element(tag);document.body=new Element('body');document.activeElement=document.body;
+ const find=(className,node=document.body)=>node.className===className?node:node.children.map(child=>find(className,child)).find(Boolean);
+ const host=document.createElement('div');document.body.append(host);return {document,host,find};
+}
+
+test('photo rename stays mounted with its draft across render and cancel clears the guard',async()=>{
+ available();const dom=photoWallDom();let locale='zh',writes=0;
+ const media={list:async()=>({items:[{id:'photo',petId:'a',kind:'photo',displayName:'original.png'}]}),resolveUrl:async()=>({url:'synthetic'}),rename:async()=>writes++};
+ const wall=api.createPhotoWall({media,getPetId:()=> 'a',t:key=>locale+':'+key,document:dom.document});
+ await wall.mount(dom.host);await dom.find('text-button').dispatch('click');
+ const editor=dom.find('paw-photo-rename'),input=dom.find('paw-photo-rename-input');input.value='unsaved original user name';
+ locale='en';await wall.render();
+ assert.equal(dom.find('paw-photo-rename'),editor,'same draft editor must be visible after render');
+ assert.equal(dom.find('paw-photo-rename-input').value,'unsaved original user name');
+ assert.equal(input.attributes.get('aria-label'),'en:photo.name');assert.equal(wall.hasUnsavedChanges(),true);
+ const cancel=editor.children.find(child=>child.tagName==='BUTTON'&&child.type==='button');
+ assert.equal(cancel.textContent,'en:common.cancel');await cancel.dispatch('click');
+ assert.equal(dom.find('paw-photo-rename'),undefined);assert.equal(wall.hasUnsavedChanges(),false);assert.equal(writes,0);wall.destroy();
+});
+
+test('deleted renamed asset clears both its visible editor and unsaved guard',async()=>{
+ available();const dom=photoWallDom();let items=[{id:'photo',petId:'a',kind:'photo',displayName:'original.png'}];
+ const wall=api.createPhotoWall({media:{list:async()=>({items}),resolveUrl:async()=>({url:'synthetic'})},getPetId:()=> 'a',t:key=>key,document:dom.document});
+ await wall.mount(dom.host);await dom.find('text-button').dispatch('click');dom.find('paw-photo-rename-input').value='removed asset draft';
+ items=[];await wall.render();assert.equal(dom.find('paw-photo-rename'),undefined);assert.equal(wall.hasUnsavedChanges(),false);wall.destroy();
+});

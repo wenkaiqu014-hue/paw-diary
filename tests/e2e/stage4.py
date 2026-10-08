@@ -2,6 +2,7 @@
 Browser denial is simulated solely for the location permission UI assertion.
 """
 from pathlib import Path
+from help_startup import dismiss_startup_help
 import os, json, re
 from playwright.sync_api import sync_playwright, expect
 ROOT=Path(__file__).resolve().parents[2]
@@ -31,6 +32,7 @@ with sync_playwright() as runtime:
     page=context.new_page();page.set_default_timeout(12000);errors=[]
     page.on('pageerror',lambda _:errors.append('PAGE_ERROR'))
     page.goto(BASE+'#community',wait_until='networkidle')
+    dismiss_startup_help(page)
     assert page.evaluate('__PAW_PUBLIC_CONFIG__.communityEnabled===true')
     for locale in ['zh-CN','en']:
         choose(page,'#locale-select',locale)

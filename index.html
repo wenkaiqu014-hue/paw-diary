@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#2c5847">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/app-icons/apple-touch-icon-180.png">
   <meta name="description" content="爪爪日记，一起记录宠物的成长、照顾健康，遇见同城宠友。">
   <title>爪爪日记 · 让每一次成长都有迹可循</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%232c5847'/%3E%3Cg fill='%23f5eee1'%3E%3Cellipse cx='32' cy='41' rx='15' ry='12'/%3E%3Cellipse cx='13' cy='27' rx='6' ry='8' transform='rotate(-25 13 27)'/%3E%3Cellipse cx='26' cy='19' rx='6' ry='8'/%3E%3Cellipse cx='40' cy='19' rx='6' ry='8'/%3E%3Cellipse cx='52' cy='27' rx='6' ry='8' transform='rotate(25 52 27)'/%3E%3C/g%3E%3C/svg%3E">
@@ -13,7 +15,7 @@
   <aside class="sidebar">
     <a class="brand" href="#home"><span class="brand-mark" data-icon="paw"></span><span>爪爪日记<small>PAW DIARY</small></span></a>
     <div class="sidebar-label">和毛孩子一起长大</div>
-    <nav aria-label="主导航">
+    <nav aria-label="主导航" data-tour="community-nav">
       <a href="#home" data-page="home"><span data-icon="home"></span><span>成长首页</span></a>
       <a href="#health" data-page="health"><span data-icon="heart"></span><span>健康档案</span></a>
       <a href="#nearby" data-page="nearby"><span data-icon="pin"></span><span>附近宠友</span></a>
@@ -24,11 +26,11 @@
   </aside>
   <div class="workspace">
     <header class="topbar"><div class="breadcrumb">我的宠物手账 <span>/</span> <strong id="page-label">成长首页</strong></div><div class="top-actions"><button class="city-button" id="city-button"><span data-icon="pin"></span><span id="city-label">深圳</span><span data-icon="down"></span></button><label class="locale-picker"><span class="sr-only">语言 / Language</span><select id="locale-select" aria-label="语言 / Language"><option value="zh-CN">中文</option><option value="en">English</option></select></label><span class="demo-badge" id="workspace-badge">本地体验</span><button type="button" id="owner-profile-button" class="owner-avatar small owner-profile-button" aria-label="个人菜单">我</button></div></header>
-    <section id="workspace-controls" class="workspace-controls" aria-label="档案空间"></section>
+    <section id="workspace-controls" class="workspace-controls" aria-label="档案空间" data-tour="workspace"></section>
     <main id="main" tabindex="-1"></main>
     <footer>每一个普通的日子，都值得被记住。<span>示例内容 · 新增数据仅保存在当前浏览器</span></footer>
   </div>
-  <dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title"></h2><label class="dialog-locale-picker"><span class="sr-only">语言 / Language</span><select id="dialog-locale-select" aria-label="语言 / Language"><option value="zh-CN">中文</option><option value="en">English</option></select></label><button class="icon-button" id="close-dialog" aria-label="关闭弹窗"><span data-icon="close"></span></button></div><div id="dialog-body"></div></dialog>
+  <dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title"></h2><label class="dialog-locale-picker"><span class="sr-only">语言 / Language</span><select id="dialog-locale-select" aria-label="语言 / Language"><option value="zh-CN">中文</option><option value="en">English</option></select></label><button type="button" class="text-button" id="dialog-help-button" data-dialog-help>帮助</button><button class="icon-button" id="close-dialog" aria-label="关闭弹窗"><span data-icon="close"></span></button></div><div id="dialog-body"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

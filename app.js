@@ -6,6 +6,14 @@ import {mountNearby} from './src/features/nearby.js';
 import {createDraftHandoff} from './src/features/community-draft-handoff.js';
 import {createOwnerDraftQueue} from './src/features/community-intents.js';
 import {createProfileMenu} from './src/ui/profile-menu.js';
+import {createUiPreferences,uiIdentityKey} from './src/data/ui-preferences.js';
+import {isInteractionBlocked} from './src/domain/help-lifecycle.js';
+import {createHelpCoordinator} from './src/features/help-coordinator.js';
+import {mountHelp,createReadonlyDialog} from './src/features/help.js';
+import {mountWhatsNew} from './src/features/whats-new.js';
+import {mountGuidedTour} from './src/features/guided-tour.js';
+import {createInstallController} from './src/features/install.js';
+import {createUpdateMonitor} from './src/features/update.js';
 import {mountRegionPicker} from './src/ui/region-picker.js';
 import {prepareCommunityImage,createCommunityImageLoader} from './src/media/community-images.js';
 import {createAiContext} from './src/ai/context.js';
@@ -92,7 +100,7 @@ let communityBrowseRegion;try{communityBrowseRegion=JSON.parse(localStorage.getI
 const communityUploads=new WeakMap();
 function communitySession(){return {userId:authPrincipal?.userId??null,generation:communityIdentityGeneration};}
 function clearPublicSurface(){publicSurface?.destroy?.();publicSurface=null;publicSurfacePage=null;}
-function assignAuthPrincipal(principal){const previous=authPrincipal?.userId;authPrincipal=principal?.userId?{userId:principal.userId}:null;changeCommunityIdentity(previous,authPrincipal);}
+function assignAuthPrincipal(principal){const previous=authPrincipal?.userId;authPrincipal=principal?.userId?{userId:principal.userId}:null;if(previous!==authPrincipal?.userId){guidedTour?.stop({reason:'identity'});helpPanel?.close();helpCoordinator?.identityChanged();}changeCommunityIdentity(previous,authPrincipal);}
 function changeCommunityIdentity(previous,next){if(previous===next?.userId)return;if(dialog.querySelector('#recap-share-form')){closeModal(true);$('#dialog-body').replaceChildren();}communityDraftQueue.clear();nextCommunityAuthor=null;if(communityContinuation?.kind==='login'&&next?.userId){try{communityHandoff.bindLoginOwner(next.userId);}catch{communityHandoff.clear();communityContinuation=null;}}else if(!communityContinuation){communityHandoff.clear();}communityIdentityGeneration++;communityRepository?.dispose();communityRepository=null;communityImages?.reset();communityImages=null;publicProfile=null;clearPublicSurface();profileMenu?.close(false);}
 function getCommunityRepository(){if(communityRepository)return communityRepository;initCloudAccount();communityRepository=createCommunityRepository({getPrincipal:()=>authPrincipal,getGeneration:()=>communityIdentityGeneration,getAuthorization:()=>auth?.getRequestSession(),invoke:request=>{if(!cloudApp||!PUBLIC_CONFIG.communityEnabled)throw Object.assign(new Error('Community unavailable'),{code:'UNAVAILABLE'});return cloudApp.callFunction({name:PUBLIC_CONFIG.communityFunctionName,data:request});}});return communityRepository;}
 function getCommunityImages(){communityImages??=createCommunityImageLoader({read:payload=>getCommunityRepository().request('community.media.read',payload)});return communityImages;}
@@ -253,10 +261,45 @@ async function avatarModal(petId){
 
 let page='home',healthFilter='all',healthFrom='',healthTo='',reminderFilter='pending',nearbyFilter='all',communityFilter='all',postSearch='';
 let modalOrigin=null,dirty=false,saving=false,toastTimer;
+let helpPanel=null,whatsNewPanel=null,guidedTour=null,helpCoordinator=null,installController=null,updateMonitor=null,installPanel=null,helpBootReady=false,helpEvaluationQueued=false;
 let management={petManage:false,reminderManage:false,selectedPetIds:[],selectedReminderIds:[]};
 let draggedPetId=null,recordPetIds=null,recordPetSelectionManual=false,petSorter=null;
 const $=selector=>document.querySelector(selector);
 const dialog=$('#dialog');
+
+function helpIdentity(){return uiIdentityKey({userId:authPrincipal?.userId});}
+function interactionState(){return {dialogOpen:!!document.querySelector('dialog[open]:not(.readonly-dialog)'),dirty:!!dirty,saving:!!saving||busyActions.size>0,aiSaving:!!dialog.querySelector('[data-ai-saving]'),publicDirty:!!publicSurface?.hasUnsavedChanges?.(),publicSaving:!!publicSurface?.isSaving?.(),photoDirty:!!photoWall?.hasUnsavedChanges?.(),photoSaving:!!photoWall?.isSaving?.(),transitioning:!helpBootReady||!state&&!loadError};}
+function queueHelpEvaluation(){if(!helpCoordinator||helpEvaluationQueued)return;helpEvaluationQueued=true;queueMicrotask(()=>{helpEvaluationQueued=false;helpCoordinator?.evaluate();});}
+function captureHelpView(){return {identity:helpIdentity(),page,scrollX:window.scrollX,scrollY:window.scrollY,focus:token(document.activeElement),healthFilter,healthFrom,healthTo,reminderFilter,recordPetIds:recordPetIds?[...recordPetIds]:null,recordPetSelectionManual,management:structuredClone(management)};}
+function restoreHelpView(view){if(!view||view.identity!==helpIdentity())return;page=view.page;healthFilter=view.healthFilter;healthFrom=view.healthFrom;healthTo=view.healthTo;reminderFilter=view.reminderFilter;recordPetIds=view.recordPetIds?new Set(view.recordPetIds):null;recordPetSelectionManual=view.recordPetSelectionManual;management=structuredClone(view.management);history.replaceState(null,'',`#${page}`);render();window.scrollTo({left:view.scrollX,top:view.scrollY,behavior:'instant'});restoreFocus(view.focus);}
+function enterHelpHome(){page='home';history.replaceState(null,'','#home');render();window.scrollTo({top:0,behavior:'instant'});}
+function markHelpTargets(){
+ const map={pets:'#main .pet-hero, #main .empty-health',record:'#main [data-action="record"]',reminders:'#main .home-reminders',recap:'#main .home-recap'};
+ for(const [id,selector]of Object.entries(map)){const node=document.querySelector(selector);if(node)node.dataset.tour=id;}
+ if(page==='home'&&!$('#main [data-help-home]')){const host=document.createElement('p');host.className='home-help-link';host.dataset.helpHome='';const button=document.createElement('button');button.type='button';button.className='text-button';button.textContent=getLocale()==='en'?'Help and beginner guide':'使用帮助与新手指引';button.onclick=()=>helpPanel?.open();host.append(button);$('#main').append(host);}
+}
+function openInstallHelp(){
+ installPanel??=createReadonlyDialog({document,id:'install-help-dialog',className:'install-help-dialog'});
+ const en=getLocale()==='en',copy=(zh,english)=>en?english:zh,d=installPanel.dialog;
+ d.innerHTML=`<h2 id="install-help-title" tabindex="-1">${copy('添加到你的设备','Add to your device')}</h2><p>${copy('从桌面或主屏幕便捷启动，仍是同一个网址。','Start from your desktop or home screen using the same website.')}</p><p class="install-data-note">${copy('本地档案属于当前浏览器，安装窗口可能有独立数据。需要同一份资料时，请登录云端，或先导出备份再在新窗口恢复。卸载或清除网站数据前请备份。','Local records belong to this browser. Installed windows may use separate storage. Sign in to your cloud account, or export a backup and restore it in the new window. Back up before uninstalling or clearing website data.')}</p><ol class="install-platforms"><li><strong>Windows · Edge / Chrome</strong><p>${copy('打开浏览器菜单，找到“应用／安装此网站”。安装后从开始菜单启动；删除时在浏览器的应用管理中卸载。','Open the browser menu and choose Apps / Install this site. Launch it from Start, and uninstall using the browser app manager.')}</p></li><li><strong>iPhone · Safari</strong><p>${copy('点击分享 → 添加到主屏幕；若有“作为网页App打开”，请开启，再点添加。从主屏幕图标打开。','Tap Share → Add to Home Screen. Enable Open as Web App if shown, then Add. Open its home-screen icon.')}</p></li><li><strong>Mac · Safari / Chrome</strong><p>${copy('Safari在支持的系统上选择文件 → 添加到Dock；Chrome使用安装菜单。Safari安装窗口不共享原浏览器本地档案。','In supported Safari versions choose File → Add to Dock; in Chrome use the installation menu. A Safari web app does not share local records with the browser.')}</p></li></ol><p>${copy('云同步、AI和社区需要网络；安装不提供系统通知。','Cloud sync, AI and community need a connection. Installation does not add system notifications.')}</p><div class="form-actions"><button type="button" class="button secondary" data-install-close>${copy('返回','Back')}</button><button type="button" class="button" data-install-prompt>${copy('安装','Install')}</button></div>`;
+ d.setAttribute('aria-labelledby','install-help-title');d.lang=getLocale();
+ const prompt=d.querySelector('[data-install-prompt]'),state=installController.getState();prompt.hidden=state==='manual';prompt.disabled=state==='installed';if(state==='installed')prompt.textContent=copy('已添加','Added');
+ prompt.onclick=async()=>{prompt.disabled=true;await installController.requestInstall();openInstallHelp();};d.querySelector('[data-install-close]').onclick=()=>installPanel.close();installPanel.open();
+}
+function initializeHelp(){
+ $('#dialog-help-button').textContent=getLocale()==='en'?'Help':'帮助';
+ let storage=null;try{storage=localStorage;}catch{}
+ const preferences=createUiPreferences({storage});
+ guidedTour=mountGuidedTour({document,t:translate,getLocale,getIdentity:helpIdentity,isBlocked:()=>isInteractionBlocked(interactionState()),captureView:captureHelpView,enterHome:enterHelpHome,restoreView:restoreHelpView,onStatus:(status,identity)=>preferences.setTourStatus(identity,status)});
+ whatsNewPanel=mountWhatsNew({document,t:translate,getLocale,onAcknowledge:()=>{void helpCoordinator?.acknowledge();},onDismiss:()=>helpCoordinator?.dismiss()});
+ helpPanel=mountHelp({document,t:translate,getLocale,onTour:()=>{if(isInteractionBlocked(interactionState()))return false;helpPanel.close();void guidedTour.start({source:'manual'});return true;},onInstall:openInstallHelp,onWhatsNew:()=>helpCoordinator.openManually()});
+ helpCoordinator=createHelpCoordinator({release:PUBLIC_CONFIG.release,previewEnabled:PUBLIC_CONFIG.helpPreview,preferences,getIdentity:helpIdentity,getInteractionState:interactionState,showWhatsNew:release=>whatsNewPanel.open(release),closeWhatsNew:()=>whatsNewPanel.close(),startTour:options=>guidedTour.start(options)});
+ installController=createInstallController({window,navigator,onState:()=>{if(installPanel?.isOpen())openInstallHelp();}});
+ const banner=document.createElement('button');banner.id='update-available';banner.type='button';banner.className='button secondary update-available';banner.hidden=true;document.querySelector('.top-actions').prepend(banner);
+ updateMonitor=createUpdateMonitor({currentRelease:PUBLIC_CONFIG.release,getInteractionState:interactionState,baseUrl:location.href,reload:()=>location.reload(),onUpdate:release=>{banner.hidden=!release;banner.textContent=getLocale()==='en'?'Update available':'新版可用';}});
+ banner.onclick=()=>{if(updateMonitor.requestReload()==='blocked')toast(getLocale()==='en'?'Save or close your current edit before updating.':'请先保存或关闭当前编辑，再更新。');};
+ document.addEventListener('close',queueHelpEvaluation,true);document.addEventListener('input',queueHelpEvaluation);document.addEventListener('change',queueHelpEvaluation);
+}
 
 // 页面只读取可见资料；持久化、JSON备份和回收站始终读取完整V3。
 function syncState(){
@@ -265,7 +308,7 @@ function syncState(){
   state={...s,...visible,activePet:visible.activePetId,city:s.profile.city,
     pets:visible.pets.map(p=>({...p,arrival:p.arrivalDate,image:avatarUrls.get(p.avatarAssetId)?.url??p.image})),
     records:visible.records.map(r=>({...r,date:r.occurredDate,createdAt:Date.parse(r.createdAt)})),posts:workspaceMode==='demo'?s.posts:createSeedState().posts};
-  if(previousPetId!==state.activePet)management=transitionManagement(management,{type:'PET_CHANGED'});
+  if(previousPetId!==state.activePet){guidedTour?.stop({reason:'pet'});management=transitionManagement(management,{type:'PET_CHANGED'});}
   management=transitionManagement(management,{type:'ENTITIES_CHANGED',petIds:state.pets.map(p=>p.id),reminderIds:petReminders(reminderFilter).map(r=>r.id)});
 }
 function pet(){return state?.pets.find(p=>p.id===state.activePet)||state?.pets[0];}
@@ -310,8 +353,10 @@ function render({focus=false}={}){
   workspaceControls();maintainPhotoWall();refreshAvatarViews();maintainStage3();maintainSelects();updatePublicIdentityChrome();if(publicPage)document.querySelector('footer span').textContent=getLocale()==='en'?'Health records stay private. You choose what to publish.':'健康档案始终私有，公开内容由你主动选择。';
   const sortHost=$('#main .pet-list');if(sortHost)petSorter=mountRowSort({root:sortHost,getIds:()=>state.pets.map(p=>p.id),onCommit:async ids=>{const gen=session.generation,current=repository;if(busyActions.has('reorder-pets'))return;busyActions.add('reorder-pets');try{await session.run(repo=>repo.reorderPets(ids));if(gen!==session.generation||current!==repository)return;syncState();render();toast(UI_TEXT('宠物顺序已保存。'));}finally{busyActions.delete('reorder-pets');}},onError:error=>toast(UI_TEXT('排序未成功：')+error.message)});
   if(activePhotoElement?.isConnected&&!dialog.open)activePhotoElement.focus({preventScroll:true});else if(focus)restoreFocus(null);else if(previous&&!dialog.open)restoreFocus(previous);
+  markHelpTargets();guidedTour?.refresh();queueHelpEvaluation();
 }
 function route(){
+  guidedTour?.stop({reason:'route'});
   const target=location.hash.slice(1);if(target==='main'){history.replaceState(null,'',`#${page}`);$('#main').focus();return;}
   if(target!==page&&publicSurface?.isSaving?.()){history.replaceState(null,'',`#${page}`);toast(getLocale()==='en'?'Saving. Please wait.':'正在保存，请等待结果。');return;}
   if(target!==page&&publicSurface?.hasUnsavedChanges?.()){const generation=communityIdentityGeneration;history.replaceState(null,'',`#${page}`);discardConfirmation.ask(accepted=>{if(accepted&&generation===communityIdentityGeneration){clearPublicSurface();history.replaceState(null,'',`#${target}`);route();}});return;}
@@ -631,8 +676,9 @@ $('#city-button').addEventListener('click',()=>PUBLIC_CONFIG.communityEnabled&&[
 dialog.addEventListener('cancel',e=>{e.preventDefault();closeModal();});
 dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});
 function openAbout(){modal(UI_TEXT('属于你们的成长手账'),UI_HTML`<div class="profile-details"><p>免登录可以使用本地档案，邮箱登录后可私有云同步。公开资料和社区内容由你主动选择发布。</p><p>支持记录编辑、独立护理待办、备份恢复和日历文件导出。</p></div><div class="form-actions">${state?button(UI_TEXT('导出我的数据'),'export','secondary','download'):''}<button class="button" data-action="close">继续记录</button></div>`);}
-profileMenu=createProfileMenu({triggers:[$('#about-button'),$('#owner-profile-button')],getLocale,onProfile:()=>{location.hash='profile';},onAccount:openAccount,onAbout:openAbout});
-window.addEventListener('beforeunload',e=>{if((dialog.open&&(dirty||saving))||publicSurface?.hasUnsavedChanges?.()||publicSurface?.isSaving?.()){e.preventDefault();e.returnValue='';}});
+profileMenu=createProfileMenu({triggers:[$('#about-button'),$('#owner-profile-button')],getLocale,onProfile:()=>{location.hash='profile';},onAccount:openAccount,onAbout:openAbout,onHelp:()=>helpPanel?.open()});
+$('#dialog-help-button').addEventListener('click',()=>helpPanel?.open());
+window.addEventListener('beforeunload',e=>{if((dialog.open&&(dirty||saving))||publicSurface?.hasUnsavedChanges?.()||publicSurface?.isSaving?.()||photoWall?.hasUnsavedChanges?.()||photoWall?.isSaving?.()){e.preventDefault();e.returnValue='';}});
 window.addEventListener('hashchange',route);
 
 function importSummary(preview){const c=preview.counts??{};return translate('backup.countSummary',{pets:c.pets??preview.newPets?.length??0,records:c.records??preview.newRecords?.length??0,reminders:c.reminders??preview.newReminders?.length??0,photos:c.photos??c.assets??preview.newAssets?.length??0});}
@@ -705,9 +751,9 @@ async function openCloudMigration(){
  $('#migrate-personal').addEventListener('click',()=>choose('local'));$('#migrate-demo').addEventListener('click',()=>choose('demo'));
 }
 
-async function boot(){try{if(!repository){const saved=localStorage.getItem('paw-diary:workspace-mode');workspaceMode=saved==='local'?'local':'demo';repository=await getLocalRepository(workspaceMode);session=createAppSession(repository);}loadError=null;render();await session.load();syncState();route();if(localStorage.getItem('paw-diary:workspace-mode')==='account'&&initCloudAccount()){const principal=await auth.getSession();if(principal){assignAuthPrincipal(principal);await switchWorkspace('account');}}}catch(error){loadError=error;render();}}
+async function boot(){try{if(!repository){const saved=localStorage.getItem('paw-diary:workspace-mode');workspaceMode=saved==='local'?'local':'demo';repository=await getLocalRepository(workspaceMode);session=createAppSession(repository);}loadError=null;render();await session.load();syncState();route();if(localStorage.getItem('paw-diary:workspace-mode')==='account'&&initCloudAccount()){const principal=await auth.getSession();if(principal){assignAuthPrincipal(principal);await switchWorkspace('account');}}}catch(error){loadError=error;render();}finally{helpBootReady=true;helpCoordinator?.ready();void updateMonitor?.check();}}
 $('#locale-select').addEventListener('change',e=>setLocale(e.target.value));$('#dialog-locale-select').addEventListener('change',e=>setLocale(e.target.value));
-subscribeLocale(()=>{applyLocaleChrome();if(publicSurface){publicSurface.refreshLocale();refreshPublicChrome();}else render();localizeOpenDialog();photoWall?.render().catch(e=>toast(localizeError(e)));});
+subscribeLocale(()=>{applyLocaleChrome();if(publicSurface){publicSurface.refreshLocale();refreshPublicChrome();}else render();localizeOpenDialog();photoWall?.render().catch(e=>toast(localizeError(e)));helpPanel?.refreshLocale();whatsNewPanel?.refreshLocale();guidedTour?.refresh();if(installPanel?.isOpen())openInstallHelp();$('#dialog-help-button').textContent=getLocale()==='en'?'Help':'帮助';const banner=$('#update-available');if(banner&&!banner.hidden)banner.textContent=getLocale()==='en'?'Update available':'新版可用';});
 document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'&&workspaceMode==='account'){try{await session.refresh();syncState();render();}catch(error){if(error.code==='UNAUTHENTICATED'){assignAuthPrincipal(null);await switchWorkspace('local');}else toast(localizeError(error));}}});
 
-boot();
+initializeHelp();boot();

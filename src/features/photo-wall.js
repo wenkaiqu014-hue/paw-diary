@@ -48,14 +48,16 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
   if(!media||!getPetId||!t)throw new TypeError('Photo wall requires media, getPetId and t');
   const session=createPhotoSession({media,getPetId,getGeneration});
   let host,wall,title,description,form,fileInput,captionInput,uploadButton,filesLabel,captionLabel,hint,status,grid,slideshowButton,dialog,slideImage,slideCaption,counter,play,previous,next,close,deleteSlide;
-  let draftScope=null,renameEditor=null,selected=[],failed=[],saving=false,destroyed=false,renderRequest=0,slideIndex=0,slideOrigin=null,timer=null,playing=false;
+  let draftScope=null,renameEditor=null,renameDraft=null,selected=[],failed=[],saving=false,destroyed=false,renderRequest=0,slideIndex=0,slideOrigin=null,timer=null,playing=false;
   const win=document?.defaultView??globalThis;
   const scope=()=>`${getGeneration()}:${getPetId()??''}`;
   function el(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
   function button(key,handler,className='button secondary'){const node=el('button',className,t(key));node.type='button';node.addEventListener('click',handler);return node;}
   function report(error){if(destroyed)return;status.textContent=localizeError(error,t);status.setAttribute('role','alert');onError(error);}
+  function clearRename(){renameEditor?.remove();renameEditor=null;renameDraft=null;}
   function labels(){
     title.textContent=t('photo.title');description.textContent=t('photo.description');filesLabel.textContent=t('photo.files');captionLabel.textContent=t('photo.caption');hint.textContent=t('photo.fileHint');captionInput.placeholder=t('photo.captionPlaceholder');uploadButton.textContent=t(saving?'common.loading':'photo.upload');slideshowButton.textContent=t('photo.slideshow');
+    if(renameDraft){renameDraft.nameLabel.textContent=t('photo.name');renameDraft.input.setAttribute('aria-label',t('photo.name'));renameDraft.save.textContent=t('common.save');renameDraft.cancel.textContent=t('common.cancel');}
     if(dialog){dialog.querySelector('h2').textContent=t('photo.title');dialog.setAttribute('aria-label',t('photo.slideshowLabel'));play.textContent=t(playing?'photo.pause':'photo.play');previous.textContent=t('photo.previous');next.textContent=t('photo.next');close.textContent=t('common.close');deleteSlide.textContent=t('common.delete');}
   }
   function stopPlaying(){playing=false;if(timer!==null){win.clearInterval(timer);timer=null;}if(play){play.textContent=t('photo.play');play.setAttribute('aria-pressed','false');}}
@@ -103,15 +105,15 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
     catch(error){if(token===scope())report(error);}finally{saving=false;if(uploadButton)uploadButton.disabled=!getPetId();}
   }
   function renamePhoto(item,tile){
-    if(!item||saving||destroyed)return;renameEditor?.remove();
+    if(!item||saving||destroyed)return;clearRename();
     let renameIntent=null,operationId=null;
-    const token=scope(),editor=el('form','paw-photo-rename'),input=el('input','paw-photo-rename-input'),label=el('label','paw-photo-rename-label',t('photo.name'));
-    input.type='text';input.maxLength=60;input.required=true;input.value=item.displayName||'';input.setAttribute('aria-label',t('photo.name'));label.append(input);
-    const save=button('common.save',()=>{}),cancel=button('common.cancel',()=>{editor.remove();if(renameEditor===editor)renameEditor=null;});save.type='submit';editor.append(label,save,cancel);tile.append(editor);renameEditor=editor;input.focus();input.select();
+    const token=scope(),editor=el('form','paw-photo-rename'),input=el('input','paw-photo-rename-input'),label=el('label','paw-photo-rename-label'),nameLabel=el('span','',t('photo.name'));
+    input.type='text';input.maxLength=60;input.required=true;input.value=item.displayName||'';input.setAttribute('aria-label',t('photo.name'));label.append(nameLabel,input);
+    const save=button('common.save',()=>{}),cancel=button('common.cancel',()=>{if(renameEditor===editor)clearRename();});save.type='submit';editor.append(label,save,cancel);tile.append(editor);renameEditor=editor;renameDraft={token,assetId:item.id,nameLabel,input,save,cancel};input.focus();input.select();
     editor.addEventListener('submit',async event=>{event.preventDefault();if(saving||destroyed||token!==scope())return;const displayName=input.value.trim();if(!displayName||displayName.length>60){report(photoError('invalid_input'));input.focus();return;}if(renameIntent!==displayName){renameIntent=displayName;operationId=crypto.randomUUID();}saving=true;save.disabled=cancel.disabled=input.disabled=true;
-      try{await media.rename({assetId:item.id,displayName,...(getRevision?{baseRevision:getRevision()}:{}),operationId});if(destroyed||token!==scope())return;renameEditor=null;await onChanged();saving=false;await render();status.textContent=t('photo.renamed');}
+      try{await media.rename({assetId:item.id,displayName,...(getRevision?{baseRevision:getRevision()}:{}),operationId});if(destroyed||token!==scope())return;if(renameEditor===editor)clearRename();await onChanged();saving=false;await render();status.textContent=t('photo.renamed');}
       catch(error){if(!destroyed&&token===scope())report(error);}
-      finally{saving=false;if(editor.isConnected){save.disabled=cancel.disabled=input.disabled=false;}if(uploadButton)uploadButton.disabled=!getPetId();}
+      finally{saving=false;if(editor.isConnected){save.disabled=cancel.disabled=input.disabled=false;}if(uploadButton)uploadButton.disabled=fileInput.disabled=captionInput.disabled=!getPetId();}
     });
   }
   async function upload(event){
@@ -152,12 +154,14 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
   }
   async function render(){
     if(!wall||destroyed)return;const serial=++renderRequest,token=scope();
-    if(draftScope!==token){renameEditor?.remove();renameEditor=null;draftScope=token;selected=[];failed=[];fileInput.value='';captionInput.value='';status.textContent='';if(dialog?.open)closeSlideshow();}
+    if(draftScope!==token){clearRename();draftScope=token;selected=[];failed=[];fileInput.value='';captionInput.value='';status.textContent='';if(dialog?.open)closeSlideshow();}
     labels();uploadButton.disabled=saving||!getPetId();fileInput.disabled=captionInput.disabled=saving||!getPetId();slideshowButton.disabled=true;
     if(!getPetId()){await session.load();grid.replaceChildren(el('p','paw-photo-empty',t('photo.noPet')));return;}
     grid.setAttribute('aria-busy','true');
     try{
       await session.load();if(serial!==renderRequest||token!==scope()||destroyed)return;
+      if(renameDraft&&(renameDraft.token!==token||!session.items.some(item=>item.id===renameDraft.assetId)))clearRename();
+      const renameFocus=renameEditor?.contains(document.activeElement)?document.activeElement:null;
       grid.replaceChildren();
       if(!session.items.length){const empty=el('div','paw-photo-empty');empty.append(el('h3','',t('photo.empty')),el('p','',t('photo.emptyHint')));grid.append(empty);}
       for(const item of session.items){
@@ -171,12 +175,14 @@ export function createPhotoWall({media,getPetId,getGeneration=()=>0,getRevision,
         const retry=button('common.retry',async()=>{try{const url=await session.resolve(item.id);if(url&&token===scope()){image.src=url;fallback.hidden=true;retry.hidden=true;}}catch(error){report(error);}},'text-button');retry.hidden=true;
         image.addEventListener('error',()=>{fallback.hidden=false;fallback.textContent=t('photo.imageError');retry.hidden=false;});image.addEventListener('load',()=>{fallback.hidden=true;retry.hidden=true;});
         actions.append(rename,remove,retry);tile.append(view,caption);if(note)tile.append(note);tile.append(actions);grid.append(tile);
+        if(renameDraft?.assetId===item.id)tile.append(renameEditor);
         session.resolve(item.id).then(url=>{if(url&&serial===renderRequest&&token===scope()&&!destroyed)image.src=url;}).catch(error=>{if(serial===renderRequest&&token===scope()){fallback.textContent=t('photo.imageError');retry.hidden=false;onError(error);}});
       }
+      if(renameFocus?.isConnected&&!renameFocus.disabled)renameFocus.focus({preventScroll:true});
       slideshowButton.disabled=!session.items.length;
       if(dialog?.open){if(!session.items.length)closeSlideshow();else{slideIndex=Math.min(slideIndex,session.items.length-1);showSlide();}}
     }catch(error){if(serial===renderRequest&&token===scope()){grid.replaceChildren(el('p','paw-photo-empty',t('photo.loadError')),button('common.retry',render));report(error);}}
     finally{if(serial===renderRequest)grid.setAttribute('aria-busy','false');}
   }
-  return {async mount(container){if(destroyed)throw new Error('Photo wall was destroyed');if(!wall)build(container);await render();},render,openSlideshow,closeSlideshow,destroy(){if(destroyed)return;destroyed=true;renameEditor?.remove();renameEditor=null;renderRequest++;stopPlaying();if(dialog?.open)dialog.close();dialog?.remove();session.destroy();wall?.remove();}};
+  return {hasUnsavedChanges:()=>!destroyed&&!!(selected.length||failed.length||captionInput?.value?.trim()||renameEditor),isSaving:()=>!destroyed&&saving,async mount(container){if(destroyed)throw new Error('Photo wall was destroyed');if(!wall)build(container);await render();},render,openSlideshow,closeSlideshow,destroy(){if(destroyed)return;destroyed=true;clearRename();renderRequest++;stopPlaying();if(dialog?.open)dialog.close();dialog?.remove();session.destroy();wall?.remove();}};
 }

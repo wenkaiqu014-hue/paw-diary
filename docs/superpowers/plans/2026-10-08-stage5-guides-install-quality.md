@@ -145,7 +145,7 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 - `createUpdateMonitor({currentRelease,fetchImpl,now,getInteractionState,onUpdate,reload,baseUrl}) -> {check(),requestReload(),destroy()}`；check Promise<Release|null>，requestReload返回`'reloaded'|'blocked'|'none'`。只允许同源release.json、5秒Abort、cache:no-store/credentials:omit；focus检查5分钟节流，无固定轮询；阻挡原因通过getInteractionState提供Task1字段。
 - manifest值逐项照spec；复制manifest与图标，release.json来自Task1；workflow加入manifest/VERSION输入并以`PAW_RELEASE_CHANNEL=stable`构建，正式本地SHA核对必须使用相同channel。
 
-- [ ] **Step 1：写失败测试**：manifest相对id/start_url/scope，图标实际尺寸与maskable purpose、apple-touch-icon；dist白名单；不注册worker/无CacheStorage写；beforeinstallprompt、取消/接受、appinstalled、standalone、无事件fallback；版本失败/超时/节流与回退不提醒；dirty/saving禁止reload且保hash。
+- [ ] **Step 1：写失败测试**：manifest固定项目id与相对start_url/scope，图标实际尺寸与maskable purpose、apple-touch-icon；dist白名单；不注册worker/无CacheStorage写；beforeinstallprompt、取消/接受、appinstalled、standalone、无事件fallback；版本失败/超时/节流与回退不提醒；dirty/saving禁止reload且保hash。
 - [ ] **Step 2：RED** `node --test tests/install.test.js tests/update.test.js tests/build.test.js`，记录真实失败。
 - [ ] **Step 3：实现安装与更新接口，复用现有品牌制作图标**；帮助显示平台手动说明，Mac存储边界显著。禁止为了自动提示立刻出现而假造事件或后台prompt。公开静态构建不用worker。
 - [ ] **Step 4：GREEN** 上述三测，preview/stable构建与/paw-diary/manifest/icon/release实际HTTP检查；mock安装仅记逻辑通过，实际OS安装留Task7/8。提交 `feat: support installation and draft-safe update prompts`。

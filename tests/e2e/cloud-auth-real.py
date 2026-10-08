@@ -17,6 +17,7 @@ import sys
 import tempfile
 import time
 from playwright.sync_api import sync_playwright
+from help_startup import dismiss_startup_help
 
 ROOT = Path(__file__).resolve().parents[2]
 LABELS = ('A', 'B')
@@ -205,6 +206,7 @@ class Acceptance:
         page.locator('#main .pet-entry, #main .empty-health, #main .recovery-panel').first.wait_for(timeout=15000)
         if page.locator('#main .recovery-panel').count():
             raise SafeFailure('CLOUD_WORKSPACE_LOAD_FAILED')
+        dismiss_startup_help(page)
         self.progress(label, 'product_cloud', privateWorkspace=True)
 
     def refresh(self, label, actor):
@@ -383,6 +385,131 @@ class Acceptance:
         self.checkpoint(label,actor,'social_checkpoint')
         emit(label=label,stage='social',uiPostSavedRefresh=True,uiImageUploaded=True,uiComment=True,pureText=True,pageErrors=actor['errors'])
 
+    def avatar(self, label, command):
+        if label!='B':
+            raise SafeFailure('SYNTHETIC_B_FIXTURE_REQUIRED')
+        actor=self.actor(label)
+        requests={};transport=[]
+        cdp=actor['context'].new_cdp_session(actor['page'])
+        def request_started(event):
+            request=event.get('request',{});method=request.get('method')
+            if method in ('OPTIONS','PUT'):
+                requests[event['requestId']]=method
+        def response_received(event):
+            method=requests.get(event.get('requestId'))
+            if method:
+                transport.append({'method':method,'status':event.get('response',{}).get('status')})
+        def request_failed(event):
+            method=requests.get(event.get('requestId'))
+            if method:
+                code=event.get('errorText','')
+                cors=event.get('corsErrorStatus',{}).get('corsError','')
+                transport.append({'method':method,'failed':True,'networkCode':code if re.fullmatch(r'net::ERR_[A-Z_]+',code) else 'NETWORK_ERROR',
+                                  'corsCode':cors if re.fullmatch(r'[A-Za-z_]{1,80}',cors) else None})
+        cdp.on('Network.requestWillBeSent',request_started)
+        cdp.on('Network.responseReceived',response_received)
+        cdp.on('Network.loadingFailed',request_failed)
+        cdp.send('Network.enable')
+        try:
+            result=actor['page'].evaluate('__realAuthAcceptance.avatarDiagnostic()')
+        finally:
+            cdp.detach()
+        result['transportFlags']=transport
+        emit(label=label,stage='avatar_diagnostic',**result)
+        self.checkpoint(label,actor,'avatar_diagnostic_checkpoint')
+
+    def stage5(self, label, command):
+        actor=self.actor(label)
+        page=actor['page']
+        dismiss_startup_help(page)
+        page.evaluate("location.hash='health'")
+        if command.get('cleanup') is not True and page.locator('#main .empty-health').count():
+            import uuid
+            pet_name='纯合成阶段5验收宠物-'+label+'-'+uuid.uuid4().hex[:8]
+            page.locator('#main [data-action=new-pet]').first.click()
+            form=page.locator('#pet-form');form.wait_for()
+            form.locator('[name=name]').fill(pet_name)
+            form.locator('[name=estimatedAgeMonths]').fill('12')
+            form.locator('[type=submit]').click()
+            page.locator('#dialog').wait_for(state='hidden',timeout=30000)
+            actor['stage5PetName']=pet_name
+        page.locator('#main .pet-entry').first.wait_for(timeout=20000)
+        if command.get('cleanup') is True:
+            marker=actor.get('stage5Marker')
+            if not marker:
+                raise SafeFailure('STAGE5_RECEIPT_MISSING')
+            row=page.locator('tbody tr').filter(has_text=marker)
+            if row.count()!=1:
+                raise SafeFailure('STAGE5_RECEIPT_NOT_UNIQUE')
+            row.get_by_role('button',name='移入回收站',exact=True).click()
+            page.locator('#trash-form [type=submit]').click()
+            page.locator('#dialog').wait_for(state='hidden')
+            if page.locator('tbody tr').filter(has_text=marker).count():
+                raise SafeFailure('STAGE5_FIXTURE_STILL_VISIBLE')
+            pet_name=actor.get('stage5PetName')
+            if pet_name:
+                page.locator('[data-action=manage-pets]').first.click()
+                item=page.locator('.pet-entry').filter(has_text=pet_name)
+                if item.count()!=1:
+                    raise SafeFailure('STAGE5_PET_RECEIPT_NOT_UNIQUE')
+                item.locator('[name=managed-pet]').check()
+                page.locator('[data-action=trash-pets]').click()
+                page.locator('#trash-form [type=submit]').click()
+                page.locator('#dialog').wait_for(state='hidden',timeout=30000)
+                if page.locator('.pet-entry').filter(has_text=pet_name).count():
+                    raise SafeFailure('STAGE5_PET_FIXTURE_STILL_VISIBLE')
+            self.checkpoint(label,actor,'stage5_cleanup_checkpoint')
+            self.progress(label,'stage5_cleaned',exactSyntheticRecordRetired=True)
+            return
+        import uuid
+        marker='纯合成阶段5验收-'+label+'-'+uuid.uuid4().hex[:8]
+        actor['stage5Marker']=marker
+        page.locator('[data-action=record]').first.click()
+        selector=page.locator('#record-type')
+        text=selector.evaluate("s=>[...s.options].find(o=>o.value==='daily').textContent")
+        root=selector.locator('..');root.locator('.select-trigger').click()
+        root.get_by_role('option',name=text,exact=True).click()
+        page.locator('#record-form [name=title]').fill(marker)
+        page.locator('#record-form [name=date]').fill(date.today().isoformat())
+        page.locator('#record-form [name=note]').fill('纯合成验收；不代表真实养宠事实。')
+        page.locator('[data-dialog-help]').click()
+        page.locator('#help-dialog').wait_for(state='visible')
+        page.locator('[data-help-action=tour]').click()
+        if page.locator('dialog[data-guided-tour]:visible').count():
+            raise SafeFailure('STAGE5_DIRTY_GUIDE_STARTED')
+        page.locator('[data-help-close]').click()
+        if page.locator('#record-form [name=title]').input_value()!=marker:
+            raise SafeFailure('STAGE5_PRIVATE_DRAFT_LOST')
+        page.locator('#record-form [type=submit]').click()
+        page.locator('#dialog').wait_for(state='hidden',timeout=30000)
+        page.reload(wait_until='networkidle')
+        self.assert_cloud(label,actor)
+        if page.locator('tbody tr').filter(has_text=marker).count()!=1:
+            raise SafeFailure('STAGE5_PRIVATE_SAVE_RELOAD_FAILED')
+        self.checkpoint(label,actor,'stage5_private_saved')
+        private_text=page.locator('#main').inner_text()
+        other=[value.get('stage5Marker') for key,value in self.actors.items() if key!=label and value.get('stage5Marker')]
+        if any(value in private_text for value in other):
+            raise SafeFailure('STAGE5_ACCOUNT_DATA_LEAK')
+        page.evaluate("location.hash='profile'")
+        form=page.locator('[data-profile-form]');form.wait_for(timeout=20000)
+        nickname=form.locator('[name=nickname]');original=nickname.input_value()
+        nickname.fill('纯合成未保存资料')
+        page.locator('#owner-profile-button').click()
+        page.get_by_role('menuitem',name='使用帮助',exact=True).click()
+        page.locator('[data-help-action=tour]').click()
+        if page.locator('dialog[data-guided-tour]:visible').count():
+            raise SafeFailure('STAGE5_PROFILE_DRAFT_GUIDE_STARTED')
+        page.locator('[data-help-close]').click()
+        if nickname.input_value()!='纯合成未保存资料':
+            raise SafeFailure('STAGE5_PROFILE_DRAFT_LOST')
+        nickname.fill(original)
+        page.evaluate("location.hash='health'")
+        page.locator('#main .pet-entry').first.wait_for()
+        self.checkpoint(label,actor,'stage5_final_checkpoint')
+        self.progress(label,'stage5_checked',realCloudRecordSavedReloaded=True,privateDraftHelpPreserved=True,
+                      profileDraftHelpPreserved=True,otherActorMarkerExcluded=True,pageErrors=actor['errors'])
+
     def check(self, label, command):
         actor = self.actor(label)
         page = actor['page']
@@ -505,7 +632,7 @@ def main():
                     if op == 'stop':
                         helper.stop()
                         break
-                    if label not in LABELS or op not in ('request', 'verify', 'resume', 'check', 'stage4', 'social', 'recap', 'discovery'):
+                    if label not in LABELS or op not in ('request', 'verify', 'resume', 'check', 'stage4', 'stage5', 'avatar', 'social', 'recap', 'discovery'):
                         raise SafeFailure('COMMAND_INVALID')
                     helper.stage = op
                     getattr(helper, op)(label, command)

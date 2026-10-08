@@ -25,3 +25,9 @@ Edge PWA根目录可见24页，读入门与UX；更深嵌套未全部展开，�
 推荐manifest与事件检测安装，无worker缓存；spotlight可参照Driver常见结构用原生实现。没有公开依据证明本项目无网写入、三端安装成功或更新无需重开；这些均列下一轮实际验证。Windows/用户系统策略、浏览器版本、独立容器的数据与公告记忆都要留实际证据。日历操作以前述calendar-clients为输入，正式验收再核当次客户端入口。
 
 完整URL均保存在以上链接及iPhone版本固定页，失败入口为 https://driverjs.com/docs 。搜索摘要仅发现候选，未用摘要支撑精确条件。
+
+## 实施时更正：应用身份解析
+
+原规划把manifest id写成./，原生Chrome Page.getAppManifest实测解析到origin根。W3C [Manifest §1.11](https://www.w3.org/TR/appmanifest/#id-member)原页546–572行明确id相对start_url的origin解析，推荐显式根相对路径。现改id为/paw-diary/，start_url和scope仍相对./#home和./；原网址不变，避免同GitPages origin其他项目身份冲突。该段为2026-08-13 Working Draft口径，另有当次真实Chrome解析证据；不是仅凭草案宣称全平台已验。目录只读该规范可见目录、相关id/start_url/scope章节，未通读整份规范。
+
+[Chrome DevTools PWA入口](https://chromedevtools.github.io/devtools-protocol/tot/PWA/)读取只有redirect，点开后JS viewer内容不足，不能用该空页支撑精确字段。安装agent另核官方协议JSON/当次浏览器实际协议并留报告；OS安装成功还需实际launcher/窗口/卸载证据。

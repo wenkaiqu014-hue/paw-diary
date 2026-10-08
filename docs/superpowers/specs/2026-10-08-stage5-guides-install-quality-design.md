@@ -63,7 +63,7 @@ main本轮起点4203f15；最新应用v0.7.1/source0a1b2ea，交接记录552单�
 
 推荐方案：manifest＋图标＋实际事件驱动安装入口＋平台手动说明＋轻量版本检测；本轮不注册service worker、不使用CacheStorage、不拦截请求。Edge官方明确worker可选，Chrome推广提示与菜单安装又有不同条件，安装入口不能承诺首次访问立即可用。若真实安装出现失败，先核manifest/HTTPS/用户参与条件/浏览器策略，不为消除提示而临时加入宽泛缓存。
 
-manifest固定`id:'./'`、`start_url:'./#home'`、`scope:'./'`、`display:'standalone'`、name“爪爪日记”、short_name“爪爪日记”、lang“zh-CN”、theme_color“#2c5847”、background_color“#f7f7f2”、prefer_related_applications=false，提供192/512 PNG及512 maskable PNG、180 apple-touch-icon。图标复用现有爪爪品牌图形制作，不新增收费素材或换品牌。
+manifest固定`id:'/paw-diary/'`、`start_url:'./#home'`、`scope:'./'`、`display:'standalone'`、name“爪爪日记”、short_name“爪爪日记”、lang“zh-CN”、theme_color“#2c5847”、background_color“#f7f7f2”、prefer_related_applications=false，提供192/512 PNG及512 maskable PNG、180 apple-touch-icon。图标复用现有爪爪品牌图形制作，不新增收费素材或换品牌。
 
 安装入口在帮助中始终可找到。捕获真实beforeinstallprompt才给可执行的“一键安装”；仅用户点击时prompt，取消不显示已安装；appinstalled/standalone判定更新状态。无事件显示浏览器菜单操作，iPhone Safari显示分享→添加到主屏幕（实际系统如有“作为网页App打开”再开启），Mac Safari按系统是否提供添加到Dock说明，Windows优先Edge。事件mock只是逻辑测试，正式安装需系统窗口/图标实际证据。
 

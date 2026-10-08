@@ -11,6 +11,8 @@ on:
       - '.nojekyll'
       - 'package.json'
       - 'package-lock.json'
+      - 'VERSION'
+      - 'manifest.webmanifest'
       - 'scripts/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -39,6 +41,8 @@ jobs:
         run: npm ci
       - name: Build public files
         run: npm run build
+        env:
+          PAW_RELEASE_CHANNEL: stable
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

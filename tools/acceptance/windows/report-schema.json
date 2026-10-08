@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paw Diary acceptance report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion","productVersion","checkedAt","environment","autoChecks","manualChecks","notes"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "productVersion": {"type":"string","pattern":"^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "checkedAt": {"type":"string","format":"date-time"},
+    "environment": {"type":"object","additionalProperties":false,"required":["os","browser","browserVersion","mode"],"properties":{"os":{"type":"string","minLength":1},"browser":{"type":"string","minLength":1},"browserVersion":{"type":"string","minLength":1},"mode":{"type":"string","minLength":1}}},
+    "autoChecks": {"type":"array","items":{"$ref":"#/$defs/check"}},
+    "manualChecks": {"type":"array","items":{"$ref":"#/$defs/check"}},
+    "notes": {"type":"string"}
+  },
+  "$defs": {"check":{"type":"object","additionalProperties":false,"required":["id","status"],"properties":{"id":{"type":"string","pattern":"^[a-z][a-z0-9-]*$"},"status":{"enum":["pass","fail","not-run","unverified"]},"evidence":{"type":"string"},"reason":{"type":"string"}},"allOf":[{"if":{"properties":{"status":{"const":"fail"}}},"then":{"required":["reason"],"properties":{"reason":{"type":"string","pattern":"\\S"}}}}]}}
+}

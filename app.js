@@ -279,6 +279,8 @@ function markHelpTargets(){
  for(const [id,selector]of Object.entries(map)){const node=document.querySelector(selector);if(node)node.dataset.tour=id;}
  if(page==='home'&&!$('#main [data-help-home]')){const host=document.createElement('p');host.className='home-help-link';host.dataset.helpHome='';const button=document.createElement('button');button.type='button';button.className='text-button';button.textContent=getLocale()==='en'?'Help and beginner guide':'使用帮助与新手指引';button.onclick=()=>helpPanel?.open();host.append(button);$('#main').append(host);}
 }
+function deviceInstallLabel(){const mobile=/iPhone|iPad|iPod|Android/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);return getLocale()==='en'?(mobile?'Add to Home Screen':'Install desktop app'):(mobile?'添加到主屏幕':'安装桌面版');}
+function installFromMenu(){if(installController?.getState()==='prompt-ready'){void installController.requestInstall().then(()=>openInstallHelp());}else openInstallHelp();}
 function openInstallHelp(){
  installPanel??=createReadonlyDialog({document,id:'install-help-dialog',className:'install-help-dialog'});
  const en=getLocale()==='en',copy=(zh,english)=>en?english:zh,d=installPanel.dialog;
@@ -677,7 +679,7 @@ $('#city-button').addEventListener('click',openBrowsingCity);$('#close-dialog').
 dialog.addEventListener('cancel',e=>{e.preventDefault();closeModal();});
 dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});
 function openAbout(){modal(UI_TEXT('属于你们的成长手账'),UI_HTML`<div class="profile-details"><p>免登录可以使用本地档案，邮箱登录后可私有云同步。公开资料和社区内容由你主动选择发布。</p><p>支持记录编辑、独立护理待办、备份恢复和日历文件导出。</p></div><div class="form-actions">${state?button(UI_TEXT('导出我的数据'),'export','secondary','download'):''}<button class="button" data-action="close">继续记录</button></div>`);}
-profileMenu=createProfileMenu({triggers:[$('#about-button'),$('#owner-profile-button')],getLocale,onProfile:()=>{location.hash='profile';},onAccount:openAccount,onAbout:openAbout,onHelp:()=>helpPanel?.open()});
+profileMenu=createProfileMenu({triggers:[$('#about-button'),$('#owner-profile-button')],getLocale,onProfile:()=>{location.hash='profile';},onAccount:openAccount,onAbout:openAbout,onHelp:()=>helpPanel?.open(),onInstall:installFromMenu,getInstallLabel:deviceInstallLabel});
 $('#dialog-help-button').addEventListener('click',()=>helpPanel?.open());
 window.addEventListener('beforeunload',e=>{if((dialog.open&&(dirty||saving))||publicSurface?.hasUnsavedChanges?.()||publicSurface?.isSaving?.()||photoWall?.hasUnsavedChanges?.()||photoWall?.isSaving?.()){e.preventDefault();e.returnValue='';}});
 window.addEventListener('hashchange',route);

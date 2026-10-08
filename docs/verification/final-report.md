@@ -22,7 +22,7 @@ Mac Chrome本地与原URL分别10pass/1unverified：真实PWA.install、OS入口
 
 ## 用户三端、Windows包与日历
 
-Windows ZIP源与自包含file://页面验证、11项报告/元数据/SHA契约检查通过，56manual项初始not-run；自动HTTP成功不等于OS/真机/读屏通过。最新包SHA256 `904ac9799d9a22ee8bf11f38f9d3021f2ce1b90a5435faaf8f5469db2d69d807`；PS5.1本机无pwsh，实际执行待用户Windows。
+Windows ZIP源与自包含file://页面验证、11项报告/元数据/SHA契约检查通过，56manual项初始not-run；自动HTTP成功不等于OS/真机/读屏通过。新版兼容修复包SHA256 `7469379ea8761bb44760204e487cf1646b6c438714af3ccb5eee0a2c6051f9a2`；已收到旧包在Windows运行结果，byte[]解析兼容修复仍需Windows复跑，不把Mac源契约检查当PS实际通过。
 
 用户明确iPhone/Windows/Mac都有，Google与Outlook两个网页版可登录，不需要桌面下载。两份ICS由产品exporter实际生成，每份2个全天事件、相同UID、首次10月10/12日、改期11/12日、无VALARM；网页导入/重复/改期/通知待用户实际结果，Apple旧导入证据不扩充为全部三端通过。
 

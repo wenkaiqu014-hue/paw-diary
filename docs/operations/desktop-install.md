@@ -39,3 +39,5 @@ Chrome可用网站真实的一键安装事件或浏览器地址栏、菜单提�
 - https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps/ux
 - https://support.apple.com/en-us/104996
 - https://support.apple.com/guide/iphone/open-as-web-app-iphea86e5236/ios
+
+右上角个人菜单可直接选择“安装桌面版”（手机为“添加到主屏幕”）：浏览器提供安装事件时直接请求原生安装确认，否则显示平台操作说明。

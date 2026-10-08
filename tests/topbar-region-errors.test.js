@@ -26,18 +26,22 @@ process.on('unhandledRejection',error=>unhandled.push(error.code??String(error))
 vm.createContext(context);
 vm.runInContext([declaration('setCommunityBrowseRegion'),declaration('openCommunityBrowseRegion'),'openCommunityBrowseRegion();'].join(String.fromCharCode(10)),context);
 apply.onclick();
+if(process.argv[1]==='identity')context.communityIdentityGeneration++;
+if(process.argv[1]==='surface')context.publicSurface={};
 await new Promise(resolve=>setTimeout(resolve,30));
 console.log(JSON.stringify({unhandled,toasts,selection:context.communityBrowseRegion,persisted:JSON.parse(stored.get('paw-diary:community-browse-region')),label:label.textContent,filter:model.getState().filters,error:model.getState().error}));
 model.destroy();
 `;
- const result=spawnSync(process.execPath,['--input-type=module','-e',probe],{cwd:process.cwd(),encoding:'utf8'});
+ for(const scenario of ['same','identity','surface']){
+ const result=spawnSync(process.execPath,['--input-type=module','-e',probe,scenario],{cwd:process.cwd(),encoding:'utf8'});
  assert.equal(result.status,0,result.stderr);
  const observed=JSON.parse(result.stdout.trim());
  assert.deepEqual(observed.unhandled,[],'directory failure must not escape as an unhandled promise rejection');
- assert.deepEqual(observed.toasts,['UNAVAILABLE'],'the same live surface should explain the failure');
+ assert.deepEqual(observed.toasts,scenario==='same'?['UNAVAILABLE']:[],'only the same live identity/surface should explain the failure');
  assert.equal(observed.selection.cityId,'110100');
  assert.deepEqual(observed.persisted,observed.selection,'browsing preference remains available for retry');
  assert.equal(observed.label,'synthetic city');
  assert.equal(observed.filter.cityId,'110100');
  assert.equal(observed.error,'UNAVAILABLE');
+ }
 });

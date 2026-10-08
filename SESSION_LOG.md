@@ -1135,3 +1135,9 @@ main全新npm ci、614/614无fail/skip、语法/diff/stable build复验后将11b
 Safari反馈修复块14:53:37开始：Root先运行shared-city browser RED，home实际仍旧六城modal；改app所有topbar/action city共用openBrowsingCity，communityEnabled时全国picker，只写既有community-browse-region。GREEN实际公共目录home→community→inline/topbar双向→nearby→health→reload一致，原demo snapshot字节不变。第一次GREEN脚本错用“北京”全等目录“北京市”而超时，改按实际名称includes，未为测试更改目录。CSS worker独占community.css/style.css/专属e2e，RED mobile文字偏12.5px/标题solid框，修flex居中及仅#dialog-title outline，GREEN实际Chrome155 390px中心0px、标题仍focused无框、下一Tab交互按钮solid3px。当前WebKit未安装，不称代Safari实机验。Root看截图确认；独立review另行检查共享地区不改profile草稿。
 
 200长中文合成记录初次夹具失败原因是旧seed.reminder引用已替换的recordIDs（validateSnapshot报事项没有对应记录），清夹具reminders后先通过schema再跑实际桌面/390UI：200行、无横向溢出、0pageErrors通过。不改生产数据，不将初次无效夹具当产品故障。
+
+用户Windows续验明确Chrome地址栏可见install，Edge未找到，要求在个人菜单新增“安装桌面版”入口；已按明确设计直接实施，小范围复用installController真实事件与既有独立说明，不再增加访谈。手机显示“添加到主屏幕”、英文一致；prompt-ready点击菜单同步调用真实event.prompt，没有事件就打开平台说明，既有表单/个人资料草稿不被替换。用户另确认日历还未导入，已给两份ICS本地链接及Google/Outlook独立测试日历首导/重复/改期/通知/清理的具体步骤，尚无实导结果。
+
+城市审查Important1：community.setBrowseRegion返回load Promise，远端失败会throw且未捕获；独立真实controller+提取实际app函数的VM probe先RED unhandled UNAVAILABLE，Root补Promise catch并匹配原generation/surface才提示，当前同身份/换身份/换surface3分支GREEN，无unhandled、选择/persist/filter保留，过期提示抑制。review块14:56:18–14:59:37=3分19，开放Critical/Important0。WindowsContent修复块14:55:45–14:58:13=2分28，JSON/index用UTF8 byte/string decoder、BOM仅text去除、SHA保rawbytes，定向4/4 GREEN；新增PS5.1行为脚本未在Mac执行。Root最终616/616无fail/skip，Fresh main npm ci/616/stable build/语法/diff过；已集成源码0124047（工作树4a8dcd1 cherry-pick），因随后新增安装菜单尚未push，最终source将再更新。
+
+新增安装菜单RED：旧菜单无安装项；增加后说明关闭回原头像焦点丢失，worker只对安装action close(true)修复。Root实际4组Chrome中英/桌面UA+iPhoneUA GREEN，说明/返回焦点/业务草稿保留通过；UA模拟不当iPhone安装证明，未派发伪造OS安装事件。Root最后npm test616/616、语法/diff0，Windows新版包6白名单文件SHA7469379ea8761bb44760204e487cf1646b6c438714af3ccb5eee0a2c6051f9a2，归档用户原ZIP保持原样，更新Windows prompt与清单。

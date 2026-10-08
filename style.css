@@ -203,7 +203,7 @@ dialog{max-height:calc(100dvh - 32px);overscroll-behavior:contain}
 
 [hidden]{display:none!important}
 
-.top-actions{flex-wrap:wrap;min-width:0;max-width:100%}.workspace-controls p{min-width:0;overflow-wrap:anywhere}.workspace-actions{min-width:0;max-width:100%}.workspace-actions .button{white-space:normal;min-width:0;overflow-wrap:anywhere}
+.top-actions{flex-wrap:wrap;min-width:0;max-width:100%}.workspace-controls p{flex:1 1 240px;min-width:min(180px,100%);overflow-wrap:anywhere}.workspace-actions{min-width:0;max-width:100%}.workspace-actions .button{white-space:normal;min-width:0;overflow-wrap:anywhere}
 
 /* Stage3: one aligned content boundary and equal home columns. */
 .workspace-controls{margin-left:42px;margin-right:42px}

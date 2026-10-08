@@ -1045,3 +1045,15 @@ v0.7.1新annotated tag解引用0a1b2ea，Release https://github.com/wenkaiqu014-
 交接保v0.6.2 AI逐条record/plan、公开/私有身份与独立媒体/健康语义，禁止恢复公共例子/顶部搜索/祖先滚动/Promise.all事务读取；真实桌面原生定位与模拟拒绝分清，真手机GPS/软键盘/缩放/读屏/Google-Outlook实导/指南/PWA/亲验明确未勾。记原600 A/B会话两键、先核恢复/串行refresh写回、旧副本不要覆盖/旧OTP不重消费；FUJI固定管理、原环境、server-only LBS Key、AI供应商/限额与预算边界，无新增采购。提醒本机定位IP今日接近限制，不反复测试或泛用quota reset，不把额度失败当充值理由。
 
 PENDING更新日期及唯一新入口、AGENTS阶段5入口、regions历史待验证段与补丁报告函数Active先后说明同步。检查新handoff引用文件全部存在、git diff --check通过；文档-only不重跑业务单测或部署网页、不读凭证值。当前main在交接前6573ab1，交接提交随后生成，不reset业务tag。下一session按handoff→PENDING→最新log→v071报告→05计划定向恢复，不通读所有旧历史、不从旧stage4树重做。
+
+## 阶段5启动：现状核对与Grilling规划
+
+2026-10-08 11:56:49 Asia/Shanghai（clock工具03:56:49 UTC检查点）。用户要求先核对现状、用superpower和grill讨论，目标是形成较详细的第五阶段plan；明确本session可派子agent、有头浏览器与截图。当前先只读调查与需求讨论。使用本机using-superpowers/brainstorming/grilling/writing-plans，归类完整设计流程；用户指定Grill按独立决策frontier成轮提问，继承可重看帮助、每已发布版本一次新内容、可跳过重看遮罩、三步建档独立和优先可安装网页等已有决定，不重访已定方向。
+
+main初始工作区干净、与origin/main对齐，HEAD4203f15；读取stage5-handoff、PENDING当前摘要、SESSION_LOG最新段、v071报告、05旧计划及总计划，定向检查原followup决策及calendar-clients。文件证据记录公开基线v0.7.1/source0a1b2ea/552单元、真实社区与桌面定位已验，手机/读屏/原生缩放/Google-Outlook实导/指南/PWA仍待；本轮未重跑业务测试或在线验证，不把旧证据写成本轮结果。总计划顶部尚含v0.6.1旧入口，完整规划收口需同步，不据此回退源码。
+
+派stage5_code_facts explorer只读调查现有帮助/onboarding/版本记忆、安装相关代码、构建白名单与子路径、草稿保护，要求文件行号、已有与缺失能力、风险，禁止改代码/真实API/读凭证；Root负责日志。初报确认目前仅助手help来源弹窗及关于菜单，无manifest/worker/安装/版本公告逻辑，三步onboarding独立持久化到profile.stage3；精确行号报告待返回。kill-race-dupes防御检查：本机该项目.Codex-internal/.Codex旧式metadata路径均不存在，无对应subagents目录可清理，不使用shell kill。
+
+首轮将对齐验收缺口时的发版门槛、可参与的真机/日历环境、帮助入口/指引覆盖和阶段5发行号，用户回复后推进依赖问题。尚未形成新版spec/plan、未开始产品实施。没有收费、采购、云管理/模型/定位请求、浏览器操作、tag或部署。
+
+文档更新首次尝试通过python3 stdin失败：解释器报Non-UTF-8 code且未执行修改，命令尾部diff空结果不作为更新成功。改用apply_patch更新PENDING与本日志；结束前另检查diff并纳入本地Git。此轮仅文档，不制造业务测试。

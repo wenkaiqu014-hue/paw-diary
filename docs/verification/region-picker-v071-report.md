@@ -1,6 +1,6 @@
 # v0.7.1：定位与地区菜单修复
 
-用户反馈：浏览器“用当前位置建议地区”一直无建议；区多时必须同时滚小列表和大弹窗；希望删顶部搜索，改城市菜单内首行自动搜索。追加要求删除社区／宠友“看看内容示例”。本补丁由fix/region-picker-v071从66f8690实施，原网址与旧tags保留，发行核验待追加。
+用户反馈：浏览器“用当前位置建议地区”一直无建议；区多时必须同时滚小列表和大弹窗；希望删顶部搜索，改城市菜单内首行自动搜索。追加要求删除社区／宠友“看看内容示例”。本补丁由fix/region-picker-v071从66f8690实施，原网址与旧tags保留，v0.7.1已于2026-10-08 11:48:44 Asia/Shanghai正式发布。
 
 ## 已修复
 
@@ -25,4 +25,10 @@
 
 ## 发行核验
 
-待：新main构建/测试、原网址SHA及交互检查、v0.7.1新tag/Release和文档收口。以实际结果补充，不提前声明发布。
+main/source/tag解引用0a1b2eabefb5d8af60c9aa19c1b603c8a16ce004，552单元及全新npm ci/build通过。Pages37723735372 success，Deploy11:40:05、workflow11:40:06。原URL实际公开三宽双语／键盘／保稿／手选检查通过；例子区不存在，顶部独立搜索不存在。最后原URL原生Chrome定位（无坐标mock）实际得到地区确认按钮。新annotated v0.7.1／Release11:48:44公开，非draft/非prerelease，旧tags不动。
+
+原URL模块图及字节SHA匹配main构建：app-CO2I3K3F.js=07e52a0604fbb48759b330ddbbcd1bfed7219baeb0f3aba7ad212b328816f326，style-P6JZ3ZBI.css=eefad42303266ed5a66fc3bf1a8a42a55d93320510f77899f9dfbe58081446c1。证据test-results/region-v071/online-build-verification.json、online-public-e2e.log、online-final-native.log。
+
+连续调试触发本机当天IP定位10次上限，线上末次第一次验收得到准确“额度已用完”。Root按该次已知合成nonce与可信平台IP，只在私密deny集合临时保存本机counter精确引用，管理事务核当前日期／nonce／count=10后回退两次本轮已确认调试占用（10→8），不清全部计数、不改perIP上限10或全站day/month及上游实耗。临时引用文档删除、临时函数代码恢复；最终paw-community11:47:23 Active。随后默认ID正常原URL原生定位成功。此清理仅用于本轮自身调试，不提供对外配额绕过功能。
+
+用户最后明确本轮只发0.7.1，未创建0.8；阶段5待项和最终20:00仍保持。

@@ -1029,3 +1029,11 @@ B real UI新discovery15.06秒：已隐藏内容列表恢复后帖重现、checkb
 此时新完整单测551/551和实际新UI主链通过，后续transaction新增项计数另记；没有新费用采购/模型/认证请求。Root源码函数诊断部署均只paw-community，FUJI管理身份，私有API与provider设置未改。未完成发版、定位最终稳定复验，不预先称已收口。
 
 11:35工具检查点后定位根因收口：平台SDK诊断捕获准确ResourceUnavailable.TransactionBusy，reserveCounters同事务并行tx.get已换顺序读／统一校验／顺序写，原额度/共享QPS不放宽且无整请求retry。新增原生并行事务复现RED→GREEN，真实平台SDK公共点与实际原生Chrome随后连续两条均有建议。所有临时gateway/regions/tencent-location诊断已恢复删除，只保limits一处真正修复；11:35:41最终paw-community Active。Rootactual-App stage4三宽双语／手选／模拟拒绝／键盘保稿通过，workerDOM Root复跑通过，552单测通过。主目录新0.7.1 version/package/lock，README/CHANGELOG同步删除公共示例说明且修正旧0.7.0待发布文字；首页“示例宠友”文案改为真实宠友，两语言键同步。旧标签和用户健康不动。此时尚未发布新前端，正在完成main合并和原URL核验。
+
+### v0.7.1原网址正式收口
+
+用户最后明确“这次发0.7.1就行，不要弄成0.8”，与Root候选一致，未建0.8。源码0a1b2eabefb5d8af60c9aa19c1b603c8a16ce004 main快进，全新npm ci及552/552无fail/skip，publicbuild/hash/语法/diff通过。Pages37723735372 Deploy11:40:05/workflow11:40:06 success；原URL app-CO2I3K3F.js/style-P6JZ3ZBI.css分别SHA07e52a0604fbb48759b330ddbbcd1bfed7219baeb0f3aba7ad212b328816f326/eefad42303266ed5a66fc3bf1a8a42a55d93320510f77899f9dfbe58081446c1匹配main。原URL三宽双语/键盘/保稿/真实手选PASS，例子区/顶部独立搜索均无，原健康8组PASS。
+
+最终线上原生Chrome定位（网站权限grant、无坐标mock）先准确提示额度已耗完，原因本轮调试消耗本机IP10次限制。Root仅对已知这次合成nonce通过可信平台上下文记录私密counter引用，FUJI管理事务核精确引用/当天/nonce/count10，回退本轮两次已确认调试占用10→8；perIP上限10、全站daily/monthly与上游实耗不变，临时deny集合引用即删除，不清其他计数。临时函数分支与所有诊断恢复，最终paw-community11:47:23 Active，配额与身份仍原边界。原URL最后默认visitorId流程实际显示“确认后才更新所选地域”及可见确认按钮，geo1call/success/0原生error，未打印/存储坐标。该自身调试清理不作为产品配额绕过入口。
+
+v0.7.1新annotated tag解引用0a1b2ea，Release https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.7.1 于11:48:44公开，非draft/prerelease；旧tag逐项对照发行前快照不变。源/版本/README/CHANGELOG/PENDING/AGENTS/PRODUCT与补丁报告同步，后续docs-only不改公开模块图或重部署。阶段5手机GPS/读屏/PWA/日历实导及用户完整亲验继续单列，不把本次桌面原生定位代真机。浏览器全部本轮上下文关闭，停止本轮4231本地服务，不动用户LBS窗口/其他服务。最终20:00截止不变。

@@ -9,3 +9,17 @@
 .region-picker .select-panel-floating .select-options{min-height:0;overflow:auto;overscroll-behavior:contain;flex:1}
 .region-picker .select-search{flex:none;padding:4px 4px 8px;border-bottom:1px solid var(--line);margin-bottom:4px}
 .region-picker .select-search input{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#f8faf6;font:inherit;color:var(--ink)}
+
+/* Public post photos preserve the complete image in editors, details and feeds. */
+.owner-avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.community-editor-dialog .photo-preview,
+.community-detail-dialog .photo-preview,
+.community-public .post-image{
+ width:auto;
+ max-width:100%;
+ height:auto;
+ max-height:480px;
+ max-height:min(480px,60dvh);
+ object-fit:contain;
+ margin-inline:auto;
+}

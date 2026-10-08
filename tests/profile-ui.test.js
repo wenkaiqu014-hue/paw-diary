@@ -54,3 +54,18 @@ test('hidden list paginates owner-only items and recovery uses desired false wit
 test('hidden restore failure keeps row and reuses operation key on retry',async()=>{const keys=[];let fail=true;const f=hiddenFixture({request:async(a,p,o)=>{if(a==='community.hidden.list')return{items:[{postId:'p',title:'保留行',available:true}],nextCursor:null};keys.push(o.operationId);if(fail){fail=false;throw Object.assign(Error('offline'),{code:'UNAVAILABLE'});}return{postId:'p',hidden:false};}});await f.controller.load();await assert.rejects(f.controller.restore('p'));assert.equal(f.controller.getState().items.length,1);await f.controller.restore('p');assert.equal(f.controller.getState().items.length,0);assert.equal(keys[0],keys[1]);});
 test('late hidden-A results do not populate B and guests cannot read hidden content',async()=>{let release;const f=hiddenFixture({request:()=>new Promise(r=>release=r)});const pending=f.controller.load().catch(e=>e);f.setScope({userId:'hidden-B',generation:2});release({items:[{postId:'private-A-title',title:'A only'}],nextCursor:null});assert.equal((await pending).code,'WORKSPACE_CHANGED');assert.equal(f.controller.getState().items.length,0);f.setScope({userId:null,generation:3});await assert.rejects(f.controller.load(),e=>e.code==='UNAUTHENTICATED');});
 test('busy hidden restoration rejects duplicate requests and ignores destroyed responses',async()=>{let release,count=0;const f=hiddenFixture({request:async(a)=>{if(a==='community.hidden.list')return{items:[{postId:'p',title:'p',available:true}],nextCursor:null};count++;return new Promise(r=>release=r);}});await f.controller.load();const pending=f.controller.restore('p').catch(e=>e);await assert.rejects(f.controller.restore('p'),e=>e.code==='BUSY');assert.equal(count,1);f.controller.destroy();release({postId:'p',hidden:false});assert.equal((await pending).code,'WORKSPACE_CHANGED');});
+test('invalid profile is rejected with field detail before a network save and retains edits',async()=>{
+ const f=fixture();await f.editor.load();f.editor.set('discoverable',true);
+ await assert.rejects(f.editor.save(),e=>e.code==='INVALID_INPUT'&&e.field==='cityId');
+ assert.equal(f.saved.length,0);assert.equal(f.editor.values().discoverable,true);assert.equal(f.editor.isDirty(),true);assert.equal(f.editor.isBusy(),false);
+});
+test('profile flow validates fields before uploading a public image',async()=>{
+ const f=fixture();await f.editor.load();f.editor.set('nickname','  ');let uploads=0;
+ const flow=createProfileSaveFlow({editor:f.editor,getSession:()=>({userId:'a',generation:1}),uploadImage:async()=>{uploads++;return{assetId:'unneeded-image'};}});
+ await assert.rejects(flow.save({file:new Blob(['source'])}),e=>e.code==='INVALID_INPUT'&&e.field==='nickname');assert.equal(uploads,0);assert.equal(flow.isSaving(),false);
+});
+test('profile feedback is bilingual and unknown server invalid input never invents a field',()=>{
+ assert.match(profileModule.profileValidationMessage({code:'INVALID_INPUT',field:'petTypes',messageKey:'profile.petTypes.required'},'zh-CN'),/至少选择一种养宠类别/);
+ assert.match(profileModule.profileValidationMessage({code:'INVALID_INPUT',field:'purposes',messageKey:'profile.purposes.required'},'en'),/Select at least one interest/);
+ const unknown=profileModule.profileValidationMessage({code:'INVALID_INPUT',field:'nickname',message:'secret payload'},'zh-CN');assert.match(unknown,/当前输入和已有资料均已保留/);assert.equal(unknown.includes('secret payload'),false);
+});

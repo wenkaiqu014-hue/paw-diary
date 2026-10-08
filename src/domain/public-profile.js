@@ -2,16 +2,16 @@
 export const PROFILE_PURPOSES=Object.freeze(['新手互助','遛宠搭子','养猫交流','多宠家庭']);
 export const PROFILE_PET_TYPES=Object.freeze(['cat','dog']);
 const fields=new Set(['nickname','avatarAssetId','bio','cityId','districtId','petTypes','purposes','discoverable']);
-const invalid=()=>{throw Object.assign(new Error('Invalid public profile'),{code:'INVALID_INPUT'});};
-const text=(value,max,required=false)=>{if(typeof value!=='string'||value.trim().length>max||(required&&!value.trim())||/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(value))invalid();return value.trim();};
-const optionalId=value=>{if(value===undefined||value===null||value==='')return null;if(typeof value!=='string'||!/^[a-zA-Z0-9_-]{1,128}$/.test(value))invalid();return value;};
-const choices=(value,allowed)=>{if(value===undefined)return[];if(!Array.isArray(value)||value.length>allowed.length||value.some(v=>!allowed.includes(v))||new Set(value).size!==value.length)invalid();return [...value];};
+const invalid=(field,reason='invalid')=>{throw Object.assign(new Error('Invalid public profile'),{code:'INVALID_INPUT',...(field?{field,messageKey:`profile.${field}.${reason}`}:{})});};
+const text=(value,max,required=false,field)=>{if(typeof value!=='string'||/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(value))invalid(field);if(required&&!value.trim())invalid(field,'required');if(value.trim().length>max)invalid(field,'length');return value.trim();};
+const optionalId=(value,field)=>{if(value===undefined||value===null||value==='')return null;if(typeof value!=='string'||!/^[a-zA-Z0-9_-]{1,128}$/.test(value))invalid(field);return value;};
+const choices=(value,allowed,field)=>{if(value===undefined)return[];if(!Array.isArray(value)||value.length>allowed.length||value.some(v=>!allowed.includes(v))||new Set(value).size!==value.length)invalid(field);return [...value];};
 export function validateProfileInput(input){
   if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!fields.has(k)))invalid();
-  if(input.discoverable!==undefined&&typeof input.discoverable!=='boolean')invalid();
-  const profile={nickname:text(input.nickname,30,true),avatarAssetId:optionalId(input.avatarAssetId),bio:text(input.bio??'',120),cityId:optionalId(input.cityId),districtId:optionalId(input.districtId),petTypes:choices(input.petTypes,PROFILE_PET_TYPES),purposes:choices(input.purposes,PROFILE_PURPOSES),discoverable:input.discoverable??false};
-  if(profile.districtId&&!profile.cityId)invalid();
-  if(profile.discoverable&&(!profile.cityId||!profile.petTypes.length||!profile.purposes.length))invalid();
+  if(input.discoverable!==undefined&&typeof input.discoverable!=='boolean')invalid('discoverable');
+  const profile={nickname:text(input.nickname,30,true,'nickname'),avatarAssetId:optionalId(input.avatarAssetId,'avatarAssetId'),bio:text(input.bio??'',120,false,'bio'),cityId:optionalId(input.cityId,'cityId'),districtId:optionalId(input.districtId,'districtId'),petTypes:choices(input.petTypes,PROFILE_PET_TYPES,'petTypes'),purposes:choices(input.purposes,PROFILE_PURPOSES,'purposes'),discoverable:input.discoverable??false};
+  if(profile.districtId&&!profile.cityId)invalid('cityId','required');
+  if(profile.discoverable){if(!profile.cityId)invalid('cityId','required');if(!profile.petTypes.length)invalid('petTypes','required');if(!profile.purposes.length)invalid('purposes','required');}
   return profile;
 }
 export function publicIdentity(profile){return{authorId:profile.authorId,nickname:profile.nickname,avatarAssetId:profile.avatarAssetId??null};}

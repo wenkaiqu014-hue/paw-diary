@@ -720,5 +720,9 @@ export default Object.freeze({
   "whatsNew.v100.beta": "邮箱登录与注册需要邀请者提供的内测码。示例、本地记录和公开浏览继续可用。",
   "whatsNew.v100.data": "已有合法账号保留内测资格，健康档案与照片仍然私有。",
   "whatsNew.v100.guidance": "完善登录提示与发码频率保护，并补充备份、安装和日历使用说明。",
+  "whatsNew.v101.title": "爪爪日记 1.0.1",
+  "whatsNew.v101.images": "修复社区头像和帖子图片显示，预览与详情完整保留图片比例。",
+  "whatsNew.v101.profile": "个人菜单显示已保存头像，发帖前引导设置公开昵称，保存后继续写帖。",
+  "whatsNew.v101.validation": "个人资料填写错误提示具体字段，保留输入并方便直接修改。",
 
 });

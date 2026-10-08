@@ -720,5 +720,9 @@ export default Object.freeze({
   "whatsNew.v100.beta": "Email sign-in and registration require your invitation code. Demo, local journals and public browsing remain available.",
   "whatsNew.v100.data": "Existing verified accounts keep their beta access. Health journals and photos remain private.",
   "whatsNew.v100.guidance": "Clearer sign-in messages, email rate protection, and backup, installation and calendar guidance.",
+  "whatsNew.v101.title": "Paw Diary 1.0.1",
+  "whatsNew.v101.images": "Community avatars and post photos now load correctly. Previews and details preserve the complete image.",
+  "whatsNew.v101.profile": "Account menus show your saved avatar. Choose a public nickname before writing, then continue your post.",
+  "whatsNew.v101.validation": "Profile validation points to the field to fix and keeps your input.",
 
 });

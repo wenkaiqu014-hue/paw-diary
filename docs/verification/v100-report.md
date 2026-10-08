@@ -1,5 +1,7 @@
 # v1.0.0 内测准入与专项验收报告
 
+2026-10-08 Windows补测最新：PS5.1自动10通过；人工4通过/0失败/5未验证/4本轮有意不重跑，实际原生200%确认说明横排及登录/助手不重叠，菜单/帮助/表单可达，已测键盘和确切本轮清理通过。原1.0.0最终1f449构件/实际加载JS SHA一致。原日常App图标重开、Narrator保存状态用户明确跳过，dirty/busy/photo跨升级缺真实旧现场，仍未验证；用户明确“没有啥大问题的话就不用再担心windows了”，本轮不再要求补测，不能改成已通过。原始报告保留；本地归档test-results/v100/windows-user-followup/paw-v100-windows-followup-results.zip，1229693字节/19项/SHA3376dbd249f7b7e1a8900e263cfcd05a4159a95302dfff2828991c8b793c9182，原桌面已移走。不发布用户回传ZIP。原report cleanup reason有旧待听读字样，最新cleanup evidence及独立narrator-cleanup确认草稿已取消/真实延迟0/Offlinefalse/窗口关闭；按实际最终证据归档，不改原文。
+
 更新：2026-10-08 17:41:36 Asia/Shanghai。状态：**v1.0.0正式发行；Windows具体未验证组合独立保留**。以下数字及真实操作来自主agent本轮记录与指定原始证据；文档收口agent没有操作真实账号、云端或用户资料。
 
 ## 发行与范围

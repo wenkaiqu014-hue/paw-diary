@@ -69,9 +69,8 @@ def main():
   page.locator('[name="title"]').fill('访客的同一篇草稿')
   page.locator('[name="text"]').fill('登录和补昵称后也要保留的输入');page.evaluate("window.community.setBrowseRegion({cityId:'440300',districtId:'440305'})");assert page.locator('[name="text"]').input_value()=='登录和补昵称后也要保留的输入';assert page.evaluate('window.community.getState().filters.cityId') is None
   page.get_by_role('button',name='确认发布',exact=True).click();page.wait_for_function("window.transition?.type === 'login'")
-  page.evaluate('completeLogin()');page.locator('[name="title"]').wait_for();assert page.locator('[name="title"]').input_value()=='访客的同一篇草稿'
-  page.get_by_role('button',name='确认发布',exact=True).click();page.wait_for_function("window.transition?.type === 'profile'")
-  page.evaluate('completeProfile()');assert page.locator('[name="text"]').input_value()=='登录和补昵称后也要保留的输入'
+  page.evaluate('completeLogin()');page.wait_for_function("window.transition?.type === 'profile'");assert page.locator('[name="title"]').count()==0
+  page.evaluate('completeProfile()');page.locator('[name="title"]').wait_for();assert page.locator('[name="title"]').input_value()=='访客的同一篇草稿';assert page.locator('[name="text"]').input_value()=='登录和补昵称后也要保留的输入'
   page.evaluate('window.failSave=true');page.get_by_role('button',name='确认发布',exact=True).click();page.locator('[data-community-editor-error]').wait_for(state='visible');assert page.locator('[name="title"]').input_value()=='访客的同一篇草稿'
   failed_key=page.evaluate('window.lastWriteKey');page.get_by_role('button',name='确认发布',exact=True).click();page.wait_for_function('window.savedPosts===1');assert page.evaluate('window.lastWriteKey')==failed_key
   page.locator('[data-community-post]').filter(has_text='访客的同一篇草稿').get_by_role('button',name='查看详情',exact=True).click()

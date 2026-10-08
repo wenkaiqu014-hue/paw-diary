@@ -1257,3 +1257,15 @@ Root明确RELEASE NOW，冻结SOURCE1f44973a357cfdfb9e51a0d27327f1ec6d5e4611、P
 前次Root最后独立Git/Release核验工具时间18:08:30，扣27分05秒真实等待后累计活动2小时00分35秒，比两小时约束超35秒；此前文档推送完成时仍在预算内，不据此宣称含最终Root核验的全程严格达标。本段补全时间口径，当前交接不倒算为前次实施预算。
 
 18:21:51工具检查点：Python核补测任务关键覆盖、旧prompt相对链接、既有六文件包SHA及ZIP完整性均通过，git diff --check退出0。仅文档修改，不重跑应用测试、不重建dist、不改tag或Release；本地Git保存交接。
+
+### 社区与个人资料紧急修复 v1.0.1 — 2026-10-08 18:32:00起点
+
+用户截图明确要求30分钟修：帖子头像/公开图片隐藏、预览固定比例裁剪、写一篇立即引导缺昵称；追加top/sidebar已存头像仍首字和一次资料INVALID_INPUT无字段。工具起点18:32:00/截止19:02:00，使用systematic-debugging/TDD/Impeccable/browser/独立审查，按用户既有工具及立即修复授权执行有界修复，不重复确认设计或派工。worktree .worktrees/community-v101、fix/community-v101基线89e7ca4（.worktrees已ignored、无native工具），npm ci＋695基线全过。主agent协调app/community共享文件精确函数，其余明确所有权三agents，无回退别人改动。
+
+media agent证明hidden image观察自身导致五项RED/read0，改parent观察及首字回退GREEN5/read13；preview agent scoped自然比例/contain/480px60dvh，旧RED670×150 cover→1440/390横竖GREEN四角完整，后续chrome实际函数+生产loader两宽解码圆形中心/cache/remove/fail/身份迟到保护通过。Root preflight actualDOM旧RED无profile提前路由→GREEN6；旧guest completeLogin后原测试期待立即editor已按新行为改为先profile，同时保原标题/正文assert，完整community旧双语三宽GREEN。Root chrome头像NodeRED2/3失败→GREEN3、productionloader/capturedUID/generation/asset/turn及单内存缓存，不改profile/帖子数据。
+
+Review独立发现两个Important：初稿在profile-read失败丢失、list刷新全局取消detail images；Root补owner-scoped pendingEntryDraft，review agent按feed/detail独立生命周期，固化实际并发RED三图隐藏→GREEN，评论输入保留。两项独立关闭、Critical0/Important0；初次完整复验与npm version并发读取临时package JSON导致3fail，版本稳定复跑702/702。preflight扩展测试先holdProfileRead夹具状态未清造成一次30s超时，修fixture后6GREEN，不当产品错误。Profile追加agent共享validator原拒绝条件加field/messageKey、saveFlow上传前验证、就近双语aria错误/字段与增强select回焦、未知serverINVALID_INPUT不猜字段/保稿，RED3→GREEN；历史用户具体invalid原因无证据不能归因截图内容。夹具一次缺括号JS语法、chrome测试初次错误期待手机隐藏sidebar仍有像素，均修fixture期望后浏览器GREEN，没有产品假通过。
+
+Root实际完整npm test702/702/0skip，syntax/diff0、mechanical detector[]；新profile/images/browser及旧community复验产物均ignored test-results/v101。真实原URL匿名只读列表为空/0pageError，首次等待帖子25s超时不当媒体通过；改只读probe空列表记录liveMediaSampleAvailable=false，用户原帖在线图需其更新后亲验，没有读取会话/发新验证码/云写入/更改真实帖子或资料。版本metadata/newnotes改1.0.1，原tag保留；部署/Release/公开SHA及任务结束时间随后按实际补记。
+
+18:46:42工具检查点：用户新增桌面Windows followup ZIP且明确“跳过几个无关紧要测试、没有大问题不再担心Windows”。实际归档1229693B/19项、SHA3376dbd249f7b7e1a8900e263cfcd05a4159a95302dfff2828991c8b793c9182，ZIP完整/复制SHA一致后删除桌面原件，主目录ignored windows-user-followup，folder700/file600；仅归档、不上传。PSauto10pass，manual4pass/0fail/5unverified/4历史有意不重跑；native200修后横排/无助手遮挡、键盘、exact本轮清理真通过。原App/Narrator用户回复不管了主动跳过，更新组合无旧现场；标用户不再要求补测、实际未验证保留，Windows结束跟进不再反复测试。原cleanup.reason旧待听读文案与最终收尾evidence差异在报告注明，最新独立narrator-cleanup确证草稿取消/网络0/Offlinefalse。此消息为当前修复中的新增交接，不取消社区30分钟目标；社区继续发布1.0.1。

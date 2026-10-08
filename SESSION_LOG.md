@@ -1141,3 +1141,15 @@ Safari反馈修复块14:53:37开始：Root先运行shared-city browser RED，hom
 城市审查Important1：community.setBrowseRegion返回load Promise，远端失败会throw且未捕获；独立真实controller+提取实际app函数的VM probe先RED unhandled UNAVAILABLE，Root补Promise catch并匹配原generation/surface才提示，当前同身份/换身份/换surface3分支GREEN，无unhandled、选择/persist/filter保留，过期提示抑制。review块14:56:18–14:59:37=3分19，开放Critical/Important0。WindowsContent修复块14:55:45–14:58:13=2分28，JSON/index用UTF8 byte/string decoder、BOM仅text去除、SHA保rawbytes，定向4/4 GREEN；新增PS5.1行为脚本未在Mac执行。Root最终616/616无fail/skip，Fresh main npm ci/616/stable build/语法/diff过；已集成源码0124047（工作树4a8dcd1 cherry-pick），因随后新增安装菜单尚未push，最终source将再更新。
 
 新增安装菜单RED：旧菜单无安装项；增加后说明关闭回原头像焦点丢失，worker只对安装action close(true)修复。Root实际4组Chrome中英/桌面UA+iPhoneUA GREEN，说明/返回焦点/业务草稿保留通过；UA模拟不当iPhone安装证明，未派发伪造OS安装事件。Root最后npm test616/616、语法/diff0，Windows新版包6白名单文件SHA7469379ea8761bb44760204e487cf1646b6c438714af3ccb5eee0a2c6051f9a2，归档用户原ZIP保持原样，更新Windows prompt与清单。
+
+最终公开修订8d97886a963395f9e17eea3397ea09d8372624cc推送成功，Pages37741014326 success，Deploy工具completedAt2026-10-08T07:03:03Z=15:03:03 Asia/Shanghai，workflow updated15:03:06。Root线上六项HTTP200字节与稳定构建全部匹配：app-BJOWAUQS.js SHA45eccc041681b7b348a7c5d313ea161f10b9289eff7f3b75672f5c13bf103ae3，style-QOCO2BV4.css SHAb94fe65e2c96f4b97dfacc0aae1aeedb54942a56e58a893eb5bbddf226f59efb。实际原URL城市双向同步/健康snapshot不变、390头像0px/title none/keyboard3px、安装菜单中英desktop/iPhoneUA4组GREEN；WebKit仍缺runtime未验证，已发用户真机刷新请求不默认通过。旧远端tags在正式新tag前cmp与原snapshot完全一致；v0.8.0 Release查不存在，没有移动旧tag。新独立review只核安装入口/gesture契约。
+
+本反馈修复/整合/部署工作块工具14:53:37–15:04:19检查点10分42秒，≤30min；后续发行/交接为独立块，整体仍12:44:26起真实工作，未扣并行用户测试等待。
+
+安装入口独立review15:04:59–15:05:28=29秒：实际app函数+真实controller探针promptWasSync true/prompts1，事件消费后第二次manual说明仍1，appinstalled后第三次说明installed仍1；用户gesture链无await、README平台能力诚实、readonly保稿；Critical/Important0。随后原v0.8.0不存在的基础上，新annotated tag固定8d97886a963395f9e17eea3397ea09d8372624cc推送成功，gh release create --verify-tag/--notes-file公开，tool publishedAt2026-10-08T07:06:20Z=15:06:20 Asia/Shanghai，非draft/non-prerelease。仅上传自己生成19994byte Windows白名单ZIP，GitHub digest与本地SHA7469379e…51f9a2一致，不上传用户21MB报告profile。旧远端24tag refs与启动snapshot逐项一致，未移动任何旧tag。
+
+用户随后回复Safari三个问题修后“通过”；记录为iPhone真机三项与原主屏幕安装成功，GPS/软键盘/VoiceOver等无逐项结果继续待验。Windows新安装菜单原生确认/启动、两家日历实导正在用户测试，未自动勾。仅核自己创建server exact argv后SIGTERM4240 PID5051、4241 PID37906；dev-browser无close子命令查询失败无操作，改仅自己paw-stage5-upgrade命名浏览器用closePage API，原idle已关闭、0命名页，未停共享daemon或LBS窗口。旧worktree证据保留、stage5 reviewer追加测试已独立本地commit fdd431f，main已含相同三分支。
+
+最后用户回报：Windows“没问题了”且询问已添加灰色disabled；Root按真实controller standalone/appinstalled状态说明防重复安装。检查其指定桌面新PNG（其他旧照片未动），实际Windows app titlebar无地址栏、已添加disabled符合当前安装窗口。复制并hash核对归档test-results/stage5/windows-user/windows-installed-standalone.png，416358bytes、SHA27e8b7b6011750adbc80ae29bfb24c9ff1fd8423c8cb7024b361069dadf8c1e1，600权限，桌面原件移除；未编辑图片或公开上传。用户另回报“两家日历都通过了，没有任何问题”，记Google/Outlook按已给首导/重复/改期/通知步骤用户通过，不伪称agent操作、不写未提供的具体数量/更新去重机制。原Windows报告仍保留原始状态，补充user-followup.json记录新回报。
+
+技术发行及本轮用户检查已收口；已实现功能不再重做，剩余读屏/真机GPS逐项结果/Windows卸载和真实跨未来发行更新未验证。Root恢复日志/计划/当前摘要，最终source/tag仍8d97886、docs-only后置不触发Pages或移动tag。工具15:10:06检查点：距12:44:26共2小时25分40秒，无等待扣除，仍低于4h；worker与已记录反馈/发行块均≤30min，未用未记录的精确分块时间作完整时长保证。

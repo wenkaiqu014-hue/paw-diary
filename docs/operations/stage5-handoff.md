@@ -1,6 +1,6 @@
 # 阶段5新 session 交接
 
-阶段5已按用户授权实施并在原网址部署v0.8.0候选；原11bc9f2候选614单测和真实A/B/公开回归、Mac实际安装已验证。用户iPhone六图反馈三处（头像/主标题focus/顶部旧城市）修复正在公开复验；Windows归档test-results/stage5/windows-user（Git忽略，不能发公开），实际report16pass/24not-run/19unverified。先读PENDING当前摘要、SESSION_LOG最新段及final-report，不重做已实现指南/PWA。正式tag/Release状态与最终source以PENDING最新为准，未测读屏/日历/平台安装继续单列。
+v0.8.0已正式发布，source/tag解引用8d97886a963395f9e17eea3397ea09d8372624cc，Pages37741014326 success/Deploy15:03:03，Release15:06:20 Asia/Shanghai。616单测、原URL/真实A/B与Mac实际安装技术检查通过；用户iPhone三处修复已明确“通过”，主屏幕此前明确成功。Windows结果已归档，安装与独立启动、Google/Outlook日历用户已通过；读屏等剩余专项继续单列；不重做已完成阶段、不把版本号当全平台全部通过。 最新事实见PENDING、SESSION_LOG和final-report。 最新用户回报：Windows安装/独立启动和Google/Outlook日历实导用户已明确通过；桌面安装截图已归档并移走原件。剩余读屏、真机GPS逐项结果、Windows卸载/跨后续版本更新等专项仍未验证。
 
 下文为v0.7.1补丁轮交接背景。原文要求下一session进入最后阶段已由最新规划推进，05四任务旧计划作为历史输入，不能按旧“版本待定”再问一遍。
 

@@ -22,7 +22,7 @@ with sync_playwright() as runtime:
             context = browser.new_context(viewport={'width': 390 if mobile else 1440, 'height': 900}, user_agent=IPHONE_UA if mobile else DESKTOP_UA, is_mobile=mobile, has_touch=mobile)
             context.add_init_script("localStorage.setItem('paw-diary:locale', " + json.dumps(locale) + ")")
             def gate(route):
-                if urlparse(route.request.url).hostname in ['127.0.0.1', 'localhost']:
+                if urlparse(route.request.url).hostname in ['127.0.0.1', 'localhost', urlparse(BASE).hostname]:
                     route.continue_()
                 else:
                     route.abort('failed')

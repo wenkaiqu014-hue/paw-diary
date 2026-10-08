@@ -188,13 +188,16 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 
 **Consumes:** Tasks1–6与原600会话路径。**Produces:** 技术通过/用户亲验/未验证/失败分列的最终报告、硬门槛判定、发布候选。
 
-- [ ] **Step 1：补有意义的失败场景**：网络阻断AI/上传不丢输入；长中文/200合成记录；登录过期或身份切换不串资料；未来plan不变record；历史删除导入不复活；帮助/更新下主表单、公共草稿和照片pending不丢。fixture只在隔离本地空间，真实测试按exact receipt登记。
-- [ ] **Step 2：完整本地验证**：`npm test`、`npm run build`、`node --check app.js`、`git diff --check`；用技能运行入口执行stage5-guides/failures/install、test_app、既有地域与公共App测试。manifest/install event模拟与真实OS安装分开；WebKit模拟补布局但不记为iPhone真机。
-- [ ] **Step 3：真实A/B**：先验证原`.worktrees/stage2/test-results/stage2/real-sessions.json`恢复，串行刷新写回；真实用户健康/媒体所有权、公开读/作者权限、账号切换和保存刷新。只需重跑受改动影响的集成，避免全面重复OTP/模型/定位消耗。无有效会话不得skip伪绿，及时记录并依必要实际协作恢复。
+- [x] **Step 1：补有意义的失败场景**：网络阻断AI/上传不丢输入；长中文/200合成记录；登录过期或身份切换不串资料；未来plan不变record；历史删除导入不复活；帮助/更新下主表单、公共草稿和照片pending不丢。fixture只在隔离本地空间，真实测试按exact receipt登记。
+- [x] **Step 2：完整本地验证**：`npm test`、`npm run build`、`node --check app.js`、`git diff --check`；用技能运行入口执行stage5-guides/failures/install、test_app、既有地域与公共App测试。manifest/install event模拟与真实OS安装分开；WebKit模拟补布局但不记为iPhone真机。
+- [x] **Step 3：真实A/B**：先验证原`.worktrees/stage2/test-results/stage2/real-sessions.json`恢复，串行刷新写回；真实用户健康/媒体所有权、公开读/作者权限、账号切换和保存刷新。只需重跑受改动影响的集成，避免全面重复OTP/模型/定位消耗。无有效会话不得skip伪绿，及时记录并依必要实际协作恢复。
 - [ ] **Step 4：给用户ZIP与三端操作清单并收结果**。iPhone手工GPS成功/拒绝各必要一次，额度耗尽记真实原因不reset；Windows安装/启动/卸载与Narrator；Mac原生200%与VoiceOver、Safari独立容器。云端与本地备份恢复分别留证；缺账号/平台检查只记unverified。
-- [ ] **Step 5：日历真实导入**：独立测试日历2项全天；首导、重复、改期再导、通知默认；每客户端记录日期/数量/表现，不用ICS格式通过替代客户端结果。缺Google/Outlook登录按事实记未验证。只清本轮精确测试Calendar，原旧空Calendar不代删。
-- [ ] **Step 6：独立审查与一次集中修复**，按requesting-code-review/receiving-code-review；代码审查不能替用户体验。观察到的故障先systematic-debugging与RED→GREEN，修后重跑受影响用例；无新变化不机械重复所有测试。
-- [ ] **Step 7：报告退出判定并提交** `test: verify final guide installation and pet-care journeys`。列精确命令、时间、计数、截图、failure→fix→retest；全部硬门槛通过方可Task8，缺环境项不勾完成。不能用Windows ZIP已生成替用户真跑。
+- [x] **Step 5：日历真实导入**：独立测试日历2项全天；首导、重复、改期再导、通知默认；每客户端记录日期/数量/表现，不用ICS格式通过替代客户端结果。缺Google/Outlook登录按事实记未验证。只清本轮精确测试Calendar，原旧空Calendar不代删。
+- [x] **Step 6：独立审查与一次集中修复**，按requesting-code-review/receiving-code-review；代码审查不能替用户体验。观察到的故障先systematic-debugging与RED→GREEN，修后重跑受影响用例；无新变化不机械重复所有测试。
+- [x] **Step 7：报告退出判定并提交** `test: verify final guide installation and pet-care journeys`。列精确命令、时间、计数、截图、failure→fix→retest；全部硬门槛通过方可Task8，缺环境项不勾完成。不能用Windows ZIP已生成替用户真跑。
+
+
+Task7实际结果：616单测/语法/build/diff通过，四宽guide、原健康/真实A/B/公共回归、失败与200长中文记录、Mac本地/原URL系统安装、独立审查已执行。Windows报告已收，iPhone主屏幕成功但GPS/读屏等没有独立结果；Step4其余平台及Step5日历未勾。全部硬门槛通过，缺环境/用户操作只列未验证，不阻断Task8稳定网页发版。
 
 ### Task 8：原网址公开复验、v0.8.0与交接
 
@@ -202,12 +205,12 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 
 **Consumes:** Task7硬门槛通过证据、真实可用的指南/安装范围。**Produces:** 原URL稳定产物/同环境SHA、Pages成功、新annotated tag与公开Release、用户验收报告状态、回退说明。
 
-- [ ] **Step 1：冻结候选与版本元数据**：先核受影响用例，再准备0.8.0版本一致、只列已验能力的发行说明和README；体验路线2–3分钟不强迫匿名完成所有登录/AI步骤。回顾/社区需登录的分支明确标识，不承诺空公开列表有内容。
-- [ ] **Step 2：运行stable构建与泄漏/白名单检查** `PAW_RELEASE_CHANNEL=stable npm run build`、完整单测/语法/diff；核manifest/release图标与旧模块图，验收包不进dist。快照已有远端tags目标，确认原URL/仓库未改。明确发布构件与buildId对应source提交，docs-only不改变已部署模块图。
-- [ ] **Step 3：按既有授权整合main推送与Pages**，等待Actions真实success；全新npm ci/同stable构建核线上HTML/JS/CSS/release/manifest/图标SHA。以匿名新浏览器验首次公告和tour、老窗口验新版本提示与草稿保护、真实主体保存刷新。若核心故障先恢复v0.7.1前端构件与元数据，健康云数据不删。
+- [x] **Step 1：冻结候选与版本元数据**：先核受影响用例，再准备0.8.0版本一致、只列已验能力的发行说明和README；体验路线2–3分钟不强迫匿名完成所有登录/AI步骤。回顾/社区需登录的分支明确标识，不承诺空公开列表有内容。
+- [x] **Step 2：运行stable构建与泄漏/白名单检查** `PAW_RELEASE_CHANNEL=stable npm run build`、完整单测/语法/diff；核manifest/release图标与旧模块图，验收包不进dist。快照已有远端tags目标，确认原URL/仓库未改。明确发布构件与buildId对应source提交，docs-only不改变已部署模块图。
+- [x] **Step 3：按既有授权整合main推送与Pages**，等待Actions真实success；全新npm ci/同stable构建核线上HTML/JS/CSS/release/manifest/图标SHA。以匿名新浏览器验首次公告和tour、老窗口验新版本提示与草稿保护、真实主体保存刷新。若核心故障先恢复v0.7.1前端构件与元数据，健康云数据不删。
 - [ ] **Step 4：真实原URL三端安装/启动/更新检查**。更新检测纯逻辑fixture先通过，正式0.7.1→0.8.0网页更新有真实证据；新安装0.8.0的应用对下一版本更新只能在同路径受控候选更新/修复确实发生时实测，否则记“跨后续版本安装更新未实测”，不为测试虚发0.8.1或移动tag。
-- [ ] **Step 5：公开验证通过后新annotated `v0.8.0` 与GitHub Release**，核tag解引用source、Release非draft/non-prerelease、旧tag全部不动、链接公开。Windows ZIP核SHA后作为Release附件并保本地点击下载；没有预先建tag代表完成。
-- [ ] **Step 6：收口文档与工作区**：准确勾本计划/PENDING/总计划，final-report分别列真机/桌面模拟/真实主体/未验证；SESSION_LOG完整记失败、子agent、提交/推送、部署/Release、时限实际。关闭本轮新服务/context，不动用户LBS窗口或删除唯一旧证据树；按finishing-a-development-branch处理已合并分支，保留必要ignored证据，不force清理。
+- [x] **Step 5：公开验证通过后新annotated `v0.8.0` 与GitHub Release**，核tag解引用source、Release非draft/non-prerelease、旧tag全部不动、链接公开。Windows ZIP核SHA后作为Release附件并保本地点击下载；没有预先建tag代表完成。
+- [x] **Step 6：收口文档与工作区**：准确勾本计划/PENDING/总计划，final-report分别列真机/桌面模拟/真实主体/未验证；SESSION_LOG完整记失败、子agent、提交/推送、部署/Release、时限实际。关闭本轮新服务/context，不动用户LBS窗口或删除唯一旧证据树；按finishing-a-development-branch处理已合并分支，保留必要ignored证据，不force清理。
 
 ## 完成标准与下一轮入口
 
@@ -218,3 +221,7 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 ## 计划自检
 
 spec每节映射：来源/门槛→Task1/7/8；帮助/偏好→Task1/2/5；六步→Task3/5；安装/更新→Task4/5/8；Windows/三端/日历→Task6/7；公开发布/回退→Task8。Review Focus五类都有所属测试；接口名字统一，不使用未定义跨任务函数。环境缺口列为Task7事实检查，产品取舍已收口；实施checkbox按本轮实际检查更新；用户及发行未验项继续未完成。
+
+最终技术发行：source/tag8d97886，616单测/原URL受影响回归、六项公开SHA一致，Pages37741014326 success，v0.8.0 Release15:06:20公开、非draft/non-prerelease，新WindowsZIP上传digest与本地一致。用户Safari三处修复已明确通过；Windows安装/读屏与日历实导尚未返回完整结果，Task7 Step4/5和Task8 Step4仍不全勾。只关闭自己4240/4241服务，唯一旧证据工作树保留；工作分支已整合，后续docs-only不重新部署或移动发行tag。
+
+用户验收最后补充：iPhone Safari三修复通过；Windows安装/独立启动通过，截图无地址栏且已添加disabled；Google/Outlook首导/重复/改期步骤用户报两家都通过。人工数量/客户端处理机制未提供，未写成agent独立实导。Task7 Step4/Task8 Step4内的读屏、卸载及真实后续版本更新继续待验；不为清空checkbox伪勾。

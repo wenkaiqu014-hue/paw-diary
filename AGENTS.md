@@ -23,7 +23,7 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
-**阶段5最新入口：** 用户已授权实施，12:44:26起每工作块≤30min/实际工作≤4h（用户测试反馈等待另计）。候选v0.8.0/source11bc9f2已在原URL部署，Pages37735756082/37735759602 success、6项SHA一致、614单测/四宽指南/原健康/公共App与Mac Chrome原URL原生安装过；Windows ZIP/合成ICS/Windows Codex prompt已交付，三端/日历用户亲验和正式tag/Release仍待。读PENDING/SESSION_LOG最新段、stage5 spec/八任务plan、final-report，不按旧“只规划/未实施”重做。Google/Outlook网页已确认能登录。原URL头像真SDK上传确认通过，本地失败确认为localhost CORS预检拒绝，没改后台或权限；会话原600继续串行更新。最终20:00不变。
+**阶段5最新入口：** v0.8.0已正式发布，source/tag解引用8d97886a963395f9e17eea3397ea09d8372624cc，Pages37741014326 success/Deploy15:03:03，Release15:06:20 Asia/Shanghai。616单测、原URL/真实A/B与Mac实际安装技术检查通过；用户iPhone三处修复已明确“通过”，主屏幕此前明确成功。Windows结果已归档，安装与独立启动、Google/Outlook日历用户已通过；读屏等剩余专项继续单列；不重做已完成阶段、不把版本号当全平台全部通过。 读PENDING/SESSION_LOG最新段、final-report与stage5 spec/plan。原600会话仍先核恢复、串行refresh写回。最终20:00不变。 最新用户回报：Windows安装/独立启动和Google/Outlook日历实导用户已明确通过；桌面安装截图已归档并移走原件。剩余读屏、真机GPS逐项结果、Windows卸载/跨后续版本更新等专项仍未验证。
 
 **最新2026-10-08 v0.7.1：** 用户定位/下拉反馈补丁已在原URL正式公开，Release11:48:44，source/tag解引用0a1b2ea，Pages37723735372 success，552单测与真实原生浏览器定位/三宽独立滚动通过；公共示例区已删。下一轮读PENDING、SESSION_LOG最新段与region-picker-v071-report，再进入阶段5，不重做旧0.7.0。用户明确本轮0.7.1，未建0.8；最终20:00不变。
 

@@ -732,5 +732,9 @@ export default Object.freeze({
   "whatsNew.v103.cards": "Masonry cards show the photo, title and author. Post actions stay in the details.",
   "whatsNew.v103.titles": "Titles use up to two lines and avoid isolated final characters. Full text stays in the details.",
   "whatsNew.v103.navigation": "Select an avatar or name for the author's posts, or the rest of a card for its details. Closing returns to that post.",
+  "whatsNew.v104.title": "Paw Diary 1.0.4",
+  "whatsNew.v104.avatar": "Selected avatars preview beside the image picker without uploading or publishing before save.",
+  "whatsNew.v104.save": "Avatar previews stay visible during saving. Failed saves keep the selected image for retry, and unreadable images have clear messages.",
+  "whatsNew.v104.focus": "Dialog headings no longer show a focus border. Keyboard controls and forms keep visible focus indicators.",
 
 });

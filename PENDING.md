@@ -4,6 +4,8 @@
 
 ## 当前唯一续作摘要
 
+v1.0.4当前技术收口：手机布局选图按钮旁本地即时头像，保存失败保文件/重试/迟到读取隔离/坏图提示；同族弹窗非交互标题无黄色框、键盘控件焦点保留。721全量及实际DOM两宽、独立审查0Critical/0Important通过，不改后台/用户既有头像和帖子。20:06:33→20:26:33本次保守窗口，正式公开核对随后记录，见[头像补丁](docs/verification/profile-avatar-v104-report.md)。下文为历史，Windows不重测。
+
 v1.0.3已正式发布：source/tagd85f23b、Pages37773059988 success/19:53:59、Release19:55:29，原URL六SHA一致/实际5列表图3详情图全部显示0错误；721单测、浏览器和独立审查0Critical/0Important。列表精简、瀑布流、原19px最多2行/孤立字处理、头像昵称作者帖与其它卡片详情分入口已交付，原文原图与全部详情操作保持。20分钟截止19:57:47，发行17分42秒；未动backend/用户数据，旧32tagrefs不变。见[本轮验收](docs/verification/community-v103-report.md)。下文为历史，Windows按用户决定不重测。
 
 v1.0.2正式发布：source/tag0744285、Pages37769811171 success/19:24:42、Release19:26:49，原URL六SHA一致。个人资料自定义类别、点赞局部乐观/失败回滚及旧响应保护、紧凑完整缩图、详情左右与手机上下均交付；718单测/有头浏览器/独立审查0Critical/0Important。仅paw-community code-only更新，真实custom筛选/匿名拒绝8项过，env/gate/LBS/timeouts保持；原URL实际列表5图/详情3图加载及0错误。没有改既有帖子正文或原图，原30tag refs未动。见[本轮补丁](docs/verification/community-v102-report.md)；用户具体新界面反馈后续据原文记录，Windows已按其决定结束跟进。下文旧发行均历史。

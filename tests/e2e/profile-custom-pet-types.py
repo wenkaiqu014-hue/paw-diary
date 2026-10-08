@@ -1,5 +1,5 @@
 """Headful synthetic custom profile pet type interaction; no cloud writes."""
-import json,os
+import base64,json,os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'test-results/v102/profile-custom';OUT.mkdir(parents=True,exist_ok=True)
@@ -12,7 +12,7 @@ with sync_playwright() as p:
   page.goto(os.environ.get('PAW_CUSTOM_TEST_ORIGIN','http://127.0.0.1:4198')+'/test-results/v102/profile-custom/fixture.html');page.locator('[name=nickname]').wait_for(timeout=4000)
   custom=page.locator('[name=customPetType]');assert custom.count()==1,'Custom pet type entry is missing'
   assert page.locator('[name=petTypes][value="兔子"]').is_checked();assert '兔子' in page.locator('[data-profile-preview]').inner_text()
-  page.locator('[name=nickname]').fill('草稿昵称');page.locator('[name=bio]').fill('保留的介绍');page.locator('[name=avatar]').set_input_files({'name':'synthetic.png','mimeType':'image/png','buffer':bytes.fromhex('89504e470d0a1a0a')})
+  page.locator('[name=nickname]').fill('草稿昵称');page.locator('[name=bio]').fill('保留的介绍');page.locator('[name=avatar]').set_input_files({'name':'synthetic.png','mimeType':'image/png','buffer':base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA0kAAAAASUVORK5CYII=')})
   custom.fill('仓鼠');custom.press('Enter');assert page.evaluate('window.saved.length')==0;assert page.locator('[name=petTypes][value="仓鼠"]').is_checked()
   custom.fill(' 猫 ');page.locator('[data-add-pet-type]').click();assert '已有' in page.locator('[data-custom-pet-error]').inner_text();assert custom.evaluate('(el)=>el===document.activeElement')
   custom.fill('');page.locator('[data-add-pet-type]').click();assert '填写' in page.locator('[data-custom-pet-error]').inner_text()

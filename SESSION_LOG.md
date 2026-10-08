@@ -1323,3 +1323,11 @@ review发现外部documentselection阻键盘（Minor），Root补actualDOM先RED
 source/tagd85f23ba49e75958db96e3ed2336672266b740a4；main ff/721全量/stable build/diff过后push，Pages37773059988 success/workflow19:53:59；原URL六HTTP200/SHA逐字一致，JSb6f813…7ea74/CSSdb30fd…c3fe，实际匿名列表5图/详情3图decode全过0error，更新后的新入口已真实点击读取详情，无真人写入。Root观察新版390/1440布局截图符合卡片简化和短列，未把合成图叫真人照片。新annotated v1.0.3 source固定、Release2026-10-08T11:55:29Z=19:55:29公开非draft/非prerelease，原32tagrefs剔新两条后逐字同；发行距19:37:47起17分42秒，后置收口以当前工具时间记录，截止19:57:47/最终20:00不变。
 
 证据已复制main ignored test-results/v103，正确校验Root自建4201 PID18766 command/cwd后SIGTERM，socket实测无监听；原worker4201已自行关闭。仅docs后置，不重建app/不移动tags，未backend部署/迁移/用户正文原图写入。已异步请用户保存后更新查看，回复据原文继续，不以等待当通过；Windows不重测。本次20分钟授权工作完成，最后仅Git保存与推送。
+
+### v1.0.4手机头像预览与标题焦点 — 2026-10-08 20:06:33工具诊断起点
+
+用户两位头像选图不能及时看到，后确认手机/未保存/常见图片；追加帖子详情标题自动焦点黄框要与所有弹窗统一，并要求两项20分钟。按更早20:06:33→20:26:33保守窗口，明确是在旧20:00截止之后新提出任务/授权，不重复请求批准也不未经授权动账号。隔离worktree avatar-v104、fix/avatar-v104基线eeef9bc/ignore核对、npmci和721基线无fail/skip。复用cardsworker负责profile/UI/E2E，Rootstyle.css标题焦点+版本/部署，densityworker独立只读终审；无源代码共享冲突/回退。
+
+原代码选图已本地blob，不upload/save，手机public-preview在长表后导致近picker看不到；新64pxinline预览同blobURL，未保存/保存中/移除pending状态清晰，实际保存确认才公开，失败保file+上传nonce重试，oldread seq迟到不覆盖/locale保持。真实有效PNG3121850B/JPEG1071323B，worker178.2/157.2ms、review175.9/158.2ms（桌面Chrome两宽1440/390，非真机计时）；held边界、新选择upload/save0、失败retry不重upload、换移/坏图阻save与纠正、0errors。旧8bytefakePNG改validfixture，新preview先RED无近picker→GREEN，旧profile/custom和22scoped过；review3blob均revoke/destroy late不更新DOM，初探针误期待destroy清DOM按既有route清理规则修测试，不改产品。
+
+详情heading生成id不匹配原#dialog-title outline:none，Root键盘打开RED outline3px，扩同族dialog .dialog-head h2[tabindex=-1] focus规则。修后computedWidth仍3使测试误报；真实CSSOM仅泛型focusvisible与新None规则匹配，style明确none，无绘制。改测试按styleNone或width0的真实paint语义后详情/编辑两宽GREEN：heading仍focus、Tabbutton/input visibleoutline、Escclose正常，不移除读屏焦点/不关全站focus。Rootreview最终721完整、syntax/diff0、detector[]、Critical0/Important0，frame全证据ignoredv104。版本1.0.4notes/VERSION/package统一，纯前端，无真实用户上传/改资料/业务写入/新模型或采购；正式source/Pages/SHA/tag/结束随后补记。

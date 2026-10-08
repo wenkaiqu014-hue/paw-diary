@@ -732,5 +732,9 @@ export default Object.freeze({
   "whatsNew.v103.cards": "社区瀑布流卡片只保留图片、标题和作者，操作集中在详情中。",
   "whatsNew.v103.titles": "标题最多两行并尽量完整，调整孤立末字和标点，原文仍在详情中。",
   "whatsNew.v103.navigation": "点击头像或昵称查看作者帖子，点击卡片其他位置打开详情，关闭后回到原帖。",
+  "whatsNew.v104.title": "爪爪日记 1.0.4",
+  "whatsNew.v104.avatar": "选图按钮旁立即显示头像本地预览，保存前不会上传或公开。",
+  "whatsNew.v104.save": "头像保存中保留预览，失败保留所选图片便于重试，无法读取的图片有明确提示。",
+  "whatsNew.v104.focus": "弹窗标题不再出现黄色焦点框，键盘按钮和表单仍有焦点提示。",
 
 });

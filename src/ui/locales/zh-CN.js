@@ -716,4 +716,9 @@ export default Object.freeze({
   "errors.beta_config_invalid": "内测登录暂不可用，请稍后重试。",
   "errors.rate_limited": "操作过于频繁，请稍后再试。",
   "errors.rate_limited_wait": "操作过于频繁，请在{retryAfterSeconds}秒后重试。",
+  "whatsNew.v100.title": "爪爪日记 1.0",
+  "whatsNew.v100.beta": "邮箱登录与注册需要邀请者提供的内测码。示例、本地记录和公开浏览继续可用。",
+  "whatsNew.v100.data": "已有合法账号保留内测资格，健康档案与照片仍然私有。",
+  "whatsNew.v100.guidance": "完善登录提示与发码频率保护，并补充备份、安装和日历使用说明。",
+
 });

@@ -1171,3 +1171,23 @@ Safari反馈修复块14:53:37开始：Root先运行shared-city browser RED，hom
 第三轮准备：用户Q6/Q7/Q8/Q10均按建议（手动关闭、码不预填持久化/公开泄漏、共享业务准入而非供应商全阻断、邮箱60秒/3次10min＋IP10次10min），Q9要求详细列剩余专项并尽量不留pending。只读agent审计最新followup覆盖旧Windowsreport：安装启动、Google/Outlook、主屏幕和Safari修复已过；剩余200%完整可达/键盘全路径/三端读屏/真机键盘GPS/Safari独立容器/Windows卸载与新版PS/真实更新/当前资格下备份回归/Windows照片断网/Apple重复改期/精确清理。大量记录已有200合成GREEN，不重复标未完。备份此前已有真实字节恢复，此处仅新资格/当前容器受影响回归，不重写功能。
 
 写入v100-beta-access-design书面方案供第3轮审阅，未写实施代码/部署/开启新gate。真实0.8→1.0可以补旧热标签与三端App更新，要求实施开始先保留0.8基线；Mac旧测试App已卸载，不能假称仍在。人工reader/手机结果不能由DOM/模拟权限替代，预留用户分段协助。当前root读原通用清单输出很长且截断，按agent专门矩阵和最新user-followup定位，不称重新逐条通读全部历史。
+
+### v1.0.0开始实施：15:40:50工具起点／17:40:50两小时目标
+
+用户明确开始、每步≤30min/实际全程≤2h，设备/验证码全力配合，Windows检查集中一次。已落盘v100-beta-access plan，root并行独立server/UI/package文件所有权，未另卡已授权开始；隔离.worktrees/v100/feat/v100-beta-access基线c53e21a，616基线无fail/skip。Root初次npm ci仍在main且无tracked影响，之后隔离树再次ci/baseline。详细独立预检接口表/Rulings/workerreports在ignored专属SDD目录；scope无新采购/新平台／反馈后台。
+
+三个worker按任务brief实现：server共享betaAdmission/OTP指纹/3类限流/5wrappers73定向与656全过；UIbetaRequired字段/epoch/清敏感输入/双语/gatewayfailclosed58定向与658全过，390/1440合成UI和旧account回归；Windows六白名单ZIP＋13manual初始not-run/集中prompt、file://无存储导入导出和14专项通过。Root集成943cd53，658全量＋4Python envmerge检查通过，生产代码无真实内测码。UI/服务器相关freshreview独立56+4通过，Critical/Important0。
+
+Root安全envmerge RED4缺helper→GREEN4，保AI/LBS未知旧env；管理SDK临时仅SCF缺TCB import失败，uv在/tmp/paw-v100-management-sdk安装独立tcb/scf/common，无项目依赖变动、FUJI only。五函数旧env/timeout/status读回私存600；先配置明确gate-off（避免新代码读取缺flag瞬态拒绝），16:00:14–16:00:38逐项active读回，再16:02:26–16:02:50部署五兼容代码。原Timeout20/3/30/40/30与原AI/LBS变量保留，没注入管理密钥；原环境上海个人版、自动续费/超额false仅只读账单配置，不称费用零。
+
+迁移helper实际dryrun cutoff2026-10-08T07:58:59.078Z，3valid/0invalid；3真实旧OTP证明只追加legacy资格，不改health/邮箱proof，apply3→verify3→重复apply0/already3。随后16:05:23–16:05:42五gate-on active读回、原env/timeouts不变。首apply进程running时启动了activation，但active前实际迁移已成功（后续读回确认3/3）；不把这种工具yield顺序写成预先全部等待完成。后续依赖操作须等待明确完成。
+
+真实新邮箱UI首次发码失败，加入只打印reviewed errorcode/字段length/private-match布尔的诊断，没有日志邮箱／码／token。实际BETA_CODE_REQUIRED、field不存在，mail-rate doc未创建。根因Root漏src/config/public-config.js白名单，build虽然注入boolean但被模块丢掉；先实际RED undefined→添加strictboolean→GREEN（测试dataURI booleantrue/stringtrue同缓存key又造成假失败，改含typeof避免复用），实际新field正确后成功发送1封。真实后台challenge.isUser=false确认首次注册；用户提供OTP只消费一次，C真实signup/私有工作区/refresh检查通过；A/B旧原600会话restore/refresh/reopen均真通过并串行checkpoint。没反复消费旧码或伪造UID。
+
+C本地stage5 newpet等待主dialog关闭超时30s；当前原因尚未完整网络实证，本地预设avatar上传CORS是已知历史线索而非本次确定因果，准备原URL重验。直接Node --input-type=module启动SDKWorker失败（继承execArgv只允许eval），改文件CLI。C SDKWorker写回又因session-file仅A/B/anonymous导致SESSION_FILE_INVALID，扩验收labelC后重试；没有改生产授权。会话未知轮换结果须实际验证，不能当已恢复。
+
+用户iPhone实体测试明确“都通过”：主屏幕软键盘保存/关开回读、GPS允许与拒绝/手选、VoiceOver帮助/记录读出与退出。Macworker已原生Safari26.6.2两个独立Dock容器：合成pet/avatar export→空容器预览取消无写入→恢复→关开→export字节SHA一致。AppleCalendar16第一/重复均2事件，无alarm；原测试日历再次导入改期未覆盖旧日期，新空日历正确11/12日，按快照限制记录、不猜DTSTAMP因果。自建具名Calendars/App/windows已清；额外两空未命名身份缺before snapshot，按项目规则请求用户具体确认后已授权精确删除，各1/0event→各0matches，其他不动。ChromePTY42017真实0.8浏览器＋App/照片dirty基线保持等待1.0。
+
+最后freshreview发现Important2：迁移收据apply/verify未严格核cutoff、id摘要、重复、冻结proof；CloudRepo吞前置auth抛出的beta错误/params。由serverworker同一wave定向修，不改数据/真实服务。迁移RED18fail/3pass→21GREEN、全680；RepoRED12fail/2pass→39定向/全694，safe5codes+boundedretry参数，两catch统一。Reviewer独立25＋14scoped、diff0，两项关闭，未误报3条实际迁移越界发生。Root1.0notes追加时误用不存在dictionary binding而ReferenceError，改冻字典内部keys；旧notes测试固定0.8，更新仅当前1.0，6专项GREEN，未把中间失败当最终pass。
+
+Windows已给集中ZIP（SHA4ae8eedd97ae992b8373dc9b4e3abb94b19dd4311e21f0de36642085df9fdc55）和prompt到main ignored可下载，agent已准备真实0.8照片dirty旧窗口，等待candidateactual1.0通知，公共9pass不当新版本已验。用户期间问发帖，按实际posts requireProfile解释仅登录＋已保存昵称，无宠物/发现开关前置，不新增需求。MacVoiceOver另给用户具体本机预览听读步骤。

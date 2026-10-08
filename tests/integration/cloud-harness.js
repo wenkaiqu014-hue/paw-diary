@@ -118,6 +118,7 @@ export async function createIsolatedClient({
     });
   };
   const client = {
+    namedFunction: (functionName, request) => rpc("namedFunction", {functionName, request}),
     invoke: (request) => rpc("invoke", request),
     community: (request) => rpc("community", request),
     readiness: () => rpc("readiness"),

@@ -86,6 +86,12 @@ async function initialize() {
   await persistCurrentSession();
 }
 async function operation(name, payload) {
+  if (name === "namedFunction") {
+    if (!['paw-auth','paw-api','paw-ai','paw-files','paw-community'].includes(payload.functionName)) throw fail('REAL_CLOUD_FUNCTION_SCOPE_INVALID');
+    const session = (await auth.getSession())?.data?.session;
+    const raw = (await app.callFunction({name:payload.functionName,data:{...payload.request,...(session?.access_token?{authToken:session.access_token}:{})}})).result;
+    return typeof raw === 'string' ? JSON.parse(raw) : raw;
+  }
   if (name === "cacheProbeSet") {
     auth.cache.storage.setItem("paw-diary:test-cache-sentinel", payload);
     return true;

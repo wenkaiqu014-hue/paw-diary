@@ -7,7 +7,7 @@ const fail=code=>Object.assign(new Error(code),{code});
 // Acceptance credentials are rotated by SDK setSession. Merge under a filesystem
 // lock because actor Workers share this file, but not their JavaScript heap.
 export async function updateSessionFile(path,{envId,label,session}){
- if(typeof envId!=='string'||!envId||!['A','B','anonymous'].includes(label)||
+ if(typeof envId!=='string'||!envId||!['A','B','C','anonymous'].includes(label)||
     typeof session?.access_token!=='string'||!session.access_token||
     typeof session?.refresh_token!=='string'||!session.refresh_token)throw fail('SESSION_FILE_INVALID');
  const credentials={access_token:session.access_token,refresh_token:session.refresh_token};

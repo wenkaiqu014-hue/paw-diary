@@ -20,7 +20,7 @@ from playwright.sync_api import sync_playwright
 from help_startup import dismiss_startup_help
 
 ROOT = Path(__file__).resolve().parents[2]
-LABELS = ('A', 'B')
+LABELS = ('A', 'B', 'C')
 
 
 class SafeFailure(Exception):
@@ -105,6 +105,31 @@ class Acceptance:
         # Register before navigation so a navigation failure does not destroy context.
         self.actors[label] = actor
         page.on('pageerror', lambda _: actor.__setitem__('errors', actor['errors'] + 1))
+        def safe_response(response):
+            if 'tcloudbase' not in response.url or response.request.resource_type not in ('fetch', 'xhr'):
+                return
+            try:
+                payload = response.json()
+                allowed = {'BETA_CODE_REQUIRED','BETA_CODE_INVALID','BETA_ACCESS_REQUIRED','BETA_CONFIG_INVALID','RATE_LIMITED','INVALID_INPUT','UNAVAILABLE','UNAUTHENTICATED','AUTH_DOMAIN_INVALID','InvalidParameterValue','InvalidParameter'}
+                codes = set()
+                def scan(value):
+                    if isinstance(value, dict):
+                        for key, item in value.items():
+                            if key in ('code','error_code') and isinstance(item, str) and item in allowed:
+                                codes.add(item)
+                            scan(item)
+                    elif isinstance(value, list):
+                        for item in value:
+                            scan(item)
+                    elif isinstance(value, str) and value.startswith(('{','[')):
+                        try: scan(json.loads(value))
+                        except Exception: pass
+                scan(payload)
+                if codes:
+                    emit(label=label, stage='reviewed_transport_error', httpStatus=response.status, errorCodes=sorted(codes))
+            except Exception:
+                pass
+        page.on('response', safe_response)
         page.goto(self.args.url.rstrip('/') + '/#health', wait_until='domcontentloaded', timeout=15000)
         page.locator('[data-action=account]').first.wait_for(timeout=12000)
         self.attach(page)
@@ -116,6 +141,7 @@ class Acceptance:
             raise SafeFailure('CLOUD_DISABLED')
         if not config['envConfigured'] or not config['publishKeyConfigured']:
             raise SafeFailure('CLOUD_CONFIG_MISSING')
+        dismiss_startup_help(page)
         return actor
 
     def actor(self, label):
@@ -169,10 +195,23 @@ class Acceptance:
         if not actor['page'].locator('#account-login-form:visible').count():
             raise SafeFailure('ACTOR_ALREADY_SIGNED_IN')
         page = actor['page']
+        beta = page.locator('#account-login-form [name=betaCode]')
+        if beta.count():
+            invite = os.environ.get('PAW_BETA_INVITE_CODE', '')
+            if not re.fullmatch(r'[0-9]{6}', invite):
+                raise SafeFailure('BETA_CONFIGURATION_MISSING')
+            beta.fill(invite)
         page.locator('#account-login-form [name=email]').fill(email.strip())
         self.progress(label, 'request_ui', sdkEnvironmentReady=True, mailSent=False)
         page.locator('[data-account-action=send]').click()
-        self.ui_result(actor, '#account-login-form [name=code]:not([disabled])')
+        try:
+            self.ui_result(actor, '#account-login-form [name=code]:not([disabled])')
+        except SafeFailure:
+            output=page.locator('#account-login-form .form-error')
+            text=output.inner_text() if output.count() else ''
+            known={'请填写内测码。':'BETA_CODE_REQUIRED','内测码不正确，请向邀请者确认。':'BETA_CODE_INVALID','内测登录暂不可用，请稍后重试。':'BETA_CONFIG_INVALID','输入内容有误，请检查后重试。':'INVALID_INPUT'}
+            self.progress(label,'request_diagnostic',reviewedUIError=known.get(text,'OTHER_REVIEWED_UI_ERROR'),betaLength=beta.input_value().__len__() if beta.count() else 0,betaMatchesPrivateConfiguration=beta.input_value()==os.environ.get('PAW_BETA_INVITE_CODE') if beta.count() else False)
+            raise
         actor['pending'] = True
         self.progress(label, 'requested', mailRequested=True, codeInputEnabled=True)
 

@@ -9,6 +9,20 @@ export class CloudApiError extends Error {
     this.params = error.params;
   }
 }
+const reviewedTransportCodes = new Set([
+  'BETA_CODE_REQUIRED', 'BETA_CODE_INVALID', 'BETA_ACCESS_REQUIRED',
+  'BETA_CONFIG_INVALID', 'RATE_LIMITED',
+]);
+function normalizeReviewedTransportError(error) {
+  if (!reviewedTransportCodes.has(error?.code)) return new CloudApiError();
+  const code = error.code, seconds = error?.params?.retryAfterSeconds;
+  return new CloudApiError({
+    code,
+    messageKey: 'errors.' + code.toLowerCase(),
+    ...(code === 'RATE_LIMITED' && Number.isSafeInteger(seconds) && seconds >= 0 && seconds <= 86400
+      ? {params: {retryAfterSeconds: seconds}} : {}),
+  });
+}
 export function createCloudRepository({
   invoke,
   clock = () => new Date().toISOString(),
@@ -55,14 +69,14 @@ export function createCloudRepository({
     let result;
     try {
       result = await invoke(request);
-    } catch {
+    } catch (error) {
       if (retry) {
         try {
           result = await invoke(request);
-        } catch {
-          throw new CloudApiError();
+        } catch (retryError) {
+          throw normalizeReviewedTransportError(retryError);
         }
-      } else throw new CloudApiError();
+      } else throw normalizeReviewedTransportError(error);
     }
     result = result?.result ?? result;
     if (!result?.ok) throw new CloudApiError(result?.error);

@@ -716,4 +716,9 @@ export default Object.freeze({
   "errors.beta_config_invalid": "Beta sign-in is temporarily unavailable. Try again later.",
   "errors.rate_limited": "Too many attempts. Try again later.",
   "errors.rate_limited_wait": "Too many attempts. Try again in {retryAfterSeconds}s.",
+  "whatsNew.v100.title": "Paw Diary 1.0",
+  "whatsNew.v100.beta": "Email sign-in and registration require your invitation code. Demo, local journals and public browsing remain available.",
+  "whatsNew.v100.data": "Existing verified accounts keep their beta access. Health journals and photos remain private.",
+  "whatsNew.v100.guidance": "Clearer sign-in messages, email rate protection, and backup, installation and calendar guidance.",
+
 });

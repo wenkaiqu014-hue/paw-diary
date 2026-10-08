@@ -17,3 +17,7 @@
 - [Apple Mac导入/导出](https://support.apple.com/zh-cn/guide/calendar/icl1023/mac)
 - [Google Calendar导入](https://support.google.com/calendar/answer/37118?hl=zh-Hans)
 - [Outlook导入与订阅](https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web)
+
+1.0内测：邮箱登录与首次注册需填写邀请者私下提供的六位内测码；示例、本地记录和公开浏览不需要。已有合法账号的内测资格保留，退出后重新登录仍需填码。
+
+Apple Calendar16实测：重复文件导入保持两条；向原测试日历再次导入改期文件时保留旧日期。向新空日历导入改期文件则正确显示新日期。文件导入不是订阅，客户端后续日期可手动编辑，或在独立新日历重新导入；不承诺覆盖旧项或自动同步。Google/Outlook已由用户实际验收通过。

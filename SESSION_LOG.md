@@ -1057,3 +1057,11 @@ main初始工作区干净、与origin/main对齐，HEAD4203f15；读取stage5-ha
 首轮将对齐验收缺口时的发版门槛、可参与的真机/日历环境、帮助入口/指引覆盖和阶段5发行号，用户回复后推进依赖问题。尚未形成新版spec/plan、未开始产品实施。没有收费、采购、云管理/模型/定位请求、浏览器操作、tag或部署。
 
 文档更新首次尝试通过python3 stdin失败：解释器报Non-UTF-8 code且未执行修改，命令尾部diff空结果不作为更新成功。改用apply_patch更新PENDING与本日志；结束前另检查diff并纳入本地Git。此轮仅文档，不制造业务测试。
+
+### 阶段5Grilling首轮确认与第二轮细节
+
+2026-10-08 12:02:04 Asia/Shanghai（clock工具04:02:04 UTC检查点）。用户Q1/Q3/Q4按推荐：数据/权限/保存/原网址为硬门槛，缺环境检查如实未验证；首次5–6步短主线、分主题帮助、三步建档独立；头像菜单帮助及首页轻入口。Q5明确v0.8.0。Q2原文确认有iPhone、Windows和Mac，要求明确验收步骤或Windows可运行验收包；尚未提供手机系统版本/Windows浏览器/Google-Outlook登录情况，不推断都有账号或已完成亲验。用户要求再查产品细节，有问题再Grill，没有再进入详细plan。Windows验收包纳入本阶段验收交付，形态在第二轮对齐，不误写为原生产品安装包。
+
+stage5_code_facts最终报告收到，现有帮助仅助手来源说明/关于，profile-menu当前无常驻帮助；三步onboarding持久化在profile.stage3.onboardingByPet，无遮罩/公告/PWA。精确接入为app boot/render/route和profile-menu、i18n，新增帮助需独立于AI可用状态；manifest/worker若新增需显式构建拷贝和Pages路径过滤。已确认代码风险为主modal替换弃稿、社区/profile/照片独立输入状态、render目标和焦点失效、导览跨页滚动与筛选重置、身份确认键、缺目标回退、私有响应缓存边界和旧模块图更新。Root定向读取profile-menu/build/pages原文件并核工作区，调查不构成产品验收，完整行号用于后续spec/plan。子agent无代码产物需要合并。
+
+第二轮对齐公告/指引记忆范围、首次指引启动方式、安装后的更新提示和草稿保护、Windows验收包交互、日历可用账号。这些产品行为尚未确认；设计与plan待Grill收口后形成。当前版本文件仍0.7.1，v0.8.0仅已确认后续发行号，未部署/创建tag。首轮日志本地提交0443ba5，尚未推送。

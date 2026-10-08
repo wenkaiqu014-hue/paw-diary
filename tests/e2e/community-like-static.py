@@ -20,7 +20,7 @@ with sync_playwright() as p:
  for width in [1440,390]:
   page=b.new_page(viewport={'width':width,'height':1000});errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   page.goto(a.url+'/test-results/v102/like-static/'+a.label+'/fixture.html');page.wait_for_function("window.ready && [...document.querySelectorAll('[data-community-post] img')].length===2 && [...document.querySelectorAll('[data-community-post] img')].every(i=>i.naturalWidth>0)")
-  page.get_by_role('button',name='查看详情',exact=True).click();page.locator('[name="comment"]').fill('Keep this comment');page.wait_for_function("[...document.querySelectorAll('[data-community-detail] img')].length===2 && [...document.querySelectorAll('[data-community-detail] img')].every(i=>i.naturalWidth>0)")
+  page.locator('[data-community-entry]').first.click();page.locator('[name="comment"]').fill('Keep this comment');page.wait_for_function("[...document.querySelectorAll('[data-community-detail] img')].length===2 && [...document.querySelectorAll('[data-community-detail] img')].every(i=>i.naturalWidth>0)")
   page.evaluate("window.images=[...document.querySelectorAll('#fixture img,[data-community-detail] img')];window.readCount=window.imageReads;window.comment=document.querySelector('[name=comment]');window.likeButton=document.querySelector('[data-community-detail] [data-like-post]');window.originalSrc=window.images.map(i=>i.src)")
   like=page.locator('[data-community-detail] [data-like-post]');like.click();page.wait_for_function("window.likeKeys.length===1")
   def stable():

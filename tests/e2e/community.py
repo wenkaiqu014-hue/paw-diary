@@ -46,7 +46,7 @@ def main():
  parser=argparse.ArgumentParser();parser.add_argument('--url',default=os.environ.get('PAW_COMMUNITY_UI_TEST_URL','http://127.0.0.1:4194/test-results/stage4/community-ui/fixture.html'));parser.add_argument('--red',action='store_true');args=parser.parse_args()
  with sync_playwright() as p:
   browser=p.chromium.launch(channel='chrome',headless=False)
-  page=browser.new_page(viewport={'width':1440,'height':1000})
+  page=browser.new_page(viewport={'width':1440,'height':1000});page.set_default_timeout(5000)
   errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
   page.goto(args.url);page.wait_for_load_state('networkidle');page.wait_for_function('window.mountType !== undefined')
   assert page.evaluate('window.mountType')=='function','community public UI mount must exist'
@@ -55,7 +55,7 @@ def main():
   page.get_by_role('button',name='写一篇',exact=True).click();page.locator('[name="title"]').fill('访客取消草稿');page.locator('[name="text"]').fill('不会发布');page.get_by_role('button',name='确认发布',exact=True).click();page.wait_for_function("window.transition?.type === 'login'");page.evaluate('cancelTransition()');page.get_by_role('button',name='取消',exact=True).click();page.get_by_role('button',name='确认',exact=True).click();assert page.evaluate('window.savedPosts')==0
   page.evaluate('setupFixture()');page.locator('[data-community-post]').first.wait_for()
   assert page.locator('[data-community-post]').count()==2
-  page.get_by_text('<script>window.scriptExecuted=true</script>',exact=True).wait_for()
+  page.get_by_role('button',name='<script>window.scriptExecuted=true</script>',exact=True).wait_for()
   assert page.evaluate('window.scriptExecuted') is False
   page.get_by_role('button',name='更多帖子',exact=True).click();page.wait_for_timeout(70)
   assert page.locator('[data-community-post]').count()==2
@@ -73,7 +73,7 @@ def main():
   page.evaluate('completeProfile()');page.locator('[name="title"]').wait_for();assert page.locator('[name="title"]').input_value()=='访客的同一篇草稿';assert page.locator('[name="text"]').input_value()=='登录和补昵称后也要保留的输入'
   page.evaluate('window.failSave=true');page.get_by_role('button',name='确认发布',exact=True).click();page.locator('[data-community-editor-error]').wait_for(state='visible');assert page.locator('[name="title"]').input_value()=='访客的同一篇草稿'
   failed_key=page.evaluate('window.lastWriteKey');page.get_by_role('button',name='确认发布',exact=True).click();page.wait_for_function('window.savedPosts===1');assert page.evaluate('window.lastWriteKey')==failed_key
-  page.locator('[data-community-post]').filter(has_text='访客的同一篇草稿').get_by_role('button',name='查看详情',exact=True).click()
+  page.locator('[data-community-post]').filter(has_text='访客的同一篇草稿').locator('[data-community-entry]').click()
   page.locator('[data-community-detail]').wait_for(state='visible');page.locator('[data-community-detail]').get_by_role('button',name='点赞 0',exact=True).click();page.locator('[data-community-detail]').get_by_role('button',name='已点赞 1',exact=True).wait_for();page.locator('[data-community-detail]').get_by_role('button',name='已点赞 1',exact=True).click();page.locator('[data-community-detail]').get_by_role('button',name='点赞 0',exact=True).wait_for();page.locator('[name="comment"]').fill('待发送评论不能被编辑入口丢掉');page.locator('[data-community-detail]').get_by_role('button',name='编辑',exact=True).click();assert page.get_by_role('alertdialog').is_visible();page.keyboard.press('Escape');assert page.locator('[name="comment"]').input_value()=='待发送评论不能被编辑入口丢掉';page.locator('[name="comment"]').fill('合成评论 <script>window.scriptExecuted=true</script>');page.evaluate('window.holdComments=true');page.get_by_role('button',name='发表评论',exact=True).click();page.wait_for_function('window.releaseComment !== null');assert page.locator('[data-community-detail]').get_by_role('button',name='编辑',exact=True).is_disabled();assert page.locator('[data-community-detail]').get_by_role('button',name='删除',exact=True).is_disabled();page.evaluate('useEnglish()');assert page.locator('[data-community-detail]').get_by_role('button',name='Edit',exact=True).is_disabled();assert page.locator('[data-community-detail]').get_by_role('button',name='Close details',exact=True).is_disabled();page.evaluate('window.releaseComment()');page.wait_for_timeout(70);assert page.evaluate('window.community.getState().detail.comments.length')==1;assert page.evaluate('window.community.getState().detail.item.post.commentCount')==1;assert page.evaluate('window.scriptExecuted') is False
   page.get_by_role('button',name='Close details',exact=True).click();page.evaluate('useChinese()')
   for width in [1440,768,390]:
@@ -83,9 +83,9 @@ def main():
   for width in [1440,768,390]:
    page.set_viewport_size({'width':width,'height':1000});page.wait_for_timeout(70);page.screenshot(path=str(OUT/f'community-en-{width}.png'),full_page=True)
    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+2'),f'English horizontal overflow at {width}'
-  page.locator('[data-community-post]').filter(has_text='访客的同一篇草稿').get_by_role('button',name='Edit',exact=True).click();page.locator('[name="title"]').fill('Edited draft');page.get_by_role('button',name='Save changes',exact=True).click();page.wait_for_timeout(80)
-  own=page.locator('[data-community-post]').filter(has_text='Edited draft');own.get_by_role('button',name='Report',exact=True).click();page.locator('[name="reason"]').select_option('其他');page.get_by_role('button',name='Submit report',exact=True).click();page.wait_for_timeout(70);page.get_by_text('Submitted and awaiting review.',exact=True).wait_for()
-  own.get_by_role('button',name='Delete',exact=True).click();page.get_by_role('button',name='Confirm',exact=True).click();page.wait_for_timeout(70);assert page.locator('[data-community-post]').filter(has_text='Edited draft').count()==0
+  page.locator('[data-community-post]').filter(has_text='访客的同一篇草稿').locator('[data-community-entry]').click();page.locator('[data-community-detail]').get_by_role('button',name='Edit',exact=True).click();page.locator('[name="title"]').fill('Edited draft');page.get_by_role('button',name='Save changes',exact=True).click();page.wait_for_timeout(80)
+  own=page.locator('[data-community-post]').filter(has_text='Edited draft');own.locator('[data-community-entry]').click();page.locator('[data-community-detail]').get_by_role('button',name='Report',exact=True).click();page.locator('[name="reason"]').select_option('其他');page.get_by_role('button',name='Submit report',exact=True).click();page.wait_for_timeout(70);page.get_by_text('Submitted and awaiting review.',exact=True).wait_for()
+  page.locator('[data-community-detail]').get_by_role('button',name='Delete',exact=True).click();page.get_by_role('button',name='Confirm',exact=True).click();page.wait_for_timeout(70);assert page.locator('[data-community-post]').filter(has_text='Edited draft').count()==0
   page.get_by_role('button',name='Write a post',exact=True).click();page.locator('[name="title"]').fill('Account A private draft');page.locator('[name="text"]').fill('Account A only');assert page.get_by_role('button',name='Close editor',exact=True).count()==1;page.evaluate('switchAccount()');assert page.locator('[data-community-editor]').count()==0
   assert not errors,errors
   (OUT/'report.json').write_text(json.dumps({'synthetic':True,'headful':True,'widths':[1440,768,390],'languages':['zh-CN','en'],'savedPosts':page.evaluate('window.savedPosts'),'pageErrors':errors},ensure_ascii=False,indent=2))

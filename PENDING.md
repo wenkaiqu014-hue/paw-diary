@@ -4,6 +4,8 @@
 
 ## 当前唯一续作摘要
 
+v1.0.3当前前端已技术收口：列表精简/作者与帖子分入口/原字号两行及末字处理/瀑布流/详情元信息和全部功能，721单测及有头浏览器、独立审查0Critical/0Important。20分钟窗口19:37:47→19:57:47，原URL公开核对及发行随后记录；不改后端/既有帖子。见[本轮验收](docs/verification/community-v103-report.md)。下文为上一发行历史，Windows不重测。
+
 v1.0.2正式发布：source/tag0744285、Pages37769811171 success/19:24:42、Release19:26:49，原URL六SHA一致。个人资料自定义类别、点赞局部乐观/失败回滚及旧响应保护、紧凑完整缩图、详情左右与手机上下均交付；718单测/有头浏览器/独立审查0Critical/0Important。仅paw-community code-only更新，真实custom筛选/匿名拒绝8项过，env/gate/LBS/timeouts保持；原URL实际列表5图/详情3图加载及0错误。没有改既有帖子正文或原图，原30tag refs未动。见[本轮补丁](docs/verification/community-v102-report.md)；用户具体新界面反馈后续据原文记录，Windows已按其决定结束跟进。下文旧发行均历史。
 
 v1.0.1社区补丁已正式发布：source/tag059e5bd、Pages37765826272 success/18:48:12、Release18:50:22，原URL六项构件一致；702单测及有头浏览器/独立审查通过。头像/帖子图片、自然比例、写帖前昵称引导、个人菜单头像和资料字段提示已交付，用户本人原帖/菜单复核“好像没问题了”。Windows补测无失败，原生200%/已测键盘/清理通过，用户跳过项保留未验证且不再追测；ZIP已本地归档并移走桌面。最新状态见[补丁验收](docs/verification/community-v101-report.md)。不重做此前认证/权限/备份。以下v1.0.0为上一发行基线。

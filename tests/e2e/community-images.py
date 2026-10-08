@@ -28,7 +28,7 @@ def main():
   page.goto(args.url);page.wait_for_function('window.ready===true');page.locator('[data-community-post]').wait_for()
   try:page.wait_for_function("[...document.querySelectorAll('[data-community-post] img')].length===2&&[...document.querySelectorAll('[data-community-post] img')].every(i=>!i.hidden&&i.complete&&i.naturalWidth>0)",timeout=2000);passed.append('feed-avatar-and-post-image')
   except PlaywrightTimeout:failures.append('feed-avatar-and-post-image: hidden images never loaded')
-  page.get_by_role('button',name='查看详情',exact=True).click();page.locator('[data-community-detail]').wait_for(state='visible')
+  page.locator('[data-community-entry]').first.click();page.locator('[data-community-detail]').wait_for(state='visible')
   try:page.wait_for_function("[...document.querySelectorAll('[data-community-detail] img')].length===3&&[...document.querySelectorAll('[data-community-detail] img')].every(i=>!i.hidden&&i.complete&&i.naturalWidth>0)",timeout=2000);passed.append('detail-avatar-post-comment-images')
   except PlaywrightTimeout:failures.append('detail-avatar-post-comment-images: hidden images never loaded')
   page.evaluate('window.delay=150');page.locator('[data-community-detail]').get_by_role('button',name='点赞 0',exact=True).click()

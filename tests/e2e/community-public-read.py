@@ -33,7 +33,7 @@ with sync_playwright() as p:
  if not args.observe_only:
   page.wait_for_function("[...document.querySelectorAll('[data-community-feed] img')].length>0 && [...document.querySelectorAll('[data-community-feed] img')].every(i=>i.complete&&i.naturalWidth>0&&!i.hidden)",timeout=20000)
   feed=stats('[data-community-feed] img')
- page.locator('[data-community-post]').first.get_by_role('button',name='查看详情',exact=True).click()
+ page.locator('[data-community-post]').first.locator('[data-community-entry]').click()
  page.locator('.community-detail-dialog .post-actions').wait_for(timeout=15000)
  page.wait_for_timeout(1500)
  if not args.observe_only:

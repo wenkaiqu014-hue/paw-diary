@@ -1307,3 +1307,13 @@ Like worker旧实际DOM RED重建4图片/评论→局部projection及updateLikes
 委派feed_grill_facts explorer只读核最终main：postCard仍有头像昵称/标题/正文/话题城市时间和完整动作；自己的编辑删除同在列表。详情目前无话题城市时间，若列表撤下需明确是否补到详情。昵称独立按钮查作者帖子、头像无click；整卡未有入口，仅查看详情button。正文pre-wrap保作者换行且overflow-wrap:anywhere、标题两行clamp，180px卡片及手机两列可造成自然短末行，但没有新的对应截图，未断言唯一成因；整卡入口需避免嵌套交互及文字选取误触，并检查关闭回到当前帖焦点。agent未写文件/云调用。
 
 本轮将问当前决策前沿：卡片保留内容、整卡与作者点击语义、孤立末行标准/列表排版处理边界、瀑布流与行对齐、无图帖样式。移除用户已明确的列表操作不重复问；原文与既有功能保留为约束，不修改已发布内容。等用户回答再整理设计，确认后才进入实施。
+
+### v1.0.3批准实施 — 2026-10-08 19:37:47工具起点／19:57:47截止
+
+用户Grill答复明确标题尽量全/最多2行，只控制单字/单标点末行（非禁2字），正文可省略；头像昵称→作者帖、其余→详情，瀑布流，其余按建议；要求20分钟完成。按已批准有界设计直接实施，保既有源文/功能/隐私/原链接，不重Grill。worktree feat/feed-v103实际分支fix/feed-v103基线6cdf135、ignore已核。两worker分别community.js和布局module/CSS，root版本/集成/部署；新review spawn及某旧followup报thread limit，复用现存community_feed_density独立审查成功，不假称失败工具派工。
+
+工作树npm ci开始时worker已写newimport但module未落盘，第一次基线失败；Root随后对干净main独立npmtest718pass0skip，工作树最终721pass。卡片DOM先RED仍有body/meta/actions→两宽GREEN紧凑、作者两入口隔离、selection/keyboard、locale及每帖closefocus、详情meta/全文原图/like节点评论保留；旧完整community双语三宽+media+detail/staticlike回归完成，titleexacttext找不到因display截断改full aria定位保XSS断言；一次savedentry不可见未稳定复现，后续连续2次旧流程和3卡缩宽probe通过，未硬归因。
+
+布局newmodule shortest-column按1pxtracks实测高度，无DOM换位/重建、preserve source attrs/aria；标题display必要字尾joiner与超过2行截断。旧masonry RED第三卡top316→GREEN116，实际Range五宽resize无singleton；初版stale columns隐式列错误、empty 1px高度均被测试发现后修复。Node3GREEN，RO独立600ms稳定和destroy/resize无callback。Root遵守Grill不缩字号，将worker16/15恢复旧19px；orphan原96px夹具不再触发单字尾，改114以对应19px后再次GREEN，产品字号不改小。
+
+review发现外部documentselection阻键盘（Minor），Root补actualDOM先RED5s超时→限制本card pointer且keyboard不阻→GREEN双宽；一次patch旧上下文不匹配无写，重新读再做。最终Root/review721/721、syntax/diff0、mechanical detector[]、新布局/卡片及旧like/image回归过，Critical0/Important0。独立browser一次5s夹具readiness超时，后观察两卡正常0pageerror、后完整再跑两宽过；原因未证实，保失败记录。组件临时4201原PID4272已worker关闭，Root另启4201供最后两宽复验，随后按精确PID/cwd关闭。v1.0.3notes/package/VERSION已一致，后端/用户帖子未动，sourcecommit/Pages/六SHA/tag/Release与结束工具随后补记。

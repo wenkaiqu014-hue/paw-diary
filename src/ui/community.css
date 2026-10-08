@@ -45,3 +45,17 @@
 @media(max-width:760px){.community-detail-dialog.has-post-image .community-detail-layout{grid-template-columns:minmax(0,1fr);gap:20px}}
 
 .profile-pet-type-options{display:flex;flex-wrap:wrap;gap:8px 20px;width:100%}.profile-pet-option{display:flex;align-items:center;gap:4px;max-width:100%;overflow-wrap:anywhere}.profile-pet-option .button{padding:8px;min-height:44px}.profile-custom-type{display:flex;align-items:end;flex-wrap:wrap;gap:8px 12px;width:100%}.profile-custom-type .field{flex:1 1 200px;min-width:0}.profile-custom-type input{width:100%;height:auto;accent-color:auto}.profile-custom-type p{flex-basis:100%;margin:0}.profile-custom-type .button{flex:none}
+
+/* A source-order masonry feed keeps loaded cards and images in their DOM nodes. */
+.community-public .community-feed{grid-auto-rows:1px;row-gap:0;column-gap:16px;align-items:start}
+.community-public .community-card{align-self:start;position:relative;cursor:pointer;overflow:hidden}
+.community-public .community-card .post-content{display:flex;flex-direction:column;gap:10px}
+.community-public .community-card h2{display:block;margin:0;font-size:19px;line-height:1.5;overflow:visible}
+.community-public .community-title-entry{display:block;width:100%;padding:0;background:none;color:var(--ink);text-align:left;font:inherit;font-weight:650;line-height:1.5;white-space:normal}
+.community-public .community-title-text{display:block;overflow-wrap:anywhere;text-wrap:balance;max-height:3em;overflow:hidden}
+.community-public .community-card .post-user{padding:0;margin:0;gap:8px;min-width:0}
+.community-public .community-card .public-avatar{width:28px;height:28px;font-size:12px}
+.community-public .community-card .community-author{display:block;min-width:0;min-height:44px;padding:0;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.community-public .community-card:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+.community-public .community-title-entry:focus-visible,.community-public .community-author-avatar:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:4px}
+@media(max-width:600px){.community-public .community-feed{row-gap:0;column-gap:12px}.community-public .community-card h2{font-size:19px}.community-public .community-card .post-content{gap:6px}}

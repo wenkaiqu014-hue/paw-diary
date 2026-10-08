@@ -31,7 +31,7 @@ with sync_playwright() as p:
     page.wait_for_function("[...document.querySelectorAll('[data-community-post] img')].length===2 && [...document.querySelectorAll('[data-community-post] img')].every(i=>!i.hidden&&i.naturalWidth>0)")
     page.evaluate('window.holdImages=true;window.holdList=true;void window.community.refresh()')
     page.wait_for_function("typeof window.finishList==='function'")
-    page.get_by_role('button', name='查看详情', exact=True).click()
+    page.locator('[data-community-entry]').first.click()
     page.locator('[name="comment"]').fill('正在写的评论必须保留')
     page.wait_for_function("window.imageReads.some(r=>r.reference.kind==='comment')")
     page.evaluate('window.finishList()')

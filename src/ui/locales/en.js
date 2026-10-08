@@ -728,5 +728,9 @@ export default Object.freeze({
   "whatsNew.v102.types": "Add your own pet types, save them with your profile, and display them in public profiles and discovery.",
   "whatsNew.v102.likes": "Likes respond immediately without reloading photos or inputs. Failed requests restore the previous state.",
   "whatsNew.v102.feed": "Compact cards show smaller, complete images. Details place photos beside the text on desktop and above it on phones, keeping existing actions.",
+  "whatsNew.v103.title": "Paw Diary 1.0.3",
+  "whatsNew.v103.cards": "Masonry cards show the photo, title and author. Post actions stay in the details.",
+  "whatsNew.v103.titles": "Titles use up to two lines and avoid isolated final characters. Full text stays in the details.",
+  "whatsNew.v103.navigation": "Select an avatar or name for the author's posts, or the rest of a card for its details. Closing returns to that post.",
 
 });

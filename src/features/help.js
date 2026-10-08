@@ -37,21 +37,21 @@ export function mountHelp({document,t,getLocale,onTour,onInstall,onWhatsNew}) {
  const closeButton=element(document,'button','button secondary',t('help.close'));closeButton.type='button';closeButton.dataset.helpClose='';
  header.append(title,closeButton);
  const layout=element(document,'div','help-layout'),nav=element(document,'nav','help-topics'),content=element(document,'article','help-content');
- content.id='help-content';const actions=element(document,'div','help-actions'),status=element(document,'p','help-status');status.setAttribute('role','status');status.hidden=true;
+ content.id='help-content';content.tabIndex=0;content.setAttribute('role','region');content.setAttribute('aria-labelledby','help-topic-title');const actions=element(document,'div','help-actions'),status=element(document,'p','help-status');status.setAttribute('role','status');status.hidden=true;
  for(const action of ['tour','whats-new','install']){const button=element(document,'button','button secondary');button.type='button';button.dataset.helpAction=action;actions.append(button);}
  layout.append(nav,content);const container=element(document,'div','help-shell');container.append(header,layout,status,actions);dialog.append(container);
  function render(){
   const focusedTopic=nav.contains(document.activeElement)?document.activeElement.dataset.helpTopic:null;
   dialog.lang=getLocale();title.textContent=t('help.title');closeButton.textContent=t('help.close');nav.setAttribute('aria-label',t('help.topics'));
   nav.replaceChildren(...HELP_TOPICS.map(topic=>{const button=element(document,'button','help-topic',t(topic.titleKey));button.type='button';button.dataset.helpTopic=topic.id;button.setAttribute('aria-controls',content.id);if(topic.id===topicId)button.setAttribute('aria-current','page');return button;}));
-  const topic=HELP_TOPICS.find(value=>value.id===topicId)??HELP_TOPICS[0];const heading=element(document,'h3','',t(topic.titleKey));
+  const topic=HELP_TOPICS.find(value=>value.id===topicId)??HELP_TOPICS[0];const heading=element(document,'h3','',t(topic.titleKey));heading.id='help-topic-title';
   const steps=element(document,'ol','help-steps');topic.bodyKeys.forEach(key=>steps.append(element(document,'li','',t(key))));content.replaceChildren(heading,steps);
   for(const button of actions.children)button.textContent=t(button.dataset.helpAction==='whats-new'?'help.whatsNew':`help.${button.dataset.helpAction}`);
   status.hidden=!statusKey;status.textContent=statusKey?t(statusKey):'';
   if(focusedTopic)nav.querySelector(`[data-help-topic="${focusedTopic}"]`)?.focus({preventScroll:true});
  }
  function click(event){
-  const topic=event.target.closest('[data-help-topic]');if(topic){topicId=topic.dataset.helpTopic;statusKey=null;render();nav.querySelector(`[data-help-topic="${topicId}"]`)?.focus();content.scrollTop=0;return;}
+  const topic=event.target.closest('[data-help-topic]');if(topic){if(!nav.contains(topic)||!HELP_TOPICS.some(value=>value.id===topic.dataset.helpTopic))return;topicId=topic.dataset.helpTopic;statusKey=null;render();content.focus({preventScroll:true});content.querySelector('h3')?.scrollIntoView({block:'nearest'});return;}
   if(event.target.closest('[data-help-close]')){shell.close();return;}
   const action=event.target.closest('[data-help-action]')?.dataset.helpAction;
   if(action==='tour'){if(onTour?.()===false){statusKey='help.tourBlocked';render();actions.querySelector('[data-help-action=tour]')?.focus();}else shell.close();}

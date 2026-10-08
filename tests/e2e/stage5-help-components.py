@@ -30,7 +30,7 @@ try:
   assert page.locator('[data-help-topic]').count()==9
   page.locator('[data-help-topic=calendar]').click();expect(page.locator('.help-content')).to_contain_text('快照')
   page.evaluate("setLocale('en')");expect(page.locator('.help-content')).to_contain_text('snapshot')
-  expect(page.locator('[data-help-topic=calendar]')).to_have_attribute('aria-current','page');expect(page.locator('[data-help-topic=calendar]')).to_be_focused(timeout=1500);expect(page.locator('#draft')).to_have_value('未保存原文')
+  expect(page.locator('[data-help-topic=calendar]')).to_have_attribute('aria-current','page');expect(page.locator('.help-content')).to_be_focused(timeout=1500);expect(page.locator('#draft')).to_have_value('未保存原文')
   page.locator('[data-help-action=tour]').click();expect(page.locator('.help-status')).to_contain_text('Save')
   page.keyboard.press('Escape');expect(page.locator('#help-dialog')).not_to_be_visible();expect(page.locator('#trigger')).to_be_focused()
   page.locator('#trigger').click();expect(page.locator('#help-title')).to_be_focused();page.keyboard.press('Shift+Tab');expect(page.locator('[data-help-action=install]')).to_be_focused();page.keyboard.press('Tab');expect(page.locator('[data-help-close]')).to_be_focused()

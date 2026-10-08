@@ -20,7 +20,7 @@ dialog.readonly-dialog::backdrop{background:rgb(18 37 28 / 44%)}
 .help-steps li{padding-left:5px;margin-bottom:16px}
 .help-actions{display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid #e6e9e0;margin-top:24px;padding-top:20px}
 .help-status{background:#fff5e9;color:#754116;padding:12px 16px;border-radius:8px}
-.help-topic:focus-visible,.readonly-dialog button:focus-visible{outline:2px solid #2c5847;outline-offset:3px}
+.help-topic:focus-visible,.help-content:focus-visible,.readonly-dialog button:focus-visible{outline:2px solid #2c5847;outline-offset:3px}
 dialog.whats-new-dialog{width:min(540px,calc(100vw - 32px));padding:28px}
 .whats-new-content>p{margin:18px 0 12px;color:#476653}
 .whats-new-content ul{margin:0;padding-left:22px}

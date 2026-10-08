@@ -10,7 +10,7 @@
 
 **Spec:** [阶段5设计](../specs/2026-10-08-stage5-guides-install-quality-design.md)。执行者先读spec、本计划、PENDING当前摘要和SESSION_LOG最新段。
 
-**当前状态:** 本轮只规划，全部实施checkbox未勾；公开仍v0.7.1/552历史单元证据。v0.8.0已由用户确定，尚未改版本文件、部署或建tag。用户明确下一轮再实施，无需本轮启动工作树/安装依赖/业务测试。
+**当前状态:** 已获实施授权，Task1–6实现并本地集成验证，source11bc9f2候选已部署原URL、614单测与公开四宽/健康/公共App过；Task7用户亲验和Task8正式tag/Release尚未收口。Mac Chrome原URL原生安装已过，不代Windows/iPhone；用户确认Google/Outlook网页可登录。用户最新每工作块≤30min/实际工作≤4h替代下表原估计，起点12:44:26，等待实际测试反馈另计。
 
 ## Global Constraints
 
@@ -83,8 +83,8 @@ Root独占`app.js/style.css/index.html`、主仓储/路由、部署与版本整�
 - `isNewStableRelease(current,remote) -> boolean`：合法stable x.y.z数字逐位比较，支持0.10大于0.9；不同channel/非法/prerelease/相等/回退均false。
 - 构建默认`PAW_RELEASE_CHANNEL=preview`，Pages明确stable；本地`PAW_HELP_PREVIEW=1`仅preview构建允许自动体验。`__PAW_PUBLIC_CONFIG__.release`包含Release；`release.json`公开同一Release。VERSION与package.version不一致构建失败，buildId从当前Git提交读取。
 
-- [ ] **Step 1：执行基线检查** `npm ci`、`npm test`、`npm run build`、`node --check app.js`、`git diff --check`，保存实际数量/输出和开始工具时间；预期552无fail/skip，否则先按systematic-debugging定位。
-- [ ] **Step 2：写行为失败测试**：guest示例/本地同键；A/B互不读确认；重复确认只有一个版本；第9个确认淘汰最旧；坏JSON/拒绝读写回内存且不抛；unseen/skip/complete独立；busy任一字段阻挡；preview默认none；确认后不再弹；0.9→0.10 true，0.8→0.7 false，0.8.0-beta false。断言示例：
+- [x] **Step 1：执行基线检查** `npm ci`、`npm test`、`npm run build`、`node --check app.js`、`git diff --check`，保存实际数量/输出和开始工具时间；预期552无fail/skip，否则先按systematic-debugging定位。
+- [x] **Step 2：写行为失败测试**：guest示例/本地同键；A/B互不读确认；重复确认只有一个版本；第9个确认淘汰最旧；坏JSON/拒绝读写回内存且不抛；unseen/skip/complete独立；busy任一字段阻挡；preview默认none；确认后不再弹；0.9→0.10 true，0.8→0.7 false，0.8.0-beta false。断言示例：
 
 ```js
 assert.equal(isNewStableRelease(
@@ -94,9 +94,9 @@ assert.equal(decideStartupHelp({release:{version:'0.8.0',channel:'preview'},
  preferences:{acknowledgedVersions:[],tourStatus:'unseen'},blocked:false}), 'none');
 ```
 
-- [ ] **Step 3：RED** `node --test tests/ui-preferences.test.js tests/help-lifecycle.test.js`，确认缺失规则造成真实失败，不改正确旧行为制造RED。
-- [ ] **Step 4：实现接口并扩展构建**。release字节不包含环境凭证；保持v0.2旧图与云配置。构建测试核版本一致、channel、release.json、日志/后端排除。
-- [ ] **Step 5：GREEN** 上述两测＋`node --test tests/build.test.js`；preview/stable各构建一次核注入差异符合预期。提交 `feat: add scoped help preferences and release metadata`。
+- [x] **Step 3：RED** `node --test tests/ui-preferences.test.js tests/help-lifecycle.test.js`，确认缺失规则造成真实失败，不改正确旧行为制造RED。
+- [x] **Step 4：实现接口并扩展构建**。release字节不包含环境凭证；保持v0.2旧图与云配置。构建测试核版本一致、channel、release.json、日志/后端排除。
+- [x] **Step 5：GREEN** 上述两测＋`node --test tests/build.test.js`；preview/stable各构建一次核注入差异符合预期。提交 `feat: add scoped help preferences and release metadata`。
 
 ### Task 2：可重看帮助、公告与双语内容
 
@@ -108,10 +108,10 @@ assert.equal(decideStartupHelp({release:{version:'0.8.0',channel:'preview'},
 - `mountWhatsNew({document,t,getLocale,onAcknowledge,onDismiss}) -> {open(release),close(),refreshLocale(),destroy()}`；关闭/Esc走onDismiss，不调用ack；仅确定调用onAcknowledge一次。
 - 两组件自行创建只读dialog，不调用主modal、不写业务库；记录原焦点，目标销毁时返回main。controller不得重复绑定监听。
 
-- [ ] **Step 1：写内容/组件失败用例**：九主题与中英键完整；无宠物/AI关闭仍能看；关闭不确认、双击确定只回调一次；Esc/Tab/焦点恢复；恶意用户原文按textContent展示；帮助主题跳转不写库。
-- [ ] **Step 2：RED** `node --test tests/help-content.test.js`，组件浏览器fixture通过下一步Task5前的独立测试入口运行，不以mock当整站已接入。
-- [ ] **Step 3：实现两controller与短内容**；指南纳入日历快照/通知由客户端管理、安装容器与备份、AI不可用手动路径。词典键归`help.* / whatsNew.*`，不复制过时“公共示例宠友”。
-- [ ] **Step 4：GREEN** `node --test tests/help-content.test.js tests/i18n.test.js tests/markup-i18n.test.js`；skill-runtime/run python跑组件E2E，确认locale切换不关当前主题、不丢输入。通过后提交 `feat: add reusable bilingual help and release notes`。
+- [x] **Step 1：写内容/组件失败用例**：九主题与中英键完整；无宠物/AI关闭仍能看；关闭不确认、双击确定只回调一次；Esc/Tab/焦点恢复；恶意用户原文按textContent展示；帮助主题跳转不写库。
+- [x] **Step 2：RED** `node --test tests/help-content.test.js`，组件浏览器fixture通过下一步Task5前的独立测试入口运行，不以mock当整站已接入。
+- [x] **Step 3：实现两controller与短内容**；指南纳入日历快照/通知由客户端管理、安装容器与备份、AI不可用手动路径。词典键归`help.* / whatsNew.*`，不复制过时“公共示例宠友”。
+- [x] **Step 4：GREEN** `node --test tests/help-content.test.js tests/i18n.test.js tests/markup-i18n.test.js`；skill-runtime/run python跑组件E2E，确认locale切换不关当前主题、不丢输入。通过后提交 `feat: add reusable bilingual help and release notes`。
 
 ### Task 3：六步spotlight、焦点与几何
 
@@ -123,7 +123,7 @@ assert.equal(decideStartupHelp({release:{version:'0.8.0',channel:'preview'},
 - `positionTourPopover({target:{left,top,width,height}|null,viewport:{left,top,width,height},card:{width,height},gap=12,inset=16}) -> {left,top,placement:'top'|'bottom'|'center'}`，尽量近目标，所有返回值在可用视口内，长内容靠卡片内部滚动。
 - `mountGuidedTour({document,t,getLocale,getIdentity,isBlocked,captureView,enterHome,restoreView,onStatus}) -> {start({source:'automatic'|'manual'}),refresh(),stop({reason}),destroy()}`；start返回Promise<'started'|'blocked'>。captureView/enterHome/restoreView由Root定义；onStatus(status,capturedIdentity)仅skipped/completed调用偏好存储。
 
-- [ ] **Step 1：写失败测试**：固定六步；启动/下一步/每步skip/末步结束；ABORT不冒充complete；viewport360/390/768/1440下popover边界，目标缺失center，visualViewport变小仍可达；同一frame多事件只重算一次；销毁后无回调。
+- [x] **Step 1：写失败测试**：固定六步；启动/下一步/每步skip/末步结束；ABORT不冒充complete；viewport360/390/768/1440下popover边界，目标缺失center，visualViewport变小仍可达；同一frame多事件只重算一次；销毁后无回调。
 
 ```js
 let s=advanceTour(createTourState(6),'START');
@@ -132,9 +132,9 @@ assert.equal(s.phase,'completed');
 assert.equal(advanceTour(s,'NEXT').phase,'completed');
 ```
 
-- [ ] **Step 2：RED** `node --test tests/tour.test.js tests/tour-position.test.js`；独立组件E2E先核缺少spotlight/按钮/焦点的失败。
-- [ ] **Step 3：实现纯状态、几何、全视口原生modal＋SVG挖空**；tip两个按钮固定文案，包括末步。焦点标题→Tab圈定→Esc跳过。目标最多等1500ms，缺失提供居中同一步说明。scroll/resize/visualViewport/ResizeObserver以rAF合并；reduced-motion无过渡。账号/宠物/外部route变更abort，locale只刷新不回第1步。
-- [ ] **Step 4：GREEN** 两单测及有头组件360/390/768/1440、缺目标、滚动/End键、resize、销毁/重挂与按钮可达E2E；实际查看一批截图，集中修复一次后确认，不无限视觉打磨。提交 `feat: add a skippable six-step spotlight guide`。
+- [x] **Step 2：RED** `node --test tests/tour.test.js tests/tour-position.test.js`；独立组件E2E先核缺少spotlight/按钮/焦点的失败。
+- [x] **Step 3：实现纯状态、几何、全视口原生modal＋SVG挖空**；tip两个按钮固定文案，包括末步。焦点标题→Tab圈定→Esc跳过。目标最多等1500ms，缺失提供居中同一步说明。scroll/resize/visualViewport/ResizeObserver以rAF合并；reduced-motion无过渡。账号/宠物/外部route变更abort，locale只刷新不回第1步。
+- [x] **Step 4：GREEN** 两单测及有头组件360/390/768/1440、缺目标、滚动/End键、resize、销毁/重挂与按钮可达E2E；实际查看一批截图，集中修复一次后确认，不无限视觉打磨。提交 `feat: add a skippable six-step spotlight guide`。
 
 ### Task 4：安装、发行探测与安全更新
 
@@ -145,10 +145,10 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 - `createUpdateMonitor({currentRelease,fetchImpl,now,getInteractionState,onUpdate,reload,baseUrl}) -> {check(),requestReload(),destroy()}`；check Promise<Release|null>，requestReload返回`'reloaded'|'blocked'|'none'`。只允许同源release.json、5秒Abort、cache:no-store/credentials:omit；focus检查5分钟节流，无固定轮询；阻挡原因通过getInteractionState提供Task1字段。
 - manifest值逐项照spec；复制manifest与图标，release.json来自Task1；workflow加入manifest/VERSION输入并以`PAW_RELEASE_CHANNEL=stable`构建，正式本地SHA核对必须使用相同channel。
 
-- [ ] **Step 1：写失败测试**：manifest固定项目id与相对start_url/scope，图标实际尺寸与maskable purpose、apple-touch-icon；dist白名单；不注册worker/无CacheStorage写；beforeinstallprompt、取消/接受、appinstalled、standalone、无事件fallback；版本失败/超时/节流与回退不提醒；dirty/saving禁止reload且保hash。
-- [ ] **Step 2：RED** `node --test tests/install.test.js tests/update.test.js tests/build.test.js`，记录真实失败。
-- [ ] **Step 3：实现安装与更新接口，复用现有品牌制作图标**；帮助显示平台手动说明，Mac存储边界显著。禁止为了自动提示立刻出现而假造事件或后台prompt。公开静态构建不用worker。
-- [ ] **Step 4：GREEN** 上述三测，preview/stable构建与/paw-diary/manifest/icon/release实际HTTP检查；mock安装仅记逻辑通过，实际OS安装留Task7/8。提交 `feat: support installation and draft-safe update prompts`。
+- [x] **Step 1：写失败测试**：manifest固定项目id与相对start_url/scope，图标实际尺寸与maskable purpose、apple-touch-icon；dist白名单；不注册worker/无CacheStorage写；beforeinstallprompt、取消/接受、appinstalled、standalone、无事件fallback；版本失败/超时/节流与回退不提醒；dirty/saving禁止reload且保hash。
+- [x] **Step 2：RED** `node --test tests/install.test.js tests/update.test.js tests/build.test.js`，记录真实失败。
+- [x] **Step 3：实现安装与更新接口，复用现有品牌制作图标**；帮助显示平台手动说明，Mac存储边界显著。禁止为了自动提示立刻出现而假造事件或后台prompt。公开静态构建不用worker。
+- [x] **Step 4：GREEN** 上述三测，preview/stable构建与/paw-diary/manifest/icon/release实际HTTP检查；mock安装仅记逻辑通过，实际OS安装留Task7/8。提交 `feat: support installation and draft-safe update prompts`。
 
 ### Task 5：整站接入、输入保护与旧测试适配
 
@@ -161,11 +161,11 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 - Root维护controllers独立于`maintainStage3()`；boot身份恢复结束才`evaluateStartupHelp()`，render/locale/identity/view变更通知controller。公告确定→ack→关闭→unseen且干净立即tour，若状态变化则延后不弃稿。
 - `dismiss_startup_help(page)`仅用于非指南回归：使用真实确认/跳过UI，不清业务存储、不一律关闭所有dialog；指南场景不得调用此helper避开首次体验。
 
-- [ ] **Step 1：写整站失败场景**：guest初次公告→确定立即第1步；各步skip后刷新不再开；已确认更新0.8后仍旧tour状态；帮助重看；empty/loadError fallback；读写失败偏好；A→B延迟回调；主/公共/照片草稿与busy下自动提示/重看/更新保输入。
-- [ ] **Step 2：RED** 新wiring单测及stage5-guides有头E2E，确保缺少真实集成造成失败。
-- [ ] **Step 3：接入六个稳定data-tour区域（包括空状态）与CSS**。帮助只读dialog不替主表单；外部route/身份/宠物变化stop；普通render不得误结束指引。beforeunload保护复用统一状态补照片pending，不改浏览器原生提示成自绘。原日期/下拉/草稿/AI语义保持。
-- [ ] **Step 4：适配旧回归的startup helper后GREEN** `npm test`、`npm run build`、`node --check app.js`、`git diff --check`；设置`PAW_DIARY_TEST_URL`指向实际子路径，用skill-runtime/run python跑`test_app.py`、stage5-guides与原region-picker-dropdown/stage4。使用各脚本实际headful变量，不混用PAW_HEADFUL和PAW_DIARY_HEADED。有头本轮至少四宽双语截图与键盘实际操作。若Impeccable detector提示，仅报告/修本轮真实问题，不借机重做品牌。
-- [ ] **Step 5：界面完成后一次检测** `node /Users/wenkaiqu/.agents/skills/impeccable/scripts/detect.mjs --json app.js style.css index.html`；按web-design-guidelines补交互/语义/键盘/触控审查。新增回归通过再提交 `feat: integrate help and installation without interrupting pet records`。
+- [x] **Step 1：写整站失败场景**：guest初次公告→确定立即第1步；各步skip后刷新不再开；已确认更新0.8后仍旧tour状态；帮助重看；empty/loadError fallback；读写失败偏好；A→B延迟回调；主/公共/照片草稿与busy下自动提示/重看/更新保输入。
+- [x] **Step 2：RED** 新wiring单测及stage5-guides有头E2E，确保缺少真实集成造成失败。
+- [x] **Step 3：接入六个稳定data-tour区域（包括空状态）与CSS**。帮助只读dialog不替主表单；外部route/身份/宠物变化stop；普通render不得误结束指引。beforeunload保护复用统一状态补照片pending，不改浏览器原生提示成自绘。原日期/下拉/草稿/AI语义保持。
+- [x] **Step 4：适配旧回归的startup helper后GREEN** `npm test`、`npm run build`、`node --check app.js`、`git diff --check`；设置`PAW_DIARY_TEST_URL`指向实际子路径，用skill-runtime/run python跑`test_app.py`、stage5-guides与原region-picker-dropdown/stage4。使用各脚本实际headful变量，不混用PAW_HEADFUL和PAW_DIARY_HEADED。有头本轮至少四宽双语截图与键盘实际操作。若Impeccable detector提示，仅报告/修本轮真实问题，不借机重做品牌。
+- [x] **Step 5：界面完成后一次检测** `node /Users/wenkaiqu/.agents/skills/impeccable/scripts/detect.mjs --json app.js style.css index.html`；按web-design-guidelines补交互/语义/键盘/触控审查。新增回归通过再提交 `feat: integrate help and installation without interrupting pet records`。
 
 ### Task 6：Windows验收包与三端用户清单
 
@@ -176,11 +176,11 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 - `check-public.ps1 -BaseUrl <固定原URL> -OutFile <明确本地路径>`，仅准许原host＋/paw-diary/子路径；无私有API/凭证参数。PowerShell5.1 UTF-8 JSON输出，网络失败或脚本阻挡不自动pass。
 - `buildAcceptancePack({version,outdir,sourceDir}) -> Promise<{archivePath,files,sha256}>`，Node脚本导出并CLI执行；在Mac开发机用已可用zip工具打包，无新npm依赖。产物固定`test-results/stage5/paw-diary-v0.8.0-windows-acceptance.zip`。
 
-- [ ] **Step 1：写报告行为失败测试**：初始manual全not-run；auto成功不改变manual；fail必须有原因；无环境/未知status拒绝导入；UTF-8中文往返、HTML注入安全显示；双击file://、禁localStorage仍能填写导出/导入；无远程报告上传。
-- [ ] **Step 2：RED** `node --test tests/acceptance-report.test.js`与包页面E2E。
-- [ ] **Step 3：实现自包含HTML和可选探测**，公共metadata版本/hash核对不能访问CloudBase。README先写“解压、打开START-HERE”，再写脚本可选；RUN-CHECK不改全局执行策略/不请求管理员，不可执行时回HTML清单。包内不携带node_modules、账号session或用户数据。
-- [ ] **Step 4：写三端分工清单**，spec每条给“操作/预期/证据/清理”；Google/Outlook先核登录，不预勾。指引每步/skip/replay、真实安装启动更新卸载、iPhone键盘/GPS、200%缩放/VoiceOver/Narrator、日历首导/重复/改期均有独立ID。
-- [ ] **Step 5：GREEN并构建ZIP**：node测试、HTML有头file://E2E、解压核文件清单/无秘密与SHA。Mac只能验证包逻辑，PowerShell及Windows系统操作记等待用户执行；交付ZIP点击链接与10分钟快速清单，完整三端约30–45分钟为建议。提交 `test: ship a portable Windows acceptance kit and device checklist`。
+- [x] **Step 1：写报告行为失败测试**：初始manual全not-run；auto成功不改变manual；fail必须有原因；无环境/未知status拒绝导入；UTF-8中文往返、HTML注入安全显示；双击file://、禁localStorage仍能填写导出/导入；无远程报告上传。
+- [x] **Step 2：RED** `node --test tests/acceptance-report.test.js`与包页面E2E。
+- [x] **Step 3：实现自包含HTML和可选探测**，公共metadata版本/hash核对不能访问CloudBase。README先写“解压、打开START-HERE”，再写脚本可选；RUN-CHECK不改全局执行策略/不请求管理员，不可执行时回HTML清单。包内不携带node_modules、账号session或用户数据。
+- [x] **Step 4：写三端分工清单**，spec每条给“操作/预期/证据/清理”；Google/Outlook先核登录，不预勾。指引每步/skip/replay、真实安装启动更新卸载、iPhone键盘/GPS、200%缩放/VoiceOver/Narrator、日历首导/重复/改期均有独立ID。
+- [x] **Step 5：GREEN并构建ZIP**：node测试、HTML有头file://E2E、解压核文件清单/无秘密与SHA。Mac只能验证包逻辑，PowerShell及Windows系统操作记等待用户执行；交付ZIP点击链接与10分钟快速清单，完整三端约30–45分钟为建议。提交 `test: ship a portable Windows acceptance kit and device checklist`。
 
 ### Task 7：完整验收、真实主体与集中修复
 
@@ -213,8 +213,8 @@ assert.equal(advanceTour(s,'NEXT').phase,'completed');
 
 原网址可访问，健康与私有权限硬门槛通过，指南/安装说明与实际能力一致，v0.8.0正式发布且旧tag不动。用户未返回的检查仍为待验，不以最终版本号代表全平台全部通过。
 
-下一轮从main按PENDING→SESSION_LOG最新段→本spec/plan恢复；先报实际剩余时间、检查工作区/服务/会话有效性再创建隔离树执行。本轮只规划，Windows ZIP/图标/manifest/产品controller均未生成，不把文件名列入计划当已交付。
+下一轮从main按PENDING→SESSION_LOG最新段→本spec/plan恢复；先报实际剩余时间、检查工作区/服务/会话有效性再创建隔离树执行。Windows ZIP/图标/manifest/controller现已生成并验证，具体发行与用户结果以PENDING/最终报告为准。
 
 ## 计划自检
 
-spec每节映射：来源/门槛→Task1/7/8；帮助/偏好→Task1/2/5；六步→Task3/5；安装/更新→Task4/5/8；Windows/三端/日历→Task6/7；公开发布/回退→Task8。Review Focus五类都有所属测试；接口名字统一，不使用未定义跨任务函数。环境缺口列为Task7事实检查，产品取舍已收口；所有checkbox保持未完成。
+spec每节映射：来源/门槛→Task1/7/8；帮助/偏好→Task1/2/5；六步→Task3/5；安装/更新→Task4/5/8；Windows/三端/日历→Task6/7；公开发布/回退→Task8。Review Focus五类都有所属测试；接口名字统一，不使用未定义跨任务函数。环境缺口列为Task7事实检查，产品取舍已收口；实施checkbox按本轮实际检查更新；用户及发行未验项继续未完成。

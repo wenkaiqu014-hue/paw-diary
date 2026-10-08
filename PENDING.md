@@ -4,7 +4,9 @@
 
 ## 当前唯一续作摘要
 
-**阶段5两轮Grilling已收口，本轮仅完成详细设计与计划，用户明确下一轮再实施。** 新入口为[阶段5设计](docs/superpowers/specs/2026-10-08-stage5-guides-install-quality-design.md)和[八任务实施计划](docs/superpowers/plans/2026-10-08-stage5-guides-install-quality.md)，结合SESSION_LOG最新段与[交接](docs/operations/stage5-handoff.md)恢复。目标发行v0.8.0已确认：首次新内容确定后立即进入六步遮罩，每步下一步/跳过；浏览器+身份记忆、可重看帮助、保护草稿的安装更新、Windows验收ZIP与iPhone/Windows/Mac亲验。Google/Outlook账号与系统版本待执行前核，不视为已具备。产品代码/版本文件未改，未部署/建tag，最终20:00不变。
+**阶段5已授权实施，v0.8.0候选在原网址公开，正式tag/Release与用户亲验收口待完成。** Source11bc9f2，Pages37735756082/37735759602均success，原URL6项SHA与main stable构建一致；614单元与有头四宽指南/双语/原健康、原公共App通过，Mac Chrome原URL真实安装闭环已验证（CDP额外设置standalone，用户正常prompt默认及Windows/iPhone另验）。主/资料/照片输入保护修复已独立审查通过。Windows ZIP及两份合成ICS已交付；用户确认Google/Outlook网页可登录，现委托Windows Codex，复制[Windows prompt](docs/verification/windows-codex-prompt.md)。三端/日历亲验结果尚未回填，不代勾。
+
+本轮12:44:26 Asia/Shanghai起，用户要求每工作块≤30分钟、实际工作≤4h（等待其测试反馈单独扣除）；初始工作目标16:44:26，最终20:00保持。当前仍有独立收尾工作，未把用户测试请求挂起期间全部排除。Root真实B头像本地上传失败已用CDP确定localhost预检403/PreflightMissingAllowOriginHeader，原URL真SDK PUT200/confirm通过，未改后端或扩大CORS。SDK会话仍须串行checkpoint原600文件。
 
 最新公开v0.7.1，2026-10-08 11:48:44 Release；source/tag解引用0a1b2eabefb5d8af60c9aa19c1b603c8a16ce004，Pages37723735372 success，app-CO2I3K3F.js/style-P6JZ3ZBI.css原URL SHA一致；552单元、实际三宽下拉/原健康/原URL公开检查和真实桌面原生定位建议通过。修复必填visitorId与同事务并行读取TransactionBusy；搜索在城市菜单内首行、行政区独立滚动、公共“看看内容示例”删除。详[补丁报告](docs/verification/region-picker-v071-report.md)。用户明确本轮0.7.1，不建0.8。阶段5与最终20:00不变；下方是0.7.0基础版本历史证据。
 
@@ -383,3 +385,5 @@ CloudBase账号、环境、费用范围与真实身份/数据/图片技术门槛
 历史main交接前言（其旧阻塞与工作树入口已失效，保留追溯）：
 
 当前阶段2候选已实现并通过210单测/17份本地与模拟边界浏览器脚本；真实邮箱/云私有权限仍未验收，未公开0.3。下一步进入 `.worktrees/stage2` / `feat/stage2-local-cloud`（HEAD3f7d01c、实现3d14cc6）读取其PENDING及docs/verification/stage2-report.md，不从main旧源码重做。原main领先交接保留；19.90单月订单未付/余额不足，等待资金与两个受控邮箱，预览http://127.0.0.1:4193/paw-diary/；八小时目标09:38:46 Asia/Shanghai，原最终截止不变。完整本轮日志已同步SESSION_LOG。
+
+阶段5用户反馈续作：Windows验收结果已按用户要求归档并移走桌面ZIP，report16pass/24not-run/19unverified（auto10pass）；iPhone主屏幕用户明确成功。Safari头像/主标题focus/旧城市入口已技术修复，准备新source公开复验；私人profile所在地独立。读屏/Google+Outlook日历/Windows安装确认继续未验证。

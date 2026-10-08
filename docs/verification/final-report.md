@@ -1,6 +1,6 @@
 # 阶段5验收报告（候选，持续补充）
 
-当前：v0.8.0本地候选，公开仍v0.7.1；尚未创建v0.8.0 tag/Release。用户三端与日历亲验独立，未以技术通过代勾。
+当前：v0.8.0候选已在原URL部署，source11bc9f2；尚未创建v0.8.0 tag/Release。用户三端与日历亲验独立，未以技术通过代勾。
 
 ## 本地实现与技术验证
 
@@ -16,9 +16,9 @@ Root实际`npm test`614/614、0fail/skip；node --check app.js、构建与git di
 
 A/B真实SDK会话从原600文件恢复、逐次刷新写回；可信不同身份、云端护理档案读取、私有record保存/刷新、主/个人资料草稿下帮助与导览阻挡通过，pageErrors0。B原本无宠物，先创建明确“纯合成”的私有验收宠物；无公开发帖或资料保存。新合成记录按唯一receipt移回收站，原资料未清理；B合成宠物暂留用于原URL重复验收，不当成真实养宠事实。
 
-B新建时父档案已保存，头像上传失败且界面保留独立重试；实际小诊断确认health.snapshot和media.prepare成功，object.put在浏览器fetch失败，尚在核传输/CORS原因。FUJI管理只读GetFunction确认paw-api当前Active/Timeout3；没有据此擅自延长运行时或部署。此处不将服务失败写成已修复，也不将管理成功代实际上传。
+B新建时父档案已保存，头像上传失败且界面保留独立重试。实际受限诊断确认localhost对象PUT预检403、浏览器PreflightMissingAllowOriginHeader；原URL同一真实B主体prepare2097ms、PUT200/424ms、confirm1789ms全部成功。未扩大CORS或改变后端；FUJI GetFunction只读确认paw-api Active/Timeout3，不把猜测归为运行时故障。之后独立上传改变revision，旧UI提交明确CAS拒绝且原输入保留；重新恢复页面后私有保存/刷新通过。
 
-Mac Chrome本地原生生命周期10pass/1unverified：真实PWA.install、OS入口、正确项目id、实际独立窗口、系统launcher、资料与偏好共享、重开当前0.8、卸载及OS入口消失；临时profile与app清理。CDP安装路径额外设置实际standalone偏好，用户正常prompt默认行为与原URL尚未验证。跨后续版本实际安装更新仍未验证；不虚发0.8.1或移动tag。
+Mac Chrome本地与原URL分别10pass/1unverified：真实PWA.install、OS入口、正确项目id、实际独立窗口、系统launcher、资料与偏好共享、重开当前0.8、卸载及OS入口消失；临时profile与app清理。原URL块14:16:11–14:17:12=1分1秒，真实0.8.0 stable/build11bc9f2。CDP路径额外设置实际standalone偏好，不代用户正常prompt默认行为。跨后续版本实际安装更新仍未验证；不虚发0.8.1或移动tag。
 
 ## 用户三端、Windows包与日历
 
@@ -26,11 +26,15 @@ Windows ZIP源与自包含file://页面验证、11项报告/元数据/SHA契约�
 
 用户明确iPhone/Windows/Mac都有，Google与Outlook两个网页版可登录，不需要桌面下载。两份ICS由产品exporter实际生成，每份2个全天事件、相同UID、首次10月10/12日、改期11/12日、无VALARM；网页导入/重复/改期/通知待用户实际结果，Apple旧导入证据不扩充为全部三端通过。
 
-用户亲验尚未回填：iPhone真实键盘/GPS/主屏幕/VoiceOver、Windows安装/窗口/卸载/Narrator/PS、Mac用户正常安装/Safari独立容器/VoiceOver、原生200%缩放、Google/Outlook日历。缺环境或未执行按unverified，不因v0.8目标而勾通过。
+用户真机反馈已收到：iPhone Safari 首页/弹窗/城市截图、添加到主屏幕成功，其余常用流程用户报告无问题；不是逐项GPS/VoiceOver结果。截图确认移动头像缺flex居中、主标题程序focus套全局outline、顶部仍旧示例城市选择器，正在按实际反馈修复。
+
+Windows 11 26200 / Edge149.0.4022.52验收ZIP已按用户要求从桌面归档至Git忽略test-results/stage5/windows-user；ZIP完整性与复制SHA通过，桌面原件已移除。报告auto10pass；manual16pass/24not-run/19unverified。本地保存刷新重开、护理plan/record、六步、第三步skip/replay、locale用户原文保留、help保稿通过。原PS脚本Content byte[]误报manifest，独立浏览器JSON纠正；保留原始report，修脚本兼容不以Mac测试代PS实机。真实Windows安装确认尚未完成、200%/键盘部分可用但未全面通过，读屏/日历仍未测。
+
+用户亲验剩余：iPhone真实键盘/GPS/主屏幕/VoiceOver、Windows安装/窗口/卸载/Narrator/PS、Mac用户正常安装/Safari独立容器/VoiceOver、原生200%缩放、Google/Outlook日历。缺环境或未执行按unverified，不因v0.8目标而勾通过。
 
 ## 公开发布与时间
 
-原网址候选、源/公开资产SHA、Pages、tag/Release与用户反馈将在后续工具证据到达后补充。旧v0.7.1与全部旧tag不动，回退只前端和发行元数据，云端健康不删。
+原网址候选已发布：11bc9f2d84a8fc6ebc8c7513fdc8181579b5480a，Pages37735756082/37735759602同source两条push均success（更新完成工具字段分别06:06:13Z/06:06:33Z），原因未核不推因果。index/release/asset-manifest/manifest/JS/CSS六项SHA与main全新ci+stable构建一致；公开app-KZH22FTC.js/style-45OUM73Z.css，字节证明test-results/stage5/online-build.json。原URL四宽指南/恢复en偏好、原健康八组、公共App三宽复验通过。旧0.7容器写入的合成记录在同名DevBrowser重开0.8后仍1条；idle后旧tab丢失，不称热标签页升级已过。正式tag/Release及用户反馈另补，旧tag不动、健康云数据不删。
 
 工具起点12:44:26 Asia/Shanghai，4h实际工作目标初始16:44:26；等待用户实际测试/反馈区间另计，截至目前仍进行独立工作，无等待扣除。各worker块最长10分17秒，Root独立检查/真实主体/头像诊断分块记录；最终20:00保持，实际超时若发生如实记录，不以估计保证完成。
 

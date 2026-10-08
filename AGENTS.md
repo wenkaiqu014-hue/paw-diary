@@ -23,7 +23,7 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
-**阶段5最新入口：** 两轮Grilling已收口，用户明确本轮只写详细plan、下一轮再实施。先读PENDING当前摘要、SESSION_LOG最新段及`docs/superpowers/specs/2026-10-08-stage5-guides-install-quality-design.md`、`docs/superpowers/plans/2026-10-08-stage5-guides-install-quality.md`，必要时读stage5-handoff/参考核对。已定目标v0.8.0、首次新内容确定后立即六步遮罩（每步下一步/跳过）、浏览器+身份偏好、头像帮助与首页入口、无缓存worker的安装/安全更新、Windows验收ZIP与三端亲验。Google/Outlook登录及系统版本未确认。当前公开仍v0.7.1，产品/版本文件未改，指南/安装/验收包未实施；最终2026-10-08 20:00不变。
+**阶段5最新入口：** 用户已授权实施，12:44:26起每工作块≤30min/实际工作≤4h（用户测试反馈等待另计）。候选v0.8.0/source11bc9f2已在原URL部署，Pages37735756082/37735759602 success、6项SHA一致、614单测/四宽指南/原健康/公共App与Mac Chrome原URL原生安装过；Windows ZIP/合成ICS/Windows Codex prompt已交付，三端/日历用户亲验和正式tag/Release仍待。读PENDING/SESSION_LOG最新段、stage5 spec/八任务plan、final-report，不按旧“只规划/未实施”重做。Google/Outlook网页已确认能登录。原URL头像真SDK上传确认通过，本地失败确认为localhost CORS预检拒绝，没改后台或权限；会话原600继续串行更新。最终20:00不变。
 
 **最新2026-10-08 v0.7.1：** 用户定位/下拉反馈补丁已在原URL正式公开，Release11:48:44，source/tag解引用0a1b2ea，Pages37723735372 success，552单测与真实原生浏览器定位/三宽独立滚动通过；公共示例区已删。下一轮读PENDING、SESSION_LOG最新段与region-picker-v071-report，再进入阶段5，不重做旧0.7.0。用户明确本轮0.7.1，未建0.8；最终20:00不变。
 

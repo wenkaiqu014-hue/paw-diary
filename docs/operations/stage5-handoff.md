@@ -1,6 +1,6 @@
 # 阶段5新 session 交接
 
-最新2026-10-08：阶段5已完成两轮Grilling与详细规划；用户明确本轮只做plan、下一轮再实施。先读PENDING、SESSION_LOG最新段、[新版设计](../superpowers/specs/2026-10-08-stage5-guides-install-quality-design.md)及[八任务计划](../superpowers/plans/2026-10-08-stage5-guides-install-quality.md)。目标v0.8.0已确认，当前公开仍v0.7.1；指南/PWA/Windows验收包未生成，Google/Outlook登录和系统版本仍待核。
+阶段5已按用户授权实施并在原网址部署v0.8.0候选；原11bc9f2候选614单测和真实A/B/公开回归、Mac实际安装已验证。用户iPhone六图反馈三处（头像/主标题focus/顶部旧城市）修复正在公开复验；Windows归档test-results/stage5/windows-user（Git忽略，不能发公开），实际report16pass/24not-run/19unverified。先读PENDING当前摘要、SESSION_LOG最新段及final-report，不重做已实现指南/PWA。正式tag/Release状态与最终source以PENDING最新为准，未测读屏/日历/平台安装继续单列。
 
 下文为v0.7.1补丁轮交接背景。原文要求下一session进入最后阶段已由最新规划推进，05四任务旧计划作为历史输入，不能按旧“版本待定”再问一遍。
 

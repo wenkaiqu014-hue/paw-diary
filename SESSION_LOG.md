@@ -1121,3 +1121,17 @@ Root实际614/614最终单测0fail/skip、语法/diff/构建通过；原健康te
 用户异步确认两个日历网页版可登录，已答无需桌面下载；用实际exportRemindersIcs生成两份合成文件，各2项10/12日与11/12日同UID/noVALARM，供独立测试日历首导/重复/改期。Microsoft当前原页重开支持文件上传/快照说明，Google原页触发sorry反爬失败，指南标沿旧官方说明等待用户实际入口，不冒充当次已查到。文件与日历操作清单在ignored artifacts和docs/verification/stage5-calendar-user-test.md，未操作用户实际日历。
 
 README/CHANGELOG/体验路线与final-report候选已准备，尚未部署或tag；阶段5正式代码功能收敛，只修观察到的可靠性问题。当前无等待用户扣时，Root以12:44:26起4h实际预算推进，最终20:00不变。头像传输实际枚举后准备main候选，公开/用户三端验收事实另补。
+
+### 阶段5公开候选、真实原URL与用户验收续作
+
+main全新npm ci、614/614无fail/skip、语法/diff/stable build复验后将11bc9f2d84a8fc6ebc8c7513fdc8181579b5480a推送原仓库；Pages37735756082/37735759602同source push均success，工具updatedAt06:06:13Z/06:06:33Z（Asia/Shanghai14:06:13/14:06:33），重复原因未知不作推断。公开index/release/asset-manifest/manifest/JS/CSS六项字节SHA与main一致，app-KZH22FTC.js/style-45OUM73Z.css；真实原URLguide四宽、en偏好、健康八组与公共三宽双语回归通过。候选v0.8.0仍未建tag/Release。
+
+真实头像诊断仅B纯合成夹具：localhost OPTIONS403与PreflightMissingAllowOriginHeader，生产原URL同SDK prepare2097ms/PUT200 424ms/confirm1789ms成功；后端/CORS/timeout未修改。独立上传改变revision后旧UI实际CAS拒绝且保稿，重新恢复页面保存/刷新成功。A/B原URL真UID、私有记录刷新与主/个人资料草稿帮助/导览阻挡通过，最后exact新增记录移回收站并两会话串行stop写回原600文件；B明确合成宠物/头像保留，不清真实数据，不新增OTP/model。Mac原URL原生PWA安装14:16:11–14:17:12共1分1秒、10pass/1unverified；CDP额外真实standalone偏好与跨未来版本未测已注明，自己的临时app/profile清理。
+
+用户要求Windows有Codex可代验，已提交36a871a提供docs/verification/windows-codex-prompt.md，ZIP当时SHA904ac979…d69d807，限定独立测试profile/实际系统动作与原始report，未要用户代做全部可自动化操作。用户随后提交iPhone Safari六张实机截图：头像“我”偏左、主弹窗标题黄色focus框、顶栏六城市与社区全国目录不同；用户明确添加到主屏幕没有问题及其他常用流程无问题，未据此代勾GPS/读屏。Root确认旧城市入口遗留，统一浏览地区与community/nearby，个人资料公开所在地独立。
+
+用户要求桌面Windows ZIP归档不留桌面：已验证paw-acceptance-20261008.zip zipIntegrity、复制SHA b7c6505e1de55b28fddf477081088ff7810809d45635b38778f3f3a8652586bd，复制至test-results/stage5/windows-user后移除桌面原件；忽略Git，目录700/files600。ZIP含本轮测试浏览器profiles，未读取其cookies/token，未上传版本资产。Windows报告原checkedAt2026-10-08T06:51:44.827Z、Windows11build26200/Edge149.0.4022.52。auto10pass；manual实际数量见summary.json（报告状态保留，未测不通过）。六步/第三步skip/replay、本地保存重开、护理计划完成/独立record、locale、draft-help、file工具通过。200%/键盘只有部分证据，安装确认/启动/卸载/Narrator/日历仍未验证。发现PS5.1Content byte[]误报manifest，独立浏览器HTTP JSON内容正常，install worker定向修helper兼容，不称Mac已运行PS。
+
+Safari反馈修复块14:53:37开始：Root先运行shared-city browser RED，home实际仍旧六城modal；改app所有topbar/action city共用openBrowsingCity，communityEnabled时全国picker，只写既有community-browse-region。GREEN实际公共目录home→community→inline/topbar双向→nearby→health→reload一致，原demo snapshot字节不变。第一次GREEN脚本错用“北京”全等目录“北京市”而超时，改按实际名称includes，未为测试更改目录。CSS worker独占community.css/style.css/专属e2e，RED mobile文字偏12.5px/标题solid框，修flex居中及仅#dialog-title outline，GREEN实际Chrome155 390px中心0px、标题仍focused无框、下一Tab交互按钮solid3px。当前WebKit未安装，不称代Safari实机验。Root看截图确认；独立review另行检查共享地区不改profile草稿。
+
+200长中文合成记录初次夹具失败原因是旧seed.reminder引用已替换的recordIDs（validateSnapshot报事项没有对应记录），清夹具reminders后先通过schema再跑实际桌面/390UI：200行、无横向溢出、0pageErrors通过。不改生产数据，不将初次无效夹具当产品故障。

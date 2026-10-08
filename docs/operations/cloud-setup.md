@@ -1,5 +1,14 @@
 # CloudBase 管理与部署
 
+## v1.0.0当前内测准入
+
+本轮沿用固定FUJI上海个人版环境。五函数paw-auth/paw-api/paw-files/paw-ai/paw-community均已显式开启服务端内测策略；真实无资格签名SDK调用全部BETA_ACCESS_REQUIRED，伪造客户端资格不生效，验收资格已恢复。合法旧OTP证明3项幂等追加legacy资格，不改健康或原邮箱证明；真实A/B/C恢复刷新已过。备份最终恢复/精确清理及设备发行门槛见[1.0报告](../verification/v100-report.md)，不能据管理读回代勾。
+
+PAW_BETA_GATE_ENABLED须显式true/false，码通过PAW_BETA_INVITE_CODE仅存在服务端。五环境保持原AI/LBS未知变量与20/3/30/40/30秒timeout；先显式gate-off兼容部署、冻结proof receipt迁移并verify、再统一gate-on读回。管理脚本合并已有env后更新，不能以required keys重建覆盖。迁移收据须校验固定环境、规范cutoff、proof日期/摘要/id与唯一性、冻结字段和资格；保存私密600，只日志计数。没有新增采购、集团账单或管理密钥注入。
+
+本轮精确时间与原source记录见SESSION_LOG、v100-report。下面是各旧版本当时原始记录；不按旧候选/未付款/未部署状态重复操作。
+
+
 ## 阶段3当前运行状态（v0.4.0已正式发布）
 
 固定FUJI凭证及上海环境不变，没有新付费采购或DeepSeek调用。新增独立paw-ai，2026-10-07 16:15:15读回Active、Node18.15、40秒；模型fetch25秒，锁定非ProQwen/Qwen2.5-7B-Instruct。paw-api于16:51:20重新部署读回Active，仍3秒/256MB/Node18.15；未重写已验收认证。

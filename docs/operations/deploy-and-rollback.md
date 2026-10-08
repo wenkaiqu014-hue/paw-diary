@@ -1,47 +1,33 @@
-# 固定地址发布准备与回滚
+# 固定地址发布与回退
 
-v0.3.0当前为候选准备，尚未发布。本文是操作步骤，不是部署成功记录；真实云门槛、最终提交、Pages工作流和匿名网页结果由发布负责人补证据。固定[仓库](https://github.com/wenkaiqu014-hue/paw-diary)和[网页](https://wenkaiqu014-hue.github.io/paw-diary/)保持不变，保留#home、#health、#nearby、#community；v0.1.0/v0.2.0 tag不移动。
+固定[仓库](https://github.com/wenkaiqu014-hue/paw-diary)和[网页](https://wenkaiqu014-hue.github.io/paw-diary/)不变。v1.0.0已实施、原URL候选公开；正式tag/Release仍以[1.0验收报告](../verification/v100-report.md)和SESSION_LOG最新记录为准，既有所有tag不移动。
 
-## 构建与发布产物
+## 构建、公开产物与源码
 
-前端使用Node 22、锁定依赖与esbuild。GitHub Actions实际工作流为`.github/workflows/pages.yml`，依次执行`npm ci`和`npm run build`，只上传`dist`。构建包含哈希JS/CSS、index.html、assets、.nojekyll、公开配置及asset-manifest.json；同时保留固定v0.2.0旧app/style/src兼容图，避免已缓存入口混用模块。
+GitHub Actions .github/workflows/pages.yml运行npm ci/npm run build，只上传dist。前端包含哈希JS/CSS、index、release.json、asset-manifest、manifest与白名单静态资源；manifest身份固定/paw-diary/。backend/cloudfunctions/tests/docs/SESSION_LOG/test-results/.env不进入Pages。云函数单独构建部署，前端buildId并不自动证明函数源码已一致部署。
 
 ```sh
-node --version
 npm ci
 npm test
 node --check app.js
 git diff --check
 npm run build
-python3 -m http.server 4193 --bind 127.0.0.1 --directory dist
 ```
 
-本地预览使用HTTP，不直接服务含SDK裸导入的源目录。上面的简单服务根入口是`http://127.0.0.1:4193/`；正式发布前另按当前子路径预览配置验收`/paw-diary/`，不能用根路径通过替代子路径通过。并行验收时不要重新安装依赖或覆盖正在检查的dist；先固定候选，再跑浏览器。
+固定待验提交与stable配置后构建，检查公开release version/channel/buildId，原URL的index、release、asset manifest、webmanifest与哈希app/style六项均HTTP200且byte SHA对应。检查五hash路由、匿名实际界面及受控真实账号权限；HTTP200、管理员Ready、mock通过不能替代真实业务。并行检查不要重装依赖或覆盖dist。文档与测试单独提交不会因路径过滤自动触发Pages；页面代码变更须等待对应headSha的工作流成功。
 
-公开配置只包含环境ID、地域、publishableKey及enabled；管理凭证、AI密钥、邮箱验证码和会话token不进入前端。默认读取`src/config/cloud-environment.json`，也支持`PAW_CLOUD_CONFIG_PATH`及公开配置环境变量。构建启用键为`enabled`，不能把运维记录的`cloudEnabled`当成它已生效。正式环境与真实权限未确认前保持`enabled=false`。管理凭证仍只由运维进程从FUJI环境变量读取。
+公开配置仅含必要公开配置与boolean betaRequired，不能带内测码、FUJI管理凭证、模型/LBS私钥、OTP/session或私有资料。只比较秘密是否出现，禁止打印值。保存忽略目录私密600凭证/receipt，正式发布资产仅用自己生成的六白名单Windows ZIP，用户原含profile的21MB报告ZIP不得上传。
 
-backend、cloudfunctions、tests、docs、SESSION_LOG、test-results及.env不进入dist。云函数是独立产物，`npm run build:functions`生成Git忽略目录`test-results/stage2/functions/paw-api`，不上传Pages；云函数运行时与资源读回详见[云操作说明](cloud-setup.md)。
+## 内测服务端部署
 
-## 发布前与公开复验
+管理固定从FUJI变量读取。先读五函数原env/timeouts并私存，合并受管键且保留未知AI/LBS配置。新逻辑兼容显式gate-off后，冻结旧合法proof收据，dry-run计数、幂等apply、verify及重复apply确认；迁移不动健康/邮箱证明。再统一开启五入口并读回，复验旧会话/new signup/无资格真实签名拒绝、匿名原范围。失败不继续发版或把有凭证者降匿名。换码须考虑challenge指纹和真实进行中登录，服务端策略与前端betaRequired保持一致。
 
-先完成[候选发布说明](../releases/v0.3.0.md)中真实邮箱、跨浏览器、跨账号、直接集合/对象访问拒绝、云媒体及迁移门槛。管理员读回、模拟SDK或HTTP200不能代替这些结果。本轮采购范围是同一笔个人版1个月订单、1990分（19.90元）；体验版先前的正式来源/严格存储限制不能靠邮箱开关绕过，不重复下单，付款与发货状态以运维证据为准。
+当前确切实施与门槛结果已记1.0报告；不要再次迁移、发验证码或开启临时匿名provider。共享会话refresh串行及时checkpoint原600文件，资料清理只按验收owned receipt精确执行，禁止清库或替换用户snapshot。
 
-全部门槛通过后，发布负责人冻结生产配置和提交SHA，确认VERSION、package及锁文件均为0.3.0，记录最终asset manifest。将已验收代码整合至main并按用户明确发布授权推送；等待Pages工作流成功，在原网页用匿名新浏览器检查免登录健康、照片、备份、四个hash入口。真实登录流程另用受控账号检查，不将邮箱或验证码写入文档。
+## 正式发行与回退
 
-工作流只在main的网页、样式、app、src、assets、package/lock、scripts和pages工作流变更时自动运行，纯文档/测试不会自动部署；保留workflow_dispatch。公开复验通过后再创建新的annotated v0.3.0 tag与Release，使它们指向实际发布源码。当前准备任务没有执行合并、推送、部署、tag或Release。
+最终真实门槛通过后，冻结实际部署source，确认VERSION/package/lock、metadata与公开六SHA一致；复核原tag snapshot26 refs。创建新的annotated v1.0.0 tag指向实际发行源码，推送并用verify-tag创建Release，上传安全包并核digest。不要以docs-only HEAD漂移重建或移动已发布tag；日志与状态可以后置文档提交。正式创建前由主agent明确确认当前用户验收结果。
 
-## 出现故障时
+需要回退时先暂停失败候选，保资料与私有权限，核真正成功运行的headSha与构件后再重跑对应Pages或新修复提交；不把历史运行号写成当前可直接执行目标。前端回退不回退函数/资格/数据库/对象权限，也不迁移或删除个人档案。旧0.8前端重新登录缺内测字段与已开启服务端存在契约差异，不能只回退页面并宣称恢复完整登录；须先明确一致的前后端策略，保现有旧合法账号资格。
 
-优先保留数据和已验收的免登录健康主线。若仅云端失败，可在新的修复提交中将正式公开配置设为`enabled=false`，重新构建并发布同一前端，显示继续本地记录；不清空用户IndexedDB、localStorage、云库或媒体。此修改必须同步正式构建配置，单次本地Shell变量不会自动改变后续GitHub Actions构建。
-
-需要整体回退前端时，先暂停待发布的新候选，检查没有更新版本的部署仍排队。项目现有已验收v0.2.0 Pages运行记录为`37497726088`，源码为`ceed8d3`（历史发布记录）；执行前重新核对完整headSha和工作流。按原成功运行重跑可恢复其原始源码与工作流，不移动tag、不换URL：
-
-```sh
-gh run view 37497726088 --json headSha,status,conclusion,workflowName
-gh run rerun 37497726088
-gh run watch 37497726088 --exit-status
-```
-
-只有原运行源码确认为已验收v0.2.0且可以重新部署时才执行重跑；失败则停止并查看失败步骤，不将命令已发出视为已回退。成功后记录新attempt与部署结果，再在原网址匿名复验。之后通过新的修复或revert提交让main与保留的发布方案一致，避免下次源码推送再次发布故障版本；如需撤销合并提交，先核对父线再使用`git revert -m 1`，不reset或丢弃未推送交接。
-
-v0.2.0不会显示阶段2个人IndexedDB和云端的新记录，回退前说明这一显示差异，并保留完整健康/照片备份及原存储；不能把前端回退当作数据向旧格式迁移。前端回退不回滚云函数、集合、存储权限或计费，也不把私有规则改成公开；云端如需修复按已核环境和独立回滚范围处理。
+业务不可用时优先提供本地记录/备份路径；需要关闭云入口或策略时以明确的新配置提交与五函数一致读回执行，保持deny权限。回退后在原URL实际匿名/旧账号/数据重新验证，记录新运行与结果，修复main避免后续自动部署恢复故障候选。

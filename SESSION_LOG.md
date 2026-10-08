@@ -1191,3 +1191,14 @@ C本地stage5 newpet等待主dialog关闭超时30s；当前原因尚未完整网
 最后freshreview发现Important2：迁移收据apply/verify未严格核cutoff、id摘要、重复、冻结proof；CloudRepo吞前置auth抛出的beta错误/params。由serverworker同一wave定向修，不改数据/真实服务。迁移RED18fail/3pass→21GREEN、全680；RepoRED12fail/2pass→39定向/全694，safe5codes+boundedretry参数，两catch统一。Reviewer独立25＋14scoped、diff0，两项关闭，未误报3条实际迁移越界发生。Root1.0notes追加时误用不存在dictionary binding而ReferenceError，改冻字典内部keys；旧notes测试固定0.8，更新仅当前1.0，6专项GREEN，未把中间失败当最终pass。
 
 Windows已给集中ZIP（SHA4ae8eedd97ae992b8373dc9b4e3abb94b19dd4311e21f0de36642085df9fdc55）和prompt到main ignored可下载，agent已准备真实0.8照片dirty旧窗口，等待candidateactual1.0通知，公共9pass不当新版本已验。用户期间问发帖，按实际posts requireProfile解释仅登录＋已保存昵称，无宠物/发现开关前置，不新增需求。MacVoiceOver另给用户具体本机预览听读步骤。
+
+
+### v1.0.0文档与发行准备收口（尚未正式Release）— 2026-10-08 17:07:51 Asia/Shanghai
+
+Root委派release/documentation closure，仅拥有文档、状态和发布说明；不改app/backend，不派子agent，不读运行时秘密/私有健康，不操作云端。依据Root明确事实及本地freshreview/Mac/帮助/门槛脱敏报告，建立v100-report、v1.0.0发布说明与/tmp/paw-v100-release-notes.md。更新PENDING/AGENTS/PRODUCT/ROADMAP/DESIGN、master/v100计划、README/CHANGELOG的当前段，旧记录明确历史，已过项与当前待项分别维护。
+
+主agent此前报告真实新C17:00重新登录/refresh成功（验收writer原缺C造成轮换失败已修）、五无资格真实SDK入口全部BETA_ACCESS_REQUIRED且资格恢复/health不变。文档agent读取real-gates.json与脱敏real-backup.json：backup早期saveRefresh/取消/导入/附件SHA/回收站保留通过，但explicitRestoreApplied/outsideBaselinePreserved/cleanupExactOwnedOnly仍false，UNAVAILABLE/FORBIDDEN；已立即通知Root，待负责QA实际恢复/精确清理，不将当前失败归因于已知旧CORS线索或虚标通过。
+
+MacVoiceOver正文修复b19fbf4已main/push，技术694/正文DOM AX键盘回归通过，用户听读待复验。Windows1.0集中结果、最终source公开六SHA及正式tag/Release/资产digest仍待Root。文档不修改deployed buildId、不建tag，不上传21MB用户原ZIP，仅六白名单安全包允许发行。本轮两小时15:40:50→17:40:50、每步30分钟及最终20:00如实保留，不扣并行用户等待。
+
+文档收口检查 2026-10-08 17:09:54 Asia/Shanghai：git diff --check退出0；全部本轮16文件的相对Markdown链接存在性检查通过；本地发行说明与/tmp实际body存在；安全Windows ZIP实际20228字节、SHA匹配4ae8…c55、恰六白名单文件，无profile。第一次operations写入脚本stdin编码报Non-UTF-8且未写文件；加显式UTF-8编码后重跑成功，未掩盖失败。未重跑应用全量测试，因为只改文档且Root已本轮验证694；应用通过事实归属此前实际命令/报告，不称文档agent复测。

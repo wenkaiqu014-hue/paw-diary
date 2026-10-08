@@ -4,7 +4,18 @@
 
 ## 当前唯一续作摘要
 
-**新的规划任务（未实施）：** 用户要求v1.0.0收口与用户指定的固定六位内测码，先2–3轮Grilling再详细plan，之后另行开始实施。当前仅只读调查/决策澄清，公开仍下述v0.8.0，不提前修改登录或云端准入。 首轮已确认目标v1.0.0、最多5–6名内测者、旧合法账号保留资格及无码体验；第二轮6/7/8/10已确认；Q9要求详列并尽量补完专项，第3轮审阅docs/superpowers/specs/2026-10-08-v100-beta-access-design.md及实体设备配合安排，尚未写实施plan或开始改功能。
+v1.0.0已实施并将候选发布到原网址，正式tag/Release尚待最终真实验收。当前前端source为b19fbf4a07f18f95a66ee1bb8389bd18c1cf63d6（Mac帮助正文阅读修复），694项单测、环境合并4项及独立审查已记录；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。Mac VoiceOver修复后用户复验、Windows集中专项、新C备份最终恢复与精确清理仍待闭环。详见docs/verification/v100-report.md。
+
+- [x] 六位码服务端准入、五函数统一验证与验证码限流；旧资格3项迁移和真实A/B/C恢复刷新。
+- [x] 独立审查及两项Important修复，694单测与原候选e464六项公开SHA通过。
+- [x] iPhone主屏幕/软键盘/GPS/VoiceOver用户通过；Safari独立容器备份和Mac既有安装App跨版本重开。
+- [ ] 新C当前资格下完整恢复及精确清理闭环。
+- [ ] Mac帮助正文VoiceOver修复后用户听读、Windows1.0集中验收最终报告。
+- [ ] 最终source原URL六项SHA、正式v1.0.0 tag/Release、安全资产digest与旧tag不变检查。
+
+本轮15:40:50开始，17:40:50两小时目标，每步≤30分钟；最终10月8日20:00不变。旧Mac热窗口dirty升级因进程失去保持未验证，既有安装App重开已真通过，不混淆两项。原600会话先核恢复、refresh串行及时写回。
+
+以下为历史发行及当时待项，最新续作以顶部与v100报告为准。
 
 **阶段5v0.8.0正式发布，用户剩余检查独立跟进。** v0.8.0已正式发布，source/tag解引用8d97886a963395f9e17eea3397ea09d8372624cc，Pages37741014326 success/Deploy15:03:03，Release15:06:20 Asia/Shanghai。616单测、原URL/真实A/B与Mac实际安装技术检查通过；用户iPhone三处修复已明确“通过”，主屏幕此前明确成功。Windows结果已归档，安装与独立启动、Google/Outlook日历用户已通过；读屏等剩余专项继续单列；不重做已完成阶段、不把版本号当全平台全部通过。 公开app-BJOWAUQS.js/style-QOCO2BV4.css；原URL六项SHA匹配发行source stable构建。Windows原报告16pass/24not-run/19unverified（auto10pass），真实结果ZIP已从桌面归档至Git忽略目录，详情final-report；新兼容验收包见Release，Windows prompt已更新。 最新用户回报：Windows安装/独立启动和Google/Outlook日历实导用户已明确通过；桌面安装截图已归档并移走原件。剩余读屏、真机GPS逐项结果、Windows卸载/跨后续版本更新等专项仍未验证。
 

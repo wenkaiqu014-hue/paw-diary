@@ -23,7 +23,9 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
-**阶段5最新入口：** v0.8.0已正式发布，source/tag解引用8d97886a963395f9e17eea3397ea09d8372624cc，Pages37741014326 success/Deploy15:03:03，Release15:06:20 Asia/Shanghai。616单测、原URL/真实A/B与Mac实际安装技术检查通过；用户iPhone三处修复已明确“通过”，主屏幕此前明确成功。Windows结果已归档，安装与独立启动、Google/Outlook日历用户已通过；读屏等剩余专项继续单列；不重做已完成阶段、不把版本号当全平台全部通过。 读PENDING/SESSION_LOG最新段、final-report与stage5 spec/plan。原600会话仍先核恢复、串行refresh写回。最终20:00不变。 最新用户回报：Windows安装/独立启动和Google/Outlook日历实导用户已明确通过；桌面安装截图已归档并移走原件。剩余读屏、真机GPS逐项结果、Windows卸载/跨后续版本更新等专项仍未验证。
+**v1.0.0当前入口：** v1.0.0已实施并将候选发布到原网址，正式tag/Release尚待最终真实验收。当前前端source为b19fbf4a07f18f95a66ee1bb8389bd18c1cf63d6（Mac帮助正文阅读修复），694项单测、环境合并4项及独立审查已记录；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。Mac VoiceOver修复后用户复验、Windows集中专项、新C备份最终恢复与精确清理仍待闭环。详见docs/verification/v100-report.md。 续作先读PENDING/SESSION_LOG最新段、v100-report及v100 spec/plan；不重做阶段1–5。原600会话串行刷新写回、验收C临时资源待负责QA精确闭环，勿自行清库。正式发布前由主agent确认真实门槛，旧26 tag refs须逐项保持。
+
+**历史阶段5入口：** v0.8.0已正式发布，source/tag解引用8d97886a963395f9e17eea3397ea09d8372624cc，Pages37741014326 success/Deploy15:03:03，Release15:06:20 Asia/Shanghai。616单测、原URL/真实A/B与Mac实际安装技术检查通过；用户iPhone三处修复已明确“通过”，主屏幕此前明确成功。Windows结果已归档，安装与独立启动、Google/Outlook日历用户已通过；读屏等剩余专项继续单列；不重做已完成阶段、不把版本号当全平台全部通过。 读PENDING/SESSION_LOG最新段、final-report与stage5 spec/plan。原600会话仍先核恢复、串行refresh写回。最终20:00不变。 最新用户回报：Windows安装/独立启动和Google/Outlook日历实导用户已明确通过；桌面安装截图已归档并移走原件。剩余读屏、真机GPS逐项结果、Windows卸载/跨后续版本更新等专项仍未验证。
 
 **最新2026-10-08 v0.7.1：** 用户定位/下拉反馈补丁已在原URL正式公开，Release11:48:44，source/tag解引用0a1b2ea，Pages37723735372 success，552单测与真实原生浏览器定位/三宽独立滚动通过；公共示例区已删。下一轮读PENDING、SESSION_LOG最新段与region-picker-v071-report，再进入阶段5，不重做旧0.7.0。用户明确本轮0.7.1，未建0.8；最终20:00不变。
 

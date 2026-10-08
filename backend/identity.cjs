@@ -1,8 +1,9 @@
 "use strict";
+const {DISABLED_BETA_POLICY,validProof,assertBetaAdmission}=require('./beta-access.cjs');
 // Context and auth must come from the platform SDK, never request.payload.
 async function resolvePrincipal(
   context,
-  { auth, getPlatformContext, readVerifiedProfile, readVerifiedProof, authToken } = {},
+  { auth, getPlatformContext, readVerifiedProfile, readVerifiedProof, authToken, betaPolicy=DISABLED_BETA_POLICY } = {},
 ) {
   if (!auth) return null;
   const trusted = await auth.getAuthContext(context),
@@ -22,7 +23,9 @@ async function resolvePrincipal(
   if (!trusted?.uid || trusted.uid !== platformUid || anonymous !== false)
     return null;
   if (typeof readVerifiedProfile === "function") {
-    const credential = context?.extendedContext?.accessToken ?? authToken;
+    const contextToken=context?.extendedContext?.accessToken;
+    if(authToken!==undefined&&contextToken!==undefined&&authToken!==contextToken)return null;
+    const credential = authToken!==undefined?authToken:contextToken;
     if (typeof credential !== "string" || !credential) return null;
     const profile = await readVerifiedProfile(credential);
     if (
@@ -34,12 +37,9 @@ async function resolvePrincipal(
       profile.isAnonymous === true
     )
       return null;
-    if (profile.email_verified !== true) {
-      const proof = typeof readVerifiedProof === 'function' ? await readVerifiedProof(trusted.uid) : null;
-      if (!proof || proof.kind !== 'verified' || proof.ownerId !== trusted.uid ||
-          proof.emailHash !== require('./email-auth.cjs').emailHash(profile.email) ||
-          typeof proof.verifiedAt !== 'string' || !Number.isFinite(Date.parse(proof.verifiedAt))) return null;
-    }
+    const proof=(profile.email_verified!==true||betaPolicy.enabled)&&typeof readVerifiedProof==='function'?await readVerifiedProof(trusted.uid):null;
+    if(profile.email_verified!==true&&!validProof(proof,trusted.uid,profile.email))return null;
+    assertBetaAdmission(betaPolicy,proof,trusted.uid,profile.email);
     return { userId: trusted.uid, emailVerified: true, isAnonymous: false };
   }
   const result = await auth.getEndUserInfo(trusted.uid);
@@ -55,6 +55,8 @@ async function resolvePrincipal(
     !(record.email_verified === true || record.emailVerified === true)
   )
     return null;
+  const proof=betaPolicy.enabled&&typeof readVerifiedProof==='function'?await readVerifiedProof(trusted.uid):null;
+  assertBetaAdmission(betaPolicy,proof,trusted.uid,record.email);
   return { userId: trusted.uid, emailVerified: true, isAnonymous: false };
 }
 module.exports = { resolvePrincipal };

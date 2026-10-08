@@ -34,6 +34,22 @@ PAID_ENVIRONMENT = ROOT / 'test-results/stage2/paid-environment.json'
 DENY_RULE = json.dumps({'read': False, 'write': False}, separators=(',', ':'))
 
 
+def merge_function_environment(existing, required, exclude_keys=()):
+    values = {}
+    for entry in existing:
+        key, value = entry.get('Key'), entry.get('Value')
+        if not isinstance(key, str) or not key or not isinstance(value, str) or key in values:
+            raise ValueError('Invalid or duplicated function environment entry')
+        values[key] = value
+    for key, value in required.items():
+        if not isinstance(key, str) or not key or not isinstance(value, str) or key.startswith('TENCENTCLOUD_'):
+            raise ValueError('Invalid managed function environment entry')
+        values[key] = value
+    for key in exclude_keys:
+        values.pop(key, None)
+    return values
+
+
 def emit(action, **summary):
     record = {'time': datetime.now(timezone(timedelta(hours=8))).isoformat(timespec='seconds'), 'action': action, **summary}
     line = json.dumps(record, ensure_ascii=False, sort_keys=True)
@@ -45,7 +61,7 @@ def emit(action, **summary):
 
 def safe_error(error):
     message = error.get_message() if hasattr(error, 'get_message') else type(error).__name__
-    for name in ('TENCENTCLOUD_FUJI_SECRET_ID', 'TENCENTCLOUD_FUJI_SECRET_KEY', 'SILICONFLOW_API_KEY', 'PAW_LBS_KEY', 'PAW_LBS_SECRET_KEY'):
+    for name in ('TENCENTCLOUD_FUJI_SECRET_ID', 'TENCENTCLOUD_FUJI_SECRET_KEY', 'SILICONFLOW_API_KEY', 'PAW_LBS_KEY', 'PAW_LBS_SECRET_KEY', 'PAW_BETA_INVITE_CODE'):
         value = os.environ.get(name)
         if value:
             message = message.replace(value, '[REDACTED]')
@@ -429,13 +445,13 @@ class Operator:
                 raise RuntimeError('Verified publish_key is required before deploying the private API')
             required_values['PAW_CLOUD_PUBLISHABLE_KEY'] = key['ApiKey']
         if name == 'paw-ai':
-            required_values['TEXT_AI_API_KEY'] = os.environ['SILICONFLOW_API_KEY']
+            if os.environ.get('SILICONFLOW_API_KEY'):
+                required_values['TEXT_AI_API_KEY'] = os.environ['SILICONFLOW_API_KEY']
             required_values['TEXT_AI_MODEL'] = 'Qwen/Qwen2.5-7B-Instruct'
         if name == 'paw-community':
             for key in ('PAW_LBS_KEY','PAW_LBS_SECRET_KEY','PAW_LBS_PROVIDER_READY','PAW_LBS_FREE_DAILY','PAW_LBS_FREE_MONTHLY'):
                 if os.environ.get(key):
                     required_values[key] = os.environ[key]
-        environment = {'Variables': [{'Key': key, 'Value': value} for key, value in required_values.items()]}
         directory = Path(directory).resolve()
         allowed = (ROOT / 'test-results/stage3/functions').resolve()
         if allowed not in directory.parents or not (directory / 'index.js').is_file():
@@ -453,6 +469,25 @@ class Operator:
             if not hasattr(error, 'get_code') or not error.get_code().startswith('ResourceNotFound'):
                 raise
             existing = None
+        old_variables = ((existing or {}).get('Environment') or {}).get('Variables') or []
+        old_values = merge_function_environment(old_variables, {})
+        if name in ('paw-api', 'paw-auth', 'paw-ai', 'paw-files', 'paw-community'):
+            gate = os.environ.get('PAW_BETA_GATE_ENABLED', old_values.get('PAW_BETA_GATE_ENABLED', 'false'))
+            if gate not in ('true', 'false'):
+                raise ValueError('Invalid beta gate configuration')
+            required_values['PAW_BETA_GATE_ENABLED'] = gate
+            if name == 'paw-auth':
+                invite = os.environ.get('PAW_BETA_INVITE_CODE', old_values.get('PAW_BETA_INVITE_CODE'))
+                if invite is not None:
+                    if not re.fullmatch(r'[0-9]{6}', invite):
+                        raise ValueError('Invalid beta invite configuration')
+                    required_values['PAW_BETA_INVITE_CODE'] = invite
+                if gate == 'true' and not invite:
+                    raise ValueError('Beta invite configuration missing')
+        merged_values = merge_function_environment(old_variables, required_values, exclude_keys=() if name == 'paw-auth' else {'PAW_BETA_INVITE_CODE'})
+        if name == 'paw-ai' and not merged_values.get('TEXT_AI_API_KEY'):
+            raise ValueError('Existing AI configuration missing')
+        environment = {'Variables': [{'Key': key, 'Value': value} for key, value in merged_values.items()]}
         if existing:
             result = self.attempt('UpdateFunctionCode', {'FunctionName': name, 'Namespace': self.env_id, 'Handler': 'index.main', 'InstallDependency': 'FALSE', 'Publish': 'FALSE', 'Code': {'ZipFile': base64.b64encode(package).decode('ascii')}, 'CodeSource': 'ZipFile'})
         else:
@@ -466,7 +501,7 @@ class Operator:
                 if status.get('Status') == 'Active':
                     variables = (status.get('Environment') or {}).get('Variables') or []
                     values = {v.get('Key'): v.get('Value') for v in variables}
-                    if any(values.get(key) != value for key, value in required_values.items()) or status.get('Timeout') != function_timeout:
+                    if any(values.get(key) != value for key, value in merged_values.items()) or (name != 'paw-auth' and 'PAW_BETA_INVITE_CODE' in values) or status.get('Timeout') != function_timeout:
                         updated = self.attempt('UpdateFunctionConfiguration', {'FunctionName': name, 'MemorySize': 256, 'Timeout': function_timeout, 'Environment': environment}, service='scf')
                         if not updated:
                             raise RuntimeError('Function public environment configuration failed')

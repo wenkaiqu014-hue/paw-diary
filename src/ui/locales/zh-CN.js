@@ -704,5 +704,16 @@ export default Object.freeze({
   "tour.recap.title": "回看真实成长",
   "tour.recap.body": "回顾依据当前宠物实际记录，无数据不虚构。分享公开摘要需要另行确认。",
   "tour.community-nav.title": "找到社区与同城",
-  "tour.community-nav.body": "浏览真实公开内容，互动需登录。健康资料不会自动公开；使用帮助可随时重看。"
+  "tour.community-nav.body": "浏览真实公开内容，互动需登录。健康资料不会自动公开；使用帮助可随时重看。",
+  "account.betaCode": "内测码",
+  "account.betaHint": "请填写邀请者提供的六位数字内测码。",
+  "account.betaRequired": "请填写内测码。",
+  "account.betaInvalid": "内测码应为六位数字，请向邀请者确认。",
+  "account.challengeChanged": "邮箱或内测码已修改，请重新发送邮箱验证码。",
+  "errors.beta_code_required": "请填写内测码。",
+  "errors.beta_code_invalid": "内测码不正确，请向邀请者确认。",
+  "errors.beta_access_required": "此账号尚未获得内测资格，请使用内测码重新登录。",
+  "errors.beta_config_invalid": "内测登录暂不可用，请稍后重试。",
+  "errors.rate_limited": "操作过于频繁，请稍后再试。",
+  "errors.rate_limited_wait": "操作过于频繁，请在{retryAfterSeconds}秒后重试。",
 });

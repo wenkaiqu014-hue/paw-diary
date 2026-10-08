@@ -103,3 +103,45 @@ for(const interruption of ['different UID','signed out','different UID then orig
   release();await assert.rejects(pending,{code:'UNAUTHENTICATED'});
  });
 }
+
+test('beta auth refuses missing gateway even for already SDK-verified identity',()=>{
+ const f=fixture();f.setRaw({sub:'A',email:'synthetic@example.invalid',email_verified:true});
+ assert.throws(()=>createCloudbaseAuth({app:{auth:()=>f.sdk},betaRequired:true}),{code:'BETA_CONFIG_INVALID'});
+});
+test('beta auth validates before transport and sends leading-zero beta value through both OTP actions',async()=>{
+ const f=fixture(),auth=createCloudbaseAuth({app:{auth:()=>f.sdk},invokeAuth:f.invokeAuth,betaRequired:true});
+ await assert.rejects(auth.requestEmailCode({email:'synthetic@example.invalid'}),{code:'BETA_CODE_REQUIRED'});
+ await assert.rejects(auth.requestEmailCode({email:'synthetic@example.invalid',betaCode:'12345'}),{code:'BETA_CODE_INVALID'});
+ assert.equal(f.calls.length,0);
+ const challenge=await auth.requestEmailCode({email:'synthetic@example.invalid',betaCode:'012349'});
+ await assert.rejects(auth.verifyEmailCode({challenge,code:'123456'}),{code:'BETA_CODE_REQUIRED'});
+ assert.deepEqual(await auth.verifyEmailCode({challenge,code:'123456',betaCode:'012349'}),{userId:'A'});
+ assert.deepEqual(f.calls[0].payload,{email:'synthetic@example.invalid',betaCode:'012349'});
+ assert.deepEqual(f.calls[1].payload,{id:'server-challenge',code:'123456',betaCode:'012349'});
+});
+for(const code of ['BETA_CODE_REQUIRED','BETA_CODE_INVALID','BETA_ACCESS_REQUIRED','BETA_CONFIG_INVALID','RATE_LIMITED']){
+ test(`auth preserves reviewed ${code} from rejection envelopes without exposing arbitrary details`,async()=>{
+  const f=fixture(),auth=createCloudbaseAuth({app:{auth:()=>f.sdk},betaRequired:true,invokeAuth:async()=>({ok:false,error:{code,status:401,private:'secret'}})});
+  await assert.rejects(auth.requestEmailCode({email:'synthetic@example.invalid',betaCode:'012349'}),error=>error.code===code&&!JSON.stringify(error).includes('secret'));
+ });
+}
+test('beta session access always asks gateway and preserves missing admission rejection',async()=>{
+ const f=fixture();f.setRaw({sub:'A',email:'synthetic@example.invalid',email_verified:true});
+ const auth=createCloudbaseAuth({app:{auth:()=>f.sdk},betaRequired:true,invokeAuth:async()=>({ok:false,error:{code:'BETA_ACCESS_REQUIRED'}})});
+ await assert.rejects(auth.getSession(),{code:'BETA_ACCESS_REQUIRED'});
+ await assert.rejects(auth.getRequestSession(),{code:'BETA_ACCESS_REQUIRED'});
+});
+
+test('beta rate errors retain only bounded reviewed retry seconds',async()=>{
+ const f=fixture();
+ for(const value of [60,-1,86401,'private-token']){
+  const auth=createCloudbaseAuth({app:{auth:()=>f.sdk},invokeAuth:async()=>({ok:false,error:{code:'RATE_LIMITED',params:{retryAfterSeconds:value,private:'secret'}}})});
+  await assert.rejects(auth.requestEmailCode({email:'synthetic@example.invalid'}),error=>{assert.deepEqual(error.params,value===60?{retryAfterSeconds:60}:undefined);assert.equal(JSON.stringify(error).includes('secret'),false);return error.code==='RATE_LIMITED';});
+ }
+});
+test('beta admission denial clears a previously confirmed subscribed identity',async()=>{
+ const f=fixture();let denied=false;const auth=createCloudbaseAuth({app:{auth:()=>f.sdk},betaRequired:true,invokeAuth:async input=>denied?{ok:false,error:{code:'BETA_ACCESS_REQUIRED'}}:f.invokeAuth(input)});
+ await auth.getSession();const seen=[];auth.subscribe(value=>seen.push(value));denied=true;
+ await f.emit('TOKEN_REFRESHED',{user:{id:'A',email:'synthetic@example.invalid',is_anonymous:false},access_token:'issued-A'});
+ assert.deepEqual(seen,[null]);
+});

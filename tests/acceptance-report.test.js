@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 let api = {}, packaging = {};
 try { api = await import('../tools/acceptance/windows/report-model.js'); } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e; }
 try { packaging = await import('../scripts/build-acceptance-pack.mjs'); } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e; }
@@ -114,4 +115,34 @@ test('Windows checker normalizes UTF8 response bytes before parsing JSON or matc
   assert.match(script, /\$PageText\.Contains\(\$Path\)/);
   assert.doesNotMatch(script, /\.Content\s*\|\s*ConvertFrom-Json|\[string\]\$Page\.Content/, 'raw byte[] response must not reach a text consumer');
   assert.match(script, /RawContentStream\.ToArray\(\)/, 'integrity hashing must keep the original bytes');
+});
+test('v1 pack defaults to stable candidate, focused checklist and six safe files', async () => {
+  const outdir = await mkdtemp(join(tmpdir(), 'paw-v100-pack-'));
+  try {
+    await writeFile(join(outdir,'private-profile.txt'),'test-only sentinel; must not enter archive');
+    const result = await packaging.buildAcceptancePack({ outdir });
+    assert.match(result.archivePath, /v1\.0\.0-windows-acceptance\.zip$/);
+    assert.equal(Object.keys(result.fileSha256).length, 6);
+    const files=execFileSync('unzip',['-Z1',result.archivePath],{encoding:'utf8'}).trim().split('\n');
+    assert.deepEqual(files.sort(),['START-HERE.html','README.txt','check-public.ps1','RUN-CHECK.cmd','report-schema.json','device-checklist.md'].sort());
+    for(const file of files)assert.equal(result.fileSha256[file],createHash('sha256').update(await readFile(join(outdir,file))).digest('hex'));
+    assert.equal(result.sha256,createHash('sha256').update(await readFile(result.archivePath)).digest('hex'));
+    const html = await readFile(join(outdir, 'START-HERE.html'), 'utf8');
+    assert.ok(html.includes('1.0.0'));
+    const ps = await readFile(join(outdir, 'check-public.ps1'), 'utf8');
+    assert.match(ps, /\$ExpectedVersion = '1\.0\.0'/);
+    const checklist = await readFile(join(outdir, 'device-checklist.md'), 'utf8');
+    assert.ok(checklist.includes('保留现有 v0.8'));
+    assert.ok(checklist.includes('Narrator'));
+  } finally { await rm(outdir, { recursive: true, force: true }); }
+});
+test('v1 manual scope starts not-run and omits previously passed install/calendar tasks', async () => {
+  const source = await readFile(new URL('../tools/acceptance/windows/report-model.js', import.meta.url), 'utf8');
+  const v1 = await import('data:text/javascript,' + encodeURIComponent('const __PAW_ACCEPTANCE_VERSION__="1.0.0";\n'+source));
+  const result = v1.buildManualReport({environment});
+  assert.equal(result.productVersion,'1.0.0');
+  assert.ok(result.manualChecks.every(c=>c.status==='not-run'));
+  const ids=result.manualChecks.map(c=>c.id);
+  for(const id of ['beta-login','dirty-update','saving-update','photo-draft','offline-input','backup-readback','windows-uninstall','windows-narrator'])assert.ok(ids.includes(id),id);
+  for(const id of ['windows-install','windows-launch','calendar-first','google-calendar-first','outlook-calendar-first'])assert.ok(!ids.includes(id),id);
 });

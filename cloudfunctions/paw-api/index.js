@@ -1,6 +1,7 @@
 "use strict";
 const cloudbase = require("@cloudbase/node-sdk");
 const { handleRequest } = require("../../backend/api.cjs");
+const {readBetaPolicy,reviewedError}=require("../../backend/beta-access.cjs");
 const { resolvePrincipal } = require("../../backend/identity.cjs");
 const {createPlatformProfileLookup}=require("../../backend/verified-profile.cjs");
 const {createAuthStore}=require("../../backend/email-auth.cjs");
@@ -12,7 +13,9 @@ const app = cloudbase.init({
 });
 exports.main = async (event, context) => {
   try {
+    const betaPolicy=readBetaPolicy(process.env);
     const principal = await resolvePrincipal(context, {
+      betaPolicy,
       auth: app.auth(),
       getPlatformContext: cloudbase.getCloudbaseContext,
       authToken:event?.authToken,
@@ -25,10 +28,7 @@ exports.main = async (event, context) => {
       store: createCloudbaseStore({ db: app.database() }),
       storage: createCloudbaseStorage({ app }),
     });
-  } catch {
-    return {
-      ok: false,
-      error: { code: "UNAVAILABLE", messageKey: "errors.unavailable" },
-    };
+  } catch(error) {
+    return reviewedError(error);
   }
 };

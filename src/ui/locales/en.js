@@ -704,5 +704,16 @@ export default Object.freeze({
   "tour.recap.title": "Look back on real growth",
   "tour.recap.body": "Recaps use the current pet’s real records without inventing missing data. Publishing a summary needs another confirmation.",
   "tour.community-nav.title": "Explore community and nearby",
-  "tour.community-nav.body": "Browse real public content; sign in to interact. Health journals are not published automatically. Revisit Help any time."
+  "tour.community-nav.body": "Browse real public content; sign in to interact. Health journals are not published automatically. Revisit Help any time.",
+  "account.betaCode": "Beta invitation code",
+  "account.betaHint": "Enter the six-digit beta code provided by your inviter.",
+  "account.betaRequired": "Enter your beta invitation code.",
+  "account.betaInvalid": "Enter a six-digit beta code. Check with your inviter.",
+  "account.challengeChanged": "Request a new email code after changing your email or invitation code.",
+  "errors.beta_code_required": "Enter your beta invitation code.",
+  "errors.beta_code_invalid": "The beta invitation code is incorrect. Check with your inviter.",
+  "errors.beta_access_required": "This account needs beta access. Sign in again with your invitation code.",
+  "errors.beta_config_invalid": "Beta sign-in is temporarily unavailable. Try again later.",
+  "errors.rate_limited": "Too many attempts. Try again later.",
+  "errors.rate_limited_wait": "Too many attempts. Try again in {retryAfterSeconds}s.",
 });

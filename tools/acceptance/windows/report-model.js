@@ -1,6 +1,6 @@
 const VERSION = typeof __PAW_ACCEPTANCE_VERSION__ === 'string' ? __PAW_ACCEPTANCE_VERSION__ : '0.8.0';
 const item = (id,title,platform,operation,expected,cleanup='只清理本次明确标注的验收数据。') => ({id,title,platform,operation,expected,evidence:'记录结果与系统/浏览器版本；截图需遮盖个人资料。',cleanup});
-export const MANUAL_CHECKS = Object.freeze([
+const LEGACY_CHECKS = Object.freeze([
  item('public-version','原网址与当前版本','all','打开原URL，阅读关于/版本新内容。','地址仍为原/paw-diary/；候选版尚未上线时标未能核验，不假称失败。'),
  item('notice-confirm','首次新内容确认','all','新浏览器或新身份查看版本公告，先关闭，再重新启动并点击确定。','关闭不算确认；确定后首次用户立即进入六步指引。'),
  ...Array.from({length:6},(_,i)=>item(`guide-step-${i+1}`,`指引第${i+1}步：下一步`,'all','依序操作该步的下一步按钮，查看目标与提示。','目标可见，文案可读，进度正确；最后一步完成。')),
@@ -44,6 +44,22 @@ export const MANUAL_CHECKS = Object.freeze([
  item('offline-input','弱网/断网输入保护','all','在明确测试输入后暂时断网，尝试云/AI操作再恢复。','失败说明明确，输入不丢；不宣称离线同步。','恢复网络，仅清本次测试数据。'),
  item('cleanup','退出、备份与确切清理','all','导出备份，清理确切“阶段5验收”数据，退出测试账号。','不删除真实档案、不清全部浏览器资料、无意外登录留存。','保留用户自主保存的报告/备份。'),
 ]);
+export const V100_CHECKS = Object.freeze([
+ item('public-version','原网址与v1.0.0公共资源','windows','核对固定URL、release/manifest、PS5.1公共资源报告。','公开v1.0.0、manifest身份不变、构件SHA与声明一致；上线前未能核验。'),
+ item('beta-login','内测码字段与登录键盘','windows','无码/合成错误码检查字段；正确码请用户私下直接输入，不写报告。','必填、错误就近提示且未发邮件；错误回焦正确；成功/退出后输入清空；语言切换保输入。'),
+ item('zoom','原生200%缩放','windows','Edge原生缩放200%，操作菜单、帮助、六步、登录/宠物/记录表单。','关键文本可读，保存/取消可滚动到；结束恢复原缩放。'),
+ item('keyboard','完整键盘与回焦','windows','Tab/Shift+Tab/Enter/Esc、菜单方向键；弹层关闭；内测码错误。','焦点可见、次序合理，关闭回入口；错误回字段，无焦点陷阱。'),
+ item('dirty-update','真实0.8→1.0：未保存输入','windows','保留原0.8标签页/App及合成草稿；收到上线通知后聚焦检测，点击更新。','真实新版本提示；未保存阻挡刷新且草稿完整；尊重5分钟focus节流。'),
+ item('saving-update','真实0.8→1.0：保存中保护','windows','实际云端保存时尝试新版更新，可记录施加的真实网络延迟。','busy期间不能刷新；无法观察就未能核验，不伪造状态。'),
+ item('windows-update','既有App真实升级及重开','windows','草稿安全保存/关闭后更新；核对hash、1.0版本与资料，关闭从原图标重开。','网页与既有App均升级成功，原hash/资料保留；保留日常App。'),
+ item('photo-draft','照片草稿、说明、改名','windows','只选合成图，填说明/名称，切语言/开关帮助；在升级前后检查并保存回读。','草稿与原文保留、保存后的名称/说明/附件正确。'),
+ item('offline-input','真实断网失败与恢复','windows','获用户同意暂时实际断网；已加载云表单保存，恢复网络后重试。','云端失败明确、输入/图片不丢，恢复重试保存回读；本地保存成功不能算云失败验证。','恢复网络；不承诺离线PWA或同步。'),
+ item('backup-readback','隔离容器备份、取消与恢复回读','windows','新隔离profile测试App建立合成档案/图/类型/软删除，导出备份，预览取消再确认恢复。','取消不写入；恢复映射、附件字节/自定义类型正确，软删除不复活；备份留本机不回传。'),
+ item('windows-uninstall','仅卸载本轮隔离测试App','windows','在隔离profile的edge://apps核对象后卸载新测试App，保网站数据再网页回读。','仅新测试App消失；原日常App仍可用，网站资料/备份保留；实际有数据清理选项需记录选择。','禁止清全部浏览器数据；私密profile不放回传ZIP。'),
+ item('windows-narrator','Narrator实际朗读','windows','Win+Ctrl+Enter启Narrator，用户听读标题/字段/错误/状态，并操作退出。','记录实际听到的名称及操作；DOM/截图不代替语音证据。','按原偏好恢复；听不到/不能操作标未能核验并说明。'),
+ item('cleanup','脱敏报告与确切清理','windows','导出JSON/HTML至同一结果目录；仅清合成数据、新测试App；保留旧原始报告。','回传仅报告/脱敏截图/公开检测，不含邮箱、码、token、真实健康内容、坐标、profile或备份。'),
+]);
+export const MANUAL_CHECKS = VERSION === '1.0.0' ? V100_CHECKS : LEGACY_CHECKS;
 const statuses = new Set(['pass','fail','not-run','unverified']);
 const keys = (value, allowed) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).every(key => allowed.includes(key));
 const text = (value, max=4000) => typeof value === 'string' && value.length <= max;

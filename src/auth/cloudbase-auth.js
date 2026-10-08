@@ -3,8 +3,14 @@ const safeError = (code = "UNAVAILABLE") =>
     code,
     messageKey: "errors." + code.toLowerCase(),
   });
+const reviewedCodes = new Set(["BETA_CODE_REQUIRED", "BETA_CODE_INVALID", "BETA_ACCESS_REQUIRED", "BETA_CONFIG_INVALID", "RATE_LIMITED"]);
 function authFailure(error) {
   const code = error?.code ?? error?.error;
+  if (reviewedCodes.has(code)) {
+    const failure = safeError(code), seconds = error?.params?.retryAfterSeconds;
+    if (code === "RATE_LIMITED" && Number.isInteger(seconds) && seconds >= 0 && seconds <= 86400) failure.params = {retryAfterSeconds:seconds};
+    return failure;
+  }
   return error?.status === 401 ||
     error?.statusCode === 401 ||
     [
@@ -33,7 +39,8 @@ function publicSession(user, raw, requireVerified = true) {
     ? { userId: user.id }
     : null;
 }
-export function createCloudbaseAuth({ app, invokeAuth } = {}) {
+export function createCloudbaseAuth({ app, invokeAuth, betaRequired = false } = {}) {
+  if (betaRequired && typeof invokeAuth !== "function") throw safeError("BETA_CONFIG_INVALID");
   if (!app || typeof app.auth !== "function") throw safeError();
   const sdk = app.auth(),
     challenges = new Map(),
@@ -98,7 +105,9 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
         confirmedUserId = principal.userId;
       return principal;
     },
-    async requestEmailCode({ email } = {}) {
+    async requestEmailCode({ email, betaCode } = {}) {
+      if (betaRequired && !betaCode) throw safeError("BETA_CODE_REQUIRED");
+      if (betaRequired && (typeof betaCode !== "string" || !/^[0-9]{6}$/.test(betaCode))) throw safeError("BETA_CODE_INVALID");
       if (
         typeof email !== "string" ||
         email.length > 254 ||
@@ -106,7 +115,7 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
       )
         throw safeError("INVALID_INPUT");
       if(typeof invokeAuth==="function"){
-        const reply=await serverCall('auth.requestEmailCode',{email:email.trim()});
+        const reply=await serverCall('auth.requestEmailCode',{email:email.trim(),...(typeof betaCode==='string'?{betaCode}:{})});
         if(typeof reply?.id!=="string"||!reply.id||reply.id.length>256)throw safeError();
         challenges.set(reply.id,{server:true});return {id:reply.id};
       }
@@ -122,7 +131,9 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
       challenges.set(id, result.data.verifyOtp);
       return { id };
     },
-    async verifyEmailCode({ challenge, code } = {}) {
+    async verifyEmailCode({ challenge, code, betaCode } = {}) {
+      if (betaRequired && !betaCode) throw safeError("BETA_CODE_REQUIRED");
+      if (betaRequired && (typeof betaCode !== "string" || !/^[0-9]{6}$/.test(betaCode))) throw safeError("BETA_CODE_INVALID");
       const verify = challenges.get(challenge?.id);
       if (
         !verify ||
@@ -132,7 +143,7 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
         throw safeError("INVALID_INPUT");
       if(typeof invokeAuth==="function"){
         const observed=authEpoch;
-        const reply=await serverCall('auth.verifyEmailCode',{id:challenge.id,code:code.trim()}),issued=reply?.session;
+        const reply=await serverCall('auth.verifyEmailCode',{id:challenge.id,code:code.trim(),...(typeof betaCode==='string'?{betaCode}:{})}),issued=reply?.session;
         if(typeof issued?.access_token!=="string"||!issued.access_token||typeof issued?.refresh_token!=="string"||!issued.refresh_token||typeof reply?.principal?.userId!=="string"||!reply.principal.userId||typeof sdk.setSession!=="function")throw safeError("UNAUTHENTICATED");
         if(observed!==authEpoch||challenges.get(challenge.id)!==verify)throw safeError("UNAUTHENTICATED");
         const credentials={access_token:issued.access_token,refresh_token:issued.refresh_token};
@@ -196,7 +207,7 @@ export function createCloudbaseAuth({ app, invokeAuth } = {}) {
           listener(value);
         } catch (error) {
           if (!active || current !== epoch) return;
-          if (error.code === "UNAUTHENTICATED") {
+          if (["UNAUTHENTICATED","BETA_ACCESS_REQUIRED","BETA_CONFIG_INVALID"].includes(error.code)) {
             confirmedUserId = null;
             listener(null);
           } /* same-user transient failures preserve the last confirmed view and drafts */

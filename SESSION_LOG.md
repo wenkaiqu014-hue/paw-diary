@@ -1202,3 +1202,5 @@ Root委派release/documentation closure，仅拥有文档、状态和发布说�
 MacVoiceOver正文修复b19fbf4已main/push，技术694/正文DOM AX键盘回归通过，用户听读待复验。Windows1.0集中结果、最终source公开六SHA及正式tag/Release/资产digest仍待Root。文档不修改deployed buildId、不建tag，不上传21MB用户原ZIP，仅六白名单安全包允许发行。本轮两小时15:40:50→17:40:50、每步30分钟及最终20:00如实保留，不扣并行用户等待。
 
 文档收口检查 2026-10-08 17:09:54 Asia/Shanghai：git diff --check退出0；全部本轮16文件的相对Markdown链接存在性检查通过；本地发行说明与/tmp实际body存在；安全Windows ZIP实际20228字节、SHA匹配4ae8…c55、恰六白名单文件，无profile。第一次operations写入脚本stdin编码报Non-UTF-8且未写文件；加显式UTF-8编码后重跑成功，未掩盖失败。未重跑应用全量测试，因为只改文档且Root已本轮验证694；应用通过事实归属此前实际命令/报告，不称文档agent复测。
+
+文档agent只读GH后续检查：b19fbf4对应Pages37753851432 completed/success、updated17:02:54（gh run list原UTC09:02:54Z）。尝试原URL六项SHA时先读main dist b19 manifest，再并行取URL；期间另一执行者重建dist使旧app-LIERNR5U.js消失，本地比较FileNotFoundError退出1，无六项成功产物、无构件改动。已通知Root，最终SHA由固定源/构件负责人补证据，不重建或覆盖共享dist。

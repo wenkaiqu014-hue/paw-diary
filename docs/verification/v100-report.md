@@ -12,7 +12,7 @@
 
 源码沿c53e21a→943cd53→e464ab1→b19fbf4演进。943cd53为五函数部署逻辑；e464ab1加入迁移收据严格校验与仓储安全错误保留；b19fbf4加入帮助正文键盘/阅读入口。后两次前端/运维本地修订没有重新部署SCF，不将前端buildId等同五函数代码版本。
 
-首候选e464ab1fbf4a3995c82b672649c4b33686d6f53e的Pages37753064061 success，工作流updated16:55:50；原URL六项HTTP200且SHA与stable main构建一致，证据main/test-results/v100/online-e464.json。b19fbf4已推送main；其最新Pages、六项SHA、正式tag/Release、资产digest及旧refs复核待主agent最终补录。公开候选release.json的stable为网页更新渠道，不替代GitHub正式Release完成。
+首候选e464ab1fbf4a3995c82b672649c4b33686d6f53e的Pages37753064061 success，工作流updated16:55:50；原URL六项HTTP200且SHA与stable main构建一致，证据main/test-results/v100/online-e464.json。b19fbf4已推送main；gh run list实际核对Pages37753851432 success，updated2026-10-08T09:02:54Z（17:02:54 Asia/Shanghai）。其六项SHA、正式tag/Release、资产digest及旧refs复核待主agent最终补录。公开候选release.json的stable为网页更新渠道，不替代GitHub正式Release完成。
 
 ## 实际部署、身份与权限
 

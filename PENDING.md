@@ -4,14 +4,18 @@
 
 ## 当前唯一续作摘要
 
-v1.0.0已实施并将候选发布到原网址，正式tag/Release尚待最终真实验收。当前前端source为b19fbf4a07f18f95a66ee1bb8389bd18c1cf63d6（Mac帮助正文阅读修复），694项单测、环境合并4项及独立审查已记录；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。Mac VoiceOver修复后用户复验、Windows集中专项、新C备份最终恢复与精确清理仍待闭环。详见docs/verification/v100-report.md。
+v1.0.0已正式发布：source/tag解引用1f44973a357cfdfb9e51a0d27327f1ec6d5e4611，Pages37758087467 success/updated17:39:10，Release18:04:50 Asia/Shanghai公开且非draft/非prerelease；安全ZIP20228字节digest4ae8…c55匹配，原26 tag refs未动。Windows具体未验证组合仍保留。最终发行前端source为1f44973a357cfdfb9e51a0d27327f1ec6d5e4611（在f559之上追加Windows原生200%说明区重排修复），最终main全新npm ci及695/695单测、环境合并4/4、语法/diff和秘密未进入tracked/dist检查通过；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。真实C备份12项和原URL界面已全部通过、精确清理且原基线保留；paw-files修复包17:09:42 Active。Mac VoiceOver第三次用户听读明确通过；Windows原始集中报告auto10通过、manual6通过/1失败/6未验证；网页清洁升级、已测键盘路径、云断网恢复/完整备份和隔离App卸载通过。200%布局失败已最小CSS修复，原生复验待用户；原图标重开/dirty-busy/照片跨升级/Narrator保存状态/Windows精确清理保持未验证；iPhone原图标升级1.0、旧记录与重开用户明确全部正常。详见docs/verification/v100-report.md。
 
 - [x] 六位码服务端准入、五函数统一验证与验证码限流；旧资格3项迁移和真实A/B/C恢复刷新。
-- [x] 独立审查及两项Important修复，694单测与原候选e464六项公开SHA通过。
+- [x] 独立审查及两项Important修复，695单测与前候选f559六项公开SHA通过；最终1f449公开核对通过。
 - [x] iPhone主屏幕/软键盘/GPS/VoiceOver用户通过；Safari独立容器备份和Mac既有安装App跨版本重开。
-- [ ] 新C当前资格下完整恢复及精确清理闭环。
-- [ ] Mac帮助正文VoiceOver修复后用户听读、Windows1.0集中验收最终报告。
-- [ ] 最终source原URL六项SHA、正式v1.0.0 tag/Release、安全资产digest与旧tag不变检查。
+- [x] 新C当前资格下完整恢复及精确清理闭环：12项全true、原URL真实UI通过、原基线逐项deepEqual。
+- [x] Mac帮助正文第二次修复后第三次用户听读明确通过。
+- [x] iPhone原图标跨版本升级/旧记录/重开用户明确通过。
+- [ ] Windows1.0集中验收最终报告；已过网页清洁升级、Narrator部分结果单列报告。
+- [x] 前候选f559原URL六项SHA匹配（test-results/v100/online-final.json当时记录）。
+- [x] 最终1f449原URL六项SHA与Pages读回；200%已技术修复，用户原生复验仍未验证。
+- [x] 正式v1.0.0 tag/Release、安全资产digest与原26 tag refs不变检查。
 
 本轮15:40:50开始，17:40:50两小时目标，每步≤30分钟；最终10月8日20:00不变。旧Mac热窗口dirty升级因进程失去保持未验证，既有安装App重开已真通过，不混淆两项。原600会话先核恢复、refresh串行及时写回。
 

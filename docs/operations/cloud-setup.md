@@ -2,7 +2,7 @@
 
 ## v1.0.0当前内测准入
 
-本轮沿用固定FUJI上海个人版环境。五函数paw-auth/paw-api/paw-files/paw-ai/paw-community均已显式开启服务端内测策略；真实无资格签名SDK调用全部BETA_ACCESS_REQUIRED，伪造客户端资格不生效，验收资格已恢复。合法旧OTP证明3项幂等追加legacy资格，不改健康或原邮箱证明；真实A/B/C恢复刷新已过。备份最终恢复/精确清理及设备发行门槛见[1.0报告](../verification/v100-report.md)，不能据管理读回代勾。
+本轮沿用固定FUJI上海个人版环境。五函数paw-auth/paw-api/paw-files/paw-ai/paw-community均已显式开启服务端内测策略；真实无资格签名SDK调用全部BETA_ACCESS_REQUIRED，伪造客户端资格不生效，验收资格已恢复。合法旧OTP证明3项幂等追加legacy资格，不改健康或原邮箱证明；真实A/B/C恢复刷新已过。新C备份/精确清理12项及原URL实际UI已通过；paw-files恢复修复包17:09:42 Active，其余四函数保留。设备发行门槛见[1.0报告](../verification/v100-report.md)，不能据管理读回代勾。
 
 PAW_BETA_GATE_ENABLED须显式true/false，码通过PAW_BETA_INVITE_CODE仅存在服务端。五环境保持原AI/LBS未知变量与20/3/30/40/30秒timeout；先显式gate-off兼容部署、冻结proof receipt迁移并verify、再统一gate-on读回。管理脚本合并已有env后更新，不能以required keys重建覆盖。迁移收据须校验固定环境、规范cutoff、proof日期/摘要/id与唯一性、冻结字段和资格；保存私密600，只日志计数。没有新增采购、集团账单或管理密钥注入。
 

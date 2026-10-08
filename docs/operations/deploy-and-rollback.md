@@ -1,6 +1,6 @@
 # 固定地址发布与回退
 
-固定[仓库](https://github.com/wenkaiqu014-hue/paw-diary)和[网页](https://wenkaiqu014-hue.github.io/paw-diary/)不变。v1.0.0已实施、原URL候选公开；正式tag/Release仍以[1.0验收报告](../verification/v100-report.md)和SESSION_LOG最新记录为准，既有所有tag不移动。
+固定[仓库](https://github.com/wenkaiqu014-hue/paw-diary)和[网页](https://wenkaiqu014-hue.github.io/paw-diary/)不变。v1.0.0已正式公开/source1f44973/Release18:04:50；具体结果与未验证限制以[1.0验收报告](../verification/v100-report.md)和SESSION_LOG最新记录为准，既有所有tag不移动。
 
 ## 构建、公开产物与源码
 

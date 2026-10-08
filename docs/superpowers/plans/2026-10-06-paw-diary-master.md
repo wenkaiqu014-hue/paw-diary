@@ -10,7 +10,7 @@
 
 **Spec:** `ROADMAP.md`、`PRODUCT.md`、`PENDING.md`；用户本轮确认的截止时间、技术选择权限和AI供应商纠正。
 
-**最新执行入口（2026-10-08）：** v1.0.0已实施并将候选发布到原网址，正式tag/Release尚待最终真实验收。当前前端source为b19fbf4a07f18f95a66ee1bb8389bd18c1cf63d6（Mac帮助正文阅读修复），694项单测、环境合并4项及独立审查已记录；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。Mac VoiceOver修复后用户复验、Windows集中专项、新C备份最终恢复与精确清理仍待闭环。详见docs/verification/v100-report.md。 本轮[内测实施计划](2026-10-08-v100-beta-access.md)已执行，剩余真实门槛与发行不提前勾选。
+**最新执行入口（2026-10-08）：** v1.0.0已正式发布：source/tag解引用1f44973a357cfdfb9e51a0d27327f1ec6d5e4611，Pages37758087467 success/updated17:39:10，Release18:04:50 Asia/Shanghai公开且非draft/非prerelease；安全ZIP20228字节digest4ae8…c55匹配，原26 tag refs未动。Windows具体未验证组合仍保留。最终发行前端source为1f44973a357cfdfb9e51a0d27327f1ec6d5e4611（在f559之上追加Windows原生200%说明区重排修复），最终main全新npm ci及695/695单测、环境合并4/4、语法/diff和秘密未进入tracked/dist检查通过；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。真实C备份12项和原URL界面已全部通过、精确清理且原基线保留；paw-files修复包17:09:42 Active。Mac VoiceOver第三次用户听读明确通过；Windows原始集中报告auto10通过、manual6通过/1失败/6未验证；网页清洁升级、已测键盘路径、云断网恢复/完整备份和隔离App卸载通过。200%布局失败已最小CSS修复，原生复验待用户；原图标重开/dirty-busy/照片跨升级/Narrator保存状态/Windows精确清理保持未验证；iPhone原图标升级1.0、旧记录与重开用户明确全部正常。详见docs/verification/v100-report.md。 本轮[内测实施计划](2026-10-08-v100-beta-access.md)已执行，剩余真实门槛与发行不提前勾选。
 
 历史阶段5：**最新执行入口（2026-10-08）:** v0.8.0已正式发布，source/tag解引用8d97886a963395f9e17eea3397ea09d8372624cc，Pages37741014326 success/Deploy15:03:03，Release15:06:20 Asia/Shanghai。616单测、原URL/真实A/B与Mac实际安装技术检查通过；用户iPhone三处修复已明确“通过”，主屏幕此前明确成功。Windows结果已归档，安装与独立启动、Google/Outlook日历用户已通过；读屏等剩余专项继续单列；不重做已完成阶段、不把版本号当全平台全部通过。 最新用户回报：Windows安装/独立启动和Google/Outlook日历实导用户已明确通过；桌面安装截图已归档并移走原件。剩余读屏、真机GPS逐项结果、Windows卸载/跨后续版本更新等专项仍未验证。
 
@@ -108,7 +108,7 @@
 详细计划：[新版八任务计划](2026-10-08-stage5-guides-install-quality.md)，配套[设计](../specs/2026-10-08-stage5-guides-install-quality-design.md)；05旧四任务计划保留历史。本轮已实施并正式发布v0.8.0；Windows包与三端清单已交付，真实用户检查剩余未验证单列final-report。
 
 - [x] 技术发行退出：所交付指南/安装说明/资料可靠性/私有权限实际验证，固定网页稳定，v0.8.0 tag目标正确/Release已公开，旧tag不动。
-- [ ] 全平台用户退出：安装/独立启动、Google/Outlook及iPhone键盘/GPS/VoiceOver已有用户通过；Windows1.0集中专项与Mac VoiceOver修后复验待最终结果，Mac原热窗口dirty升级明确未验证。详v100-report。
+- [ ] 全平台用户退出：安装/独立启动、Google/Outlook及iPhone键盘/GPS/VoiceOver已有用户通过；Mac VoiceOver修后用户通过；iPhone原图标升级已过，Windows1.0剩余专项待最终结果，Mac原热窗口dirty升级明确未验证。详v100-report。
 
 ## 最新确认需求与当前续作
 

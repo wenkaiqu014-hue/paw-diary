@@ -22,6 +22,19 @@ function Get-Public([string]$Path) {
   # No credentials/session; no redirects to another origin; no private business calls.
   return Invoke-WebRequest -Uri $Uri.AbsoluteUri -UseBasicParsing -TimeoutSec 10 -MaximumRedirection 0 -Headers @{'Cache-Control'='no-cache'}
 }
+function Get-ResponseText($Response) {
+  $Content=$Response.Content
+  if ($Content -is [byte[]]) { $Text=[Text.Encoding]::UTF8.GetString($Content) }
+  elseif ($Content -is [string]) { $Text=$Content }
+  else { throw 'Unsupported public HTTP response content type.' }
+  # Windows PowerShell can expose application/manifest+json as byte[].
+  # Remove a UTF8 BOM only for text parsing; hash checks keep the raw bytes.
+  if ($Text.Length -gt 0 -and [int][char]$Text[0] -eq 0xFEFF) { $Text=$Text.Substring(1) }
+  return $Text
+}
+function ConvertFrom-PublicJson($Response) {
+  return (Get-ResponseText $Response) | ConvertFrom-Json
+}
 function Get-Sha256($Response) {
   $Sha = [Security.Cryptography.SHA256]::Create()
   try {
@@ -32,17 +45,18 @@ function Get-Sha256($Response) {
   } finally { $Sha.Dispose() }
 }
 $Page = $null
-try { $Page=Get-Public 'index.html'; Add-Result 'public-page' 'pass' 'Fixed HTTPS origin and /paw-diary/ index: HTTP 200' '' }
+$PageText = $null
+try { $Page=Get-Public 'index.html'; $PageText=Get-ResponseText $Page; Add-Result 'public-page' 'pass' 'Fixed HTTPS origin and /paw-diary/ index: HTTP 200' '' }
 catch { Add-Result 'public-page' 'unverified' '' 'Public page unavailable or network/script blocked; retry manually.' }
 $Release = $null
 try {
-  $Release=(Get-Public 'release.json').Content | ConvertFrom-Json
+  $Release=ConvertFrom-PublicJson (Get-Public 'release.json')
   if ($Release.version -notmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' -or $Release.channel -ne 'stable' -or -not $Release.buildId) { Add-Result 'release-version' 'fail' '' 'Release metadata is not a valid stable product release.' }
   elseif ($Release.version -ne $ExpectedVersion) { Add-Result 'release-version' 'unverified' ("Observed " + $Release.version) ("Expected " + $ExpectedVersion + '; candidate may not be deployed yet. Recheck after deployment.') }
   else { Add-Result 'release-version' 'pass' ("Stable version " + $Release.version + '; build ' + $Release.buildId) '' }
 } catch { Add-Result 'release-version' 'unverified' '' 'release.json unavailable; older public version may not ship release metadata yet.' }
 try {
-  $Manifest=(Get-Public 'manifest.webmanifest').Content | ConvertFrom-Json
+  $Manifest=ConvertFrom-PublicJson (Get-Public 'manifest.webmanifest')
   if ($Manifest.id -ne '/paw-diary/' -or $Manifest.start_url -ne './#home' -or $Manifest.scope -ne './' -or $Manifest.display -ne 'standalone' -or $Manifest.prefer_related_applications -ne $false) { Add-Result 'manifest' 'fail' '' 'Manifest fixed path or display values differ.' }
   else { Add-Result 'manifest' 'pass' 'Manifest preserves /paw-diary/ app identity, relative start_url/scope and standalone display.' '' }
 } catch { Add-Result 'manifest' 'unverified' '' 'Manifest unavailable or invalid; candidate may not be deployed yet.' }
@@ -51,7 +65,7 @@ foreach ($Icon in @('icon-192.png','icon-512.png','icon-maskable-512.png','apple
   catch { Add-Result ('icon-'+$Icon.Replace('.png','')) 'unverified' '' 'Public icon unavailable; real OS icon/installation remains a manual check.' }
 }
 try {
-  $Assets=(Get-Public 'asset-manifest.json').Content | ConvertFrom-Json
+  $Assets=ConvertFrom-PublicJson (Get-Public 'asset-manifest.json')
   if (-not $Assets.release -or -not $Assets.release.version -or -not $Assets.release.buildId -or -not $Assets.release.channel) {
     Add-Result 'asset-release' 'unverified' '' 'Asset release declaration is missing; older public versions do not declare this metadata.'
   } elseif (-not $Release) {
@@ -79,9 +93,9 @@ try {
         $DeclaredDigest=$DeclaredDigest.ToLowerInvariant()
         if ($ActualDigest -cne $DeclaredDigest) {
           Add-Result ('asset-'+$Kind) 'fail' ('Expected '+$DeclaredDigest+'; received '+$ActualDigest) 'SHA256 mismatch: downloaded bytes differ from the public declaration. Recheck deployment integrity.'
-        } elseif (-not $Page) {
+        } elseif ($null -eq $PageText) {
           Add-Result ('asset-'+$Kind) 'unverified' ($Path+'; SHA256 matches declaration') 'Public index is unavailable, so its reference to this matched asset cannot be checked.'
-        } elseif (-not ([string]$Page.Content).Contains($Path)) {
+        } elseif (-not $PageText.Contains($Path)) {
           Add-Result ('asset-'+$Kind) 'fail' ($Path+'; SHA256 matches declaration') 'Public index does not reference asset-manifest entry.'
         } else {
           Add-Result ('asset-'+$Kind) 'pass' ($Path+'; SHA256 '+$ActualDigest+' matches declaration; referenced by public index') ''

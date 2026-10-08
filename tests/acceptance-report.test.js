@@ -99,3 +99,19 @@ test('Windows checker requires the fixed paw-diary app identity while retaining 
   assert.match(script, /\$Manifest\.start_url\s+-ne\s+'\.\/#home'/);
   assert.match(script, /\$Manifest\.scope\s+-ne\s+'\.\/'/);
 });
+test('Windows checker normalizes UTF8 response bytes before parsing JSON or matching index text', async () => {
+  const script = await readFile(new URL('../tools/acceptance/windows/check-public.ps1', import.meta.url), 'utf8');
+  assert.match(script, /function Get-ResponseText\(\$Response\)/, 'one response decoder owns byte[]/string compatibility');
+  assert.match(script, /\$Content\s+-is\s+\[byte\[\]\]/);
+  assert.match(script, /\[Text\.Encoding\]::UTF8\.GetString\(\$Content\)/, 'byte Content must decode bytes as UTF8, never cast decimal bytes to a string');
+  assert.match(script, /\$Content\s+-is\s+\[string\]/);
+  assert.match(script, /function ConvertFrom-PublicJson\(\$Response\)/);
+  assert.match(script, /Get-ResponseText\s+\$Response\)\s*\|\s*ConvertFrom-Json/);
+  for (const resource of ['release.json','manifest.webmanifest','asset-manifest.json']) {
+    assert.ok(script.includes(`ConvertFrom-PublicJson (Get-Public '${resource}')`), `${resource} must use the common byte-safe JSON boundary`);
+  }
+  assert.match(script, /\$PageText\s*=\s*Get-ResponseText\s+\$Page/);
+  assert.match(script, /\$PageText\.Contains\(\$Path\)/);
+  assert.doesNotMatch(script, /\.Content\s*\|\s*ConvertFrom-Json|\[string\]\$Page\.Content/, 'raw byte[] response must not reach a text consumer');
+  assert.match(script, /RawContentStream\.ToArray\(\)/, 'integrity hashing must keep the original bytes');
+});

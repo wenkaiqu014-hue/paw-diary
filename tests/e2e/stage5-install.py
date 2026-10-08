@@ -2,6 +2,7 @@
 
 No synthetic install events, service worker, production account or credentials.
 PAW_DIARY_TEST_URL selects the local or deployed candidate at its real path.
+PAW_INSTALL_OUTDIR selects an independent evidence folder (default local).
 Stops before install when a matching OS app already exists. Only a PWA this
 run creates is uninstalled, always through the same isolated browser session.
 """
@@ -14,7 +15,8 @@ from playwright.sync_api import sync_playwright, expect
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = os.environ.get('PAW_DIARY_TEST_URL', 'http://127.0.0.1:4240/paw-diary/')
-OUT = ROOT/'test-results/stage5/install'
+OUT = Path(os.environ.get('PAW_INSTALL_OUTDIR',str(ROOT/'test-results/stage5/install')))
+if not OUT.is_absolute(): OUT = ROOT/OUT
 OUT.mkdir(parents=True, exist_ok=True)
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 CHECKS = []

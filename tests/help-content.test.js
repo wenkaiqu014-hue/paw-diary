@@ -10,7 +10,7 @@ test('help covers nine independently readable themes in both languages',()=>{
  assert.ok(Object.isFrozen(topics));
 });
 test('release notes reference complete bilingual keys and only one current product release',()=>{
- assert.ok(notes,'release notes available');assert.deepEqual(notes.map(note=>note.version),['1.0.4']);
+ assert.ok(notes,'release notes available');assert.deepEqual(notes.map(note=>note.version),['1.0.5']);
  for(const note of notes){for(const key of [note.titleKey,...note.bulletKeys]){assert.equal(typeof zh[key],'string',key);assert.equal(typeof en[key],'string',key);}}
 });
 test('standalone controllers do not require pet, AI, account or repository arguments',()=>{

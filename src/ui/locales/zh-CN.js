@@ -737,4 +737,6 @@ export default Object.freeze({
   "whatsNew.v104.save": "头像保存中保留预览，失败保留所选图片便于重试，无法读取的图片有明确提示。",
   "whatsNew.v104.focus": "弹窗标题不再出现黄色焦点框，键盘按钮和表单仍有焦点提示。",
 
+  "whatsNew.v105.title": "爪爪日记 1.0.5",
+  "whatsNew.v105.cleanup": "移除页面顶部档案空间提示栏，个人菜单仍可登录和管理账号。",
 });

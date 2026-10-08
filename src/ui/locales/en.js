@@ -737,4 +737,6 @@ export default Object.freeze({
   "whatsNew.v104.save": "Avatar previews stay visible during saving. Failed saves keep the selected image for retry, and unreadable images have clear messages.",
   "whatsNew.v104.focus": "Dialog headings no longer show a focus border. Keyboard controls and forms keep visible focus indicators.",
 
+  "whatsNew.v105.title": "Paw Diary 1.0.5",
+  "whatsNew.v105.cleanup": "Removed the workspace banner. Sign-in and account controls remain in the personal menu.",
 });

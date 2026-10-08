@@ -1339,3 +1339,7 @@ source/tag117958e954bab1652c9462e0fafe0c8f512e8698；main ff、721全量/stable 
 新annotated v1.0.4 source固定/ghrelease --verify-tag成功publishedAt2026-10-08T12:22:28Z=20:22:28、非draft/非prerelease，原34tagrefs剔新两条逐字不变。首诊断20:06:33至Release15分55秒，保守20min截止20:26:33；最后docs收口以本时间及最终工具记录为准。仅前端，未真实用户资料/帖子/avatar云写入、未服务部署/新费用或邮件。证据已复制main ignoredv104，核root4197 PID43097 command/cwd后停止/socket确认无监听；worker4202已关。后置docs不重建app/不移tag，当前仅Git保存推送。已问手机用户两项亲验，等待不当通过，后续按实际原文记录。
 
 用户手机两项亲验收口 2026-10-08 20:25:42 Asia/Shanghai：针对近选图头像即时显示与帖子详情标题无黄色框问题，用户明确回复“OK了，没啥问题”。据原问题逐项确认两项通过，未扩大为任意设备/图片性能均达标；本轮v1.0.4收口完成，用户反馈已记录，不要求重复测试。
+
+### 顶部档案空间栏删除 2026-10-08 20:28:16 Asia/Shanghai
+
+用户明确完全删除截图整栏、3分钟完成，工具起点20:26:40/截止20:29:40。主目录main直接有界删除index workspace-controls DOM与app构建/引用，原locale渲染改直接applyLocaleChrome，避免空节点异常；首步guide锚定既有个人菜单，账号登录仍通过原菜单，无新按钮或数据删除。VERSION/package/notes1.0.5一致，nodecheck/diff与完整721测试通过。无后端/资料/示例数据写入，准备原URL发布及新tag，旧tags不动。

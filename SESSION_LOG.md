@@ -1331,3 +1331,9 @@ source/tagd85f23ba49e75958db96e3ed2336672266b740a4；main ff/721全量/stable bu
 原代码选图已本地blob，不upload/save，手机public-preview在长表后导致近picker看不到；新64pxinline预览同blobURL，未保存/保存中/移除pending状态清晰，实际保存确认才公开，失败保file+上传nonce重试，oldread seq迟到不覆盖/locale保持。真实有效PNG3121850B/JPEG1071323B，worker178.2/157.2ms、review175.9/158.2ms（桌面Chrome两宽1440/390，非真机计时）；held边界、新选择upload/save0、失败retry不重upload、换移/坏图阻save与纠正、0errors。旧8bytefakePNG改validfixture，新preview先RED无近picker→GREEN，旧profile/custom和22scoped过；review3blob均revoke/destroy late不更新DOM，初探针误期待destroy清DOM按既有route清理规则修测试，不改产品。
 
 详情heading生成id不匹配原#dialog-title outline:none，Root键盘打开RED outline3px，扩同族dialog .dialog-head h2[tabindex=-1] focus规则。修后computedWidth仍3使测试误报；真实CSSOM仅泛型focusvisible与新None规则匹配，style明确none，无绘制。改测试按styleNone或width0的真实paint语义后详情/编辑两宽GREEN：heading仍focus、Tabbutton/input visibleoutline、Escclose正常，不移除读屏焦点/不关全站focus。Rootreview最终721完整、syntax/diff0、detector[]、Critical0/Important0，frame全证据ignoredv104。版本1.0.4notes/VERSION/package统一，纯前端，无真实用户上传/改资料/业务写入/新模型或采购；正式source/Pages/SHA/tag/结束随后补记。
+
+### v1.0.4正式收口 2026-10-08 20:24:22 Asia/Shanghai
+
+source/tag117958e954bab1652c9462e0fafe0c8f512e8698；main ff、721全量/stable build/diff再过后push，Pages37776122974 success/20:20:31；原URL六HTTP200/冻结source SHA逐字同，JS578874…55ccc/CSSe6d467…8df3e，实际匿名列表8/详情1图全部decode0error。Root查看390near-picker真实合成截图预览64circle与未保存提示、控制fileButton焦点仍可见。WebKit engine试launch executable未配置，写入webkit-smoke未执行，无安装，没用它冒称Safari/iPhone。
+
+新annotated v1.0.4 source固定/ghrelease --verify-tag成功publishedAt2026-10-08T12:22:28Z=20:22:28、非draft/非prerelease，原34tagrefs剔新两条逐字不变。首诊断20:06:33至Release15分55秒，保守20min截止20:26:33；最后docs收口以本时间及最终工具记录为准。仅前端，未真实用户资料/帖子/avatar云写入、未服务部署/新费用或邮件。证据已复制main ignoredv104，核root4197 PID43097 command/cwd后停止/socket确认无监听；worker4202已关。后置docs不重建app/不移tag，当前仅Git保存推送。已问手机用户两项亲验，等待不当通过，后续按实际原文记录。

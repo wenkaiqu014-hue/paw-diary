@@ -23,6 +23,8 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+**v1.0.4最新入口：** 117958e source/tag，Pages37776122974 success/20:20:31、Release20:22:28、六SHA匹配；721全量/两宽真实DOM/独立0Critical0Important。手机布局头像近picker本地即显，保存前无上传公开、失败保file/nonce重试；同族标题outlineNone保焦点与控制focus。旧20:00后用户明确新任务/20分钟，两项15分55秒发行，不拒绝新授权。未后台/既有数据写入，原34refs保持。读profile-avatar-v104-report/PENDING/SESSION_LOG最新段，raw证据ignoredv104，真机用户回复据原文补，Windows不重测。
+
 **v1.0.3最新入口：** source/tagd85f23b、Pages37773059988 success/19:53:59、Release19:55:29及原URL六SHA一致；721单测/独立0Critical/0Important、新旧社区与图/like回归过。仅前端卡片精简/原字号两行及尾字/瀑布流/作者与详情入口/关闭回焦，原文原图/backend未动，旧32refs不变。读community-v103-report/PENDING/SESSION_LOG最新段；截图证据ignored主目录v103，Windows不重测，以下旧版本为历史。
 
 **v1.0.2当前入口：** source/tag0744285、Pages37769811171 success/19:24:42、Release19:26:49、原URL六SHA一致；718单测/独立审查0Critical/0Important及有头浏览器通过。自定义类别/静态局部点赞及确认序号保护/紧凑完整缩图/左右详情与手机上下已交付。server仅paw-community code-only19:07:59 Active、env/timeout/gate/LBS不变，真实custom读取拒绝8项过；原URL真实列表5图/详情3图解码及0错误。未迁移或改既有帖子，原30tag refs保持；docs/verification/community-v102-report.md/PENDING/SESSION_LOG为续作依据，Windows用户已结束跟进。旧版本按历史看，不重做。

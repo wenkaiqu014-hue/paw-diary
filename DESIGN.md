@@ -1,5 +1,7 @@
 # 界面方向
 
+v1.0.4当前：头像近picker64px圆预览与状态，在手机长表单顶部可见，原公开预览继续共用同本地URL；待保存/保存中/失败重选状态清晰。同族dialog-head h2[tabindex=-1]不绘outline而保focus/ARIA，button/input仍有键盘环。Chrome两宽实测preview约0.16–0.18s仅浏览器基准不冒称实体手机，详情/编辑focus与旧表单回归通过。下段为历史。
+
 v1.0.3当前：原19px标题最多2行、孤立尾字/标点仅display处理，aria及data源文保持；昵称一行省略。列表无正文/meta/actions，原图max240、无图纯卡，短列瀑布流保节点，resize/font/image重排及销毁监听已验。头像/昵称独立作者按钮，标题native键盘与其余pointer详情，选区防误触、关闭回当前入口；详情完整原文元信息及原有功能保留。下段为历史。
 
 v1.0.2当前：截图养宠类别保猫狗加input/添加/移除，Enter不整表提交，就近双语错误，保存才写入；分类最多10项/20codepoints。列表采用180px minimum紧凑网格，1440五列/1682六列/390两列/≤340单列；feed自然比例contain/max240，仅列表摘要clamp两行。详情有图1100上限/45:55左右，≤760上下、无图720单列，编辑/详情原480/60dvh完整图保持；操作不隐藏。点赞只局部button/aria/error更新，图/评论DOM与焦点固定；fake/real验证分开，见community-v102-report。下段v1.0.1为历史。

@@ -1,6 +1,6 @@
 # 社区瀑布流与卡片精简验收
 
-2026-10-08 v1.0.3候选。用户完成Grilling后批准：标题尽量完整且最多两行，避免末行仅一字/标点；正文可省略；头像或昵称查看作者帖子，其余卡片区域进入详情；瀑布流，其余按建议。工具起点19:37:47 Asia/Shanghai、20分钟截止19:57:47、最终20:00不变。只改前端展示/导航，不部署后端或改既有帖子。
+2026-10-08 v1.0.3已正式发布，Release19:55:29，从起点到发行17分42秒。用户完成Grilling后批准：标题尽量完整且最多两行，避免末行仅一字/标点；正文可省略；头像或昵称查看作者帖子，其余卡片区域进入详情；瀑布流，其余按建议。工具起点19:37:47 Asia/Shanghai、20分钟截止19:57:47、最终20:00不变。只改前端展示/导航，不部署后端或改既有帖子。
 
 列表只保留完整小图、标题、头像昵称，无正文摘要、话题城市时间或操作区；自己的编辑/删除也仅在详情。无图纯文字卡片。详情补话题/城市/创建日期、完整原文原图，保留点赞/评论/编辑/删除/举报/隐藏。头像新增原生按钮、与昵称都阻断卡片详情点击；卡片普通区域打开详情，标题原生按钮支持Enter/Space，不制造嵌套按钮角色。关闭回当前帖子入口，语言重绘后仍能回焦，复制本卡文字不误开，外部选区不阻挡键盘。
 
@@ -13,3 +13,5 @@
 旧完整社区回归曾saved entry不可见、字面长script标题因展示省略无法exact-text找到；后者改完整aria标签定位保安全assert，前者未稳定复现，后续三卡独立缩宽与完整流程两次通过，不编造成因。独立review最终一次5秒夹具readiness超时，观察随后两卡正常/无pageerror，仅favicon404；完整独立重跑两宽通过，原因未证实。Root一次patch上下文不匹配未写文件，读实际脚本后重做。新agent/部分旧agent调用报thread limit，复用现存density agent执行独立审查，未虚报派工成功。
 
 正式source/Pages/公开六SHA/tag/Release及结束时间随后按工具补记；用户ZIP/旧Windows不重复要求，数据与私有权限沿既有已验规则。
+
+正式source/tag d85f23ba49e75958db96e3ed2336672266b740a4；Pages37773059988 success/workflow19:53:59，原URL六HTTP200/逐字SHA全部匹配固定source stable构建。JS app-UM5RIBO6.js SHAb6f81315ccd9f682adf05ae161cf70ba8a12c2d43cb156b0c45fb0669497ea74、CSS style-N4DRWRKQ.css SHAdb30fd0581459aeca538441ec9571958a7ddd40be4135f6af057597576c3c3fe。原URL真实匿名列表5图/详情3图全解码、0pageerror，未执行真人业务写入。新annotated tag与Release19:55:29公开/非draft非prerelease，旧32refs逐字不变；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v1.0.3 。main721全量/stable build再次过，证据主目录ignored test-results/v103；后置docs不重建/不移tag。

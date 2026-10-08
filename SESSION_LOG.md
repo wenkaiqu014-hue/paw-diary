@@ -1317,3 +1317,9 @@ Like worker旧实际DOM RED重建4图片/评论→局部projection及updateLikes
 布局newmodule shortest-column按1pxtracks实测高度，无DOM换位/重建、preserve source attrs/aria；标题display必要字尾joiner与超过2行截断。旧masonry RED第三卡top316→GREEN116，实际Range五宽resize无singleton；初版stale columns隐式列错误、empty 1px高度均被测试发现后修复。Node3GREEN，RO独立600ms稳定和destroy/resize无callback。Root遵守Grill不缩字号，将worker16/15恢复旧19px；orphan原96px夹具不再触发单字尾，改114以对应19px后再次GREEN，产品字号不改小。
 
 review发现外部documentselection阻键盘（Minor），Root补actualDOM先RED5s超时→限制本card pointer且keyboard不阻→GREEN双宽；一次patch旧上下文不匹配无写，重新读再做。最终Root/review721/721、syntax/diff0、mechanical detector[]、新布局/卡片及旧like/image回归过，Critical0/Important0。独立browser一次5s夹具readiness超时，后观察两卡正常0pageerror、后完整再跑两宽过；原因未证实，保失败记录。组件临时4201原PID4272已worker关闭，Root另启4201供最后两宽复验，随后按精确PID/cwd关闭。v1.0.3notes/package/VERSION已一致，后端/用户帖子未动，sourcecommit/Pages/六SHA/tag/Release与结束工具随后补记。
+
+### v1.0.3正式收口 2026-10-08 19:56:58 Asia/Shanghai
+
+source/tagd85f23ba49e75958db96e3ed2336672266b740a4；main ff/721全量/stable build/diff过后push，Pages37773059988 success/workflow19:53:59；原URL六HTTP200/SHA逐字一致，JSb6f813…7ea74/CSSdb30fd…c3fe，实际匿名列表5图/详情3图decode全过0error，更新后的新入口已真实点击读取详情，无真人写入。Root观察新版390/1440布局截图符合卡片简化和短列，未把合成图叫真人照片。新annotated v1.0.3 source固定、Release2026-10-08T11:55:29Z=19:55:29公开非draft/非prerelease，原32tagrefs剔新两条后逐字同；发行距19:37:47起17分42秒，后置收口以当前工具时间记录，截止19:57:47/最终20:00不变。
+
+证据已复制main ignored test-results/v103，正确校验Root自建4201 PID18766 command/cwd后SIGTERM，socket实测无监听；原worker4201已自行关闭。仅docs后置，不重建app/不移动tags，未backend部署/迁移/用户正文原图写入。已异步请用户保存后更新查看，回复据原文继续，不以等待当通过；Windows不重测。本次20分钟授权工作完成，最后仅Git保存与推送。

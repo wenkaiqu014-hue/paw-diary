@@ -1279,3 +1279,17 @@ Root集成source059e5bdd902452392f9ebbb003c41378d86c3470，main ff、完整npm t
 18:51:23检查点，已将工作树合成验收JSON/截图/独立review复制到主目录ignored test-results/v101，原证据保留；核对本次4197服务器PID10097及cwd恰当前工作树，准备仅停止自建服务。Windows桌面原件已消失、ignored归档存在；文档同步正式发行/用户跳过不再追测。起点18:32→Release18:50:22为18分22秒，在30分钟窗口内；文档结束/最终检查时间以下次工具为准，不冒称此时全部已完成。后置仅文档，不重建构件、不移动tag。
 
 最终收口 2026-10-08 18:53:30 Asia/Shanghai：自建4197监听已停止（socket实测拒绝连接）；正式Release再次读回非draft/非prerelease、assets=[]，source-tag仍059e5bd，主目录文档3a60196已推送/状态干净。Windows归档再次SHA完整核对、原桌面不存在、manual无fail。最后仅补此日志并保存，不重建或追加测试；本轮已在18:32起30分钟窗口内完成。
+
+### v1.0.2自定义类别与社区交互 — 2026-10-08 18:58:27工具起点
+
+用户新要求个人资料“养宠类别”自行添加；施工期间追加点赞不重载/即时本地反馈、空间利用/多列、参考小红书图片缩至1/4且完整比例、详情左图右全文评论/保留现有功能不用关注，明确已有用户上线不能影响已发布内容。按既有授权直接有界迭代，原网址/旧tag不改；本轮未另给数值预算，root沿紧急节奏内部目标约19:28，最终20:00保持。隔离worktree fix/custom-pet-types基线13142ed，ignored已核、npm ci及702基线全过。领域/server、profileUI、rootnearby分工；后续like与density、独立review明确文件责任，主agent app/version/deploy，共享CSS按profile/custom/feed/detail区域精确编辑，没有回退他人修改。
+
+Domain normalizePetTypeName/normalizePetTypes≤10总/20codepoints、NFKC/trim/spaces/aliases、非法/重复/limit精确理由；backend save/discover一致，原用途及权限不改。新增RED4→GREEN25，reason RED1→GREEN26scoped、full711。UI实际1440/390新增/Enter不提交、选中/移除/回读、空长/Emoji20/21/别名/10限制、ARIA就近错误、pending保存提示、locale/nickname/bio/avatar保持、preview原名，原validation顺序复跑通过；先前焦点等待和导航aboutblank失败原因未证明不硬归因。rootnearby RED2→GREEN3+原6，rawcustom不会当狗，已加载自定义tab可真实发canonicalfilter；review找literalall哨兵冲突，改空值后独立UI两宽GREEN。系统Python3.9临时SDK依赖union type导入失败（无API发出），换现有skill-runtime Python3.12成功。
+
+仅paw-community代码更新：先管理read实际旧Active/30/Node18.15/9env，实际GetFunctionAddress下载旧ZIP600保存；没有输出签名URL/env/keys。liveInvoke旧兔子筛选INVALID_INPUT，final bundle233572…11ca在19:07:54–19:07:59codeonly UpdateFunctionCode→Active，env9/Timeout/Runtime/beta/LBS逐项一致；真实函数兔子/仓鼠/alias/all成功、markup/dup/overlimit拒绝、匿名write拒绝8true。调用实际部署函数不等同真实登录用户save，内存真实gateway save/getOwn/getPublic/discover及browser存取已验证；没有为了验收改用户profile/帖子或新发邮件/采购。
+
+Like worker旧实际DOM RED重建4图片/评论→局部projection及updateLikes GREEN两宽read4→4，真实boundaryheldrequest乐观1/成功4/失败回4/localalert/samekeyretry/busyguard、评论focus保留，22scoped；用aria-disabled与同步guard而非native disabled保focus。density旧2列/480cap RED→5/6桌面/2tablet&phone/≤340一列、feed240自然contain完整，按用户后续1/4解释面积/宽高各半已在commentary明确，preview/detail仍480/60dvh；列表正文仅clamp摘要不改存储，44px所有actions可达。第一夹具漏footer导致bottomnav遮挡，补真实footer并正确RED/GREEN。新增详情DOM左右/stack/noimage单列/所有操作保留，先RED缺cols→两宽生产DOMGREEN含评论保存/report/edit/noimage键盘；一次fixture误期待edit后仍开detail按既有行为修正。
+
+独立review716full/like/detail/density/oldimage-layout/image-race均过，但发现旧feed遮蔽freshdetail赞数，like worker RED22pass2fail→GREEN24，仅stats同步保正文/img/revision；后续review控时序又发现延迟旧detail盖已确认like，要求post本地确认sequence保护，最终结果随后记录。所有用户持续追加作为同一任务steering，不弃原自定义类别目标，不执行真实用户点赞/发布/删除测试。最终codefreeze/复验/source/push/Pages/Release待实际工具补记。
+
+19:22:56工具检查点：like worker第二边界先受控RED旧read迟到覆确认→confirmedLikes perpost sequence只覆stats GREEN35scoped，identity/destroy清map；review独立控制时序验证true1不undo、关闭保持1、随后fresh12采纳，原正文/img/revision/comments计数逐项一致。Root及reviewer最终718/718/0skip、syntax/diff0、mechanical detector[]；最终like-static1440/390 GREEN0pageerror，详情/密度/oldlayout/image-race均独立GREEN。所有Critical/Important已关闭、无真实用户内容写入。Root准备固定source+main ff+stable build+Pages六项SHA+新tag/Release，旧tags不动，日志/文档后置不重建app。

@@ -18,3 +18,21 @@ test('profile revisions are required for updates to prevent blind overwrites',as
 test('delegated writes require operation keys while reads get uniformly wrapped data',async()=>{const{store}=fixture();const handlers={community:async()=>({items:[]})};const read=await gateway.handleCommunity({version:1,action:'community.list',payload:{}},{store,handlers});assert.deepEqual(read,{ok:true,data:{items:[]}});const write=await gateway.handleCommunity({version:1,action:'community.save',payload:{}},{store,principal:A,hasCredential:true,handlers});assert.equal(write.error?.code,'INVALID_INPUT');});
 test('committed profile operation can replay when the region provider later becomes unavailable',async()=>{const{call,store}=fixture();const request={version:1,action:'profiles.saveOwn',payload:draft,idempotencyKey:'receipt-during-outage',expectedRevision:0};const first=await call(request.action,request.payload,A,{idempotencyKey:request.idempotencyKey,expectedRevision:0});const replay=await gateway.handleCommunity(request,{principal:A,hasCredential:true,store,regions:{normalize:async()=>{throw Object.assign(new Error('unavailable'),{code:'REGION_UNAVAILABLE'});}}});assert.deepEqual(replay,first);});
 test('location QPS backpressure remains a stable code instead of a generic unavailable error',async()=>{const{store}=fixture();const reply=await gateway.handleCommunity({version:1,action:'regions.suggest',payload:{}},{store,handlers:{regions:async()=>{throw Object.assign(new Error('paced upstream'),{code:'LOCATION_RATE_LIMITED'});}}});assert.deepEqual(reply,{ok:false,error:{code:'LOCATION_RATE_LIMITED',messageKey:'errors.community.location_rate_limited'}});});
+
+test('custom pet types save and round trip through own public and discovery projections',async()=>{
+ const{call}=fixture();
+ const saved=await call('profiles.saveOwn',{...draft,petTypes:[' 猫咪 ','  兔子  ']},A,{idempotencyKey:'custom-pets',expectedRevision:0});
+ assert.equal(saved.ok,true);assert.deepEqual(saved.data.petTypes,['cat','兔子']);
+ assert.deepEqual((await call('profiles.getOwn',{},A)).data.petTypes,['cat','兔子']);
+ assert.deepEqual((await call('profiles.getPublic',{authorId:saved.data.authorId})).data.petTypes,['cat','兔子']);
+ assert.equal((await call('profiles.saveOwn',{...draft,petTypes:['dog']},B,{idempotencyKey:'other-pets',expectedRevision:0})).ok,true);
+ const custom=(await call('profiles.discover',{petTypes:[' 兔子 ']})).data;
+ assert.deepEqual(custom.items.map(item=>item.authorId),[saved.data.authorId]);
+ assert.deepEqual((await call('profiles.discover',{petTypes:['Cats']})).data.items.map(item=>item.authorId),[saved.data.authorId]);
+ assert.deepEqual((await call('profiles.discover',{petTypes:['仓鼠']})).data.items,[]);
+ assert.equal((await call('profiles.discover',{petTypes:['兔子'],purposes:['unknown']})).error.code,'INVALID_INPUT');
+});
+test('custom discovery rejects malformed unsafe duplicate and excessive filters',async()=>{
+ const{call}=fixture();
+ for(const petTypes of [null,'兔子',['<img>'],['兔\n子'],['cat','猫'],['兔子',' 兔子 '],Array.from({length:11},(_,i)=>`宠物${i}`)])assert.equal((await call('profiles.discover',{petTypes})).error?.code,'INVALID_INPUT');
+});

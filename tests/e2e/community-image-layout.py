@@ -47,7 +47,8 @@ with sync_playwright() as p:
             actual = row['width'] / row['height']
             if abs(actual-expected) > .01 or row['fit'] != 'contain':
                 failures.append(f'{width} {row["case"]}: image cropped/distorted {row}')
-            if row['height'] > 481 or row['width'] > row['parentWidth']:
+            height_limit = 241 if row['case'].startswith('community-public-') else 481
+            if row['height'] > height_limit or row['width'] > row['parentWidth']:
                 failures.append(f'{width} {row["case"]}: image exceeds content/viewport bound {row}')
         assert page.locator('#unrelated-photo').evaluate('n => n.getBoundingClientRect().height') == 150, 'Unrelated photo-preview changed'
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Horizontal overflow'

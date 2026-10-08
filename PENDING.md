@@ -4,6 +4,8 @@
 
 ## 当前唯一续作摘要
 
+v1.0.2候选当前已技术收口：个人资料自定义类别、点赞局部乐观/失败回滚及旧响应保护、社区紧凑缩图/详情左右和手机stack。718单测/有头浏览器/独立审查0Critical/0Important；仅paw-community代码已Active，真实custom筛选及匿名拒绝8项过、原env/gate/LBS/timeouts保持，没有改用户既有内容。原URL正式部署/tag下一步核对，见[本轮补丁](docs/verification/community-v102-report.md)。以下v1.0.1为上一正式基线，Windows已按用户决定结束跟进。
+
 v1.0.1社区补丁已正式发布：source/tag059e5bd、Pages37765826272 success/18:48:12、Release18:50:22，原URL六项构件一致；702单测及有头浏览器/独立审查通过。头像/帖子图片、自然比例、写帖前昵称引导、个人菜单头像和资料字段提示已交付，用户本人原帖/菜单复核“好像没问题了”。Windows补测无失败，原生200%/已测键盘/清理通过，用户跳过项保留未验证且不再追测；ZIP已本地归档并移走桌面。最新状态见[补丁验收](docs/verification/community-v101-report.md)。不重做此前认证/权限/备份。以下v1.0.0为上一发行基线。
 
 v1.0.0已正式发布：source/tag解引用1f44973a357cfdfb9e51a0d27327f1ec6d5e4611，Pages37758087467 success/updated17:39:10，Release18:04:50 Asia/Shanghai公开且非draft/非prerelease；安全ZIP20228字节digest4ae8…c55匹配，原26 tag refs未动。Windows具体未验证组合仍保留。最终发行前端source为1f44973a357cfdfb9e51a0d27327f1ec6d5e4611（在f559之上追加Windows原生200%说明区重排修复），最终main全新npm ci及695/695单测、环境合并4/4、语法/diff和秘密未进入tracked/dist检查通过；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。真实C备份12项和原URL界面已全部通过、精确清理且原基线保留；paw-files修复包17:09:42 Active。Mac VoiceOver第三次用户听读明确通过；Windows原始集中报告auto10通过、manual6通过/1失败/6未验证；网页清洁升级、已测键盘路径、云断网恢复/完整备份和隔离App卸载通过。200%布局失败已最小CSS修复，原生复验待用户；原图标重开/dirty-busy/照片跨升级/Narrator保存状态/Windows精确清理保持未验证；iPhone原图标升级1.0、旧记录与重开用户明确全部正常。详见docs/verification/v100-report.md。

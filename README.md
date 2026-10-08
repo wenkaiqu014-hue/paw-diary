@@ -42,7 +42,7 @@ AI提供有限额体验，访客无需配置密钥。点击整理、生成或发
 
 ## 版本与项目文档
 
-**v1.0.1 内测**：修复社区图片显示与完整比例，个人菜单显示已保存头像；发帖前引导填写公开昵称，个人资料错误定位到具体字段。邮箱登录／首次注册仍必填邀请者提供的内测码，合法旧账号资格保留。保留双语帮助、可跳过重看的六步指引、可安装网页及保护草稿的更新提示。源码、云端与设备验收分别记录，见[本次补丁](docs/verification/community-v101-report.md)及[1.0验收报告](docs/verification/v100-report.md)。
+**v1.0.2 内测**：个人资料支持自定义养宠类别；点赞即时反馈、图片与输入保持；社区卡片更紧凑，详情桌面左图右文、手机上下排列。邮箱登录／首次注册仍必填邀请者提供的内测码，合法旧账号资格保留。保留双语帮助、可跳过重看的六步指引、可安装网页及保护草稿的更新提示。源码、云端与设备验收分别记录，见[本次补丁](docs/verification/community-v102-report.md)及[1.0验收报告](docs/verification/v100-report.md)。
 
 [更新记录](CHANGELOG.md) · [发布记录](https://github.com/wenkaiqu014-hue/paw-diary/releases) · [社区运维](docs/operations/community.md) · [后续计划](ROADMAP.md)
 

@@ -724,5 +724,9 @@ export default Object.freeze({
   "whatsNew.v101.images": "Community avatars and post photos now load correctly. Previews and details preserve the complete image.",
   "whatsNew.v101.profile": "Account menus show your saved avatar. Choose a public nickname before writing, then continue your post.",
   "whatsNew.v101.validation": "Profile validation points to the field to fix and keeps your input.",
+  "whatsNew.v102.title": "Paw Diary 1.0.2",
+  "whatsNew.v102.types": "Add your own pet types, save them with your profile, and display them in public profiles and discovery.",
+  "whatsNew.v102.likes": "Likes respond immediately without reloading photos or inputs. Failed requests restore the previous state.",
+  "whatsNew.v102.feed": "Compact cards show smaller, complete images. Details place photos beside the text on desktop and above it on phones, keeping existing actions.",
 
 });

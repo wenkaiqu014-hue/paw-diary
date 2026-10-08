@@ -10,11 +10,10 @@
 .region-picker .select-search{flex:none;padding:4px 4px 8px;border-bottom:1px solid var(--line);margin-bottom:4px}
 .region-picker .select-search input{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#f8faf6;font:inherit;color:var(--ink)}
 
-/* Public post photos preserve the complete image in editors, details and feeds. */
+/* Public post photos preserve the complete image in editors and details. */
 .owner-avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .community-editor-dialog .photo-preview,
-.community-detail-dialog .photo-preview,
-.community-public .post-image{
+.community-detail-dialog .photo-preview{
  width:auto;
  max-width:100%;
  height:auto;
@@ -23,3 +22,26 @@
  object-fit:contain;
  margin-inline:auto;
 }
+
+
+/* Compact public feed; full original images remain available in post details. */
+.community-public .community-feed{grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:16px}
+.community-public .community-card{min-width:0}
+.community-public .post-image{width:auto;max-width:100%;height:auto;max-height:240px;object-fit:contain;margin-inline:auto;border-radius:var(--radius) var(--radius) 0 0}
+.community-public .community-card .post-content{padding:12px}
+.community-public .community-card h2,.community-public .community-card .post-text{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.community-public .community-card .post-text{margin-block:12px}
+@media(max-width:600px){.community-public .community-feed{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.community-public .community-card .post-content{padding:10px}}
+@media(max-width:340px){.community-public .community-feed{grid-template-columns:1fr}}
+
+
+/* Image posts show full media beside their discussion on roomy screens. */
+.community-detail-dialog.has-post-image{width:min(1100px,calc(100% - 32px))}
+.community-detail-dialog .community-detail-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}
+.community-detail-dialog.has-post-image .community-detail-layout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+.community-detail-media,.community-detail-content{min-width:0}
+.community-detail-dialog .community-detail-media{display:flex;justify-content:center;align-items:flex-start}
+.community-detail-dialog .community-detail-media .photo-preview{margin-top:0}
+@media(max-width:760px){.community-detail-dialog.has-post-image .community-detail-layout{grid-template-columns:minmax(0,1fr);gap:20px}}
+
+.profile-pet-type-options{display:flex;flex-wrap:wrap;gap:8px 20px;width:100%}.profile-pet-option{display:flex;align-items:center;gap:4px;max-width:100%;overflow-wrap:anywhere}.profile-pet-option .button{padding:8px;min-height:44px}.profile-custom-type{display:flex;align-items:end;flex-wrap:wrap;gap:8px 12px;width:100%}.profile-custom-type .field{flex:1 1 200px;min-width:0}.profile-custom-type input{width:100%;height:auto;accent-color:auto}.profile-custom-type p{flex-basis:100%;margin:0}.profile-custom-type .button{flex:none}

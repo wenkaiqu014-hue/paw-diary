@@ -4,10 +4,34 @@ let domain={};try{domain=await import('../src/domain/public-profile.js');}catch(
 const validate=(...args)=>{assert.equal(typeof domain.validateProfileInput,'function','profile validation must exist');return domain.validateProfileInput(...args);};
 test('public profile defaults to private discovery and normalizes text',()=>{assert.deepEqual(validate({nickname:' 合成昵称 '}),{nickname:'合成昵称',avatarAssetId:null,bio:'',cityId:null,districtId:null,petTypes:[],purposes:[],discoverable:false});});
 test('joining discovery requires city pet type and purpose',()=>{for(const value of [{nickname:'A',discoverable:true},{nickname:'A',discoverable:true,cityId:'310100',petTypes:['cat']}])assert.throws(()=>validate(value),e=>e.code==='INVALID_INPUT');assert.equal(validate({nickname:'A',discoverable:true,cityId:'310100',petTypes:['cat'],purposes:['新手互助']}).discoverable,true);});
-test('profile accepts only editable fields and rejects forged identities',()=>{for(const extra of [{ownerId:'B'},{email:'b@example.com'},{authorId:'B'},{nickname:'x'.repeat(31)},{bio:'x'.repeat(121)},{petTypes:['fish']},{purposes:['other']},{discoverable:'true'}])assert.throws(()=>validate({nickname:'A',...extra}),e=>e.code==='INVALID_INPUT');});
+test('profile accepts only editable fields and rejects forged identities',()=>{for(const extra of [{ownerId:'B'},{email:'b@example.com'},{authorId:'B'},{nickname:'x'.repeat(31)},{bio:'x'.repeat(121)},{petTypes:['<fish>']},{purposes:['other']},{discoverable:'true'}])assert.throws(()=>validate({nickname:'A',...extra}),e=>e.code==='INVALID_INPUT');});
 test('public projections cannot carry owner email tokens or private snapshot',()=>{assert.equal(typeof domain.publicIdentity,'function');assert.equal(typeof domain.discoverableProfile,'function');const profile={authorId:'author-A',nickname:'A',avatarAssetId:null,bio:'Hi',cityId:'310100',cityName:'上海市',districtId:null,districtName:null,petTypes:['cat'],purposes:['新手互助'],discoverable:true,ownerId:'PRIVATE',email:'PRIVATE',authToken:'PRIVATE',snapshot:{}};assert.deepEqual(domain.publicIdentity(profile),{authorId:'author-A',nickname:'A',avatarAssetId:null});assert.equal(JSON.stringify(domain.discoverableProfile(profile)).includes('PRIVATE'),false);});
 test('profile validation identifies the first invalid field without exposing supplied values',()=>{
  for(const [changes,field,reason] of [[{nickname:'   '},'nickname','required'],[{nickname:'x'.repeat(31)},'nickname','length'],[{bio:'x'.repeat(121)},'bio','length'],[{discoverable:true},'cityId','required'],[{discoverable:true,cityId:'310100'},'petTypes','required'],[{discoverable:true,cityId:'310100',petTypes:['cat']},'purposes','required'],[{districtId:'310101'},'cityId','required'],[{cityId:'非法城市'},'cityId','invalid']]){
   assert.throws(()=>validate({nickname:'A',...changes}),e=>e.code==='INVALID_INPUT'&&e.field===field&&e.messageKey===`profile.${field}.${reason}`);
+ }
+});
+
+test('custom pet types persist normalized text and aliases without translating names',()=>{
+ assert.deepEqual(validate({nickname:'A',petTypes:[' 猫咪 ','ＤＯＧＳ','  兔子  ',' Guinea   pig ']}).petTypes,['cat','dog','兔子','Guinea pig']);
+ assert.deepEqual(validate({nickname:'A',petTypes:['🐰'.repeat(20)]}).petTypes,['🐰'.repeat(20)]);
+ assert.deepEqual(validate({nickname:'A',petTypes:Array.from({length:10},(_,i)=>`类别${i}`)}).petTypes,Array.from({length:10},(_,i)=>`类别${i}`));
+});
+test('custom pet type validation rejects unsafe malformed duplicate and oversized values with field metadata',()=>{
+ for(const petTypes of [null,'兔子',[1],[''],['  '],['<script>'],['兔\u0000子'],['兔\n子'],['🐰'.repeat(21)],['cat','猫'],['兔子',' 兔子 '],Array.from({length:11},(_,i)=>`类别${i}`)]){
+  assert.throws(()=>validate({nickname:'A',petTypes}),e=>e.code==='INVALID_INPUT'&&e.field==='petTypes'&&!e.message.includes('script'));
+ }
+});
+test('pet type normalizers are shared by profile editing and custom discovery filters',()=>{
+ assert.equal(typeof domain.normalizePetTypeName,'function');
+ assert.equal(typeof domain.normalizePetTypes,'function');
+ assert.equal(domain.normalizePetTypeName('  ＣＡＴＳ '),'cat');
+ assert.deepEqual(domain.normalizePetTypes(),[]);
+ assert.deepEqual(domain.normalizePetTypes(['狗狗','仓鼠']),['dog','仓鼠']);
+});
+
+test('pet type limit and normalized duplicates report their actionable reason',()=>{
+ for(const [petTypes,reason] of [[Array.from({length:11},(_,i)=>`类别${i}`),'limit'],[['cat','猫'],'duplicate'],[['兔子',' 兔子 '],'duplicate'],['兔子','invalid']]){
+  assert.throws(()=>validate({nickname:'A',petTypes}),e=>e.code==='INVALID_INPUT'&&e.field==='petTypes'&&e.messageKey===`profile.petTypes.${reason}`);
  }
 });

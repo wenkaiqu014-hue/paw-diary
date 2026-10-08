@@ -997,3 +997,11 @@ B real UI新discovery15.06秒：已隐藏内容列表恢复后帖重现、checkb
 来源补读：腾讯个人配额FAQ原页Q8区分个人学习非企业/组织、企业/非公益组织商业许可；authorizationFaq再次Web Internal Error未读到完整许可，不称全查清。既有Key配额已分配、无新增购买；应用低于当前账户额度，不等于查过账单为0。Web Interface Guidelines当前169行已从官方repo读取；Impeccable detector对本轮6目标一次运行exit0无findings输出。界面修订有三宽实际截图与独审，不做另一次无理由重设计。
 
 后续：core独审新profile hidden＋Root分享/chrome、community_audit finalreview进行中；media已交hidden11m04补充和分享0material复核，另15分钟独占README/CHANGELOG/community运维文档准备。Root仍独占APP/发布/版本/日志/报告与实际cleanup。stage4未发布，Git下一checkpoint包含已验证源码，不把待发布写成公开交付。
+
+### 阶段4恢复与发行准备
+
+2026-10-08 10:50:43 Asia/Shanghai（clock02:50:43Z）用户继续，本轮上一检查点10月7日23:33后的间隔已超过总5小时目标；不声明工时达标，不改变最终20:00。恢复未重做已完成模块：检查工作树2ff77d1＋后续未提交分享scope补丁，独立task-9-shared-review有头复验旧A阻止／sameOwner1稿／旧预览关闭清理，最终0material；independent-review84/84＋三宽真实源码隔离Chrome通过。Root fresh543/543无fail/skip、build/syntax/diff通过。
+
+原ignored cleanup flags确认仅exact本轮合成内容，2公共图片删除、原无profile恢复、B退出先读回，随后真实anonposts/discover均0；私有health read脚本首取snapshot字段失败，实际APIdata结构纠正后不同真实owner/宠物不重合/伪造workspace拒绝/无token私有读拒全部成功。未执行健康mutation、不打印原文。会话原600 checkpoint保留，恢复不得机械消费旧验证码。
+
+现使用finishing-a-development-branch/verification-before-completion收口；用户既有main/原URL/版本授权明确，按已选main发布，不重复请求合并菜单。源码和唯一证据工作树先保留，不force删除忽略的截图/私密文件。version/package/lock改0.7.0，jpeg-js显式固定0.4.4；README/CHANGELOG/community运维由media产物复核，纠正失败FAQ为实际/faq/authorizationFaq、补真实test会话/既有昵称前提。新增stage4-report汇总实际验证／失败与修复／工时违约／阶段5待项；此时Pages/tag/Release尚未宣称完成。

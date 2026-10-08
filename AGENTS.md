@@ -23,6 +23,8 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
+**2026-10-07阶段4实施检查点：** 用户已授权21:10:13开始，十步各≤40分钟/总≤5小时，总结束02:10:13；单步超时详日志不虚称达标。继续先读docs/operations/stage4-execution.md、SESSION_LOG最新段/PENDING。工作树stage4、branch feature/stage4-community-profiles-nearby、source checkpoint2ff77d1；原URL仍v0.6.2，尚未发v0.7。最新543单元/真实A+B+tokenless public14flag/真实页面资料头像帖评与隐藏加入退出、人工下架撤销/原健康回归已过，最后分享ownerScope审查补丁复审及清理、发布进行中。B已一次真实OTP建立并merge原stage2 600会话，两actor最新checkpoint需按工具记录、不得再消费旧码。LBS个人Key已分配当前6000/day5QPS；server env only、app100/day1000month+共享保守4/s、无新增购买。旧下文“阶段4尚未实施、B失效、待平台决定”均为交接当时状态。真机GPS/手机读屏/PWA/日历和用户亲验仍阶段5。
+
 v0.6.2已于2026-10-07 20:57:27 Asia/Shanghai正式发布，source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429；Pages37624440076成功（Deploy20:56:14、工作流20:56:18），原URL app-H5YZFURX.js/style-HCP5IGKK.css与main全新npm ci构件SHA一致。365/365单测无skip；原URL真模型、有头Chrome1440/390混合草稿/目录/分类/保存刷新通过。 AI与手动共用src/ui/record-fields.js；每条purpose独立，record仅成长记录，plan为独立reminder按includeInHealth分类；疫苗/驱虫新计划默认true、其余false且显式选择保留。AI复用同一record-type-picker，未知类型空、四内置不可删除、自定义最多3个。saveEntryBatch(entries,{baseRevision,operationId})/可信entries.saveBatch原子写入1–5项，item为draftId/purpose/input，计划input.recordType，记录input.type；旧records.saveBatch兼容。类型回调传revision/priorRevision，只在自身写入紧接草稿基线时升级CAS，不覆盖外部修改。模糊日期null，明确五相对词代码计算；模型不新建类型。 A最近20:48:29 checkpoint原600路径归还，B过期不复用；详本轮验收及stage4-handoff。阶段4原三个规划提交保留，下方v0.6.1及此前发行状态均历史，不能回退新版AI规则。
 
 2026-10-07阶段4本session已完成Q1–Q12 Grilling与只读调查，待用户审阅`docs/superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md`和`docs/superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md`，尚未开始实施。新增头像菜单/个人资料页、两页全部／同城、匿名公开读、举报用户手动维护；腾讯位置服务先按新增费用0元核适用条件和真实额度，Key仅server，用户配合账号/两邮箱；验收后新v0.7.0。当前应用基线已更新v0.6.2，下面旧“定位/版本待对齐”是交接历史；实际供应商许可/额度/目录覆盖和真实B会话仍需核。本輪不把初估4–5小时当新硬时限，详拆建议并行4–6小时、用户先看plan。

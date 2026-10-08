@@ -6,7 +6,7 @@
 
 让登录用户拥有明确的公开身份，能发布真实图文、查看他人的公开帖子并评论交流，主动加入按地域与养宠目的筛选的宠友发现。访客可以浏览真实公开内容。保留「记录→提醒→成长回顾」主线、现有视觉、私有健康数据和原发布链接。
 
-起点为main，应用v0.6.1/source 52e88ee，交接记载343单测及原URL技术验收。现有社区和8条宠友为示例，个人/登录空间禁止真实社区写入；分享回顾仅预览复制。新增能力不能依据旧示例测试宣称完成。
+实施起点为main04ed5c2，应用v0.6.2/source bf7274c，365单测及原URL技术验收；v0.6.1是设计初稿时的历史基线。现有社区和8条宠友为示例，个人/登录空间禁止真实社区写入；分享回顾仅预览复制。新增能力不能依据旧示例测试宣称完成。
 
 成功标准：真实A/B账号及干净匿名浏览器走通公开资料、加入/退出、发帖、读取、评论、点赞、作者编辑删除、举报和个人隐藏；公开图片真的跨账号可读；全国地域搜索和实际坐标转地域可用；错误身份不能读私有数据或写他人内容；原URL通过后发布新v0.7.0。
 
@@ -134,3 +134,5 @@ A尝试恢复并每次refresh写回原600 checkpoint；B旧会话失效，需新
 - https://github.com/modood/Administrative-divisions-of-China/blob/master/dist/pca-code.json
 - https://github.com/uiwjs/province-city-china
 - https://github.com/uiwjs/province-city-china/blob/master/LICENSE
+
+实施补充：回顾分享预览独立绑定公开owner/generation，健康本地模式下换A/B同样关闭旧预览并禁止旧文本进入新账号draft；长首行不截断，发布表单按60字校验并保输入。公开社区弹窗内提供语言选择，保文本和图片意图。未绑定公开图片24h为标记＋人工清理命令，本轮无自动TTL job；PUT结果不确定保charged tombstone，不能承诺供应商迟到上传时限。使用jpeg-js有界真实JPEG解码，WebP在前端规范化PNG，私有媒体机制保持。

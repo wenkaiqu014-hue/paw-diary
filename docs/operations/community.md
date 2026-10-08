@@ -1,37 +1,87 @@
-# 社区举报与人工处置
+# 社区、公开资料与地域服务运维
 
-真实社区服务由独立paw-community处理。公开读只走允许的帖子/评论/资料/资源投影，写入及本人隐藏列表需要可信邮箱Principal；普通用户不能提交或调用管理员处置action。数据库集合和对象规则继续deny直接客户端访问。本文记录代码路径，不把本地合成测试当真实A/B或线上验收。
+本文对应 v0.7.0 社区能力。正式发行、部署工作流和原网址验收由主发布流程确认，本文不替代发布记录。社区业务独立于私有健康档案；仅维护者在本机使用管理身份操作举报和资源清理。
 
-登录用户可调用community.report({postId,reason,note?})。reason取广告骚扰、不当内容、隐私问题、其他，说明最多200字。成功返回reportId与status，首次为queued；举报不自动删除或下架帖子。相同账号、相同帖子只保留一个队列项，即使弱网用新操作ID重试也不无限入队；相同操作ID内容改变会拒绝。第一份reason/note保留，返回中不包含举报正文、报告者UID或其他私有字段。客户端展示“已提交，等待处理”，不承诺即时审核。幂等重放的旧提交回执表示当时结果，不是实时处置状态。
+## 公开和私有边界
 
-个人隐藏community.hide({postId,hidden:true})只创建当前账号的隐藏关系，其他人仍可读原公开帖子，不改变全站可见性或点赞/评论计数。hidden:false删除本人隐藏关系；帖子已删除或全站下架时也允许清理本人关系，但不会恢复全站帖子。community.hidden.list({cursor?,limit?})只返回本人隐藏项，默认20最多50，游标绑定owner，支持超过100条。返回postId、可见时的标题、available和hiddenAt，不输出owner；已删除/下架标题为null，仍可取消个人隐藏。
+公开身份仅包含随机作者标识、昵称与公开头像。主动加入发现后，资料卡增加所选地域、猫狗类别、交流目的和简介；退出发现撤下卡片，已发表帖子和评论仍保留作者身份。邮箱只供可信本人读取，健康档案、护理记录、私有照片、附件和备份不会因登录、加入发现或分享回顾而自动公开。
 
-维护者在现有CloudBase控制台查看community_reports中的queued项，核对确切reportId及postId。记录原举报内容仅留在私有集合，不复制到SESSION_LOG、终端调试日志或聊天；执行证据只保必要ID、状态、时间与结果。维护者本机已有FUJI管理变量，不能使用个人/集团变量替代，不需在命令中粘贴实际值。
+匿名可以通过 `paw-community` 的白名单动作读公开帖子、有效作者身份、发现卡片和地域目录。写帖子、评论、点赞、举报、个人隐藏及修改本人资料需要可信邮箱身份；携带无效凭证的调用不会降成匿名。匿名身份 provider 保持 `false`，公开函数读取不依赖开启匿名登录。
 
-先查看帮助（不读取凭证、不创建SDK或发起管理请求）：
+下列十个集合全部保持直接读写 `deny`；公开访问只经 `paw-community` 的服务端投影、身份和父项校验：
+
+| 集合 | 用途 |
+| --- | --- |
+| `community_profiles` | 公开资料实体与内部 owner 映射 |
+| `community_posts` | 帖子、内容版本及公开状态 |
+| `community_comments` | 评论与所属帖子 |
+| `community_likes` | 本人期望的点赞状态 |
+| `community_reports` | 私密举报队列 |
+| `community_hidden` | 本人的隐藏标记 |
+| `community_receipts` | 按本人和操作标识隔离的写入回执 |
+| `community_media` | 上传票据、资源归属、用途绑定及配额 |
+| `community_rate_limits` | 共享限额与频率门槛 |
+| `community_regions` | 地域目录缓存 |
+
+对象存储也保持直接访问 `deny`。头像和帖子图片使用独立社区命名空间；草稿资源仅本人可读，匿名读图必须携带有效帖子、评论或发现资料引用。评论还需其公开父帖子有效，头像需匹配作者当前头像。删除、下架、退出发现或替换头像后的新读取继续由服务端验证，不对外保留私有临时下载链接。
+
+## 举报与个人隐藏
+
+举报由登录用户提交，进入待处理队列，不自动全站删帖。个人隐藏仅影响该账号的社区阅读；本人在资料页的已隐藏列表恢复时，只移除自己的标记，不能恢复已经删除或被维护者下架的帖子。
+
+维护者先在私密云控制台核对确切举报记录，再从项目根目录使用以下命令。`EXACT` 是 reportId 占位词，必须替换为核对过的那一条记录，不在公开文档写真实标识：
+
+```sh
+node scripts/community-moderate.mjs --report-id EXACT --action hide
+node scripts/community-moderate.mjs --report-id EXACT --action dismiss
+```
+
+`hide` 下架对应帖子并处理举报；公开详情、评论写入和图片新读取随父项状态被阻止。`dismiss` 仅驳回举报，不下架帖子。脚本只从本机环境读取 `TENCENTCLOUD_FUJI_SECRET_ID`／`TENCENTCLOUD_FUJI_SECRET_KEY`，缺失时失败，不回退其他个人或集团身份。管理动作不部署为普通用户可调用的路由。日志记录操作、时间和结果，不复制举报原文、凭证或用户私密资料。
+
+仅检查命令帮助、不调用管理接口：
 
 ```sh
 node scripts/community-moderate.mjs --help
 ```
 
-确认指定举报需要全站下架：
+## 未绑定公开媒体的清理
+
+原图选择上限10MiB，展示图原字节上限1MiB；账号的社区媒体预留与已确认容量合计50MiB，最多20个待确认票据。资源只允许一次用途绑定；不能借别人的资源或私有照片引用直接公开。
+
+票据和未绑定资源具有24小时到期标记。**标记到期不等于自动删除或自动释放配额；当前没有自动清理 job。** 取消、换图和失败清理的前端队列只存在当前页面内存，按本人和确切资源保留操作标识；页面刷新／关闭后的余留资源需要维护者清理。未知上传结果还会保留保护窗口和带配额的清理记录，不能只删除数据库文档而遗留对象。
+
+先查看最多100个候选的 dry-run，再按明确结果执行：
 
 ```sh
-node scripts/community-moderate.mjs --report-id REPORT_ID --action hide
+node scripts/community-media-cleanup.mjs --limit 100
+node scripts/community-media-cleanup.mjs --apply --limit 100
 ```
 
-确认指定举报不应下架：
+脚本仅处理确切到期、无绑定的社区资源，事务中重查状态，遵守活动上传和未知结果保护窗口；对象删除确认后才释放元数据和配额。失败时保留可重试引用；绑定资源和私有健康照片不清理。数量上限是每次候选窗口，需按实际结果重复核对，不能把一次输出当成全站余留已清完。该脚本同样只使用 FUJI 管理环境变量。
 
-```sh
-node scripts/community-moderate.mjs --report-id REPORT_ID --action dismiss
-```
+## 地域选择、定位与配额
 
-CLI仅从TENCENTCLOUD_FUJI_SECRET_ID/TENCENTCLOUD_FUJI_SECRET_KEY读取管理身份，固定paw-diary-d8g3p4tlsb305221d/ap-shanghai；可用的PAW_CLOUD_ENV_ID若不一致即拒绝。缺失FUJI配置不回退其他凭证。Web客户端没有管理员按钮，也没有部署公开admin action；不能在payload添加角色或managementAuthorized来处置报告。管理Node SDK的secretId/secretKey初始化契约核对自当前安装的@cloudbase/node-sdk/types/index.d.ts。
+社区与宠友页均有全部／同城。浏览地域与个人资料地域分开；手选城市和行政区不依赖设备GPS。定位仅在点击后请求浏览器权限，坐标只用于本次服务端建议，用户明确确认后才更新选中地域。权限拒绝、供应商失败、超时或限额耗尽时保留手选路径，不记录原始坐标或向前端交付位置服务 Key／SK。
 
-hide在一个数据库事务中把确切帖子moderationStatus设hidden、增加revision、更新时间，并把该报告设resolved、记录resolution=hide、handledAt与handledBy=FUJI management。dismiss只将该报告设dismissed/记录处置，不改变帖子。重复相同已完成处置返回原结果；对已完成报告改变action拒绝CONFLICT，不偷偷改写既有审计。其他报告不被批量关闭，其他帖子不被扫描修改。帖子或报告不存在返回NOT_FOUND；事务失败必须同时保留原帖子和报告状态。
+位置服务 Key／SK 只在 `paw-community` 服务端读取。应用上游请求共享上限为 **100次／日、1000次／月、4次／秒**；共享门槛跨请求实例，串行租约和请求完成后的250ms间隔控制频率，队列等待有界。建议请求另有限制，失败和结果不明的尝试也按服务端执行的额度规则计入。应用限额不是供应商赠送权益。
 
-全站下架后新的公开列表/详情/评论/点赞/引用该帖的图片读取都被父状态校验拒绝；不依赖前端按钮，也不通过举报接口自动执行。已经下载到用户设备的内容无法撤回。下架保留内部原文及资源用于可信处置，不立即删除用户原对象；个人取消隐藏不能绕过全站状态。
+本轮实际个人账户控制台读回相关接口 **6000次／日、Key 5 QPS**，用户将既有额度分配到该Key，未新增购买／充值／升级。6000是当前账户／接口的实际口径，不是个人开发者一律可用的承诺；应用共享4次／秒比当前Key 5 QPS更保守。1000次／月是本应用另设的上限，不能描述为已核供应商月免费额度。依据：[执行记录](stage4-execution.md)的“位置Key/SK”段及 [SESSION_LOG](../../SESSION_LOG.md)“用户看到Key额度0询问是否充值”“Root standalone腾讯4上游”两段。
 
-测试资源清理仅按本轮明确的合成post/report/asset/receipt ID，不能按用户昵称、日期窗口或关键词批量扫库。真实B举报A、本人隐藏/取消、FUJI实际处理合成报告及匿名读取拒绝，需要Root在真实环境独立验收；worker只跑本地memory store/SDK query fixture和CLI帮助，没有实际云操作。回顾确认发布由Root前端完成，本后端不自动公开私有记录/完整AI故事。
+本轮位置服务新增采购为0，不等于整站云账单为0。已有云函数、数据库、对象存储和其他服务仍按所用环境的套餐与账单计费；未用免费额度数字代替账单核验。
 
-本轮工作使用本地superpowers:test-driven-development与verification-before-completion，高star来源沿执行入口已记录的https://github.com/obra/superpowers，不重复安装技能。
+## 位置服务许可适用范围
+
+腾讯位置服务当前配额 FAQ 的 Q8 将个人基础额度限定于个人学习、非企业或组织使用，并要求企业及其他非公益组织持续使用办理商业授权。额度由同一账号的所有Key共同分配。把本作品改为企业或组织持续运营前，需要按实际主体与用途确认并办理适用许可，不能因账户显示免费额度就认定已经获得商业授权。[腾讯位置服务配额 FAQ](https://lbs.qq.com/faq/accountQuota/faqQuota)
+
+本次已打开上述 Q8 原页；商业授权 FAQ 页面通过 Web 工具访问失败，因此未核完整商业许可细则，不宣称本项目的全部许可条件已查清或企业可免费持续使用。失败入口：[商业授权 FAQ](https://lbs.qq.com/faq/authorizationFaq)。该失败不影响已确认的手选地域回退，但不能被用作许可确认依据。
+
+公开来源完整网址：
+
+- 配额 FAQ：https://lbs.qq.com/faq/accountQuota/faqQuota
+- 商业授权 FAQ（本次读取失败）：https://lbs.qq.com/faq/authorizationFaq
+
+管理接口、Key／SK、真实账号、验证码、会话、举报原文和实际验收帖子标识不写入本文或公开仓库。真实匿名／双账号访问、有效引用读图、撤回与下架、确切资源清理以及真实设备GPS的验收，仍以当次验证报告和主发布流程为准。
+
+## 真实集成验收入口
+
+`node --test tests/integration/community.test.js` 使用 `PAW_DIARY_REAL_SESSIONS_FILE` 指定A会话文件，`PAW_DIARY_STAGE4_B_SESSIONS_FILE` 指定B（可与A同一600文件、分别A/B键）。先在受控测试账号的个人资料UI设置昵称，测试要求已有公开authorId才能准确恢复原资料。先关闭同账号的GUI刷新；每个SDK操作写回最新会话。缺真实会话直接失败，不能把跳过当成功。测试精确清理本轮媒体/内容并恢复资料字段，但举报审计记录需维护者按当轮私密receipt核对处置；不提供全站清空命令。真实设备GPS、手机与读屏检查单列在阶段5。

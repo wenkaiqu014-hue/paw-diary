@@ -4,9 +4,15 @@
 
 ## 当前唯一续作摘要
 
-v0.6.2已于2026-10-07 20:57:27 Asia/Shanghai正式发布，source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429；Pages37624440076成功（Deploy20:56:14、工作流20:56:18），原URL app-H5YZFURX.js/style-HCP5IGKK.css与main全新npm ci构件SHA一致。365/365单测无skip；原URL真模型、有头Chrome1440/390混合草稿/目录/分类/保存刷新通过。 阶段4本session已完成Grilling Q1–Q12及只读代码/供应商调查，新增[设计说明](docs/superpowers/specs/2026-10-07-stage4-community-profiles-nearby-design.md)和[详细计划](docs/superpowers/plans/2026-10-07-stage4-community-profiles-nearby.md)，待用户审阅，尚未实施。已确认账号级公开资料＋头像菜单/独立个人资料页、两页全部／同城、匿名公开读、真实互动、手动举报、腾讯位置服务先按新增费用0元核接入、验收后v0.7.0。实际位置账号许可/额度、目录覆盖和真实B会话仍需实施时核，用户会配合。最终10月8日20:00不变；用户亲验及阶段5真机/指南/PWA/日历实导仍未代勾。下方历史状态不作为当前待办，既有v0.6.1语义及新增v0.6.2规则与[交接](docs/operations/stage4-handoff.md)继续继承。
+公开版本暂仍v0.6.2；阶段4已由用户于21:10:13启动实施，当前隔离工作树`.worktrees/stage4`/feature/stage4-community-profiles-nearby，源码检查点2ff77d1，后续公开账号分享边界补丁待下个commit。基础后端及完整前端已实现；真实A/B/匿名14项集成、A/B个人资料与A头像、A图文发帖刷新和评论、B隐藏恢复/加入退出、回顾取消0帖/最终1帖、手动管理下架及媒体撤销均已有实际证据。Root单元最新543/543、0skip；原健康有头test_app、双语语言回归及公开页面三宽/两语言/键盘/保稿E2E通过。所有账号会话均600、按同actor串行refresh写回，B已重新真实认证；不用再次请求旧验证码。位置Key已有免费额度已分配，真实目录和服务端坐标转换/逆地理接通，浏览器权限拒绝仅为模拟，真机GPS留阶段5。无新增采购，不声称账单0元。详[实施恢复入口](docs/operations/stage4-execution.md)与SESSION_LOG最新段。
 
-阶段4计划全部任务尚未勾选：公开服务与资料后端→个人资料UI→公开媒体→互动后端→社区UI→地域定位→宠友发现→举报/回顾分享→真实双账号及独立审查→原URL/v0.7.0。建议并行窗口4–6小时（串行5.5–8.5小时），只是拆分估算，用户尚未启动本轮实施。
+- [x] 步骤1–7模块、公开投影/媒体/真实互动与全国地域/宠友基本实现及源码检查点。
+- [x] 步骤8举报入队、个人隐藏恢复、可信手动处置和回顾简短确认分享；分享独立账号scope审查补丁已GREEN，复审待关闭。
+- [ ] 步骤9最终独立复审关闭、确切合成资源清理与报告。
+- [ ] 步骤10原固定URL部署、构件核对与v0.7.0新tag/Release。
+- [ ] 用户亲自体验；阶段5使用指南/PWA/真实手机/读屏/日历实导仍单列，不代勾。
+
+用户要求十步各≤40分钟、总≤5小时；多步骤完整收口超40已如实记录，不能称全部时限达标。总结束仍2026-10-08 02:10:13，最终项目截止仍10月8日20:00。下方v0.6.2及更早段为历史；继承v0.6.2逐条record/plan和共享record-fields/类型管理，不恢复隐式健康待办。
 
 本轮阶段3补丁已收口，详[验收](docs/verification/ai-entry-parity-v062-report.md)。AI与手动共用src/ui/record-fields.js；每条purpose独立，record仅成长记录，plan为独立reminder按includeInHealth分类；疫苗/驱虫新计划默认true、其余false且显式选择保留。AI复用同一record-type-picker，未知类型空、四内置不可删除、自定义最多3个。saveEntryBatch(entries,{baseRevision,operationId})/可信entries.saveBatch原子写入1–5项，item为draftId/purpose/input，计划input.recordType，记录input.type；旧records.saveBatch兼容。类型回调传revision/priorRevision，只在自身写入紧接草稿基线时升级CAS，不覆盖外部修改。模糊日期null，明确五相对词代码计算；模型不新建类型。 A最近20:48:29 checkpoint原600路径归还，B仍需新会话；阶段4原823a828/7783995/df2ad7f完整保留并纳入main。
 

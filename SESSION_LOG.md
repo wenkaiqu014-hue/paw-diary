@@ -1161,3 +1161,9 @@ Safari反馈修复块14:53:37开始：Root先运行shared-city browser RED，hom
 使用brainstorming/grilling/writing-plans（计划阶段待决策收敛再写），分类跨模块准入／身份与发行门槛，走完整设计与详细计划；不把新增一个输入框当完整服务端准入。现代码auth UI requestEmailCode→verifyEmailCode共用首注册/已注册，challenge与可信邮箱证明在paw-auth；identity对email_verified=true不要求本地verifiedProof，因此严格内测资格需要独立检查，不能只挡前端/邮箱bridge。已读PENDING/SESSION_LOG最新段和实际source；派beta_gate_facts只读explorer核各入口、已有资格迁移及部署env覆盖边界，不读会话/credentials、不开云调用。
 
 首轮问题准备：发行号/内测开放范围、无码可用体验、已有账号连续性、第一批人数、稳定收口与反馈范围；固定六位码和登录注册必填已明确，不重复问码值。用户决定未返回时不填默认已确认；下一轮依据回答重新计算问题依赖。
+
+内测规划首轮用户决定已返回：Q1发布v1.0.0、账号邀请内测；Q2保留示例/本地记录/公开浏览/原匿名AI体验；Q3已通过本站邮箱验证的合法旧账号保留资格，不强制退出，但重新登录仍填码；Q4用户明确最多5–6人（替代建议5–10）；Q5仅内测准入、必要稳定检查和说明/维护收口，反馈通过现有聊天渠道及统一模板，不新建反馈后台。
+
+只读beta_gate_facts explorer完成：共享identity平台email_verified=true分支及fallback必须统一查资格，五paw-*入口都接；内测资格不伪装邮箱proof，按UID独立语义持久化；旧proof迁移幂等不碰健康数据；challenge需bind gate generation，旧challenge/换码来源重新核，邮箱/码字段变动使UI challenge失效；有凭证资格拒绝不得降匿名；部署脚本当前仅重建required_values，未合并existing env，源码能确认合并缺失但未调用云API证明远端删除行为。另确认严格业务准入不等同供应商底层账号创建完全禁止，第二轮明确本轮边界。
+
+首轮本地未推送规划commit99044ae包含用户指定的码值；为避免之后公开仓库历史暴露，确认origin/main仍95479cc且只有本地规划commit后，已amend仅该未发布规划提交为脱敏文本，不改任何已发布source/tag。第二轮建议码只存服务端env、公开UI/文档不披露；真实配置/测试读取env，计划可使用无关纯合成码测试前导0。工具15:22:45 Asia/Shanghai本轮调查检查点；仍未实施或开始部署，新施工预算待计划定稿。

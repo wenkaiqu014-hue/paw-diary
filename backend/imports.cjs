@@ -469,8 +469,7 @@ async function handleImport(request, deps) {
               index = next[field].findIndex((value) => value.id === targetId);
             if (index < 0) throw new ApiError("FORBIDDEN");
             const candidate = { ...item, id: targetId };
-  if(candidate.customTypeId)candidate.customTypeId=mapType(source.sourceWorkspaceId,candidate.customTypeId);
-  if(kind==="asset"&&item.kind==="attachment")candidate.parentId=await target(item.parentKind,item.parentId);
+            if(candidate.customTypeId)candidate.customTypeId=mapType(current.sourceWorkspaceId,candidate.customTypeId);
             if (kind === "pet")
               candidate.avatarAssetId =
                 ids.asset.get(item.avatarAssetId) ?? null;

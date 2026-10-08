@@ -357,3 +357,17 @@ test('complete cloud migration maps onboarding and recap sources; partial select
  const run=setup(),payload={sourceWorkspaceId:'stage3-source',snapshot,selection:{petIds:['source-pet'],recordIds:['source-record'],reminderIds:['source-reminder'],assetIds:[]}};const prepared=await run('imports.prepare',payload,0),result=await run('imports.commit',{batchId:prepared.data.batchId},0);assert.equal(result.ok,true);const actual=result.snapshot,petId=actual.pets[0].id,recordId=actual.records[0].id,reminderId=actual.reminders[0].id;assert.equal(actual.profile.stage3.onboardingByPet[petId].reminderId,reminderId);const saved=actual.profile.stage3.recaps[0];assert.deepEqual(saved.storySources,[recordId,reminderId]);assert.equal(saved.facts.upcomingReminders[0].id,reminderId);assert.equal(saved.sourceHash,recap.sourceHash);assert.notEqual(await recapSourceHash({snapshot:actual,petId,from:scope.from,to:scope.to}),saved.sourceHash);assert.equal(result.data.metadataSkipped,0);
  const partial=setup(),p=await partial('imports.prepare',{...payload,selection:{petIds:['source-pet'],recordIds:[],reminderIds:[],assetIds:[]}},0),committed=await partial('imports.commit',{batchId:p.data.batchId},0);assert.equal(committed.ok,true);assert.equal(committed.data.metadataSkipped,2);assert.equal(committed.snapshot.profile.stage3.recaps.length,0);
 });
+
+test('explicit restore of an imported custom record retains its mapped type and active parent',async()=>{
+ const {applyRecordTypeCommand}=await import('../src/domain/record-type-catalog.js');
+ let snapshot=applyRecordTypeCommand(source(),{action:'add',name:'合成护理',iconKey:'book'},{idFactory:()=> 'restore-care',now:'2026-10-07T01:00:00.000Z'});
+ const custom=snapshot.profile.recordTypeCatalog.custom[0];snapshot.records[0]={...snapshot.records[0],type:'other',typeLabel:custom.name,customTypeId:custom.id,iconKey:custom.iconKey,deletedAt:null};
+ const run=setup(),input={...request(),snapshot};
+ const first=await run('imports.prepare',input,0),initial=await run('imports.commit',{batchId:first.data.batchId},0);assert.equal(initial.ok,true);
+ const id=initial.snapshot.records[0].id,typeId=initial.snapshot.records[0].customTypeId;
+ const trashed=await run('trash.move',{kind:'record',ids:[id]},initial.revision);assert.equal(trashed.ok,true);
+ const accepted={...input,acceptConflicts:['record:source-record']};const preview=await run('imports.preview',accepted);assert.ok(preview.data.conflicts.some(c=>c.kind==='record'&&c.effect==='restore'&&c.resolution==='accepted'));
+ const prepared=await run('imports.prepare',accepted,trashed.revision),restored=await run('imports.commit',{batchId:prepared.data.batchId},trashed.revision);
+ assert.equal(restored.ok,true,'accepted custom-type record restore must succeed');
+ const row=restored.snapshot.records.find(r=>r.id===id);assert.equal(row.deletedAt,null);assert.equal(row.customTypeId,typeId);assert.equal(restored.snapshot.pets[0].deletedAt,null);
+});

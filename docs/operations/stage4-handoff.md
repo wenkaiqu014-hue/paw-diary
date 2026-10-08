@@ -1,5 +1,8 @@
 # 阶段4新session交接
 
+**2026-10-08续作更新：阶段4已验收并正式公开v0.7.0。** 先读PENDING、SESSION_LOG最新段及docs/verification/stage4-report.md；下面是阶段3结束时的历史交接，勿按“尚未实施/B失效/定位待选”重做。下一阶段入口docs/superpowers/plans/2026-10-06-05-quality-release.md，真实手机/GPS/读屏/日历/PWA与亲验仍未代勾。
+
+
 更新时间2026-10-07。
 
 **阶段3补丁最新交接：** v0.6.2已于2026-10-07 20:57:27 Asia/Shanghai正式发布，source/tag bf7274caaf5053dd5ed12f3906bc9c6de754b429；Pages37624440076成功（Deploy20:56:14、工作流20:56:18），原URL app-H5YZFURX.js/style-HCP5IGKK.css与main全新npm ci构件SHA一致。365/365单测无skip；原URL真模型、有头Chrome1440/390混合草稿/目录/分类/保存刷新通过。 阶段4 agent暂停期间隔离修改后fast-forward；原823a828/7783995/df2ad7f规划提交保留，以下v0.6.1发行数字为历史。A最新20:48:29 checkpoint原600路径归还，不signOut；B仍须新真实会话。

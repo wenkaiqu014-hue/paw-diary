@@ -38,3 +38,5 @@ Cloud实际：21:37:20十个新集合deny/publicinvoke并读回，原private/obj
 23:12续作更新：前述21:49历史段保留证据，当前communityEnabled已打开；最新云paw-community Active22:49:06，zipSHA9e6be688e53a3ec946eb9b0939c6f66cab7a8faa7813463adfe67581f51dc953。完整单元533（下一检查点可能新增）；A/B真实SDK12flag成功；真实profile A/B页面成功、Aavatar owner-read成功；真实UI A post/photo/refresh/comment成功且0pageErrors。完整原健康test_app通过。Root actualauth helper48108已stop，A最近checkpoint原stage2路径600；B新会话已merge同文件，两actor均从这个文件串行恢复，绝不复用旧B/旧验证码。当前私密receipt仅test-results/stage4，后续exactcleanup已知合成profile/post/image/report，不碰健康。
 
 Root最近审查修复：公开草稿queue绑定owner/generation单次消费；A重新登录用户主动取消清handoff；已有有效B授权时await身份协调私有workspace，samehashprofile明确重绘，3 actualsource tests通过。上一次ledger“未恢复A”等是历史，勿照它重新请求OTP。
+
+最终2026-10-08 10:57:49：v0.7.0已在原URL公开，main源码d21a8cb，543单元和原URL真实页面/恢复A+B均过、latest stop checkpoint原600会话。步骤9/10均完成，详情stage4-report；旧“未开始/未发布”表格为21–23点检查点。当前只剩阶段5待项；跨度使5小时要求未满足，不能恢复旧02:10时限假称达标。工作树保留证据，原端口已无监听，用户LBS窗口未代操作。

@@ -4,15 +4,15 @@
 
 ## 当前唯一续作摘要
 
-公开版本暂仍v0.6.2；阶段4已由用户于21:10:13启动实施，当前隔离工作树`.worktrees/stage4`/feature/stage4-community-profiles-nearby，源码检查点2ff77d1，后续公开账号分享边界补丁待下个commit。基础后端及完整前端已实现；真实A/B/匿名14项集成、A/B个人资料与A头像、A图文发帖刷新和评论、B隐藏恢复/加入退出、回顾取消0帖/最终1帖、手动管理下架及媒体撤销均已有实际证据。Root单元最新543/543、0skip；原健康有头test_app、双语语言回归及公开页面三宽/两语言/键盘/保稿E2E通过。所有账号会话均600、按同actor串行refresh写回，B已重新真实认证；不用再次请求旧验证码。位置Key已有免费额度已分配，真实目录和服务端坐标转换/逆地理接通，浏览器权限拒绝仅为模拟，真机GPS留阶段5。无新增采购，不声称账单0元。详[实施恢复入口](docs/operations/stage4-execution.md)与SESSION_LOG最新段。
+v0.7.0已于2026-10-08 10:57:49 Asia/Shanghai正式公开，源码/tag解引用d21a8cb5cd2261ae2c6bb3caf9a01fc061eec982，Pages37720181113 success（Deploy10:55:14，workflow10:55:18）。原URL app-VP3GVTVF.js/style-3BJOHPAC.css与main全新npm ci构件SHA一致。543/543单元、真实A/B/匿名14flag、原URL三宽双语键盘保稿与健康主线、A/B恢复刷新及邮箱私有边界通过。详[阶段4报告](docs/verification/stage4-report.md)、[社区运维](docs/operations/community.md)。真实公开合成资源按exact receipt清理，目前公开帖与卡片为空，明确示例仍独立。原私有健康/照片与v0.6.2 AI逐条record/plan／共享类型管理保留。
 
-- [x] 步骤1–7模块、公开投影/媒体/真实互动与全国地域/宠友基本实现及源码检查点。
-- [x] 步骤8举报入队、个人隐藏恢复、可信手动处置和回顾简短确认分享；分享独立账号scope审查补丁已GREEN，复审待关闭。
-- [ ] 步骤9最终独立复审关闭、确切合成资源清理与报告。
-- [ ] 步骤10原固定URL部署、构件核对与v0.7.0新tag/Release。
-- [ ] 用户亲自体验；阶段5使用指南/PWA/真实手机/读屏/日历实导仍单列，不代勾。
+- [x] 阶段4十项实现、真实技术验收、独立复审及确切合成资源清理。
+- [x] 原固定URL部署、SHA/Pages核对、v0.7.0新tag/Release；旧tags未移动。
+- [ ] 用户亲自体验；阶段5使用指南、新版内容说明/PWA、真实手机/GPS/软键盘、200%原生缩放、读屏与Google/Outlook日历实导。
 
-用户要求十步各≤40分钟、总≤5小时；多步骤完整收口超40已如实记录，不能称全部时限达标。总结束仍2026-10-08 02:10:13，最终项目截止仍10月8日20:00。下方v0.6.2及更早段为历史；继承v0.6.2逐条record/plan和共享record-fields/类型管理，不恢复隐式健康待办。
+下一轮从main读取本摘要、SESSION_LOG最新段、stage4-report和[阶段5计划](docs/superpowers/plans/2026-10-06-05-quality-release.md)。不要重建社区／重复OTP。A/B最新会话10月8日原URL复验后600 checkpoint写回原stage2路径；后续先验证可恢复，逐次refresh及时写回，绝不直接消费旧验证码。LBS现Key免费额度已分配、server Key/SK、app100/day1000/month＋共享保守4/s，无新增采购，不承诺云账单0元。用户只读LBS浏览器限制仍保留。
+
+用户十步≤40分钟／总≤5小时要求未全部满足；单步与跨恢复总超时详报告及日志，最终10月8日20:00不变。下方阶段3与旧版本为历史。
 
 本轮阶段3补丁已收口，详[验收](docs/verification/ai-entry-parity-v062-report.md)。AI与手动共用src/ui/record-fields.js；每条purpose独立，record仅成长记录，plan为独立reminder按includeInHealth分类；疫苗/驱虫新计划默认true、其余false且显式选择保留。AI复用同一record-type-picker，未知类型空、四内置不可删除、自定义最多3个。saveEntryBatch(entries,{baseRevision,operationId})/可信entries.saveBatch原子写入1–5项，item为draftId/purpose/input，计划input.recordType，记录input.type；旧records.saveBatch兼容。类型回调传revision/priorRevision，只在自身写入紧接草稿基线时升级CAS，不覆盖外部修改。模糊日期null，明确五相对词代码计算；模型不新建类型。 A最近20:48:29 checkpoint原600路径归还，B仍需新会话；阶段4原823a828/7783995/df2ad7f完整保留并纳入main。
 

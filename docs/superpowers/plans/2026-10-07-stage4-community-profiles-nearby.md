@@ -8,7 +8,7 @@
 
 **Tech Stack:** 原生ESM、现HTML/CSS、esbuild、CloudBase JS SDK 3.10.1/Node SDK 3.18.3、node:test、Playwright、腾讯WebService；不默认新增框架或依赖。
 
-**Spec:** [已确认设计](../specs/2026-10-07-stage4-community-profiles-nearby-design.md)。用户已授权实施；截至2026-10-08 10:50完成步骤1–9技术验收与确切资源清理，步骤10原网址发布收口中。
+**Spec:** [已确认设计](../specs/2026-10-07-stage4-community-profiles-nearby-design.md)。用户已授权实施；2026-10-08 10:57:49十步骤技术/发行验收已完成，详stage4-report；时间限制未全部满足。
 
 ## Global Constraints
 
@@ -190,11 +190,11 @@ assert.equal(commentAfterDelete.error.code, 'NOT_FOUND');
 
 **Files:** VERSION、package.json/package-lock.json、CHANGELOG.md、README.md、PENDING.md、ROADMAP.md/PRODUCT.md、总计划/04旧计划、SESSION_LOG.md、docs/releases/v0.7.0.md、stage4-report.md及必要AGENTS续作摘要。
 
-- [ ] Step1：全部核心验收已过后更新候选0.7.0与产品说明，README标题下原网址、先用途/体验步骤、只最新版能力；不把研究未核许可/真机写已完成。按finishing-a-development-branch集成验证分支，不清旧私密证据。
-- [ ] Step2：全新npm ci/build和必要最终回归后提交/推送main触发原Pages；核工作流head SHA、success及原URL新构件SHA。无node_modules symlink/旧缓存/本地mock冒充线上。
-- [ ] Step3：以`PAW_DIARY_TEST_URL=https://wenkaiqu014-hue.github.io/paw-diary/ /Users/wenkaiqu/.codex/skill-runtime/run python -u tests/e2e/stage4.py`复验匿名公开read/三宽双语/四hash和#profile；真实A/B生产SDK复验该部署新功能，读取已准备合成帖子，必要写只确切测试资源。不得把线上匿名写拒绝当真实分享通过。
-- [ ] Step4：确认原URL和核心功能通过后创建新annotated v0.7.0 tag与公开Release（非draft/非prerelease），记录source/tag SHA、Pages run、Release时间/URL，工具核旧tag未移动；清理本轮确切测试资源/只停止本轮服务，保存会话checkpoint。
-- [ ] Step5：同步日志/状态/报告和阶段5入口并本地Git可恢复，必要docs-only推送不重发业务。阶段5指南/PWA/真机/读屏/日历实导与用户亲验继续单列。
+- [x] Step1：全部核心验收已过后更新候选0.7.0与产品说明，README标题下原网址、先用途/体验步骤、只最新版能力；不把研究未核许可/真机写已完成。按finishing-a-development-branch集成验证分支，不清旧私密证据。
+- [x] Step2：全新npm ci/build和必要最终回归后提交/推送main触发原Pages；核工作流head SHA、success及原URL新构件SHA。无node_modules symlink/旧缓存/本地mock冒充线上。
+- [x] Step3：以`PAW_DIARY_TEST_URL=https://wenkaiqu014-hue.github.io/paw-diary/ /Users/wenkaiqu/.codex/skill-runtime/run python -u tests/e2e/stage4.py`复验匿名公开read/三宽双语/四hash和#profile；真实A/B生产SDK复验该部署新功能，读取已准备合成帖子，必要写只确切测试资源。不得把线上匿名写拒绝当真实分享通过。
+- [x] Step4：确认原URL和核心功能通过后创建新annotated v0.7.0 tag与公开Release（非draft/非prerelease），记录source/tag SHA、Pages run、Release时间/URL，工具核旧tag未移动；清理本轮确切测试资源/只停止本轮服务，保存会话checkpoint。
+- [x] Step5：同步日志/状态/报告和阶段5入口并本地Git可恢复，必要docs-only推送不重发业务。阶段5指南/PWA/真机/读屏/日历实导与用户亲验继续单列。
 
 ## 并行顺序、时间与启动门槛
 
@@ -204,4 +204,4 @@ assert.equal(commentAfterDelete.error.code, 'NOT_FOUND');
 
 **允许继续独立工作的依赖：** B暂不可登录时可做本地与单账号模块；位置账号暂不可用时可做UI/契约/fixture测试。**不得代勾的门槛：** 真实双账号分享/权限、公开媒体跨账号、实际全国目录/定位服务、原URL验证。费用/许可条件不满足时记录确切待项；不采购企业许可、不静默用旧六城或mock代替目标能力。
 
-plan self-review要求：spec每条映射到任务，接口名/字段/错误码一致；Review Focus五项都具有测试；命令指向真实或该任务新增文件；无占位项或空泛完成项。步骤1–9已按当前实际证据勾选；步骤10只在原URL与新Release实际核验后勾选。具体执行差异见阶段4报告，真机检查仍未代勾。
+plan self-review要求：spec每条映射到任务，接口名/字段/错误码一致；Review Focus五项都具有测试；命令指向真实或该任务新增文件；无占位项或空泛完成项。步骤1–9已按当前实际证据勾选；步骤10原URL与新Release已实际核验后勾选。具体执行差异见阶段4报告，真机检查仍未代勾。

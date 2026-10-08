@@ -1,6 +1,6 @@
 # 阶段4：个人资料、真实社区与宠友发现验收
 
-技术验收已完成，v0.7.0原网址发行核验收口中；发布结果将在本页补充。起点main04ed5c2、应用v0.6.2/bf7274c、365单测。实施工作树`.worktrees/stage4`；源码检查点761c3ae、2ff77d1。原仓库与网址保留，旧tag不移动。
+阶段4技术验收和原网址发行核验已完成，v0.7.0于2026-10-08 10:57:49 Asia/Shanghai正式发布。起点main04ed5c2、应用v0.6.2/bf7274c、365单测。实施工作树`.worktrees/stage4`；源码检查点761c3ae、2ff77d1。原仓库与网址保留，旧tag不移动。
 
 ## 本轮交付与公开边界
 
@@ -51,4 +51,13 @@ Root账号协调与same-hash profile重绘、草稿owner/generation单次消费�
 
 ## 发行核验
 
-尚待：main全新npm ci构建与测试、原网址构件SHA/公开三宽、Pages状态、v0.7.0新tag和公开Release、旧tag引用比较。此段在实际完成后追加结果。
+main从原04ed5c2快进到d21a8cb5cd2261ae2c6bb3caf9a01fc061eec982，全新`npm ci`、543/543单元、构建/语法/diff检查成功。Pages [37720181113](https://github.com/wenkaiqu014-hue/paw-diary/actions/runs/37720181113)源码为该SHA，Deploy10:55:14完成、工作流10:55:18 success。原网址10:56:01.045核对模块图及两构件SHA均匹配：
+
+- assets/app-VP3GVTVF.js：4801a9f9b8e853617d0abe1792506610a195fd18bdb190582eda0ce0b7aac675
+- assets/style-3BJOHPAC.css：709644c87d71fc4d8faa383d0bfe2ec0aa611d110931eeb98fdbd72f0264f368
+
+原URL真实有头stage4公开三页面／双语／三宽／键盘／手选／模拟拒绝／保稿与原test_app健康8组均PASS。A/B实际会话恢复、私有云刷新、各自资料页读取、本人邮箱不在公开预览、A390英文公共页面0overflow/0pageErrors，B确认与A主体不同；最后两actor都stop且最新会话写回原600文件。没有为验收再次发送邮件或修改空公开资料。
+
+v0.7.0为新annotated tag，解引用源码d21a8cb5cd2261ae2c6bb3caf9a01fc061eec982；[Release](https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.7.0)于10:57:49公开，非draft／非prerelease。发行前旧tag快照逐项比对远程引用未变化。证据为main/test-results/stage4/online-build-verification.json、tag-verification.json、public-app/report.json及/tmp/paw-stage4-online-health.log。完整旧阶段证据保留在stage4工作树，不force移除唯一私密会话／截图。原4220/4221/4196端口已无本轮监听，用户位置服务浏览器未代操作或关闭。
+
+恢复到公开Release用时7分06秒（10:50:43→10:57:49），总任务窗口仍已违约；不以恢复后快速完成替代原工时要求。阶段5待项继续独立。

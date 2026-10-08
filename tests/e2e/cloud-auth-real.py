@@ -388,9 +388,14 @@ class Acceptance:
         page = actor['page']
         route=command.get('route')
         if route is not None:
-            if route not in ('community','nearby'):raise SafeFailure('PUBLIC_ROUTE_INVALID')
+            if route not in ('community','nearby','profile'):raise SafeFailure('PUBLIC_ROUTE_INVALID')
             page.evaluate('(route)=>{location.hash=route}',route)
-            page.wait_for_timeout(800)
+            if route=='community':
+                page.wait_for_function('document.querySelector("[data-community-feed]")?.getAttribute("aria-busy")=="false"',timeout=25000)
+            elif route=='nearby':
+                page.wait_for_function('document.querySelector("[data-nearby-status]")&&!/(Loading|\\u6b63\\u5728\\u8bfb\\u53d6)/.test(document.querySelector("[data-nearby-status]").textContent)',timeout=25000)
+            else:
+                page.locator('[data-profile-form]').wait_for(timeout=20000)
         viewport = command.get('viewport')
         if viewport is not None:
             if not isinstance(viewport, dict) or not all(isinstance(viewport.get(k), int) and 320 <= viewport[k] <= 2400 for k in ('width', 'height')):
@@ -415,6 +420,10 @@ class Acceptance:
             page.locator('.paw-slideshow-heading button').first.click()
         observed = self.checkpoint(label, actor, 'check_checkpoint', required=False)
         flags = dict(actor['config'], **observed['flags'], pageErrors=actor['errors'], sessionSaved=actor['saved'])
+        if route=='profile':
+            own_email=page.locator('[data-own-email]').inner_text()
+            flags['ownProfileFormRead']=True
+            flags['publicPreviewEmailExcluded']=not own_email or own_email=='—' or own_email not in page.locator('[data-profile-preview]').inner_text()
         flags['galleryOpen'] = bool(page.locator('.paw-slideshow[open]').count())
         flags['photoCount'] = page.locator('.paw-photo-tile').count()
         flags['petCount'] = page.locator('.pet-entry').count()

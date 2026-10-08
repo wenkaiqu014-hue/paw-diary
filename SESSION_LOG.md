@@ -1005,3 +1005,15 @@ B real UI新discovery15.06秒：已隐藏内容列表恢复后帖重现、checkb
 原ignored cleanup flags确认仅exact本轮合成内容，2公共图片删除、原无profile恢复、B退出先读回，随后真实anonposts/discover均0；私有health read脚本首取snapshot字段失败，实际APIdata结构纠正后不同真实owner/宠物不重合/伪造workspace拒绝/无token私有读拒全部成功。未执行健康mutation、不打印原文。会话原600 checkpoint保留，恢复不得机械消费旧验证码。
 
 现使用finishing-a-development-branch/verification-before-completion收口；用户既有main/原URL/版本授权明确，按已选main发布，不重复请求合并菜单。源码和唯一证据工作树先保留，不force删除忽略的截图/私密文件。version/package/lock改0.7.0，jpeg-js显式固定0.4.4；README/CHANGELOG/community运维由media产物复核，纠正失败FAQ为实际/faq/authorizationFaq、补真实test会话/既有昵称前提。新增stage4-report汇总实际验证／失败与修复／工时违约／阶段5待项；此时Pages/tag/Release尚未宣称完成。
+
+### 阶段4原网址正式发行收口
+
+2026-10-08发行实际证据：主main已fetch确认原04ed5c2，无其他远端变更，快进合并d21a8cb5cd2261ae2c6bb3caf9a01fc061eec982；main全新npm ci、543/543无fail/skip、build/syntax/diff成功。凭证扫描312 trackedfiles未包含任何已配置实际Secret/LBSKey/SK/模型Key，未打印值。main push成功，Pages37720181113源码d21a8cb，Deploy10:55:14/工作流10:55:18 success。
+
+10:56:01.045原URL HTTP实际下载模块图、JS/CSS sha256与main全新构建一致：app-VP3GVTVF.js=4801a9f9b8e853617d0abe1792506610a195fd18bdb190582eda0ce0b7aac675；style-3BJOHPAC.css=709644c87d71fc4d8faa383d0bfe2ec0aa611d110931eeb98fdbd72f0264f368。真实原URL有头stage4.py三宽/双语/键盘/保稿/手选/明确模拟拒绝PASS；原健康test_app8组全过，无JS错误。实际A和B原会话均可恢复，不再次发送OTP；私有云刷新、各自资料表单与邮箱不入公开preview通过，A390英文公共页0overflow/0pageErrors，B再次读回与A不同主体，两actor最后stop并原600 checkpoint写回，无业务新增，不重新污染已清空真实社区。
+
+新annotated tag v0.7.0解引用d21a8cb，push仅新tag；Release https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v0.7.0 于10:57:49公开，非draft/non-prerelease。旧10 tag对照发行前快照与远端refs逐项未变。报告、计划、PENDING/AGENTS、产品/路线及阶段5入口同步最新；README保产品介绍和原体验入口，运维说明手动举报/TTL清理、严格公开边界和位置账户口径。下方旧“未发布”段是当时状态。
+
+原本轮4220/4221/4196端口无监听，未强杀其他服务；所有本轮新Chrome已停止，用户LBS窗口未代操作或关闭。阶段4工作树因唯一原始截图/私密receipt保留，未force删除。恢复10:50:43到Release10:57:49为7分06秒，但从前日开始总时限已违约，不宣称十步40分钟/五小时达标。最终产品20:00截止不变。阶段4技术发行完成；用户亲验、阶段5指南/版本新内容/PWA/手机/GPS/软键盘/200%缩放/读屏/实际日历导入仍明确未勾。
+
+后续docs/tests-only收口不改变源码/tag/公开构件，不重新部署应用。下一轮从main PENDING最新摘要与05-quality-release开始；会话先核恢复、及时写回，不再用历史20:48 checkpoint或失效旧B。

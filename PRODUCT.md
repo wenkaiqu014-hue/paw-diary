@@ -1,5 +1,7 @@
 # 爪爪日记
 
+当前v1.0.1（2026-10-08）：社区图片与原比例、两处个人菜单头像已修；已登录用户点击写帖先检查公开昵称，保存资料后继续同一草稿，不要求宠物或加入发现。个人资料在上传前校验并提示具体字段，未知服务端错误保留输入。公开与用户复核见docs/verification/community-v101-report.md；Windows用户决定结束补测，未验证保留。下段v1.0.0为历史发行记录。
+
 v1.0.0已正式发布：source/tag解引用1f44973a357cfdfb9e51a0d27327f1ec6d5e4611，Pages37758087467 success/updated17:39:10，Release18:04:50 Asia/Shanghai公开且非draft/非prerelease；安全ZIP20228字节digest4ae8…c55匹配，原26 tag refs未动。Windows具体未验证组合仍保留。最终发行前端source为1f44973a357cfdfb9e51a0d27327f1ec6d5e4611（在f559之上追加Windows原生200%说明区重排修复），最终main全新npm ci及695/695单测、环境合并4/4、语法/diff和秘密未进入tracked/dist检查通过；两项Important修复后开放Critical/Important为0。五个真实函数准入已开启、合法旧证明3项幂等迁移，真实新C注册及A/B/C恢复刷新通过；五入口无资格真实签名调用均拒绝。iPhone主屏幕软键盘保存重开、GPS允许/拒绝和手选、VoiceOver帮助/记录已由用户明确通过。Mac Safari独立容器备份及原0.8安装App升级重开通过；原热窗口丢失，dirty热升级未验证。真实C备份12项和原URL界面已全部通过、精确清理且原基线保留；paw-files修复包17:09:42 Active。Mac VoiceOver第三次用户听读明确通过；Windows原始集中报告auto10通过、manual6通过/1失败/6未验证；网页清洁升级、已测键盘路径、云断网恢复/完整备份和隔离App卸载通过。200%布局失败已最小CSS修复，原生复验待用户；原图标重开/dirty-busy/照片跨升级/Narrator保存状态/Windows精确清理保持未验证；iPhone原图标升级1.0、旧记录与重开用户明确全部正常。详见docs/verification/v100-report.md。
 
 以下为各阶段历史记录；发生冲突时以上述当前状态及v100报告为准。

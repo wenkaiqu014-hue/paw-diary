@@ -1269,3 +1269,11 @@ Review独立发现两个Important：初稿在profile-read失败丢失、list刷�
 Root实际完整npm test702/702/0skip，syntax/diff0、mechanical detector[]；新profile/images/browser及旧community复验产物均ignored test-results/v101。真实原URL匿名只读列表为空/0pageError，首次等待帖子25s超时不当媒体通过；改只读probe空列表记录liveMediaSampleAvailable=false，用户原帖在线图需其更新后亲验，没有读取会话/发新验证码/云写入/更改真实帖子或资料。版本metadata/newnotes改1.0.1，原tag保留；部署/Release/公开SHA及任务结束时间随后按实际补记。
 
 18:46:42工具检查点：用户新增桌面Windows followup ZIP且明确“跳过几个无关紧要测试、没有大问题不再担心Windows”。实际归档1229693B/19项、SHA3376dbd249f7b7e1a8900e263cfcd05a4159a95302dfff2828991c8b793c9182，ZIP完整/复制SHA一致后删除桌面原件，主目录ignored windows-user-followup，folder700/file600；仅归档、不上传。PSauto10pass，manual4pass/0fail/5unverified/4历史有意不重跑；native200修后横排/无助手遮挡、键盘、exact本轮清理真通过。原App/Narrator用户回复不管了主动跳过，更新组合无旧现场；标用户不再要求补测、实际未验证保留，Windows结束跟进不再反复测试。原cleanup.reason旧待听读文案与最终收尾evidence差异在报告注明，最新独立narrator-cleanup确证草稿取消/网络0/Offlinefalse。此消息为当前修复中的新增交接，不取消社区30分钟目标；社区继续发布1.0.1。
+
+### v1.0.1部署、发行与用户复核收口
+
+Root集成source059e5bdd902452392f9ebbb003c41378d86c3470，main ff、完整npm test702/702/0skip＋build/syntax/diff成功后push；本地初build为默认preview，公开核对前显式PAW_RELEASE_CHANNEL=stable重新构建固定source，未把preview比作线上。Pages37765826272 completed/success，Deploy18:48:09、workflow18:48:12；main/test-results/v101/online-final.json原URL六HTTP200且sameAsFrozenBuild全部true，JS1151cf…74d2/CSS05c5fa…2b1。原URL再次只读v1.0.1公开页0pageError、列表无媒体样本，与此前真实API/用户本账号结果分开。Root观察agent图片四角/菜单圆形截图，原比例与居中均符合要求。
+
+新annotated v1.0.1固定059e5bd、push新tag；gh release create --verify-tag --notes-file实际publishedAt2026-10-08T10:50:22Z=18:50:22、非draft/非prerelease，原28 tag refs在仅剔除v1.0.1两refs后逐字相同。原网址不变，无用户RAW资产上传、无服务器部署/云数据迁移/真实资料修改。用户随后对原帖头像/图片及top/sidebar头像复核回复“好像没问题了”，记录未见问题反馈，不扩展成所有设备/所有字段实际全验。
+
+18:51:23检查点，已将工作树合成验收JSON/截图/独立review复制到主目录ignored test-results/v101，原证据保留；核对本次4197服务器PID10097及cwd恰当前工作树，准备仅停止自建服务。Windows桌面原件已消失、ignored归档存在；文档同步正式发行/用户跳过不再追测。起点18:32→Release18:50:22为18分22秒，在30分钟窗口内；文档结束/最终检查时间以下次工具为准，不冒称此时全部已完成。后置仅文档，不重建构件、不移动tag。

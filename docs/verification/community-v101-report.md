@@ -1,6 +1,6 @@
 # 社区图片与个人资料补丁验收
 
-2026-10-08，目标版本 v1.0.1；当前为已验证候选，正式公开状态在发行后补记。用户30分钟窗口起点18:32:00、截止19:02:00 Asia/Shanghai，来自本轮工具时钟与用户原文。
+2026-10-08，v1.0.1已正式发布。用户30分钟窗口起点18:32:00、截止19:02:00 Asia/Shanghai，来自本轮工具时钟与用户原文；Pages18:48:09部署、18:48:12工作流成功，Release18:50:22公开，发行耗时18分22秒。后续用户对原帖图片/头像和个人菜单头像复核回复“好像没问题了”，记录其未见问题反馈，不扩大为所有设备及字段已亲验。
 
 用户截图反馈：已发布帖子头像和图片不显示、编辑预览固定高度裁剪照片、缺公开昵称直到提交才引导；随后追加个人菜单两处仍显示昵称首字，以及曾遇无法定位字段的INVALID_INPUT。修复沿既有界面和账号规则，不增宠物/发现前置。用户明确要求立即修复，按既有项目授权直接执行本轮有界修复，不追加grill或批准步骤。
 
@@ -26,4 +26,6 @@
 
 ## 发布核对
 
-待本轮固定source、Pages、公开六项构件一致性、新v1.0.1 tag/Release及旧tag不变核对后补记。
+最终source/tag解引用059e5bdd902452392f9ebbb003c41378d86c3470；Pages37765826272 completed/success。原URL六项HTTP200且逐字等于该source的stable构建，证据test-results/v101/online-final.json；JS app-R33W6C5X.js SHA1151cf145d367c5ef602b4d5fca0ef189c918bc5d131c301b55dfe4e6d0074d2、CSS style-WLOB62HC.css SHA05c5fa11ca8e664c467b96a04337e59ea6b7106598700ace5487aa69433c52b1。新annotated tag固定业务source，旧28远端refs逐字不变；Release2026-10-08T10:50:22Z（18:50:22）公开、非draft/非prerelease，不附用户ZIP。链接：https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v1.0.1 。后置文档不重建app或移动tag。
+
+最终主目录完整npm test702/702无fail/skip；独立审查Critical0/Important0。原URL匿名公开页无错误但没有帖子样本，公开资源一致性与合成浏览器技术验证分开；用户已补本人原帖/菜单视觉复核未见问题。Windows补测已按用户决定结束跟进。证据复制至主目录ignored test-results/v101、原工作树保留，不要求再次Windows/iPhone测试。

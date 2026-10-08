@@ -23,7 +23,7 @@ README面向首次访问仓库的用户，作为产品介绍与体验入口：�
 
 ## 当前状态与续作入口
 
-**v1.0.2当前收口入口：** 本轮自定义类别/点赞静态局部更新/紧凑完整缩图/详情左右及mobile上下，718单测/独立审查0Critical/0Important，server仅paw-community code-only19:07:59 Active/原env保留，未迁移或改既有帖子。正式公开状态按docs/verification/community-v102-report.md、PENDING、SESSION_LOG最新段读回；不要要求重做已结束的Windows专项。以下v1.0.1为上一基线。
+**v1.0.2当前入口：** source/tag0744285、Pages37769811171 success/19:24:42、Release19:26:49、原URL六SHA一致；718单测/独立审查0Critical/0Important及有头浏览器通过。自定义类别/静态局部点赞及确认序号保护/紧凑完整缩图/左右详情与手机上下已交付。server仅paw-community code-only19:07:59 Active、env/timeout/gate/LBS不变，真实custom读取拒绝8项过；原URL真实列表5图/详情3图解码及0错误。未迁移或改既有帖子，原30tag refs保持；docs/verification/community-v102-report.md/PENDING/SESSION_LOG为续作依据，Windows用户已结束跟进。旧版本按历史看，不重做。
 
 **v1.0.1社区补丁入口：** 正式source/tag059e5bd、Pages37765826272 success/18:48:12、Release18:50:22、原URL六项SHA一致。用户18:32起30分钟窗口；702单测、有头浏览器/独立审查已过，用户原帖/两处菜单头像复核未见问题。Windows补测0fail，原生200%/已测键盘/清理通过，其余用户跳过或缺旧现场项目保留未验证但不再追测。当前闭环见docs/verification/community-v101-report.md、PENDING及SESSION_LOG最新段；勿按以下旧v1.0.0段重做认证。主目录ignored test-results/v101保有技术证据，用户ZIP只本地700/600归档，桌面已移走，旧28tag refs未动。
 

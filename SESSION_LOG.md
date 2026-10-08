@@ -1293,3 +1293,9 @@ Like worker旧实际DOM RED重建4图片/评论→局部projection及updateLikes
 独立review716full/like/detail/density/oldimage-layout/image-race均过，但发现旧feed遮蔽freshdetail赞数，like worker RED22pass2fail→GREEN24，仅stats同步保正文/img/revision；后续review控时序又发现延迟旧detail盖已确认like，要求post本地确认sequence保护，最终结果随后记录。所有用户持续追加作为同一任务steering，不弃原自定义类别目标，不执行真实用户点赞/发布/删除测试。最终codefreeze/复验/source/push/Pages/Release待实际工具补记。
 
 19:22:56工具检查点：like worker第二边界先受控RED旧read迟到覆确认→confirmedLikes perpost sequence只覆stats GREEN35scoped，identity/destroy清map；review独立控制时序验证true1不undo、关闭保持1、随后fresh12采纳，原正文/img/revision/comments计数逐项一致。Root及reviewer最终718/718/0skip、syntax/diff0、mechanical detector[]；最终like-static1440/390 GREEN0pageerror，详情/密度/oldlayout/image-race均独立GREEN。所有Critical/Important已关闭、无真实用户内容写入。Root准备固定source+main ff+stable build+Pages六项SHA+新tag/Release，旧tags不动，日志/文档后置不重建app。
+
+### v1.0.2公开收口 — 2026-10-08 19:27:10检查点
+
+固定source0744285cc67e296fda0b8c1421036f48f5ae6fdc；main ff/完整718单测/stable build/diff成功后push，Pages37769811171 completed/success/workflow19:24:42。原URL六HTTP200/逐字SHA全部匹配冻结构件，JS892244…68f76、CSS825b69…ca34d；同一shell末尾lsof其它无监听端口导致总exit1，不影响已成功的Python assert/GH，按分项证据报告。原URL真实匿名读列表5图/详情3图全部decode可见、0pageError，无人真业务写入；证据test-results/v101/public/v102-after.json。Root看了density1440五列图片及详情左右截图；一次误用1440.png不存在，rg找到真实image-1440.png后观察正确，不假称失败view成功。
+
+新annotated v1.0.2固定source，push tag与gh release --verify-tag --notes-file成功；publishedAt2026-10-08T11:26:49Z=19:26:49，非draft/非prerelease，原30 tag refs排除新增两条后逐字保持。从18:58:27到Release28分22秒，含用户持续追加范围；最后文档/清理时间以下工具记录为准。原URL不变、未改用户profile/正文/原图，只有既有函数代码兼容扩展、无迁移或新服务/邮件。证据已复制main ignored test-results/v102（保含600实际servercode备份，目录700），原工作树保留。review自建4203已关闭；Root核4197 PID49675及cwd恰本工作树，随后仅停止该服务，后置文档不重建app、不移动tags。已问用户保存后更新查看新体验，反馈据实际原文补，不把挂起当通过。

@@ -1,6 +1,6 @@
 # 自定义养宠类别与社区交互补丁
 
-2026-10-08 v1.0.2候选，正式发行与最终验证随后补记。工具起点18:58:27 Asia/Shanghai；用户本轮先要求养宠类别自行添加，施工期间继续追加点赞不重载、社区空间利用、图片缩至约四分之一、小红书式详情左右布局及“已有用户上线，修改不要影响已发布内容”。所有追加纳入同一补丁，保留原网址、现有功能及用户已发布内容。
+2026-10-08 v1.0.2已正式发布。工具起点18:58:27 Asia/Shanghai，Release19:26:49，发行耗时28分22秒；用户本轮先要求养宠类别自行添加，施工期间继续追加点赞不重载、社区空间利用、图片缩至约四分之一、小红书式详情左右布局及“已有用户上线，修改不要影响已发布内容”。所有追加纳入同一补丁，保留原网址、现有功能及用户已发布内容。
 
 ## 自定义类别
 
@@ -27,3 +27,9 @@ like-static有头两宽旧RED重建图片/评论→GREEN同4图片/read4不变�
 独立审查发现问题及关闭证据在ignored test-results/v102/review.md，最终开放等级、全量单测及公开SHA发行后补记。管理SDK默认系统Python3.9读取临时urllib3类型定义失败，切既有skill-runtime Python3.12后操作成功，第一次未发管理调用。无新增服务/采购/邮件、无账号资料或用户帖子迁移；旧Windows补测按用户决定结束，不要求重复。
 
 最终确认：postId确认序号守卫先记录openPost读起点，若读取期间已有本地点赞确认，只使用较新的确认liked/count；开始于确认后的新读仍正常接受更鲜服务端计数。identity/destroy清确认缓存，旧读迟到不覆盖确认、新账号隔离、关开后保持、新read count12与原正文/img/revision/commentCount一致已独立控时序验证。最后Root及Reviewer完整718/718无fail/skip；like双宽最终回归、详情/密度/旧图片并发全部通过，开放Critical0/Important0，mechanical detector[]。
+
+## 正式公开核对
+
+source/tag解引用0744285cc67e296fda0b8c1421036f48f5ae6fdc；Pages37769811171 completed/success，workflow19:24:42；原URL六项HTTP200且逐字匹配固定source的stable构建，证据test-results/v102/online-final.json。JS app-5VDL2JPL.js SHA89224445c5dd1eef1f43d46a27b47cbded3c413585634e3a13451e5f14d68f76，CSS style-HR6L2TYM.css SHA825b69ec322f01efd8f8f54c2be96e3be37c0b7e3726cbaf0d94a50ac14ca34d。实际原URL新浏览器匿名只读：列表5张图片及详情3张图片全部解码显示，0pageError，不执行真人发帖/点赞/删除。截图/原始JSON仅ignored本地证据，未上传Release。
+
+annotated v1.0.2固定业务source、新Release19:26:49公开且非draft/非prerelease，链接：https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v1.0.2 。仅剔除新tag两refs后原30远端refs逐字相同。后置文档不重建app或移动tag；main718全量及stable build再次成功。原网址与私有数据边界保持，未迁移/改写已有帖子内容；公开后的用户具体体验另据回复记录，不扩大模拟浏览器为全平台亲验。

@@ -1167,3 +1167,7 @@ Safari反馈修复块14:53:37开始：Root先运行shared-city browser RED，hom
 只读beta_gate_facts explorer完成：共享identity平台email_verified=true分支及fallback必须统一查资格，五paw-*入口都接；内测资格不伪装邮箱proof，按UID独立语义持久化；旧proof迁移幂等不碰健康数据；challenge需bind gate generation，旧challenge/换码来源重新核，邮箱/码字段变动使UI challenge失效；有凭证资格拒绝不得降匿名；部署脚本当前仅重建required_values，未合并existing env，源码能确认合并缺失但未调用云API证明远端删除行为。另确认严格业务准入不等同供应商底层账号创建完全禁止，第二轮明确本轮边界。
 
 首轮本地未推送规划commit99044ae包含用户指定的码值；为避免之后公开仓库历史暴露，确认origin/main仍95479cc且只有本地规划commit后，已amend仅该未发布规划提交为脱敏文本，不改任何已发布source/tag。第二轮建议码只存服务端env、公开UI/文档不披露；真实配置/测试读取env，计划可使用无关纯合成码测试前导0。工具15:22:45 Asia/Shanghai本轮调查检查点；仍未实施或开始部署，新施工预算待计划定稿。
+
+第三轮准备：用户Q6/Q7/Q8/Q10均按建议（手动关闭、码不预填持久化/公开泄漏、共享业务准入而非供应商全阻断、邮箱60秒/3次10min＋IP10次10min），Q9要求详细列剩余专项并尽量不留pending。只读agent审计最新followup覆盖旧Windowsreport：安装启动、Google/Outlook、主屏幕和Safari修复已过；剩余200%完整可达/键盘全路径/三端读屏/真机键盘GPS/Safari独立容器/Windows卸载与新版PS/真实更新/当前资格下备份回归/Windows照片断网/Apple重复改期/精确清理。大量记录已有200合成GREEN，不重复标未完。备份此前已有真实字节恢复，此处仅新资格/当前容器受影响回归，不重写功能。
+
+写入v100-beta-access-design书面方案供第3轮审阅，未写实施代码/部署/开启新gate。真实0.8→1.0可以补旧热标签与三端App更新，要求实施开始先保留0.8基线；Mac旧测试App已卸载，不能假称仍在。人工reader/手机结果不能由DOM/模拟权限替代，预留用户分段协助。当前root读原通用清单输出很长且截断，按agent专门矩阵和最新user-followup定位，不称重新逐条通读全部历史。

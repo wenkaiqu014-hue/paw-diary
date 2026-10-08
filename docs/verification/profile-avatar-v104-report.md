@@ -11,3 +11,5 @@
 隔离.worktrees/avatar-v104、基线eeef9bc，全新npm ci/721基线通过；最终Root/独立review721/721无fail/skip，syntax/diff0、mechanical detector[]，开放Critical0/Important0。independent destroy探针一度假设destroy清DOM（既有路由负责清），修为late回复不改变DOM并过，未改生产行为满足假设。两worker复用前轮线程、Root负责focus/version/deploy；未调用后台写入或改已有头像/帖子。正式source/Pages/六SHA/tag/Release/任务结束随后据实际补记，旧Windows不重新要求测试。
 
 正式source/tag117958e954bab1652c9462e0fafe0c8f512e8698；Pages37776122974 success/20:20:31，原URL六HTTP200且逐字SHA匹配固定source stable构建。JS app-VCGAUQ5F.js SHA57887497fca64fdc9473387bdfa0942185bde24e354d9cc2d893259f30f55ccc、CSS style-JLGG55TT.css SHAe6d467861abe334e0039388d7494e049ce8cd3fa1578a2bd1e097329edb8df3e。实际匿名列表8图/详情1图读取全过0错误，个人选图保存边界由合成仓储/真实浏览器验证，不代称本人实际云保存。新annotated v1.0.4固定业务source、Release20:22:28公开非draft/非prerelease，原34tagrefs逐字保持；https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v1.0.4 。WebKit executable未配置，已如实记未执行且不安装，不冒充Safari/iPhone亲验；用户手机实际反馈另据回复记录。main完整721再次通过，raw证据ignored主目录v104，后置仅docs不重建构件。
+
+用户手机实际复核：对本轮头像近picker即时显示及帖子标题无黄色框两项，明确回复“OK了，没啥问题”，据此两项亲验通过；没有用户真机耗时数据，不把浏览器计时改为真机数值。

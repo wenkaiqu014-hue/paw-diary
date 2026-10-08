@@ -1337,3 +1337,5 @@ source/tagd85f23ba49e75958db96e3ed2336672266b740a4；main ff/721全量/stable bu
 source/tag117958e954bab1652c9462e0fafe0c8f512e8698；main ff、721全量/stable build/diff再过后push，Pages37776122974 success/20:20:31；原URL六HTTP200/冻结source SHA逐字同，JS578874…55ccc/CSSe6d467…8df3e，实际匿名列表8/详情1图全部decode0error。Root查看390near-picker真实合成截图预览64circle与未保存提示、控制fileButton焦点仍可见。WebKit engine试launch executable未配置，写入webkit-smoke未执行，无安装，没用它冒称Safari/iPhone。
 
 新annotated v1.0.4 source固定/ghrelease --verify-tag成功publishedAt2026-10-08T12:22:28Z=20:22:28、非draft/非prerelease，原34tagrefs剔新两条逐字不变。首诊断20:06:33至Release15分55秒，保守20min截止20:26:33；最后docs收口以本时间及最终工具记录为准。仅前端，未真实用户资料/帖子/avatar云写入、未服务部署/新费用或邮件。证据已复制main ignoredv104，核root4197 PID43097 command/cwd后停止/socket确认无监听；worker4202已关。后置docs不重建app/不移tag，当前仅Git保存推送。已问手机用户两项亲验，等待不当通过，后续按实际原文记录。
+
+用户手机两项亲验收口 2026-10-08 20:25:42 Asia/Shanghai：针对近选图头像即时显示与帖子详情标题无黄色框问题，用户明确回复“OK了，没啥问题”。据原问题逐项确认两项通过，未扩大为任意设备/图片性能均达标；本轮v1.0.4收口完成，用户反馈已记录，不要求重复测试。

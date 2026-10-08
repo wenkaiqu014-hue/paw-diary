@@ -4,7 +4,7 @@
 
 ## 当前唯一续作摘要
 
-v1.0.4正式发布：source/tag117958e、Pages37776122974 success/20:20:31、Release20:22:28、原URL六SHA一致；721单测/实际浏览器两宽/独立0Critical0Important通过。选图按钮旁本地即时头像(保存前无上传/公开)，失败/重试/换移/语言/旧read保护、坏图明确提示；弹窗标题仍focus但无黄色框，控件焦点仍可见。实际公开图片8/1全部加载0错误，未改backend/既有资料帖子，旧34refs未动。保守窗口20:06:33→20:26:33，发行15分55秒；实体手机反馈另记，Windows不要求重测，见[验收](docs/verification/profile-avatar-v104-report.md)。下文均历史。
+v1.0.4正式发布：source/tag117958e、Pages37776122974 success/20:20:31、Release20:22:28、原URL六SHA一致；721单测/实际浏览器两宽/独立0Critical0Important通过。选图按钮旁本地即时头像(保存前无上传/公开)，失败/重试/换移/语言/旧read保护、坏图明确提示；弹窗标题仍focus但无黄色框，控件焦点仍可见。实际公开图片8/1全部加载0错误，未改backend/既有资料帖子，旧34refs未动。保守窗口20:06:33→20:26:33，发行15分55秒；用户手机两项亲验明确“OK了，没啥问题”，本轮已收口，Windows不要求重测，见[验收](docs/verification/profile-avatar-v104-report.md)。下文均历史。
 
 v1.0.3已正式发布：source/tagd85f23b、Pages37773059988 success/19:53:59、Release19:55:29，原URL六SHA一致/实际5列表图3详情图全部显示0错误；721单测、浏览器和独立审查0Critical/0Important。列表精简、瀑布流、原19px最多2行/孤立字处理、头像昵称作者帖与其它卡片详情分入口已交付，原文原图与全部详情操作保持。20分钟截止19:57:47，发行17分42秒；未动backend/用户数据，旧32tagrefs不变。见[本轮验收](docs/verification/community-v103-report.md)。下文为历史，Windows按用户决定不重测。
 

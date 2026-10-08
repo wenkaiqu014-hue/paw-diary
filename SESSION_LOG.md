@@ -1249,3 +1249,11 @@ Root已核C额外baseline纯合成pet exact trash count-1其他数据/assets保�
 Root明确RELEASE NOW，冻结SOURCE1f44973a357cfdfb9e51a0d27327f1ec6d5e4611、Pages37758087467 success/updated17:39:10，online-release-final六sameAsFrozenBuild=true。先cmp原26remote refs通过，新annotated tag固定SOURCE而非docs HEAD，git push新tag成功；gh release create --verify-tag --notes-file仅安全20228B六文件ZIP，publishedAt2026-10-08T10:04:50Z=18:04:50 Asia/Shanghai，非draft/非prerelease。实际唯一assetuploaded/size20228/digest sha256:4ae8eedd97ae992b8373dc9b4e3abb94b19dd4311e21f0de36642085df9fdc55匹配本地；local/remote tag^{}均1f449，剔除仅新增tag两refs后原26refs逐字一致。用户RAW2137285B/SHA b4a3…bb346未上传。正式URL https://github.com/wenkaiqu014-hue/paw-diary/releases/tag/v1.0.0 。
 
 发行后首文档脚本误假定online-release-final.files字段matches，实际sameAsFrozenBuild，assert前退出未写任何正式状态；直接核原文件后更正，重新验证六true。未影响成功发行、没有重建app。Rootidle总27m05、18:03:22 active1h55m27，Release18:04:50 active1h56m55；预算18:07:55、最终20:00。用户Windows快验未回，native200retest/Appicon/NarratorSavedState及原六unverified如实保留，原报告不改。更新当前所有文档为正式发行、Windows专项不虚勾，后置docs提交不移动tag/不触发Pages。
+
+### Windows发布后补测交接准备 — 2026-10-08 18:20:15 Asia/Shanghai
+
+用户要求准备转发给Windows agent的材料并明确是否需新包。读现有六文件ZIP、原人工报告13项、v100报告和build metadata；确认旧1.0工具可复用，包内发布前等待说明需由新prompt覆盖，不重打/覆盖Release资产。新增docs/verification/v100-windows-followup-prompt.md并在旧prompt顶部指向新任务：最终1f449/CSS实际核对、原生200%、原App重开、Narrator保存状态集中协助；旧现场仍在才补dirty/busy/photo组合，无旧现场如实未验证，不伪造降级；仅创建收据可证的合成资源精确清理；原报告保留，独立脱敏followup ZIP回传。正确码/邮箱/OTP不进入prompt。无新开发/云调用/收费/子agent或版本变更，本任务是前次发行后的新增交接请求。
+
+前次Root最后独立Git/Release核验工具时间18:08:30，扣27分05秒真实等待后累计活动2小时00分35秒，比两小时约束超35秒；此前文档推送完成时仍在预算内，不据此宣称含最终Root核验的全程严格达标。本段补全时间口径，当前交接不倒算为前次实施预算。
+
+18:21:51工具检查点：Python核补测任务关键覆盖、旧prompt相对链接、既有六文件包SHA及ZIP完整性均通过，git diff --check退出0。仅文档修改，不重跑应用测试、不重建dist、不改tag或Release；本地Git保存交接。

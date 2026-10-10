@@ -447,7 +447,6 @@ class Operator:
         if name == 'paw-ai':
             if os.environ.get('SILICONFLOW_API_KEY'):
                 required_values['TEXT_AI_API_KEY'] = os.environ['SILICONFLOW_API_KEY']
-            required_values['TEXT_AI_MODEL'] = 'Qwen/Qwen2.5-7B-Instruct'
         if name == 'paw-community':
             for key in ('PAW_LBS_KEY','PAW_LBS_SECRET_KEY','PAW_LBS_PROVIDER_READY','PAW_LBS_FREE_DAILY','PAW_LBS_FREE_MONTHLY'):
                 if os.environ.get(key):
@@ -471,6 +470,8 @@ class Operator:
             existing = None
         old_variables = ((existing or {}).get('Environment') or {}).get('Variables') or []
         old_values = merge_function_environment(old_variables, {})
+        if name == 'paw-ai':
+            required_values['TEXT_AI_MODEL'] = os.environ.get('TEXT_AI_MODEL') or old_values.get('TEXT_AI_MODEL') or 'meituan-longcat/LongCat-2.0'
         if name in ('paw-api', 'paw-auth', 'paw-ai', 'paw-files', 'paw-community'):
             gate = os.environ.get('PAW_BETA_GATE_ENABLED', old_values.get('PAW_BETA_GATE_ENABLED', 'false'))
             if gate not in ('true', 'false'):

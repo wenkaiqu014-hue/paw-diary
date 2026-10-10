@@ -1,3 +1,5 @@
+<!-- 2026-10-10：本次LongCat切换和push获用户明确授权，临时恢复origin，发布核验后恢复隔离。当前模型meituan-longcat/LongCat-2.0、enable_thinking=false；下文Qwen为历史，回滚见docs/operations/longcat-model-switch.md。前端仍v1.0.5。 -->
+
 # 爪爪日记项目协作规则
 
 本文件位于项目根目录 `/Users/wenkaiqu/ClaudeInternal/Daily/paw-diary/`，仅约束本项目，不是 Daily 根目录的通用规则。默认中文协作。

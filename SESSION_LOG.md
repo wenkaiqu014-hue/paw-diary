@@ -1345,3 +1345,11 @@ source/tag117958e954bab1652c9462e0fafe0c8f512e8698；main ff、721全量/stable 
 用户明确完全删除截图整栏、3分钟完成，工具起点20:26:40/截止20:29:40。主目录main直接有界删除index workspace-controls DOM与app构建/引用，原locale渲染改直接applyLocaleChrome，避免空节点异常；首步guide锚定既有个人菜单，账号登录仍通过原菜单，无新按钮或数据删除。VERSION/package/notes1.0.5一致，nodecheck/diff与完整721测试通过。无后端/资料/示例数据写入，准备原URL发布及新tag，旧tags不动。
 
 1.0.5正式收口：source/tag ae0b48e72b51dca656f9a361d272d93d9b79985a，Pages37777090451 success，原URLrelease1.0.5及四路由banner DOM不存在/账号菜单存在/0pageError实际通过，721单测通过，Release已公开；只删除界面，不改数据。
+
+## LongCat模型最小切换 — 2026-10-10
+
+用户先要求只读评估，随后明确开始、已充值并沿用硅基流动API，授权本次切换和push，目标十分钟。13:01:47旧云Qwen/Active/40秒；13:04:06新代码及配置读回LongCat/Active/40秒，其余环境变量完整内存比对相同，原Key保留；13:04:52只读状态再通过。provider仅LongCat关闭思考、部署保留线上模型、新增单命令Qwen回滚、真实smoke改读目标模型。初次smoke2过/1录入INVALID_MODEL_OUTPUT，诊断确认默认含思考但首个失败finish_reason未保存，不断言具体耗尽原因；适配后3/3通过约4.1/16.4/2.0秒。参数回归RED→GREEN/provider4过、环境合并4过、函数构建/编译/语法通过。25/35/40秒与1200tokens保持。未全量/浏览器/真机验收，无子agent、无真实档案写入；回滚和边界详docs/operations/longcat-model-switch.md，脱敏证据ignored test-results/longcat-switch。文档生成首个Python stdin报Non-UTF-8，未写入文档，改用apply_patch和Node完成。
+
+本次发布用origin/main独立工作树，只集成任务文件，保留本地收尾/面试历史。按用户授权临时恢复项目origin，发布核验结束恢复隔离；旧tag不移，前端仍v1.0.5。提交/push结果后续补回执。
+
+文档集成第二次因发布基线没有仅本地delivery-closure.md报ENOENT；已保留该文档仅本地，补齐发布工作树CHANGELOG，源码复制与已写文档检查后继续。

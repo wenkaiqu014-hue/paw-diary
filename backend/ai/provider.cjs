@@ -5,7 +5,7 @@ function createTextModel({fetchImpl=globalThis.fetch,baseUrl='https://api.silico
   if(!apiKey||!model)throw new AiError('UNAVAILABLE');
   if(!Array.isArray(messages)||!messages.length||Buffer.byteLength(JSON.stringify(messages))>24*1024||!Number.isInteger(maxTokens)||maxTokens<1||maxTokens>1200)throw new AiError('INVALID_INPUT');
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeoutMs);
-  try{const response=await fetchImpl(baseUrl+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+apiKey},signal:controller.signal,body:JSON.stringify({model,messages,max_tokens:maxTokens,stream:false,temperature:0.2,response_format:responseFormat})});
+  try{const response=await fetchImpl(baseUrl+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+apiKey},signal:controller.signal,body:JSON.stringify({model,messages,max_tokens:maxTokens,stream:false,temperature:0.2,response_format:responseFormat,...(model==='meituan-longcat/LongCat-2.0'?{enable_thinking:false}:{})})});
    if(!response.ok)throw new AiError(response.status===429?'RATE_LIMITED':'UNAVAILABLE');
    const result=await response.json(),content=result?.choices?.[0]?.message?.content;
    if(typeof content!=='string'||!content.trim()||content.length>12000)throw new AiError('INVALID_MODEL_OUTPUT');

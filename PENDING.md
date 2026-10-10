@@ -4,6 +4,8 @@
 
 ## 当前唯一续作摘要
 
+**2026-10-10 LongCat后端补丁：** 用户新增明确授权本次切换与push；LongCat/Active/40秒已读回，三项真实模型冒烟3/3通过。快速回滚见[模型补丁](docs/operations/longcat-model-switch.md)。本次发布核验后恢复GitHub隔离，前端仍v1.0.5；以下为历史收尾。
+
 v1.0.5最新：已完全删除顶部档案空间栏，source/tag ae0b48e、Pages37777090451成功，四页原URL无该DOM且0错误，721单测通过。账号入口在原个人菜单，数据未改。以下旧版本为历史。
 
 v1.0.4正式发布：source/tag117958e、Pages37776122974 success/20:20:31、Release20:22:28、原URL六SHA一致；721单测/实际浏览器两宽/独立0Critical0Important通过。选图按钮旁本地即时头像(保存前无上传/公开)，失败/重试/换移/语言/旧read保护、坏图明确提示；弹窗标题仍focus但无黄色框，控件焦点仍可见。实际公开图片8/1全部加载0错误，未改backend/既有资料帖子，旧34refs未动。保守窗口20:06:33→20:26:33，发行15分55秒；用户手机两项亲验明确“OK了，没啥问题”，本轮已收口，Windows不要求重测，见[验收](docs/verification/profile-avatar-v104-report.md)。下文均历史。

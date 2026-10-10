@@ -19,3 +19,8 @@ test('empty body and timeout fail with explicit codes',async()=>{
  await assert.rejects(()=>createTextModel({apiKey:'x',model:'m',fetchImpl:async()=>({ok:true,json:async()=>({choices:[]})})}).complete({messages:[{role:'user',content:'x'}]}),e=>e.code==='INVALID_MODEL_OUTPUT');
  await assert.rejects(()=>createTextModel({apiKey:'x',model:'m',timeoutMs:5,fetchImpl:(_url,{signal})=>new Promise((_resolve,reject)=>signal.addEventListener('abort',()=>reject(new Error('abort'))))}).complete({messages:[{role:'user',content:'x'}]}),e=>e.code==='TIMEOUT');
 });
+test('LongCat disables thinking to reserve the bounded output for application JSON',async()=>{
+ const {createTextModel}=load();let body;
+ await createTextModel({apiKey:'synthetic',model:'meituan-longcat/LongCat-2.0',fetchImpl:async(_url,options)=>{body=JSON.parse(options.body);return{ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}]})};}}).complete({messages:[{role:'user',content:'JSON'}]});
+ assert.equal(body.enable_thinking,false);assert.equal(body.max_tokens,1200);assert.deepEqual(body.response_format,{type:'json_object'});
+});

@@ -1353,3 +1353,5 @@ source/tag117958e954bab1652c9462e0fafe0c8f512e8698；main ff、721全量/stable 
 本次发布用origin/main独立工作树，只集成任务文件，保留本地收尾/面试历史。按用户授权临时恢复项目origin，发布核验结束恢复隔离；旧tag不移，前端仍v1.0.5。提交/push结果后续补回执。
 
 文档集成第二次因发布基线没有仅本地delivery-closure.md报ENOENT；已保留该文档仅本地，补齐发布工作树CHANGELOG，源码复制与已写文档检查后继续。
+
+发布核验：源码提交328c6a31c574837eece250ea832adb2d8f46389e已push到原GitHub main；Pages工作流38026344896成功，Deploy步骤2026-10-10 13:06:17 Asia/Shanghai完成，工作流13:06:19完成。原网页HTTP200，公开release.buildId与源码328c6a3一致，version1.0.5/stable。13:06:44云模型命令显式LongCat读回Active且changed=false。独立只读agent longcat_quick_review仅审provider/部署/切换脚本/说明，报告0Critical/0Important；主agent实际检查和真实smoke证据不由该审查替代。发布核验后恢复GitHub主动隔离；本地两笔收尾/面试资料历史保留，未移动tag。

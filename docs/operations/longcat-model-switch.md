@@ -35,3 +35,7 @@ python3 scripts/switch-ai-model.py
 按用户十分钟最小范围，没有重跑全量测试、浏览器完整业务流程或真机验收。三项是真实模型加本地业务验证器的冒烟，云端验证为部署及配置读回，不冒充网页端到端验收。原始脱敏回执在ignored test-results/longcat-switch。
 
 本次按原600回执临时恢复origin，并从原远端main建立发布工作树，保留两笔仅本地收尾/面试资料历史。发布核验完成后恢复本项目主动隔离，旧tag不动，不额外创建Release。
+
+## 发布回执
+
+源码328c6a3已push原main，Pages38026344896成功（Deploy13:06:17、workflow13:06:19 Asia/Shanghai）；原URL HTTP200，公开buildId与该源码SHA一致。13:06:44云模型再次读回Active；独立只读四文件审查0Critical/0Important。
